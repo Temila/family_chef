@@ -18,6 +18,16 @@ class OrderStatusUpdate(BaseModel):
     """订单状态更新请求"""
     status: str
 
+class OrderItemResponse(BaseModel):
+    """订单项响应"""
+    id: int
+    dish_id: int
+    quantity: int
+    special_notes: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
 class OrderListResponse(BaseModel):
     """订单列表项响应"""
     id: int
@@ -36,7 +46,7 @@ class OrderDetailResponse(BaseModel):
     status: str
     chef_id: Optional[int] = None
     notes: Optional[str] = None
-    items: List[dict] = []
+    items: List[OrderItemResponse] = []
     created_at: datetime
     completed_at: Optional[datetime] = None
     
