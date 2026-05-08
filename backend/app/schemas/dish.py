@@ -23,6 +23,23 @@ class DietaryWarning(BaseModel):
     type: str  # dislike | allergy
     ingredient: str
 
+class CategoryInfo(BaseModel):
+    """分类信息"""
+    id: int
+    name: str
+    type: str
+    
+    class Config:
+        from_attributes = True
+
+class IngredientInfo(BaseModel):
+    """食材信息"""
+    id: int
+    name: str
+    
+    class Config:
+        from_attributes = True
+
 class DishListResponse(BaseModel):
     """菜品列表项响应"""
     id: int
@@ -30,7 +47,7 @@ class DishListResponse(BaseModel):
     pinyin: Optional[str] = None
     image_url: Optional[str] = None
     status: str
-    categories: List[dict] = []
+    categories: List[CategoryInfo] = []
     dietary_warnings: Optional[List[DietaryWarning]] = None
     
     class Config:
@@ -43,8 +60,8 @@ class DishDetailResponse(BaseModel):
     description: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: bool
-    categories: List[dict] = []
-    ingredients: List[dict] = []
+    categories: List[CategoryInfo] = []
+    ingredients: List[IngredientInfo] = []
     dietary_warning: Optional[DietaryWarning] = None
     
     class Config:

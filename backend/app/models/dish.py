@@ -31,6 +31,7 @@ class DishIngredient(Base):
     sort_order = Column(Integer, nullable=False, default=0)
     
     dish = relationship("Dish", back_populates="ingredients")
+    ingredient = relationship("Ingredient")
 
 class DishCategory(Base):
     __tablename__ = "dish_categories"
@@ -40,3 +41,4 @@ class DishCategory(Base):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     
     dish = relationship("Dish", back_populates="categories")
+    category = relationship("Category")
