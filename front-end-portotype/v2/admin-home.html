@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 管理后台</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="header-back">←</button>
+    <div class="header-title">⚙️ 管理后台</div>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-sm" style="color:var(--text-muted);">🔔</button>
+    </div>
+  </div>
+
+  <!-- Welcome -->
+  <div class="section animate-fade-in">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="avatar">T</div>
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--text-primary);">管理员 Temila</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">超级管理员 · 在线</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="section animate-fade-in stagger-1">
+    <div class="grid-3" style="gap:8px;">
+      <div class="admin-stat-card">
+        <div class="admin-stat-value">6</div>
+        <div class="admin-stat-label">用户数</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-value">128</div>
+        <div class="admin-stat-label">菜品数</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-value">23</div>
+        <div class="admin-stat-label">今日订单</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Management Modules -->
+  <div class="section animate-fade-in stagger-2">
+    <div class="section-title">📦 管理模块</div>
+    <div class="grid-3" style="gap:10px;">
+
+      <!-- User Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(212,118,60,0.1);color:var(--accent-warm-light);">👥</div>
+        <div class="module-card-title">用户管理</div>
+        <div class="module-card-count">6 位用户</div>
+      </div>
+
+      <!-- Dish Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(201,168,76,0.1);color:var(--accent-gold-light);">🍽</div>
+        <div class="module-card-title">菜品管理</div>
+        <div class="module-card-count">128 道菜</div>
+      </div>
+
+      <!-- Ingredient Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(90,154,90,0.1);color:var(--accent-green-light);">🥬</div>
+        <div class="module-card-title">食材管理</div>
+        <div class="module-card-count">86 种食材</div>
+      </div>
+
+      <!-- Chef Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(74,122,154,0.1);color:#7ab0d0;">👨‍🍳</div>
+        <div class="module-card-title">厨师管理</div>
+        <div class="module-card-count">2 位厨师</div>
+      </div>
+
+      <!-- Category Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(196,64,64,0.1);color:var(--accent-red-light);">🏷</div>
+        <div class="module-card-title">分类管理</div>
+        <div class="module-card-count">8 个分类</div>
+      </div>
+
+      <!-- Order Management -->
+      <div class="module-card">
+        <div class="module-card-icon" style="background:rgba(201,168,76,0.1);color:var(--accent-gold-light);">📋</div>
+        <div class="module-card-title">订单管理</div>
+        <div class="module-card-count">23 条今日</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="section animate-fade-in stagger-3">
+    <div class="section-title">📊 最近动态</div>
+    <div class="card" style="padding:0;">
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(90,154,90,0.1);color:var(--accent-green-light);">✅</div>
+        <div class="list-item-content">
+          <div class="list-item-title">新增菜品「宫保鸡丁」</div>
+          <div class="list-item-desc">10 分钟前</div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(212,118,60,0.1);color:var(--accent-warm-light);">👤</div>
+        <div class="list-item-content">
+          <div class="list-item-title">用户「霏霏」更新了口味偏好</div>
+          <div class="list-item-desc">30 分钟前</div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(74,122,154,0.1);color:#7ab0d0;">📋</div>
+        <div class="list-item-content">
+          <div class="list-item-title">订单 #1028 已提交</div>
+          <div class="list-item-desc">1 小时前</div>
+        </div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(201,168,76,0.1);color:var(--accent-gold-light);">🏷</div>
+        <div class="list-item-content">
+          <div class="list-item-title">新增分类「黑暗料理界」</div>
+          <div class="list-item-desc">2 小时前</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section animate-fade-in stagger-4">
+    <div class="section-title">⚡ 快捷操作</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary btn-block">
+        ➕ 新增菜品
+      </button>
+      <button class="btn btn-secondary btn-block">
+        📤 批量导入食材
+      </button>
+    </div>
+  </div>
+
+  <!-- Spacer -->
+  <div style="height:20px;"></div>
+
+</div>
+</body>
+</html>

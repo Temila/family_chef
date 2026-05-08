@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 菜品管理</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Admin dishes responsive: list on mobile, card grid on desktop */
+    .dish-list-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .dish-list-mobile .dish-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+    @media (min-width: 768px) {
+      .dish-list-mobile {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .dish-list-mobile .dish-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+      }
+      .dish-list-mobile .dish-row .dish-row-img {
+        width: 100% !important;
+        height: 80px !important;
+        border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+      }
+      .dish-list-mobile .dish-row .dish-row-content {
+        flex: none !important;
+        width: 100%;
+      }
+      .dish-list-mobile .dish-row .dish-row-actions {
+        flex-direction: row !important;
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+    }
+    @media (min-width: 1024px) {
+      .dish-list-mobile {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="header-back">←</button>
+    <div class="header-title">🍽 菜品管理</div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm">
+        ➕ 新增
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="section" style="padding-bottom:8px;">
+    <div class="search-bar" style="margin-bottom:10px;">
+      <span class="search-icon">🔎</span>
+      <input type="text" placeholder="搜索菜品名称..." value="">
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span class="filter-chip active">全部</span>
+      <span class="filter-chip">中餐</span>
+      <span class="filter-chip">西餐</span>
+      <span class="filter-chip">日料</span>
+      <span class="filter-chip">印度菜</span>
+      <span class="filter-chip">东南亚</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="section" style="padding:4px 16px 12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:0.8rem;color:var(--text-muted);">共 <span style="color:var(--accent-gold);font-weight:600;">128</span> 道菜品</div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;">排序 ↕</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:0.75rem;">筛选 🔽</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dish List - Responsive -->
+  <div class="section" style="padding:0 16px;">
+    <div class="dish-list-mobile">
+
+      <!-- Dish Item 1 -->
+      <div class="card animate-fade-in stagger-1" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🌶️</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">麻婆豆腐</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">川菜</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">豆腐 · 猪肉末 · 豆瓣酱 · 花椒</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-success" style="font-size:0.65rem;">上架中</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dish Item 2 -->
+      <div class="card animate-fade-in stagger-2" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🥩</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">红烧肉</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">鲁菜</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">五花肉 · 冰糖 · 酱油 · 八角</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-success" style="font-size:0.65rem;">上架中</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dish Item 3 -->
+      <div class="card animate-fade-in stagger-3" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🍗</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">宫保鸡丁</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">川菜</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">鸡胸肉 · 花生 · 干辣椒 · 葱段</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-success" style="font-size:0.65rem;">上架中</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dish Item 4 -->
+      <div class="card animate-fade-in stagger-4" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🍝</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">意大利面</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">意大利</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">意面 · 番茄酱 · 牛肉 · 芝士</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-warn" style="font-size:0.65rem;">草稿</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dish Item 5 -->
+      <div class="card animate-fade-in stagger-5" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🍤</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">天妇罗</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">日料</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">虾 · 面粉 · 鸡蛋 · 蔬菜</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-success" style="font-size:0.65rem;">上架中</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dish Item 6 -->
+      <div class="card animate-fade-in stagger-6" style="padding:0;">
+        <div class="dish-row">
+          <div class="dish-row-img" style="width:52px;height:52px;border-radius:var(--radius-md);background:linear-gradient(135deg, var(--bg-elevated), var(--bg-card-hover));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🍛</div>
+          <div class="dish-row-content" style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">咖喱鸡</span>
+              <span class="badge badge-info" style="font-size:0.65rem;">印度菜</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">鸡肉 · 咖喱 · 洋葱 · 土豆</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+              <span class="badge badge-success" style="font-size:0.65rem;">上架中</span>
+            </div>
+          </div>
+          <div class="dish-row-actions" style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="编辑">✏️</button>
+            <button class="btn-icon" style="width:32px;height:32px;font-size:0.75rem;" title="删除">🗑</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="page-btn" disabled>‹</button>
+    <button class="page-btn active">1</button>
+    <button class="page-btn">2</button>
+    <button class="page-btn">3</button>
+    <button class="page-btn">...</button>
+    <button class="page-btn">7</button>
+    <button class="page-btn">›</button>
+  </div>
+
+  <!-- Spacer -->
+  <div style="height:20px;"></div>
+
+</div>
+</body>
+</html>

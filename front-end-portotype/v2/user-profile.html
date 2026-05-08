@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 个人中心</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="header-back">←</button>
+    <div class="header-title">个人中心</div>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-sm" style="color:var(--accent-warm);">编辑</button>
+    </div>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="section animate-fade-in">
+    <div style="background:linear-gradient(135deg, rgba(212,118,60,0.1), rgba(201,168,76,0.06));border:1px solid rgba(212,118,60,0.12);border-radius:var(--radius-lg);padding:24px 20px;text-align:center;">
+      <div class="avatar avatar-lg" style="margin:0 auto 12px;">T</div>
+      <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--text-primary);">Temila</div>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+        <span class="badge badge-gold" style="margin-right:4px;">超级管理员</span>
+        <span class="badge badge-info">家庭厨师</span>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">加入于 2026年1月</div>
+    </div>
+  </div>
+
+  <!-- Basic Info -->
+  <div class="section animate-fade-in stagger-1">
+    <div class="section-title">👤 基本信息</div>
+    <div class="card" style="padding:0;">
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(212,118,60,0.1);color:var(--accent-warm-light);">📛</div>
+        <div class="list-item-content">
+          <div class="list-item-title">用户名</div>
+          <div class="list-item-desc">Temila</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(74,122,154,0.1);color:#7ab0d0;">🔒</div>
+        <div class="list-item-content">
+          <div class="list-item-title">修改密码</div>
+          <div class="list-item-desc">定期修改密码更安全</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(90,154,90,0.1);color:var(--accent-green-light);">📧</div>
+        <div class="list-item-content">
+          <div class="list-item-title">邮箱</div>
+          <div class="list-item-desc">temila@example.com</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Taste Preferences -->
+  <div class="section animate-fade-in stagger-2">
+    <div class="section-title">🌶️ 口味偏好</div>
+    <div class="card" style="padding:0;">
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(232,148,90,0.1);color:var(--accent-warm-light);">😣</div>
+        <div class="list-item-content">
+          <div class="list-item-title">不爱吃的食材</div>
+          <div class="list-item-desc">这些食材会显示黄色提示</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+      <div style="padding:8px 16px 12px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-warn">🥜 花生</span>
+          <span class="badge badge-warn">🧅 葱</span>
+          <span class="badge badge-warn">🫑 青椒</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(196,64,64,0.1);color:var(--accent-red-light);">🚫</div>
+        <div class="list-item-content">
+          <div class="list-item-title">严格忌口食材</div>
+          <div class="list-item-desc">这些食材会显示红色警告</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+      <div style="padding:8px 16px 12px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-danger">🐟 鱼类</span>
+          <span class="badge badge-danger">🦐 虾类</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites -->
+  <div class="section animate-fade-in stagger-3">
+    <div class="section-title">❤️ 我的收藏</div>
+    <div class="card" style="padding:0;">
+      <div class="list-item">
+        <div style="font-size:1.5rem;">🥩</div>
+        <div class="list-item-content">
+          <div class="list-item-title">红烧肉</div>
+          <div class="list-item-desc">鲁菜</div>
+        </div>
+        <span class="badge badge-gold">收藏</span>
+      </div>
+      <div class="list-item">
+        <div style="font-size:1.5rem;">🍖</div>
+        <div class="list-item-content">
+          <div class="list-item-title">糖醋排骨</div>
+          <div class="list-item-desc">苏菜</div>
+        </div>
+        <span class="badge badge-gold">收藏</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Switch -->
+  <div class="section animate-fade-in stagger-4">
+    <div class="section-title">🔄 角色切换</div>
+    <div class="card" style="padding:0;">
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(201,168,76,0.1);color:var(--accent-gold-light);">👨‍🍳</div>
+        <div class="list-item-content">
+          <div class="list-item-title">厨师模式</div>
+          <div class="list-item-desc">查看和管理订单</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+      <div class="list-item">
+        <div class="list-item-icon" style="background:rgba(74,122,154,0.1);color:#7ab0d0;">⚙️</div>
+        <div class="list-item-content">
+          <div class="list-item-title">管理后台</div>
+          <div class="list-item-desc">用户、菜品、食材管理</div>
+        </div>
+        <div class="list-item-action">→</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <div class="section animate-fade-in stagger-5">
+    <button class="btn btn-secondary btn-block" style="color:var(--accent-red-light);border-color:rgba(196,64,64,0.3);">
+      🚪 退出登录
+    </button>
+  </div>
+
+  <!-- Spacer -->
+  <div style="height:80px;"></div>
+
+  <!-- Bottom Tab Bar -->
+  <div class="bottom-bar">
+    <div style="display:flex;justify-content:space-around;align-items:center;">
+      <div style="text-align:center;cursor:pointer;opacity:0.5;">
+        <div style="font-size:1.3rem;">🏠</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">首页</div>
+      </div>
+      <div style="text-align:center;cursor:pointer;opacity:0.5;">
+        <div style="font-size:1.3rem;">🍽</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">点菜</div>
+      </div>
+      <div style="text-align:center;cursor:pointer;">
+        <div style="font-size:1.3rem;">👤</div>
+        <div style="font-size:0.7rem;color:var(--accent-warm);font-weight:600;margin-top:2px;">我的</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

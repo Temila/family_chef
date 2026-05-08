@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 厨师订单</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="header-back">←</button>
+    <div class="header-title">👨‍🍳 厨师订单</div>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-sm" style="color:var(--text-muted);">🔔 2</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="section animate-fade-in">
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;background:linear-gradient(135deg, rgba(212,118,60,0.12), rgba(212,118,60,0.06));border:1px solid rgba(212,118,60,0.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--accent-warm-light);">3</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);">待制作</div>
+      </div>
+      <div style="flex:1;background:rgba(90,154,90,0.08);border:1px solid rgba(90,154,90,0.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--accent-green-light);">5</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);">今日已完成</div>
+      </div>
+      <div style="flex:1;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);border-radius:var(--radius-md);padding:14px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--accent-gold-light);">12</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);">本周总计</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Orders -->
+  <div class="section animate-fade-in stagger-1">
+    <div class="section-title">
+      <span class="status-dot pending"></span>
+      待制作订单
+    </div>
+
+    <!-- Order 1: Urgent -->
+    <div class="card mb-3" style="border-color:rgba(196,64,64,0.2);">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">订单 #1028</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Temila · 今天 10:30</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="status-dot urgent"></span>
+          <span class="badge badge-danger">紧急</span>
+        </div>
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🥩</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">红烧肉</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🌶️</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">麻婆豆腐</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🍅</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">番茄炒蛋</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+          <button class="btn btn-secondary btn-sm">查看</button>
+          <button class="btn btn-primary btn-sm">标记完成 ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order 2 -->
+    <div class="card mb-3">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">订单 #1027</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">小明 · 今天 09:15</div>
+        </div>
+        <span class="badge badge-warn">待制作</span>
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🍖</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">糖醋排骨</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🍝</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">意大利面</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+          <button class="btn btn-secondary btn-sm">查看</button>
+          <button class="btn btn-primary btn-sm">标记完成 ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order 3 -->
+    <div class="card mb-3">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:600;color:var(--text-primary);font-size:0.9rem;">订单 #1026</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">霏霏 · 今天 08:45</div>
+        </div>
+        <span class="badge badge-warn">待制作</span>
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🍤</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">天妇罗</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">🍚</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);">白饭 ×2</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+          <button class="btn btn-secondary btn-sm">查看</button>
+          <button class="btn btn-primary btn-sm">标记完成 ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completed Orders -->
+  <div class="section animate-fade-in stagger-2">
+    <div class="section-title">
+      <span class="status-dot done"></span>
+      今日已完成
+    </div>
+
+    <div class="card" style="padding:0;opacity:0.7;">
+      <div class="list-item">
+        <div style="font-size:1.3rem;">🍛</div>
+        <div class="list-item-content">
+          <div class="list-item-title">#1025 · 咖喱鸡 · 清蒸鲈鱼</div>
+          <div class="list-item-desc">Temila · 18:00 完成</div>
+        </div>
+        <span class="badge badge-success">已完成</span>
+      </div>
+      <div class="list-item">
+        <div style="font-size:1.3rem;">🥟</div>
+        <div class="list-item-content">
+          <div class="list-item-title">#1024 · 饺子拼盘 · 酸辣汤</div>
+          <div class="list-item-desc">小明 · 17:30 完成</div>
+        </div>
+        <span class="badge badge-success">已完成</span>
+      </div>
+      <div class="list-item">
+        <div style="font-size:1.3rem;">🥘</div>
+        <div class="list-item-content">
+          <div class="list-item-title">#1023 · 红烧肉 · 白饭</div>
+          <div class="list-item-desc">霏霏 · 12:15 完成</div>
+        </div>
+        <span class="badge badge-success">已完成</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer -->
+  <div style="height:20px;"></div>
+
+</div>
+</body>
+</html>
