@@ -62,3 +62,8 @@ htmlcov/
 
 # UV
 uv.lock
+
+# 文档和原型（不纳入版本控制）
+docs-dev/
+front-end-prototype/
+front-end-portotype/
