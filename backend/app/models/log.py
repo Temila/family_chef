@@ -1,10 +1,15 @@
 """系统日志模型"""
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, String, Text
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, String, Text, Index
 from sqlalchemy.sql import func
 from app.database import Base
 
 class SystemLog(Base):
     __tablename__ = "system_logs"
+    __table_args__ = (
+        Index("ix_system_logs_user_id", "user_id"),
+        Index("ix_system_logs_action", "action"),
+        Index("ix_system_logs_created_at", "created_at"),
+    )
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"))
