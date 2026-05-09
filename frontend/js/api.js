@@ -1,0 +1,275 @@
+/**
+ * 家味 · Family Chef — API Client
+ * 封装所有后端 API 调用
+ */
+
+const API = {
+  baseURL: '/api',
+
+  // ─── Auth ─────────────────────────────────────
+  async login(username, password) {
+    return this.post('/auth/login', { username, password });
+  },
+
+  async register(username, password, display_name) {
+    return this.post('/auth/register', { username, password, display_name });
+  },
+
+  async refreshToken(refresh_token) {
+    return this.post('/auth/refresh', { refresh_token });
+  },
+
+  // ─── Dishes ─────────────────────────────────────
+  async getDishes(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    if (params.search) qs.set('search', params.search);
+    if (params.regions) params.regions.forEach(v => qs.append('regions', v));
+    if (params.cuisines) params.cuisines.forEach(v => qs.append('cuisines', v));
+    if (params.tastes) params.tastes.forEach(v => qs.append('tastes', v));
+    if (params.seasons) params.seasons.forEach(v => qs.append('seasons', v));
+    if (params.favorites_only) qs.set('favorites_only', 'true');
+    if (params.sort) qs.set('sort', params.sort);
+    return this.get(`/dishes?${qs}`);
+  },
+
+  async getDish(id) {
+    return this.get(`/dishes/${id}`);
+  },
+
+  async createDish(data) {
+    return this.post('/dishes', data);
+  },
+
+  async updateDish(id, data) {
+    return this.put(`/dishes/${id}`, data);
+  },
+
+  async deleteDish(id) {
+    return this.del(`/dishes/${id}`);
+  },
+
+  async updateDishStatus(id, status) {
+    return this.put(`/dishes/${id}/status`, { status });
+  },
+
+  async getDietaryWarning(dishId) {
+    return this.get(`/dishes/${dishId}/dietary_warning`);
+  },
+
+  // ─── Orders ─────────────────────────────────────
+  async createOrder(data) {
+    return this.post('/orders', data);
+  },
+
+  async getOrders(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    if (params.status) qs.set('status', params.status);
+    return this.get(`/orders?${qs}`);
+  },
+
+  async getOrder(id) {
+    return this.get(`/orders/${id}`);
+  },
+
+  async updateOrderStatus(id, status) {
+    return this.put(`/orders/${id}/status`, { status });
+  },
+
+  async cancelOrder(id) {
+    return this.del(`/orders/${id}`);
+  },
+
+  async getOrderStats() {
+    return this.get('/orders/stats');
+  },
+
+  // ─── Categories ─────────────────────────────────────
+  async getCategories(type = null, tree = false) {
+    const qs = new URLSearchParams();
+    if (type) qs.set('type', type);
+    if (tree) qs.set('tree', 'true');
+    return this.get(`/categories?${qs}`);
+  },
+
+  async createCategory(data) {
+    return this.post('/categories', data);
+  },
+
+  async updateCategory(id, data) {
+    return this.put(`/categories/${id}`, data);
+  },
+
+  async deleteCategory(id) {
+    return this.del(`/categories/${id}`);
+  },
+
+  // ─── Ingredients ─────────────────────────────────────
+  async getIngredients(category = null, search = null) {
+    const qs = new URLSearchParams();
+    if (category) qs.set('category', category);
+    if (search) qs.set('search', search);
+    return this.get(`/ingredients?${qs}`);
+  },
+
+  async createIngredient(data) {
+    return this.post('/ingredients', data);
+  },
+
+  async updateIngredient(id, data) {
+    return this.put(`/ingredients/${id}`, data);
+  },
+
+  async deleteIngredient(id) {
+    return this.del(`/ingredients/${id}`);
+  },
+
+  // ─── Favorites ─────────────────────────────────────
+  async addFavorite(dish_id) {
+    return this.post('/favorites', { dish_id });
+  },
+
+  async removeFavorite(dish_id) {
+    return this.del(`/favorites/${dish_id}`);
+  },
+
+  async getFavorites(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    return this.get(`/favorites?${qs}`);
+  },
+
+  // ─── Preferences ─────────────────────────────────────
+  async getPreferences() {
+    return this.get('/preferences');
+  },
+
+  async updatePreferences(data) {
+    return this.put('/preferences', data);
+  },
+
+  // ─── Users ─────────────────────────────────────
+  async getUsers(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    if (params.role) qs.set('role', params.role);
+    if (params.search) qs.set('search', params.search);
+    return this.get(`/users?${qs}`);
+  },
+
+  async getUser(id) {
+    return this.get(`/users/${id}`);
+  },
+
+  async updateUser(id, data) {
+    return this.put(`/users/${id}`, data);
+  },
+
+  async updatePassword(userId, old_password, new_password) {
+    return this.put(`/users/${userId}/password`, { old_password, new_password });
+  },
+
+  async deleteUser(id) {
+    return this.del(`/users/${id}`);
+  },
+
+  // ─── Chefs ─────────────────────────────────────
+  async getChefs() {
+    return this.get('/chefs');
+  },
+
+  async getSchedules(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.schedule_date) qs.set('schedule_date', params.schedule_date);
+    if (params.chef_id) qs.set('chef_id', params.chef_id);
+    return this.get(`/chefs/schedules?${qs}`);
+  },
+
+  async updateSchedule(data) {
+    return this.put('/chefs/schedules', data);
+  },
+
+  // ─── Admin ─────────────────────────────────────
+  async getAdminLogs(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    if (params.action) qs.set('action', params.action);
+    if (params.target_type) qs.set('target_type', params.target_type);
+    if (params.start_date) qs.set('start_date', params.start_date);
+    if (params.end_date) qs.set('end_date', params.end_date);
+    return this.get(`/admin/logs?${qs}`);
+  },
+
+  async getAdminStats() {
+    return this.get('/admin/stats');
+  },
+
+  async getDashboard() {
+    return this.get('/admin/dashboard');
+  },
+
+  // ─── Upload ─────────────────────────────────────
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.post('/upload/image', formData, true);
+  },
+
+  // ─── Core HTTP Methods ─────────────────────────────────────
+  async get(url) {
+    return this.request('GET', url);
+  },
+
+  async post(url, body, isFormData = false) {
+    return this.request('POST', url, body, isFormData);
+  },
+
+  async put(url, body, isFormData = false) {
+    return this.request('PUT', url, body, isFormData);
+  },
+
+  async del(url) {
+    return this.request('DELETE', url);
+  },
+
+  async request(method, url, body = null, isFormData = false) {
+    const headers = {};
+    if (Auth.getToken()) {
+      headers['Authorization'] = `Bearer ${Auth.getToken()}`;
+    }
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const options = { method, headers };
+    if (body) {
+      options.body = isFormData ? body : JSON.stringify(body);
+    }
+
+    const res = await fetch(this.baseURL + url, options);
+
+    if (res.status === 401) {
+      Auth.clear();
+      if (!url.includes('/auth/')) {
+        window.location.href = '/login.html';
+      }
+      throw new Error('未认证');
+    }
+
+    if (res.status === 204) return null;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || '请求失败');
+    }
+
+    return data;
+  }
+};
