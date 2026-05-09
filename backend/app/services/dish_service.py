@@ -216,7 +216,7 @@ class DishService:
             image_url=dish_data.image_url,
             is_popular=dish_data.is_popular,
             created_by=created_by,
-            status="draft",
+            status=dish_data.status or "draft",
         )
         db.add(dish)
         await db.flush()

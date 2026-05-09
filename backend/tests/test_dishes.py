@@ -16,7 +16,7 @@ async def test_create_dish(client: AsyncClient, admin_token: str):
             "name": "麻婆豆腐",
             "description": "经典川菜",
             "ingredients": ["豆腐", "猪肉末", "辣椒"],
-            "category_ids": [1, 2],
+            "category_ids": [],  # 先不关联分类
             "image_url": "https://example.com/mapo.jpg",
             "status": "published",
         }

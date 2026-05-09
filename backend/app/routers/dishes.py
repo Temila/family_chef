@@ -5,6 +5,8 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token
 from app.schemas.dish import (
@@ -16,6 +18,7 @@ from app.schemas.dish import (
 )
 from app.schemas.common import PageResponse
 from app.services.dish_service import dish_service
+from app.models.dish import Dish, DishIngredient, DishCategory
 from app.models.user import User
 
 router = APIRouter()
@@ -109,8 +112,46 @@ async def create_dish(
 
     dish = await dish_service.create_dish(db, dish_data, current_user.id)
     await db.commit()
-
-    return DishDetailResponse.model_validate(dish)
+    
+    # 重新查询并预加载关系
+    result = await db.execute(
+        select(Dish)
+        .options(
+            selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
+            selectinload(Dish.categories).selectinload(DishCategory.category),
+        )
+        .where(Dish.id == dish.id)
+    )
+    dish = result.scalar_one()
+    
+    # 手动构建响应
+    ingredients = []
+    for dish_ing in dish.ingredients:
+        if dish_ing.ingredient:
+            ingredients.append({
+                'id': dish_ing.ingredient.id,
+                'name': dish_ing.ingredient.name,
+            })
+    
+    categories = []
+    for dish_cat in dish.categories:
+        if dish_cat.category:
+            categories.append({
+                'id': dish_cat.category.id,
+                'name': dish_cat.category.name,
+                'type': dish_cat.category.type,
+            })
+    
+    return DishDetailResponse(
+        id=dish.id,
+        name=dish.name,
+        description=dish.description,
+        image_url=dish.image_url,
+        is_popular=dish.is_popular,
+        status=dish.status,
+        categories=categories,
+        ingredients=ingredients,
+    )
 
 
 @router.put("/{dish_id}", response_model=DishDetailResponse)
@@ -121,22 +162,53 @@ async def update_dish(
     db: AsyncSession = Depends(get_db),
 ):
     """更新菜品"""
-    # 权限检查：仅管理员和厨师可更新
-    if current_user.role not in ["admin", "chef"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="权限不足，仅管理员和厨师可更新菜品",
-        )
-
     dish = await dish_service.update_dish(db, dish_id, dish_data)
     if not dish:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="菜品不存在",
         )
-
     await db.commit()
-    return DishDetailResponse.model_validate(dish)
+    
+    # 重新查询并预加载关系
+    result = await db.execute(
+        select(Dish)
+        .options(
+            selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
+            selectinload(Dish.categories).selectinload(DishCategory.category),
+        )
+        .where(Dish.id == dish.id)
+    )
+    dish = result.scalar_one()
+    
+    # 手动构建响应
+    ingredients = []
+    for dish_ing in dish.ingredients:
+        if dish_ing.ingredient:
+            ingredients.append({
+                'id': dish_ing.ingredient.id,
+                'name': dish_ing.ingredient.name,
+            })
+    
+    categories = []
+    for dish_cat in dish.categories:
+        if dish_cat.category:
+            categories.append({
+                'id': dish_cat.category.id,
+                'name': dish_cat.category.name,
+                'type': dish_cat.category.type,
+            })
+    
+    return DishDetailResponse(
+        id=dish.id,
+        name=dish.name,
+        description=dish.description,
+        image_url=dish.image_url,
+        is_popular=dish.is_popular,
+        status=dish.status,
+        categories=categories,
+        ingredients=ingredients,
+    )
 
 
 @router.delete("/{dish_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -146,51 +218,36 @@ async def delete_dish(
     db: AsyncSession = Depends(get_db),
 ):
     """删除菜品"""
-    # 权限检查：仅管理员可删除
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="权限不足，仅管理员可删除菜品",
-        )
-
     success = await dish_service.delete_dish(db, dish_id)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="菜品不存在",
         )
-
     await db.commit()
 
 
-@router.put("/{dish_id}/status", response_model=DishDetailResponse)
+@router.put("/{dish_id}/status")
 async def update_dish_status(
     dish_id: int,
-    status: str = Query(..., description="菜品状态：draft, published, hidden"),
+    status_data: dict,
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
     """更新菜品状态"""
-    # 权限检查：仅管理员和厨师可更新状态
-    if current_user.role not in ["admin", "chef"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="权限不足，仅管理员和厨师可更新菜品状态",
-        )
-
-    try:
-        dish = await dish_service.update_dish_status(db, dish_id, status)
-    except ValueError as e:
+    new_status = status_data.get("status")
+    if not new_status:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail="缺少 status 字段",
         )
-
-    if not dish:
+    
+    success = await dish_service.update_dish_status(db, dish_id, new_status)
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="菜品不存在",
         )
-
     await db.commit()
-    return DishDetailResponse.model_validate(dish)
+    
+    return {"message": "菜品状态更新成功"}

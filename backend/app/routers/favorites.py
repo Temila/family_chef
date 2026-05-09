@@ -70,6 +70,7 @@ async def list_favorites(
 ):
     """收藏列表"""
     from app.utils.pagination import PaginationParams
+    from app.models.dish import DishIngredient, DishCategory
 
     params = PaginationParams(page=page, page_size=page_size)
 
@@ -79,7 +80,26 @@ async def list_favorites(
         params,
     )
 
-    items = [DishListResponse.model_validate(d) for d in dishes]
+    # 手动构建响应
+    items = []
+    for dish in dishes:
+        categories = []
+        for dish_cat in dish.categories:
+            if dish_cat.category:
+                categories.append({
+                    'id': dish_cat.category.id,
+                    'name': dish_cat.category.name,
+                    'type': dish_cat.category.type,
+                })
+        
+        items.append(DishListResponse(
+            id=dish.id,
+            name=dish.name,
+            pinyin=dish.pinyin,
+            image_url=dish.image_url,
+            status=dish.status,
+            categories=categories,
+        ))
 
     return PageResponse[DishListResponse](
         total=total,
