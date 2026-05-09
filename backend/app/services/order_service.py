@@ -78,8 +78,39 @@ class OrderService:
         await db.flush()
         await db.refresh(order)
 
-        # TODO: 触发飞书通知（异步）
-        # await feishu_service.notify_new_order(order)
+        # 触发飞书通知（异步）
+        try:
+            from app.integrations.feishu import feishu_client
+            # 获取厨师列表
+            chefs_result = await db.execute(
+                select(User).where(User.role == "chef", User.is_active == True)
+            )
+            chefs = chefs_result.scalars().all()
+            
+            # 获取菜品信息
+            items_info = []
+            for item in order.items:
+                dish_result = await db.execute(
+                    select(Dish).where(Dish.id == item.dish_id)
+                )
+                dish = dish_result.scalar_one_or_none()
+                if dish:
+                    items_info.append({
+                        "name": dish.name,
+                        "quantity": item.quantity,
+                    })
+            
+            # 通知所有厨师
+            for chef in chefs:
+                if chef.feishu_open_id:
+                    await feishu_client.send_order_notification(
+                        chef.feishu_open_id,
+                        order.order_no,
+                        order.status,
+                        items_info,
+                    )
+        except Exception as e:
+            print(f"⚠️ 飞书通知发送失败：{e}")
 
         return order
 
@@ -182,8 +213,38 @@ class OrderService:
         await db.flush()
         await db.refresh(order)
 
-        # TODO: 触发飞书通知（异步）
-        # await feishu_service.notify_order_status_change(order)
+        # 触发飞书通知（异步）
+        try:
+            from app.integrations.feishu import feishu_client
+            # 获取用户信息
+            user_result = await db.execute(
+                select(User).where(User.id == order.user_id)
+            )
+            user = user_result.scalar_one_or_none()
+            
+            # 获取菜品信息
+            items_info = []
+            for item in order.items:
+                dish_result = await db.execute(
+                    select(Dish).where(Dish.id == item.dish_id)
+                )
+                dish = dish_result.scalar_one_or_none()
+                if dish:
+                    items_info.append({
+                        "name": dish.name,
+                        "quantity": item.quantity,
+                    })
+            
+            # 通知用户
+            if user and user.feishu_open_id:
+                await feishu_client.send_order_notification(
+                    user.feishu_open_id,
+                    order.order_no,
+                    order.status,
+                    items_info,
+                )
+        except Exception as e:
+            print(f"⚠️ 飞书通知发送失败：{e}")
 
         return order
 

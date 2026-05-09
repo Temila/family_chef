@@ -2,8 +2,10 @@
 家味 · Family Chef - FastAPI 应用入口
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from app.database import init_db
 
@@ -34,6 +36,13 @@ async def startup():
     await create_initial_data()
     await create_preset_categories()
     
+    # 创建上传目录
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    
+    # 挂载静态文件服务
+    if os.path.exists(settings.UPLOAD_DIR):
+        app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+    
     print(f"✅ {settings.APP_NAME} v{settings.APP_VERSION} 启动成功")
 
 
@@ -59,7 +68,7 @@ async def health_check():
     return {"status": "ok"}
 
 
-# 注册路由（占位，Phase 2+ 逐步实现）
+# 注册路由
 from app.routers import auth, users, dishes, orders, ingredients, categories, favorites, preferences, chefs, admin, feishu, tools, upload
 
 app.include_router(auth.router, prefix="/api/auth", tags=["认证"])
