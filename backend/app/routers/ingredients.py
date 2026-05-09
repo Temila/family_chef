@@ -109,6 +109,18 @@ async def update_ingredient(
             )
         await db.commit()
         
+        # 重新查询并预加载关系
+        from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
+        from app.models.ingredient import Ingredient
+        
+        result = await db.execute(
+            select(Ingredient)
+            .options(selectinload(Ingredient.aliases))
+            .where(Ingredient.id == ingredient.id)
+        )
+        ingredient = result.scalar_one()
+        
         # 构建响应
         aliases = [alias.alias for alias in ingredient.aliases]
         response = IngredientResponse.model_validate(ingredient)

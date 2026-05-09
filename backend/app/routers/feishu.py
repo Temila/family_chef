@@ -3,7 +3,8 @@
 """
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi import status as http_status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token
@@ -31,7 +32,7 @@ async def bind_user(
 async def send_notify(
     receive_id: str,
     order_no: Optional[str] = None,
-    status: Optional[str] = None,
+    order_status: Optional[str] = None,
     items: Optional[list] = None,
     current_user: User = Depends(get_current_user_from_token),
 ):
@@ -39,26 +40,26 @@ async def send_notify(
     # 权限检查：仅管理员和厨师可发送通知
     if current_user.role not in ["admin", "chef"]:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=http_status.HTTP_403_FORBIDDEN,
             detail="权限不足，仅管理员和厨师可发送飞书通知",
         )
 
-    if order_no and status:
+    if order_no and order_status:
         success = await feishu_client.send_order_notification(
             receive_id,
             order_no,
-            status,
+            order_status,
             items or [],
         )
     else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=http_status.HTTP_400_BAD_REQUEST,
             detail="缺少必要参数",
         )
 
     if not success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="飞书消息发送失败",
         )
 
