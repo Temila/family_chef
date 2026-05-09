@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 管理后台</title>
+  <link rel="stylesheet" href="/app/css/styles.css">
+</head>
+<body>
+<div class="page-container">
+  <div class="header">
+    <div class="header-title">⚙️ 管理后台</div>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="loadDashboard()" title="刷新">🔄</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Stats -->
+  <div class="section">
+    <div class="section-title">📊 数据概览</div>
+    <div class="grid-2" id="dashboardStats">
+      <div class="stat-card"><div class="stat-value" id="statOrders">-</div><div class="stat-label">今日订单</div></div>
+      <div class="stat-card"><div class="stat-value" id="statDishes">-</div><div class="stat-label">菜品总数</div></div>
+      <div class="stat-card"><div class="stat-value" id="statUsers">-</div><div class="stat-label">家庭成员</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPopular">-</div><div class="stat-label">最受欢迎</div></div>
+    </div>
+  </div>
+
+  <!-- Quick Menu -->
+  <div class="section">
+    <div class="section-title">📋 功能管理</div>
+    <div class="menu-list" id="menuList">
+      <div class="menu-item" onclick="location.href='admin-dishes.html'">
+        <div class="menu-icon">🍽</div>
+        <div class="menu-text"><div class="menu-title">菜品管理</div><div class="menu-desc">新增、编辑、上下架菜品</div></div>
+        <div class="menu-arrow">→</div>
+      </div>
+      <div class="menu-item" onclick="alert('食材管理开发中')">
+        <div class="menu-icon">🥬</div>
+        <div class="menu-text"><div class="menu-title">食材管理</div><div class="menu-desc">管理食材库和分类</div></div>
+        <div class="menu-arrow">→</div>
+      </div>
+      <div class="menu-item" onclick="alert('用户管理开发中')">
+        <div class="menu-icon">👥</div>
+        <div class="menu-text"><div class="menu-title">用户管理</div><div class="menu-desc">查看和管理家庭成员</div></div>
+        <div class="menu-arrow">→</div>
+      </div>
+      <div class="menu-item" onclick="alert('数据统计开发中')">
+        <div class="menu-icon">📈</div>
+        <div class="menu-text"><div class="menu-title">数据统计</div><div class="menu-desc">订单统计和趋势分析</div></div>
+        <div class="menu-arrow">→</div>
+      </div>
+      <div class="menu-item" onclick="alert('系统日志开发中')">
+        <div class="menu-icon">📝</div>
+        <div class="menu-text"><div class="menu-title">系统日志</div><div class="menu-desc">查看操作记录和异常</div></div>
+        <div class="menu-arrow">→</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar"></div>
+</div>
+
+<script src="/app/js/auth.js"></script>
+<script src="/app/js/api.js"></script>
+<script src="/app/js/app.js"></script>
+<script>
+if (!Auth.requireRole(['admin'])) throw new Error();
+
+document.addEventListener('DOMContentLoaded', () => {
+  App.initBottomNav('admin-home');
+  loadDashboard();
+});
+
+async function loadDashboard() {
+  try {
+    // Try to get dashboard data, fallback to separate API calls
+    let data;
+    try {
+      data = await API.getDashboard();
+    } catch {
+      // Fallback: gather from multiple endpoints
+      const [dishes, orders, users] = await Promise.all([
+        API.getDishes({ page_size: 1 }),
+        API.getOrders({ page_size: 1 }),
+        API.getUsers({ page_size: 100 }),
+      ]);
+      data = {
+        total_orders: orders.total || 0,
+        total_dishes: dishes.total || 0,
+        total_users: users.total || 0,
+        popular_dish: '暂无数据',
+      };
+    }
+
+    document.getElementById('statOrders').textContent = data.total_orders || data.today_orders || '-';
+    document.getElementById('statDishes').textContent = data.total_dishes || '-';
+    document.getElementById('statUsers').textContent = data.total_users || '-';
+    document.getElementById('statPopular').textContent = data.popular_dish || '-';
+  } catch (err) {
+    document.getElementById('dashboardStats').innerHTML = App.emptyState('😢', '加载失败：' + err.message);
+  }
+}
+</script>
+</body>
+</html>

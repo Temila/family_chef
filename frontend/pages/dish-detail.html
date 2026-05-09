@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 菜品详情</title>
+  <link rel="stylesheet" href="/app/css/styles.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Header -->
+    <div class="header">
+      <button class="header-back" onclick="history.back()">‹</button>
+      <div class="header-title">菜品详情</div>
+      <div class="header-actions">
+        <button class="theme-toggle" style="position: static;">🌙</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content" style="padding-bottom: 80px;" id="content">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        加载中...
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-bar"></div>
+  </div>
+
+  <script src="/app/js/auth.js"></script>
+  <script src="/app/js/api.js"></script>
+  <script src="/app/js/app.js"></script>
+  <script>
+    let currentDish = null;
+    let isFavorite = false;
+    let favoriteDishIds = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 检查认证
+      if (!Auth.requireAuth('/login.html')) return;
+
+      // 初始化底部导航
+      App.initBottomNav('order-dish');
+
+      // 获取菜品ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const dishId = urlParams.get('id');
+      
+      if (!dishId) {
+        renderError('缺少菜品ID参数');
+        return;
+      }
+
+      // 加载收藏列表（用于检查收藏状态）
+      await loadFavorites();
+
+      // 加载菜品详情
+      await loadDishDetail(dishId);
+    });
+
+    async function loadFavorites() {
+      try {
+        const res = await API.getFavorites({ page: 1, page_size: 100 });
+        favoriteDishIds = (res.items || []).map(item => item.id || item.dish_id);
+      } catch (err) {
+        console.error('加载收藏列表失败:', err);
+      }
+    }
+
+    async function loadDishDetail(dishId) {
+      const content = document.getElementById('content');
+      
+      try {
+        const dish = await API.getDish(dishId);
+        currentDish = dish;
+        
+        // 检查是否已收藏
+        isFavorite = favoriteDishIds.includes(parseInt(dishId));
+        
+        renderDish(dish);
+      } catch (err) {
+        console.error('加载菜品详情失败:', err);
+        renderError(err.message || '加载菜品详情失败');
+      }
+    }
+
+    function renderDish(dish) {
+      const content = document.getElementById('content');
+      
+      const heroImage = dish.image_url 
+        ? `<img src="${dish.image_url}" alt="${dish.name}">`
+        : `<div class="placeholder-img">${dish.name.charAt(0)}</div>`;
+
+      const categories = dish.categories?.map(cat => 
+        `<span class="badge badge-info">${cat.name}</span>`
+      ).join('') || '';
+
+      const ingredients = dish.ingredients?.map(ing => `
+        <div class="ingredient-item">
+          <div class="ingredient-icon">🥗</div>
+          <div>
+            <div style="font-weight: 500; color: var(--text-primary);">${ing.name}</div>
+            ${ing.quantity ? `<div style="font-size: 0.75rem; color: var(--text-muted);">${ing.quantity}</div>` : ''}
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--text-muted); font-size: 0.85rem;">暂无食材信息</div>';
+
+      const favoriteBtnClass = isFavorite ? 'active' : '';
+      const favoriteBtnText = isFavorite ? '已收藏' : '收藏';
+
+      content.innerHTML = `
+        <!-- Hero Image -->
+        <div class="hero-image">
+          ${heroImage}
+          ${dish.is_popular ? '<div class="badge badge-gold" style="position: absolute; top: 12px; right: 12px;">热门</div>' : ''}
+        </div>
+
+        <!-- Dish Info -->
+        <div class="section">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <h1 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">
+              ${dish.name}
+            </h1>
+          </div>
+          
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+            ${App.statusBadge(dish.status)}
+            ${categories}
+          </div>
+
+          ${dish.pinyin ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">拼音: ${dish.pinyin}</div>` : ''}
+
+          ${dish.description ? `
+            <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+              ${dish.description}
+            </p>
+          ` : ''}
+
+          <!-- Favorite Button -->
+          <button class="btn btn-outline btn-block" onclick="toggleFavorite()" id="favoriteBtn">
+            ${isFavorite ? '⭐ 已收藏' : '☆ 收藏'}
+          </button>
+        </div>
+
+        <!-- Ingredients -->
+        <div class="section">
+          <div class="section-title">食材列表</div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px;">
+            ${ingredients}
+          </div>
+        </div>
+
+        <!-- Dietary Warning -->
+        <div class="section" id="dietarySection">
+          <div class="section-title">饮食提醒</div>
+          <div id="dietaryContainer">
+            <div class="loading">
+              <div class="loading-spinner"></div>
+              检查中...
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Button -->
+        <div class="section">
+          <button class="btn btn-primary btn-block btn-lg" onclick="addToOrder()">
+            添加到订单
+          </button>
+        </div>
+      `;
+
+      // 加载饮食提醒
+      loadDietaryWarning(dish.id);
+    }
+
+    async function loadDietaryWarning(dishId) {
+      const container = document.getElementById('dietaryContainer');
+      try {
+        const warning = await API.getDietaryWarning(dishId);
+        
+        if (!warning || (!warning.dislikes?.length && !warning.allergies?.length)) {
+          container.innerHTML = `
+            <div style="color: var(--success); font-size: 0.9rem;">
+              ✓ 无饮食冲突
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        
+        if (warning.dislikes?.length > 0) {
+          html += `<div style="margin-bottom: 8px;">
+            <span class="badge badge-warn">不喜</span>
+            <span style="margin-left: 8px; font-size: 0.85rem; color: var(--text-secondary);">
+              包含: ${warning.dislikes.join('、')}
+            </span>
+          </div>`;
+        }
+
+        if (warning.allergies?.length > 0) {
+          html += `<div>
+            <span class="badge badge-danger">过敏</span>
+            <span style="margin-left: 8px; font-size: 0.85rem; color: var(--text-secondary);">
+              包含: ${warning.allergies.join('、')}
+            </span>
+          </div>`;
+        }
+
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('加载饮食提醒失败:', err);
+        container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.9rem;">无法获取饮食提醒</div>`;
+      }
+    }
+
+    async function toggleFavorite() {
+      if (!currentDish) return;
+
+      const btn = document.getElementById('favoriteBtn');
+      
+      try {
+        if (isFavorite) {
+          await API.removeFavorite(currentDish.id);
+          isFavorite = false;
+          btn.innerHTML = '☆ 收藏';
+          btn.classList.remove('active');
+          App.showToast('已取消收藏');
+        } else {
+          await API.addFavorite(currentDish.id);
+          isFavorite = true;
+          btn.innerHTML = '⭐ 已收藏';
+          btn.classList.add('active');
+          App.showToast('已收藏');
+        }
+      } catch (err) {
+        console.error('操作收藏失败:', err);
+        App.showToast(err.message || '操作失败', 'error');
+      }
+    }
+
+    function addToOrder() {
+      // 简单实现：存储到 localStorage，实际订单页面会读取
+      let cart = JSON.parse(localStorage.getItem('fc_cart') || '[]');
+      const existingItem = cart.find(item => item.dish_id === currentDish.id);
+      
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          dish_id: currentDish.id,
+          dish_name: currentDish.name,
+          quantity: 1
+        });
+      }
+      
+      localStorage.setItem('fc_cart', JSON.stringify(cart));
+      App.showToast('已添加到订单，当前共 ' + cart.length + ' 道菜');
+    }
+
+    function renderError(message) {
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">❌</div>
+          <div class="empty-state-text">${message}</div>
+          <button class="btn btn-outline" style="margin-top: 16px;" onclick="history.back()">返回</button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

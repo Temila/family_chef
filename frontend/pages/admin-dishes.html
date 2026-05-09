@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 菜品管理</title>
+  <link rel="stylesheet" href="/app/css/styles.css">
+</head>
+<body>
+<div class="page-container">
+  <div class="header">
+    <button class="header-back" onclick="window.location.href='admin-home.html'">←</button>
+    <div class="header-title">🍽 菜品管理</div>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="loadDishes()" title="刷新">🔄</button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索菜品..." oninput="handleSearch()">
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-chips">
+    <button class="filter-chip active" data-status="all">全部</button>
+    <button class="filter-chip" data-status="published">已上架</button>
+    <button class="filter-chip" data-status="hidden">已下架</button>
+    <button class="filter-chip" data-status="draft">草稿</button>
+  </div>
+
+  <!-- Dish List -->
+  <div class="section" id="dishList"></div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="showCreateForm()" title="新增菜品">＋</button>
+
+  <!-- Create/Edit Modal -->
+  <div id="dishModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:center;justify-content:center;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto;">
+      <h3 style="margin-bottom:16px;" id="modalTitle">新增菜品</h3>
+      <form id="dishForm" onsubmit="handleSave(event)">
+        <input type="hidden" id="dishId">
+        <div class="form-group">
+          <label class="form-label">菜品名称 *</label>
+          <input class="form-input" type="text" id="dishName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">描述</label>
+          <textarea class="form-input" id="dishDesc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">分类 ID（逗号分隔）</label>
+          <input class="form-input" type="text" id="dishCats" placeholder="如：1,2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">食材 ID（逗号分隔）</label>
+          <input class="form-input" type="text" id="dishIngs" placeholder="如：1,3">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal()">取消</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar"></div>
+</div>
+
+<script src="/app/js/auth.js"></script>
+<script src="/app/js/api.js"></script>
+<script src="/app/js/app.js"></script>
+<script>
+if (!Auth.requireRole(['admin', 'chef'])) throw new Error();
+
+let allDishes = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  App.initBottomNav('admin-dishes');
+  loadDishes();
+  setupFilters();
+});
+
+async function loadDishes() {
+  const container = document.getElementById('dishList');
+  App.showLoading(container);
+  try {
+    const res = await API.getDishes({ page_size: 100 });
+    allDishes = res.items || [];
+    renderDishes('all');
+  } catch (err) {
+    container.innerHTML = App.emptyState('😢', '加载失败：' + err.message);
+  }
+}
+
+function setupFilters() {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderDishes(chip.dataset.status);
+    });
+  });
+}
+
+function handleSearch() {
+  const activeChip = document.querySelector('.filter-chip.active');
+  const status = activeChip ? activeChip.dataset.status : 'all';
+  renderDishes(status);
+}
+
+function renderDishes(status) {
+  const container = document.getElementById('dishList');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let dishes = allDishes;
+  if (status !== 'all') dishes = dishes.filter(d => d.status === status);
+  if (search) dishes = dishes.filter(d => d.name.toLowerCase().includes(search));
+
+  if (!dishes.length) {
+    container.innerHTML = App.emptyState('🍽', '暂无菜品');
+    return;
+  }
+
+  container.innerHTML = dishes.map(d => {
+    const cats = (d.categories || []).map(c => c.name).join(' · ') || '未分类';
+    return `
+      <div class="list-item" onclick="editDish(${d.id})">
+        <div class="list-item-img">${d.image_url ? `<img src="${d.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">` : '🍲'}</div>
+        <div class="list-item-info">
+          <div class="list-item-name">${d.name}</div>
+          <div class="list-item-meta">${cats}</div>
+        </div>
+        ${App.statusBadge(d.status)}
+      </div>`;
+  }).join('');
+}
+
+function showCreateForm() {
+  document.getElementById('modalTitle').textContent = '新增菜品';
+  document.getElementById('dishId').value = '';
+  document.getElementById('dishForm').reset();
+  document.getElementById('dishModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('dishModal').style.display = 'none';
+}
+
+async function editDish(id) {
+  try {
+    const dish = await API.getDish(id);
+    document.getElementById('modalTitle').textContent = '编辑菜品';
+    document.getElementById('dishId').value = dish.id;
+    document.getElementById('dishName').value = dish.name;
+    document.getElementById('dishDesc').value = dish.description || '';
+    document.getElementById('dishCats').value = (dish.categories || []).map(c => c.id).join(',');
+    document.getElementById('dishIngs').value = (dish.ingredients || []).map(i => i.id).join(',');
+    document.getElementById('dishModal').style.display = 'flex';
+  } catch (err) {
+    App.showToast('加载失败：' + err.message, 'error');
+  }
+}
+
+async function handleSave(e) {
+  e.preventDefault();
+  const id = document.getElementById('dishId').value;
+  const name = document.getElementById('dishName').value;
+  const description = document.getElementById('dishDesc').value;
+  const cats = document.getElementById('dishCats').value.split(',').filter(Boolean).map(Number);
+  const ings = document.getElementById('dishIngs').value.split(',').filter(Boolean).map(Number);
+
+  const data = { name, description, category_ids: cats, ingredient_ids: ings };
+
+  try {
+    if (id) {
+      await API.updateDish(parseInt(id), data);
+      App.showToast('菜品已更新 ✓');
+    } else {
+      await API.createDish(data);
+      App.showToast('菜品已创建 ✓');
+    }
+    closeModal();
+    await loadDishes();
+  } catch (err) {
+    App.showToast('保存失败：' + err.message, 'error');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 厨师工作台</title>
+  <link rel="stylesheet" href="/app/css/styles.css">
+</head>
+<body>
+<div class="page-container">
+  <div class="header">
+    <button class="header-back" onclick="window.location.href='../pages/user-home.html'">←</button>
+    <div class="header-title">👨‍🍳 厨师工作台</div>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="loadOrders()" title="刷新">🔄</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="dashboard-stats" id="statsCards">
+    <div class="stat-card"><div class="stat-value" id="statPending">-</div><div class="stat-label">待处理</div></div>
+    <div class="stat-card"><div class="stat-value" id="statCooking">-</div><div class="stat-label">烹饪中</div></div>
+    <div class="stat-card"><div class="stat-value" id="statToday">-</div><div class="stat-label">今日完成</div></div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-chips">
+    <button class="filter-chip active" data-status="all">全部</button>
+    <button class="filter-chip" data-status="pending">待处理</button>
+    <button class="filter-chip" data-status="cooking">烹饪中</button>
+    <button class="filter-chip" data-status="completed">已完成</button>
+  </div>
+
+  <!-- Orders List -->
+  <div class="section" id="ordersList"></div>
+
+  <div class="bottom-bar" id="bottomBar"></div>
+</div>
+
+<script src="/app/js/auth.js"></script>
+<script src="/app/js/api.js"></script>
+<script src="/app/js/app.js"></script>
+<script>
+if (!Auth.requireRole(['chef', 'admin'])) throw new Error();
+
+let allOrders = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  App.initBottomNav('chef-orders');
+  loadOrders();
+  setupFilters();
+});
+
+async function loadOrders() {
+  const container = document.getElementById('ordersList');
+  App.showLoading(container);
+  try {
+    const res = await API.getOrders({ page_size: 50 });
+    allOrders = res.items || [];
+    updateStats();
+    renderOrders('all');
+  } catch (err) {
+    container.innerHTML = App.emptyState('😢', '加载失败：' + err.message);
+  }
+}
+
+function updateStats() {
+  const today = new Date().toDateString();
+  document.getElementById('statPending').textContent = allOrders.filter(o => o.status === 'pending').length;
+  document.getElementById('statCooking').textContent = allOrders.filter(o => o.status === 'cooking').length;
+  document.getElementById('statToday').textContent = allOrders.filter(o => o.status === 'completed' && new Date(o.created_at).toDateString() === today).length;
+}
+
+function setupFilters() {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderOrders(chip.dataset.status);
+    });
+  });
+}
+
+function renderOrders(status) {
+  const container = document.getElementById('ordersList');
+  let orders = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
+
+  if (!orders.length) {
+    container.innerHTML = App.emptyState('📭', '暂无订单');
+    return;
+  }
+
+  container.innerHTML = orders.map(o => {
+    const items = (o.items || []).map(i => `${i.quantity}× 菜品#${i.dish_id}`).join('、');
+    let actions = '';
+    if (o.status === 'pending') {
+      actions = `
+        <button class="btn btn-sm btn-secondary" onclick="updateStatus(${o.id}, 'cancelled')">拒绝</button>
+        <button class="btn btn-sm btn-primary" onclick="updateStatus(${o.id}, 'accepted')">接单</button>`;
+    } else if (o.status === 'accepted') {
+      actions = `<button class="btn btn-sm btn-primary" onclick="updateStatus(${o.id}, 'cooking')">开始烹饪</button>`;
+    } else if (o.status === 'cooking') {
+      actions = `<button class="btn btn-sm btn-primary" onclick="updateStatus(${o.id}, 'completed')">标记完成</button>`;
+    }
+
+    return `
+      <div class="order-card animate-fade-in">
+        <div class="order-header">
+          <span class="order-no">${o.order_no}</span>
+          ${App.statusBadge(o.status)}
+        </div>
+        <div class="order-date">${App.formatDate(o.created_at)}</div>
+        <div class="order-items">${items || '暂无菜品'}</div>
+        ${o.notes ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">备注：${o.notes}</div>` : ''}
+        <div class="order-footer">
+          <span></span>
+          <div style="display:flex;gap:8px;">${actions}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function updateStatus(orderId, status) {
+  try {
+    await API.updateOrderStatus(orderId, status);
+    App.showToast(status === 'cancelled' ? '已拒绝' : '状态已更新 ✓');
+    await loadOrders();
+  } catch (err) {
+    App.showToast('操作失败：' + err.message, 'error');
+  }
+}
+</script>
+</body>
+</html>

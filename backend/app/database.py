@@ -4,6 +4,7 @@
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import text
 from app.config import settings
 
 
@@ -18,7 +19,7 @@ engine = create_async_engine(
 async def setup_wal_mode():
     """启用 SQLite WAL 模式"""
     async with engine.connect() as conn:
-        await conn.execute("PRAGMA journal_mode=WAL")
+        await conn.execute(text("PRAGMA journal_mode=WAL"))
         await conn.commit()
 
 

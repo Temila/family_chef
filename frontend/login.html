@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 登录</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .tab-switch { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .tab-switch button { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); }
+    .tab-switch button.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+    .tab-switch button:hover { color: var(--text-primary); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .toggle-theme-btn { position: fixed; top: 16px; right: 16px; z-index: 100; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <button class="toggle-theme-btn" id="themeToggle">🌙</button>
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">🍲 家味</div>
+      <p class="login-subtitle">Family Chef · 家的味道</p>
+
+      <div class="tab-switch">
+        <button class="active" onclick="switchTab('login')">登录</button>
+        <button onclick="switchTab('register')">注册</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginTab" class="tab-content active">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">用户名</label>
+            <input class="form-input" type="text" id="loginUsername" placeholder="请输入用户名" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码</label>
+            <input class="form-input" type="password" id="loginPassword" placeholder="请输入密码" required autocomplete="current-password">
+          </div>
+          <div id="loginError" class="form-error"></div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 8px;">登 录</button>
+        </form>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerTab" class="tab-content">
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label">用户名</label>
+            <input class="form-input" type="text" id="regUsername" placeholder="请输入用户名" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">显示名称</label>
+            <input class="form-input" type="text" id="regDisplayName" placeholder="请输入显示名称" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码</label>
+            <input class="form-input" type="password" id="regPassword" placeholder="至少 6 位" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label">确认密码</label>
+            <input class="form-input" type="password" id="regConfirm" placeholder="再次输入密码" required>
+          </div>
+          <div id="regError" class="form-error"></div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 8px;">注 册</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // If already logged in, redirect
+    if (Auth.isLoggedIn()) {
+      window.location.href = '/pages/user-home.html';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-switch button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      if (tab === 'login') {
+        document.querySelectorAll('.tab-switch button')[0].classList.add('active');
+        document.getElementById('loginTab').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-switch button')[1].classList.add('active');
+        document.getElementById('registerTab').classList.add('active');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('loginError');
+      errEl.classList.remove('show');
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+      try {
+        const res = await API.login(username, password);
+        Auth.setTokens(res.access_token, res.refresh_token, res.user);
+        App.showToast('登录成功');
+        window.location.href = '/pages/user-home.html';
+      } catch (err) {
+        errEl.textContent = err.message || '登录失败，请检查用户名和密码';
+        errEl.classList.add('show');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('regError');
+      errEl.classList.remove('show');
+      const username = document.getElementById('regUsername').value;
+      const display_name = document.getElementById('regDisplayName').value;
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      if (password !== confirm) {
+        errEl.textContent = '两次输入的密码不一致';
+        errEl.classList.add('show');
+        return;
+      }
+      try {
+        await API.register(username, password, display_name);
+        App.showToast('注册成功，请登录');
+        switchTab('login');
+        document.getElementById('loginUsername').value = username;
+      } catch (err) {
+        errEl.textContent = err.message || '注册失败';
+        errEl.classList.add('show');
+      }
+    }
+
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('fc_theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+    });
+    // Init theme icon
+    (function() {
+      const saved = localStorage.getItem('fc_theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeToggle').textContent = '☀️';
+      }
+    })();
+  </script>
+</body>
+</html>

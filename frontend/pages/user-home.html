@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家味 · 首页</title>
+  <link rel="stylesheet" href="/app/css/styles.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-title">家味 · 首页</div>
+      <button class="theme-toggle">🌙</button>
+    </div>
+
+    <!-- Content -->
+    <div class="content" style="padding-bottom: 80px;">
+      <!-- Welcome Section -->
+      <div class="section">
+        <div class="profile-card">
+          <div class="avatar avatar-lg" id="userAvatar">U</div>
+          <div class="profile-info">
+            <div class="profile-name" id="userName">用户</div>
+            <div class="profile-role">
+              <span class="role-badge role-user" id="userRole">用户</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="dashboard-stats" id="statsContainer">
+        <div class="stat-card">
+          <div class="stat-value" id="ordersCount">0</div>
+          <div class="stat-label">订单数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="favoritesCount">0</div>
+          <div class="stat-label">收藏数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="dislikesCount">0</div>
+          <div class="stat-label">不喜食材</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="allergiesCount">0</div>
+          <div class="stat-label">过敏源</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section">
+        <div class="section-title">快捷入口</div>
+        <div class="grid-2">
+          <div class="quick-action" onclick="App.navigate('order-dish')">
+            <div class="quick-action-icon">🍽</div>
+            <div>
+              <div class="quick-action-text">开始点菜</div>
+              <div class="quick-action-desc">浏览美味菜品</div>
+            </div>
+          </div>
+          <div class="quick-action" onclick="App.navigate('user-profile')">
+            <div class="quick-action-icon">⚙</div>
+            <div>
+              <div class="quick-action-text">个人设置</div>
+              <div class="quick-action-desc">管理个人信息</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="section">
+        <div class="section-title">
+          <span>最近订单</span>
+          <a href="#" style="font-size: 0.85rem; font-weight: normal;" onclick="App.navigate('chef-orders')">查看全部</a>
+        </div>
+        <div id="ordersContainer">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            加载中...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-bar"></div>
+  </div>
+
+  <script src="/app/js/auth.js"></script>
+  <script src="/app/js/api.js"></script>
+  <script src="/app/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 检查认证
+      if (!Auth.requireAuth('/login.html')) return;
+
+      // 初始化底部导航
+      App.initBottomNav('user-home');
+
+      // 加载用户信息
+      loadUserInfo();
+
+      // 加载统计数据
+      loadStats();
+
+      // 加载最近订单
+      loadRecentOrders();
+    });
+
+    async function loadUserInfo() {
+      const user = Auth.getUser();
+      if (user) {
+        document.getElementById('userName').textContent = user.display_name || user.username;
+        document.getElementById('userRole').textContent = Auth.getRoleLabel();
+        document.getElementById('userAvatar').textContent = (user.display_name || user.username).charAt(0).toUpperCase();
+        
+        // 更新角色徽章样式
+        const roleBadge = document.getElementById('userRole');
+        roleBadge.className = `role-badge role-${user.role}`;
+      }
+    }
+
+    async function loadStats() {
+      try {
+        // 并行加载数据
+        const [ordersRes, favoritesRes, preferencesRes] = await Promise.all([
+          API.getOrders({ page: 1, page_size: 1 }),
+          API.getFavorites({ page: 1, page_size: 1 }),
+          API.getPreferences()
+        ]);
+
+        document.getElementById('ordersCount').textContent = ordersRes.total || 0;
+        document.getElementById('favoritesCount').textContent = favoritesRes.total || 0;
+        document.getElementById('dislikesCount').textContent = preferencesRes.dislikes?.length || 0;
+        document.getElementById('allergiesCount').textContent = preferencesRes.allergies?.length || 0;
+      } catch (err) {
+        console.error('加载统计数据失败:', err);
+        App.showToast('加载统计数据失败', 'error');
+      }
+    }
+
+    async function loadRecentOrders() {
+      const container = document.getElementById('ordersContainer');
+      try {
+        const res = await API.getOrders({ page: 1, page_size: 3 });
+        
+        if (!res.items || res.items.length === 0) {
+          container.innerHTML = App.emptyState('📭', '暂无订单记录');
+          return;
+        }
+
+        container.innerHTML = res.items.map(order => `
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-no">#${order.order_no}</span>
+              <span class="order-date">${App.formatDate(order.created_at)}</span>
+            </div>
+            <div class="order-items">
+              ${order.items?.map(item => item.dish_name || '未知菜品').join('、') || '无菜品'}
+            </div>
+            <div class="order-footer">
+              ${App.statusBadge(order.status)}
+              <span class="order-total">${order.items?.length || 0} 道菜</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('加载订单失败:', err);
+        container.innerHTML = App.emptyState('❌', '加载失败');
+      }
+    }
+  </script>
+</body>
+</html>
