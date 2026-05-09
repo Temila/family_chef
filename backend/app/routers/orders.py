@@ -37,6 +37,18 @@ async def create_order(
         )
 
     await db.commit()
+    
+    # 重新查询并预加载关系
+    from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
+    from app.models.order import Order
+    result = await db.execute(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.id == order.id)
+    )
+    order = result.scalar_one()
+    
     return OrderDetailResponse.model_validate(order)
 
 
@@ -131,6 +143,18 @@ async def update_order_status(
         )
 
     await db.commit()
+    
+    # 重新查询并预加载关系
+    from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
+    from app.models.order import Order
+    result = await db.execute(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.id == order.id)
+    )
+    order = result.scalar_one()
+    
     return OrderDetailResponse.model_validate(order)
 
 

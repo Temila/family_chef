@@ -255,7 +255,11 @@ class OrderService:
         user_id: int,
     ) -> Optional[Order]:
         """取消订单（仅用户可取消 pending 状态）"""
-        result = await db.execute(select(Order).where(Order.id == order_id))
+        result = await db.execute(
+            select(Order)
+            .options(selectinload(Order.items))
+            .where(Order.id == order_id)
+        )
         order = result.scalar_one_or_none()
         if not order:
             return None

@@ -1,19 +1,150 @@
 """食材管理路由"""
-from fastapi import APIRouter
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database import get_db
+from app.routers.auth import get_current_user_from_token, require_role
+from app.services.ingredient_service import ingredient_service
+from app.schemas.ingredient import IngredientCreate, IngredientUpdate, IngredientResponse
+from app.models.user import User
+
 router = APIRouter()
 
+
 @router.get("/")
-async def list_ingredients():
-    return {"message": "食材列表 - Phase 3 实现"}
+async def list_ingredients(
+    category: Optional[str] = Query(None, description="食材分类"),
+    search: Optional[str] = Query(None, description="搜索关键词"),
+    db: AsyncSession = Depends(get_db),
+):
+    """食材列表"""
+    ingredients = await ingredient_service.list_ingredients(
+        db,
+        category=category,
+        search=search,
+    )
+    
+    items = []
+    for ing in ingredients:
+        aliases = [alias.alias for alias in ing.aliases]
+        item = IngredientResponse.model_validate(ing)
+        item.aliases = aliases
+        items.append(item)
+    
+    return {
+        "total": len(items),
+        "items": items,
+    }
 
-@router.post("/")
-async def create_ingredient():
-    return {"message": "新增食材 - Phase 3 实现"}
 
-@router.put("/{ingredient_id}")
-async def update_ingredient(ingredient_id: int):
-    return {"message": "更新食材 - Phase 3 实现"}
+@router.post("/", response_model=IngredientResponse, status_code=status.HTTP_201_CREATED)
+async def create_ingredient(
+    request: IngredientCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "chef")),
+):
+    """新增食材"""
+    try:
+        ingredient = await ingredient_service.create_ingredient(
+            db,
+            name=request.name,
+            pinyin=request.pinyin,
+            category=request.category,
+            description=request.description,
+            image_url=request.image_url,
+            unit=request.unit,
+            aliases=request.aliases,
+        )
+        await db.commit()
+        
+        # 重新查询并预加载关系
+        from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
+        from app.models.ingredient import Ingredient
+        
+        result = await db.execute(
+            select(Ingredient)
+            .options(selectinload(Ingredient.aliases))
+            .where(Ingredient.id == ingredient.id)
+        )
+        ingredient = result.scalar_one()
+        
+        # 构建响应
+        aliases = [alias.alias for alias in ingredient.aliases]
+        response = IngredientResponse.model_validate(ingredient)
+        response.aliases = aliases
+        return response
+    except ValueError as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
 
-@router.delete("/{ingredient_id}")
-async def delete_ingredient(ingredient_id: int):
-    return {"message": "删除食材 - Phase 3 实现"}
+
+@router.put("/{ingredient_id}", response_model=IngredientResponse)
+async def update_ingredient(
+    ingredient_id: int,
+    request: IngredientUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "chef")),
+):
+    """更新食材"""
+    try:
+        ingredient = await ingredient_service.update_ingredient(
+            db,
+            ingredient_id,
+            name=request.name,
+            pinyin=request.pinyin,
+            category=request.category,
+            description=request.description,
+            image_url=request.image_url,
+            is_active=request.is_active,
+            aliases=request.aliases,
+        )
+        if not ingredient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="食材不存在",
+            )
+        await db.commit()
+        
+        # 重新查询并预加载关系
+        from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
+        from app.models.ingredient import Ingredient
+        
+        result = await db.execute(
+            select(Ingredient)
+            .options(selectinload(Ingredient.aliases))
+            .where(Ingredient.id == ingredient.id)
+        )
+        ingredient = result.scalar_one()
+        
+        # 构建响应
+        aliases = [alias.alias for alias in ingredient.aliases]
+        response = IngredientResponse.model_validate(ingredient)
+        response.aliases = aliases
+        return response
+    except ValueError as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+@router.delete("/{ingredient_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_ingredient(
+    ingredient_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """删除食材"""
+    success = await ingredient_service.delete_ingredient(db, ingredient_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="食材不存在",
+        )
+    await db.commit()

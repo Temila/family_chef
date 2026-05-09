@@ -75,10 +75,17 @@ class FavoriteService:
         params: PaginationParams,
     ) -> tuple[List[Dish], int]:
         """获取收藏列表（分页）"""
+        from sqlalchemy.orm import selectinload
+        from app.models.dish import DishIngredient, DishCategory
+        
         # 基础查询
         query = (
             select(Dish)
             .join(Favorite, Dish.id == Favorite.dish_id)
+            .options(
+                selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
+                selectinload(Dish.categories).selectinload(DishCategory.category),
+            )
             .where(Favorite.user_id == user_id)
             .order_by(Favorite.created_at.desc())
         )
