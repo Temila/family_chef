@@ -72,6 +72,16 @@ async def refresh_token(
             detail="无效的 refresh_token",
         )
 
+    # 获取用户信息
+    from app.utils.security import decode_access_token
+    payload = decode_access_token(result["access_token"])
+    user_id = int(payload.get("sub"))
+    from sqlalchemy import select
+    from app.models.user import User
+    user_result = await db.execute(select(User).where(User.id == user_id))
+    user = user_result.scalar_one_or_none()
+    
+    result["user"] = UserResponse.model_validate(user)
     return TokenResponse(**result)
 
 
