@@ -1,0 +1,105 @@
+/**
+ * 家味 · Family Chef — App Utilities
+ * 主题切换、Toast、日期格式化
+ */
+
+// ─── Theme ─────────────────────────────────────
+export const theme = {
+  initTheme() {
+    const saved = localStorage.getItem('fc_theme');
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  },
+
+  getTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  },
+
+  setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('fc_theme', theme);
+  },
+
+  toggleTheme() {
+    const isDark = this.getTheme() === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    this.setTheme(newTheme);
+    return newTheme;
+  },
+
+  getThemeIcon() {
+    return this.getTheme() === 'dark' ? '☀️' : '🌙';
+  }
+};
+
+// ─── Date Format ─────────────────────────────────────
+export const formatDate = (str) => {
+  if (!str) return '';
+  const d = new Date(str);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+};
+
+export const formatDateShort = (str) => {
+  if (!str) return '';
+  const d = new Date(str);
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+};
+
+// ─── Status Badge ─────────────────────────────────────
+export const statusBadge = (status) => {
+  const map = {
+    pending: { text: '待处理', cls: 'badge-warn' },
+    accepted: { text: '已接单', cls: 'badge-info' },
+    cooking: { text: '烹饪中', cls: 'badge-accent' },
+    completed: { text: '已完成', cls: 'badge-success' },
+    cancelled: { text: '已取消', cls: 'badge-danger' },
+    published: { text: '已上架', cls: 'badge-success' },
+    hidden: { text: '已下架', cls: 'badge-danger' },
+    draft: { text: '草稿', cls: 'badge-info' },
+  };
+  const s = map[status] || { text: status, cls: 'badge-info' };
+  return { text: s.text, cls: s.cls };
+};
+
+// ─── Empty State ─────────────────────────────────────
+export const emptyState = (icon = '📭', text = '暂无数据') => {
+  return { icon, text };
+};
+
+// ─── Price Format ─────────────────────────────────────
+export const formatPrice = (price) => {
+  if (price === null || price === undefined) return '0.00';
+  return parseFloat(price).toFixed(2);
+};
+
+// ─── Debounce ─────────────────────────────────────
+export const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+// ─── Truncate Text ─────────────────────────────────────
+export const truncate = (text, length = 50) => {
+  if (!text) return '';
+  if (text.length <= length) return text;
+  return text.substring(0, length) + '...';
+};
+
+export default {
+  theme,
+  formatDate,
+  formatDateShort,
+  statusBadge,
+  emptyState,
+  formatPrice,
+  debounce,
+  truncate
+};

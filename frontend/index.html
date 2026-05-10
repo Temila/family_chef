@@ -1,24 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>家味 · Family Chef</title>
-  <script>
-    // Auto-redirect based on auth state
-    (function() {
-      const token = localStorage.getItem('fc_access_token');
-      if (token) {
-        window.location.href = '/pages/user-home.html';
-      } else {
-        window.location.href = '/login.html';
-      }
-    })();
-  </script>
-</head>
-<body>
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#999;">
-    加载中...
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>家味 · Family Chef</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
