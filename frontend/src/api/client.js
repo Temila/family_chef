@@ -175,6 +175,14 @@ class ApiClient {
     return this.del(`/ingredients/${id}`);
   }
 
+  async parseIngredientsFromText(text) {
+    return this.post('/ingredients/parse', { text });
+  }
+
+  async batchImportIngredients(items) {
+    return this.post('/ingredients/batch-import', { items });
+  }
+
   // ─── Favorites ─────────────────────────────────────
   async addFavorite(dish_id) {
     return this.post('/favorites', { dish_id });

@@ -7,6 +7,7 @@ class DishCreate(BaseModel):
     """创建菜品请求"""
     name: str
     description: Optional[str] = None
+    recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: bool = False
     category_ids: Optional[List[int]] = None
@@ -18,9 +19,12 @@ class DishUpdate(BaseModel):
     """更新菜品请求"""
     name: Optional[str] = None
     description: Optional[str] = None
+    recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: Optional[bool] = None
     status: Optional[str] = None
+    category_ids: Optional[List[int]] = None
+    ingredient_ids: Optional[List[int]] = None
 
 
 class DietaryWarning(BaseModel):
@@ -67,6 +71,7 @@ class DishDetailResponse(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
+    recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: bool
     status: str

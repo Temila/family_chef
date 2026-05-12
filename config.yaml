@@ -1,0 +1,43 @@
+# 家味 · Family Chef - 全局配置文件
+# 修改后需重启后端服务生效
+
+app:
+  name: "家味·Family Chef"
+  version: "0.1.0"
+  debug: true
+  secret_key: "dev-secret-key-change-in-production"
+
+database:
+  url: "sqlite+aiosqlite:///./data/family_chef.db"
+
+jwt:
+  secret_key: "dev-jwt-secret-key-change-in-production"
+  algorithm: "HS256"
+  expire_minutes: 1440
+
+feishu:
+  app_id: null
+  app_secret: null
+  app_token: null
+
+upload:
+  dir: "./data/uploads"
+  max_size: 5242880  # 5MB
+
+cors:
+  origins:
+    - "*"
+
+smart:
+  # 总开关：控制所有智能化功能，设为 false 时所有智能功能都不生效
+  enabled: true
+  features:
+    # 智能食材提取：使用 LLM 从文本中智能识别食材名称、数量和单位
+    ingredient_extraction: true
+  llm:
+    model_repo: "unsloth/Qwen3.5-0.8B-GGUF"
+    model_filename: "Qwen3.5-0.8B-Q4_K_M.gguf"
+    n_ctx: 2048
+    # n_gpu_layers: 0
+    # HuggingFace 镜像地址，留空则使用官方源；国内推荐 https://hf-mirror.com
+    hf_mirror: "https://hf-mirror.com"

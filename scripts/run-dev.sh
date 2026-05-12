@@ -40,7 +40,7 @@ echo "📦 检查后端依赖..."
 cd "$BACKEND_DIR"
 
 # 安装依赖
-uv sync
+uv sync --extra smart
 
 # 创建数据目录
 mkdir -p "$BACKEND_DIR/data"

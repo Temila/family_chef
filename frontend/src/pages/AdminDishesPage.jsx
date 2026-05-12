@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -7,33 +7,60 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
+const CATEGORY_OPTIONS = [
+  { value: 'meat', label: '肉类' },
+  { value: 'vegetable', label: '蔬菜' },
+  { value: 'seafood', label: '海鲜' },
+  { value: 'fruit', label: '水果' },
+  { value: 'seasoning', label: '调味品' },
+  { value: 'other', label: '其他' },
+];
+
 export default function AdminDishesPage() {
   const { showToast } = useToast();
 
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [showExtractModal, setShowExtractModal] = useState(false);
+
+  const [showDishModal, setShowDishModal] = useState(false);
   const [editingDish, setEditingDish] = useState(null);
   const [form, setForm] = useState({
     name: '', description: '', image_url: '', status: 'draft',
     category_ids: [], ingredient_ids: [], recipe: '',
   });
-  const [categories, setCategories] = useState({ regions: [], cuisines: [], tastes: [], seasons: [] });
-  const [ingredients, setIngredients] = useState([]);
-  const [ingredientSearch, setIngredientSearch] = useState('');
-  const [ingredientResults, setIngredientResults] = useState([]);
 
+  const [allCategories, setAllCategories] = useState([]);
+  const [allIngredients, setAllIngredients] = useState([]);
+
+  const [showIngDropdown, setShowIngDropdown] = useState(false);
+  const [ingSearch, setIngSearch] = useState('');
+  const [ingCategoryFilter, setIngCategoryFilter] = useState('');
+  const ingDropdownRef = useRef(null);
+
+  const [showExtractModal, setShowExtractModal] = useState(false);
   const [extractText, setExtractText] = useState('');
   const [extracting, setExtracting] = useState(false);
-  const [extractResult, setExtractResult] = useState(null);
+  const [parseResult, setParseResult] = useState(null);
+
+  const [showAddIngModal, setShowAddIngModal] = useState(false);
+  const [addIngForm, setAddIngForm] = useState({ name: '', category: '', description: '', aliases: '' });
 
   useEffect(() => {
     loadDishes();
-    loadCategories();
-    loadIngredients();
+    loadAllData();
   }, []);
+
+  useEffect(() => {
+    if (!showIngDropdown) return;
+    const handler = (e) => {
+      if (ingDropdownRef.current && !ingDropdownRef.current.contains(e.target)) {
+        setShowIngDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showIngDropdown]);
 
   const loadDishes = async () => {
     try {
@@ -49,48 +76,40 @@ export default function AdminDishesPage() {
     }
   };
 
-  const loadCategories = async () => {
+  const loadAllData = async () => {
     try {
-      const [regionsRes, cuisinesRes, tastesRes, seasonsRes] = await Promise.all([
-        api.getCategories('region'),
-        api.getCategories('cuisine'),
-        api.getCategories('taste'),
-        api.getCategories('season'),
+      const [catRes, ingRes] = await Promise.all([
+        api.getCategories(),
+        api.getIngredients(),
       ]);
-      setCategories({
-        regions: regionsRes.items || [],
-        cuisines: cuisinesRes.items || [],
-        tastes: tastesRes.items || [],
-        seasons: seasonsRes.items || [],
-      });
+      setAllCategories(catRes.items || []);
+      setAllIngredients(ingRes.items || []);
     } catch (err) {}
   };
 
-  const loadIngredients = async () => {
-    try {
-      const res = await api.getIngredients();
-      setIngredients(res.items || []);
-    } catch (err) {}
-  };
+  const regions = allCategories.filter(c => c.type === 'region');
+  const cuisines = allCategories.filter(c => c.type === 'cuisine');
+  const tastes = allCategories.filter(c => c.type === 'taste');
+  const seasons = allCategories.filter(c => c.type === 'season');
 
-  const searchIngredients = async (query) => {
-    setIngredientSearch(query);
-    if (query.length < 1) {
-      setIngredientResults([]);
-      return;
-    }
-    try {
-      const res = await api.getIngredients(null, query);
-      setIngredientResults(res.items || []);
-    } catch (err) {
-      setIngredientResults([]);
-    }
-  };
+  const selectedRegionIds = form.category_ids.filter(id => regions.some(r => r.id === id));
+  const filteredCuisines = selectedRegionIds.length > 0
+    ? cuisines.filter(c => selectedRegionIds.includes(c.parent_id))
+    : cuisines;
 
-  const openCreate = () => {
+  const filteredIngForDropdown = allIngredients
+    .filter(i => !form.ingredient_ids.includes(i.id))
+    .filter(i => !ingCategoryFilter || i.category === ingCategoryFilter)
+    .filter(i => !ingSearch || i.name.includes(ingSearch) || (i.aliases || []).some(a => a.includes(ingSearch)));
+
+  const openCreate = (prefill = {}) => {
     setEditingDish(null);
-    setForm({ name: '', description: '', image_url: '', status: 'draft', category_ids: [], ingredient_ids: [], recipe: '' });
-    setShowModal(true);
+    setForm({
+      name: '', description: '', image_url: '', status: 'draft',
+      category_ids: [], ingredient_ids: [], recipe: '',
+      ...prefill,
+    });
+    setShowDishModal(true);
   };
 
   const openEdit = (dish) => {
@@ -104,7 +123,7 @@ export default function AdminDishesPage() {
       ingredient_ids: (dish.ingredients || []).map(i => i.id),
       recipe: dish.recipe || '',
     });
-    setShowModal(true);
+    setShowDishModal(true);
   };
 
   const handleSave = async () => {
@@ -116,6 +135,7 @@ export default function AdminDishesPage() {
       const data = {
         name: form.name,
         description: form.description || null,
+        recipe: form.recipe || null,
         image_url: form.image_url || null,
         status: form.status,
         category_ids: form.category_ids.length > 0 ? form.category_ids : null,
@@ -129,7 +149,7 @@ export default function AdminDishesPage() {
         await api.createDish(data);
         showToast('创建成功');
       }
-      setShowModal(false);
+      setShowDishModal(false);
       loadDishes();
     } catch (err) {
       showToast(err.message || '操作失败', 'error');
@@ -158,50 +178,6 @@ export default function AdminDishesPage() {
     }
   };
 
-  const handleExtract = async () => {
-    if (!extractText.trim()) {
-      showToast('请输入文本内容', 'error');
-      return;
-    }
-    try {
-      setExtracting(true);
-      const res = await api.extractIngredients(extractText);
-      setExtractResult(res);
-      if (res.ingredients && res.ingredients.length > 0) {
-        const newIngredientIds = res.ingredients
-          .filter(name => {
-            const found = ingredients.find(i => i.name === name);
-            return found && !form.ingredient_ids.includes(found.id);
-          })
-          .map(name => ingredients.find(i => i.name === name)?.id)
-          .filter(Boolean);
-        if (newIngredientIds.length > 0) {
-          setForm(prev => ({
-            ...prev,
-            ingredient_ids: [...prev.ingredient_ids, ...newIngredientIds],
-          }));
-        }
-      }
-      showToast(`解析完成，识别到 ${res.ingredients?.length || 0} 个食材`);
-    } catch (err) {
-      showToast('解析失败', 'error');
-    } finally {
-      setExtracting(false);
-    }
-  };
-
-  const handleUploadImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const res = await api.uploadImage(file);
-      setForm(prev => ({ ...prev, image_url: res.url }));
-      showToast('上传成功');
-    } catch (err) {
-      showToast('上传失败', 'error');
-    }
-  };
-
   const toggleCategory = (catId) => {
     setForm(prev => ({
       ...prev,
@@ -220,16 +196,115 @@ export default function AdminDishesPage() {
     }));
   };
 
+  const handleUploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const res = await api.uploadImage(file);
+      setForm(prev => ({ ...prev, image_url: res.url }));
+      showToast('上传成功');
+    } catch (err) {
+      showToast('上传失败', 'error');
+    }
+  };
+
+  const openExtractModal = () => {
+    setExtractText('');
+    setParseResult(null);
+    setShowExtractModal(true);
+  };
+
+  const handleExtract = async () => {
+    if (!extractText.trim()) {
+      showToast('请输入文本内容', 'error');
+      return;
+    }
+    try {
+      setExtracting(true);
+      const res = await api.parseIngredientsFromText(extractText);
+      setParseResult(res);
+      showToast(`解析完成，识别到 ${(res.parsed_ingredients || []).length} 个食材`);
+    } catch (err) {
+      showToast(err.message || '解析失败', 'error');
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const hasNewIngredients = (parseResult?.parsed_ingredients || []).some(p => !p.matched_ingredient_id);
+  const allIngredientsExist = (parseResult?.parsed_ingredients || []).length > 0 && !hasNewIngredients;
+
+  const handleGoToAddIngredient = () => {
+    setAddIngForm({ name: '', category: '', description: '', aliases: '' });
+    setShowAddIngModal(true);
+  };
+
+  const handleAddIngredient = async () => {
+    if (!addIngForm.name.trim()) {
+      showToast('请输入食材名称', 'error');
+      return;
+    }
+    try {
+      await api.createIngredient({
+        name: addIngForm.name,
+        category: addIngForm.category || null,
+        description: addIngForm.description || null,
+        aliases: addIngForm.aliases ? addIngForm.aliases.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
+      });
+      showToast('食材添加成功');
+      setShowAddIngModal(false);
+      const ingRes = await api.getIngredients();
+      setAllIngredients(ingRes.items || []);
+      const newRes = await api.parseIngredientsFromText(extractText);
+      setParseResult(newRes);
+    } catch (err) {
+      showToast(err.message || '添加失败', 'error');
+    }
+  };
+
+  const handleNextStepFromExtract = () => {
+    const matchedIds = (parseResult?.parsed_ingredients || [])
+      .map(p => p.matched_ingredient_id)
+      .filter(Boolean);
+    setShowExtractModal(false);
+    openCreate({
+      recipe: extractText,
+      ingredient_ids: matchedIds,
+    });
+  };
+
+  const renderCategorySection = (label, items, selectedIds, onToggle) => {
+    if (items.length === 0) return null;
+    return (
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>{label}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {items.map(c => (
+            <button
+              key={c.id}
+              type="button"
+              className={`filter-chip ${selectedIds.includes(c.id) ? 'active' : ''}`}
+              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+              onClick={() => onToggle(c.id)}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="page-container">
       <Header
         title="菜品管理"
         actions={
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => { setExtractText(''); setExtractResult(null); setShowExtractModal(true); }}>
+            <button className="btn btn-secondary btn-sm" onClick={openExtractModal}>
               📝 解析文本
             </button>
-            <button className="btn btn-primary btn-sm" onClick={openCreate}>
+            <button className="btn btn-primary btn-sm" onClick={() => openCreate()}>
               + 添加
             </button>
           </div>
@@ -330,12 +405,12 @@ export default function AdminDishesPage() {
         </section>
       )}
 
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+      {showDishModal && (
+        <div className="modal-overlay" onClick={() => setShowDishModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 600 }}>
             <div className="modal-header">
               <h3>{editingDish ? '编辑菜品' : '添加菜品'}</h3>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
+              <button className="modal-close" onClick={() => setShowDishModal(false)}>✕</button>
             </div>
             <div className="modal-body">
               <div className="form-group">
@@ -346,6 +421,11 @@ export default function AdminDishesPage() {
               <div className="form-group">
                 <label className="form-label">描述</label>
                 <textarea className="form-input" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="菜品描述" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">食谱</label>
+                <textarea className="form-input" rows={5} value={form.recipe} onChange={(e) => setForm({ ...form, recipe: e.target.value })} placeholder="食材用量、制作步骤等" />
               </div>
 
               <div className="form-group">
@@ -360,33 +440,18 @@ export default function AdminDishesPage() {
 
               <div className="form-group">
                 <label className="form-label">分类</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {[...categories.regions, ...categories.cuisines, ...categories.tastes, ...categories.seasons].map(c => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      className={`filter-chip ${form.category_ids.includes(c.id) ? 'active' : ''}`}
-                      style={{ fontSize: '0.75rem', padding: '4px 10px' }}
-                      onClick={() => toggleCategory(c.id)}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
+                {renderCategorySection('地区', regions, form.category_ids, toggleCategory)}
+                {renderCategorySection('菜系', filteredCuisines, form.category_ids, toggleCategory)}
+                {renderCategorySection('口味', tastes, form.category_ids, toggleCategory)}
+                {renderCategorySection('季节', seasons, form.category_ids, toggleCategory)}
               </div>
 
-              <div className="form-group">
+              <div className="form-group" style={{ position: 'relative' }} ref={ingDropdownRef}>
                 <label className="form-label">食材（已选 {form.ingredient_ids.length}）</label>
-                <input
-                  className="form-input"
-                  placeholder="搜索食材添加..."
-                  value={ingredientSearch}
-                  onChange={(e) => searchIngredients(e.target.value)}
-                  style={{ marginBottom: 8 }}
-                />
+
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   {form.ingredient_ids.map(id => {
-                    const ing = ingredients.find(i => i.id === id);
+                    const ing = allIngredients.find(i => i.id === id);
                     return ing ? (
                       <span key={id} className="preference-tag dislike-tag" style={{ cursor: 'pointer' }} onClick={() => toggleIngredient(id)}>
                         {ing.name} ×
@@ -394,14 +459,71 @@ export default function AdminDishesPage() {
                     ) : null;
                   })}
                 </div>
-                {ingredientResults.length > 0 && (
-                  <div className="preference-search-results" style={{ maxHeight: 150 }}>
-                    {ingredientResults.filter(i => !form.ingredient_ids.includes(i.id)).slice(0, 10).map(ing => (
-                      <div key={ing.id} className="preference-search-item" onClick={() => { toggleIngredient(ing.id); setIngredientSearch(''); setIngredientResults([]); }}>
-                        <span>{ing.name}</span>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>+ 添加</span>
+
+                <div
+                  className="form-input"
+                  style={{ cursor: 'pointer', color: 'var(--text-muted)', minHeight: 38, display: 'flex', alignItems: 'center' }}
+                  onClick={() => setShowIngDropdown(!showIngDropdown)}
+                >
+                  {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
+                </div>
+
+                {showIngDropdown && (
+                  <div style={{
+                    position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
+                    background: 'var(--bg-card)', border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
+                    maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                  }}>
+                    <div style={{ padding: '8px 8px 0' }}>
+                      <input
+                        className="form-input"
+                        placeholder="搜索食材..."
+                        value={ingSearch}
+                        onChange={(e) => setIngSearch(e.target.value)}
+                        autoFocus
+                        style={{ marginBottom: 6 }}
+                      />
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+                        <button
+                          className={`filter-chip ${!ingCategoryFilter ? 'active' : ''}`}
+                          style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                          onClick={() => setIngCategoryFilter('')}
+                        >
+                          全部
+                        </button>
+                        {CATEGORY_OPTIONS.map(c => (
+                          <button
+                            key={c.value}
+                            className={`filter-chip ${ingCategoryFilter === c.value ? 'active' : ''}`}
+                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                            onClick={() => setIngCategoryFilter(c.value)}
+                          >
+                            {c.label}
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <div style={{ overflowY: 'auto', flex: 1 }}>
+                      {filteredIngForDropdown.length === 0 ? (
+                        <div style={{ padding: 12, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>无匹配食材</div>
+                      ) : (
+                        filteredIngForDropdown.slice(0, 50).map(ing => (
+                          <div
+                            key={ing.id}
+                            className="preference-search-item"
+                            onClick={() => { toggleIngredient(ing.id); }}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <input type="checkbox" checked readOnly style={{ marginRight: 6, pointerEvents: 'none' }} />
+                            <span>{ing.name}</span>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                              {CATEGORY_OPTIONS.find(c => c.value === ing.category)?.label || ''}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -416,7 +538,7 @@ export default function AdminDishesPage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>取消</button>
+              <button className="btn btn-secondary" onClick={() => setShowDishModal(false)}>取消</button>
               <button className="btn btn-primary" onClick={handleSave}>保存</button>
             </div>
           </div>
@@ -425,7 +547,7 @@ export default function AdminDishesPage() {
 
       {showExtractModal && (
         <div className="modal-overlay" onClick={() => setShowExtractModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
             <div className="modal-header">
               <h3>从文本解析食材</h3>
               <button className="modal-close" onClick={() => setShowExtractModal(false)}>✕</button>
@@ -435,7 +557,7 @@ export default function AdminDishesPage() {
                 <label className="form-label">粘贴菜谱或文本内容</label>
                 <textarea
                   className="form-input"
-                  rows={8}
+                  rows={6}
                   value={extractText}
                   onChange={(e) => setExtractText(e.target.value)}
                   placeholder="将菜谱文章、食材列表等文本粘贴到这里，系统会自动识别其中的食材..."
@@ -449,35 +571,43 @@ export default function AdminDishesPage() {
                 {extracting ? '解析中...' : '开始解析'}
               </button>
 
-              {extractResult && (
+              {parseResult && (
                 <div style={{ marginTop: 16 }}>
-                  <div className="form-label">解析结果</div>
-                  {extractResult.ingredients && extractResult.ingredients.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {extractResult.ingredients.map((name, i) => {
-                        const existing = ingredients.find(ing => ing.name === name);
-                        return (
-                          <span
-                            key={i}
-                            className="filter-chip"
-                            style={{ cursor: existing ? 'default' : 'pointer', opacity: existing ? 1 : 0.6 }}
-                          >
-                            {existing ? '✅' : '🆕'} {name}
-                          </span>
-                        );
-                      })}
+                  <div className="form-label">
+                    解析结果（{(parseResult.parsed_ingredients || []).length} 个食材）
+                  </div>
+                  {(parseResult.parsed_ingredients || []).length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                      {parseResult.parsed_ingredients.map((p) => (
+                        <span
+                          key={p.name}
+                          className="filter-chip"
+                          style={{ opacity: p.matched_ingredient_id ? 1 : 0.6 }}
+                        >
+                          {p.matched_ingredient_id ? '✅' : '🆕'} {p.name}
+                          {p.matched_ingredient_name && p.matched_ingredient_name !== p.name && (
+                            <span style={{ fontSize: '0.7rem', marginLeft: 4 }}>→ {p.matched_ingredient_name}</span>
+                          )}
+                        </span>
+                      ))}
                     </div>
                   ) : (
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>未识别到食材</div>
                   )}
-                  {extractResult.steps && extractResult.steps.length > 0 && (
-                    <div style={{ marginTop: 12 }}>
-                      <div className="form-label">识别的制作步骤</div>
-                      {extractResult.steps.map((step, i) => (
-                        <div key={i} style={{ fontSize: '0.85rem', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
-                          {i + 1}. {step}
-                        </div>
-                      ))}
+
+                  {hasNewIngredients && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                      <button className="btn btn-outline btn-sm" onClick={handleGoToAddIngredient}>
+                        ➕ 去添加新食材
+                      </button>
+                    </div>
+                  )}
+
+                  {allIngredientsExist && (
+                    <div style={{ marginTop: 8 }}>
+                      <button className="btn btn-primary btn-sm" onClick={handleNextStepFromExtract}>
+                        下一步 → 创建菜品
+                      </button>
                     </div>
                   )}
                 </div>
@@ -485,6 +615,42 @@ export default function AdminDishesPage() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-secondary" onClick={() => setShowExtractModal(false)}>关闭</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAddIngModal && (
+        <div className="modal-overlay" onClick={() => setShowAddIngModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>添加食材</h3>
+              <button className="modal-close" onClick={() => setShowAddIngModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label className="form-label">名称 *</label>
+                <input className="form-input" value={addIngForm.name} onChange={(e) => setAddIngForm({ ...addIngForm, name: e.target.value })} placeholder="如：西红柿" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">分类</label>
+                <select className="form-input" value={addIngForm.category} onChange={(e) => setAddIngForm({ ...addIngForm, category: e.target.value })}>
+                  <option value="">请选择</option>
+                  {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">描述</label>
+                <textarea className="form-input" rows={2} value={addIngForm.description} onChange={(e) => setAddIngForm({ ...addIngForm, description: e.target.value })} placeholder="可选描述" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">别名（逗号分隔）</label>
+                <input className="form-input" value={addIngForm.aliases} onChange={(e) => setAddIngForm({ ...addIngForm, aliases: e.target.value })} placeholder="如：番茄, 柿子" />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowAddIngModal(false)}>取消</button>
+              <button className="btn btn-primary" onClick={handleAddIngredient}>保存</button>
             </div>
           </div>
         </div>

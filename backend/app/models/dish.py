@@ -11,6 +11,7 @@ class Dish(Base):
     name = Column(String(100), nullable=False)
     pinyin = Column(String(200))
     description = Column(String)
+    recipe = Column(String)
     image_url = Column(String(500))
     status = Column(String(20), nullable=False, default="draft")
     is_popular = Column(Boolean, nullable=False, default=False)

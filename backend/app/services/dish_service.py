@@ -213,6 +213,7 @@ class DishService:
             name=dish_data.name,
             pinyin=pinyin,
             description=dish_data.description,
+            recipe=dish_data.recipe,
             image_url=dish_data.image_url,
             is_popular=dish_data.is_popular,
             created_by=created_by,
@@ -254,12 +255,30 @@ class DishService:
         if not dish:
             return None
 
-        update_data = dish_data.model_dump(exclude_unset=True)
-        if "name" in update_data:
-            update_data["pinyin"] = DishService.generate_pinyin(update_data["name"])
+        simple_fields = dish_data.model_dump(exclude_unset=True, exclude={"category_ids", "ingredient_ids"})
+        if "name" in simple_fields:
+            simple_fields["pinyin"] = DishService.generate_pinyin(simple_fields["name"])
 
-        for key, value in update_data.items():
+        for key, value in simple_fields.items():
             setattr(dish, key, value)
+
+        if dish_data.category_ids is not None:
+            result = await db.execute(
+                select(DishCategory).where(DishCategory.dish_id == dish_id)
+            )
+            for old in result.scalars().all():
+                await db.delete(old)
+            for cat_id in dish_data.category_ids:
+                db.add(DishCategory(dish_id=dish_id, category_id=cat_id))
+
+        if dish_data.ingredient_ids is not None:
+            result = await db.execute(
+                select(DishIngredient).where(DishIngredient.dish_id == dish_id)
+            )
+            for old in result.scalars().all():
+                await db.delete(old)
+            for idx, ing_id in enumerate(dish_data.ingredient_ids):
+                db.add(DishIngredient(dish_id=dish_id, ingredient_id=ing_id, is_main=True, sort_order=idx))
 
         await db.flush()
         await db.refresh(dish)
