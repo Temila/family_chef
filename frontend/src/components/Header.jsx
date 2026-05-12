@@ -4,7 +4,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { theme } from '../utils';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header({ title, showBack = false, actions }) {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function Header({ title, showBack = false, actions }) {
       <h1 className="header-title">{title}</h1>
 
       <div className="header-actions">
+        {user && <ThemeToggle />}
         {actions}
         {user && (
           <div className="avatar avatar-sm">

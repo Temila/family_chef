@@ -4,18 +4,53 @@
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token
-from app.schemas.order import OrderCreate, OrderStatusUpdate, OrderListResponse, OrderDetailResponse
+from app.schemas.order import OrderCreate, OrderStatusUpdate, OrderListResponse, OrderDetailResponse, OrderItemResponse
 from app.schemas.common import PageResponse
 from app.services.order_service import order_service
 from app.models.user import User
+from app.models.order import Order
+from app.models.dish import Dish
 
 router = APIRouter()
 
 
-@router.post("/", response_model=OrderDetailResponse, status_code=status.HTTP_201_CREATED)
+async def build_order_detail(db, order):
+    result = await db.execute(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.id == order.id)
+    )
+    order = result.scalar_one()
+    item_responses = []
+    for item in order.items:
+        dish_result = await db.execute(select(Dish).where(Dish.id == item.dish_id))
+        dish = dish_result.scalar_one_or_none()
+        item_responses.append(OrderItemResponse(
+            id=item.id,
+            dish_id=item.dish_id,
+            dish_name=dish.name if dish else f"菜品#{item.dish_id}",
+            quantity=item.quantity,
+            special_notes=item.special_notes,
+        ))
+    return OrderDetailResponse(
+        id=order.id,
+        order_no=order.order_no,
+        user_id=order.user_id,
+        status=order.status,
+        chef_id=order.chef_id,
+        notes=order.notes,
+        items=item_responses,
+        created_at=order.created_at,
+        completed_at=order.completed_at,
+    )
+
+
+@router.post("", response_model=OrderDetailResponse, status_code=status.HTTP_201_CREATED)
 async def create_order(
     order_data: OrderCreate,
     current_user: User = Depends(get_current_user_from_token),
@@ -38,21 +73,10 @@ async def create_order(
 
     await db.commit()
     
-    # 重新查询并预加载关系
-    from sqlalchemy import select
-    from sqlalchemy.orm import selectinload
-    from app.models.order import Order
-    result = await db.execute(
-        select(Order)
-        .options(selectinload(Order.items))
-        .where(Order.id == order.id)
-    )
-    order = result.scalar_one()
-    
-    return OrderDetailResponse.model_validate(order)
+    return await build_order_detail(db, order)
 
 
-@router.get("/", response_model=PageResponse[OrderListResponse])
+@router.get("", response_model=PageResponse[OrderListResponse])
 async def list_orders(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -77,13 +101,32 @@ async def list_orders(
         status=status,
     )
 
-    items = [OrderListResponse.model_validate(o) for o in orders]
+    list_items = []
+    for o in orders:
+        item_responses = []
+        for item in o.items:
+            dish_result = await db.execute(select(Dish).where(Dish.id == item.dish_id))
+            dish = dish_result.scalar_one_or_none()
+            item_responses.append(OrderItemResponse(
+                id=item.id,
+                dish_id=item.dish_id,
+                dish_name=dish.name if dish else f"菜品#{item.dish_id}",
+                quantity=item.quantity,
+                special_notes=item.special_notes,
+            ))
+        list_items.append(OrderListResponse(
+            id=o.id,
+            order_no=o.order_no,
+            status=o.status,
+            items=item_responses,
+            created_at=o.created_at,
+        ))
 
     return PageResponse[OrderListResponse](
         total=total,
         page=page,
         page_size=page_size,
-        items=items,
+        items=list_items,
     )
 
 
@@ -108,7 +151,7 @@ async def get_order(
             detail="无权查看此订单",
         )
 
-    return OrderDetailResponse.model_validate(order)
+    return await build_order_detail(db, order)
 
 
 @router.put("/{order_id}/status", response_model=OrderDetailResponse)
@@ -118,8 +161,6 @@ async def update_order_status(
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
-    """更新订单状态"""
-    # 权限检查：仅厨师和管理员可更新订单状态
     if current_user.role not in ["chef", "admin"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -144,18 +185,7 @@ async def update_order_status(
 
     await db.commit()
     
-    # 重新查询并预加载关系
-    from sqlalchemy import select
-    from sqlalchemy.orm import selectinload
-    from app.models.order import Order
-    result = await db.execute(
-        select(Order)
-        .options(selectinload(Order.items))
-        .where(Order.id == order.id)
-    )
-    order = result.scalar_one()
-    
-    return OrderDetailResponse.model_validate(order)
+    return await build_order_detail(db, order)
 
 
 @router.delete("/{order_id}", response_model=OrderDetailResponse)
@@ -180,4 +210,4 @@ async def cancel_order(
         )
 
     await db.commit()
-    return OrderDetailResponse.model_validate(order)
+    return await build_order_detail(db, order)

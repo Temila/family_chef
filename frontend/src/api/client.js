@@ -39,7 +39,13 @@ class ApiClient {
 
     if (res.status === 204) return null;
 
-    const data = await res.json();
+    const text = await res.text();
+    if (!text) {
+      if (!res.ok) throw new Error(`请求失败 (${res.status})`);
+      return null;
+    }
+
+    const data = JSON.parse(text);
 
     if (!res.ok) {
       throw new Error(data.detail || '请求失败');
@@ -261,6 +267,11 @@ class ApiClient {
     const formData = new FormData();
     formData.append('file', file);
     return this.post('/upload/image', formData, true);
+  }
+
+  // ─── Tools ─────────────────────────────────────
+  async extractIngredients(text) {
+    return this.post('/tools/extract-ingredients', { text });
   }
 
   // ─── Core HTTP Methods ─────────────────────────────────────

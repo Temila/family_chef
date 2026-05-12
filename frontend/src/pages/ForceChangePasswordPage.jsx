@@ -1,0 +1,107 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import api from '../api/client';
+
+export default function ForceChangePasswordPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { showToast } = useToast();
+
+  const [form, setForm] = useState({
+    old_password: '',
+    new_password: '',
+    confirm: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.new_password || form.new_password.length < 6) {
+      showToast('新密码长度至少 6 位', 'error');
+      return;
+    }
+    if (form.new_password !== form.confirm) {
+      showToast('两次输入的密码不一致', 'error');
+      return;
+    }
+    if (form.new_password === form.old_password) {
+      showToast('新密码不能与旧密码相同', 'error');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await api.updatePassword(user.id, form.old_password, form.new_password);
+      showToast('密码修改成功，请重新登录');
+
+      localStorage.removeItem('fc_access_token');
+      localStorage.removeItem('fc_refresh_token');
+      localStorage.removeItem('fc_user');
+      window.location.href = '/login';
+    } catch (err) {
+      showToast(err.message || '密码修改失败', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-logo">🔒</div>
+        <p className="login-subtitle">首次登录，请修改密码</p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label">当前密码</label>
+            <input
+              className="form-input"
+              type="password"
+              value={form.old_password}
+              onChange={(e) => setForm({ ...form, old_password: e.target.value })}
+              placeholder="请输入当前密码"
+              required
+              autoComplete="current-password"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">新密码</label>
+            <input
+              className="form-input"
+              type="password"
+              value={form.new_password}
+              onChange={(e) => setForm({ ...form, new_password: e.target.value })}
+              placeholder="至少 6 位"
+              required
+              minLength="6"
+              autoComplete="new-password"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">确认新密码</label>
+            <input
+              className="form-input"
+              type="password"
+              value={form.confirm}
+              onChange={(e) => setForm({ ...form, confirm: e.target.value })}
+              placeholder="再次输入新密码"
+              required
+              autoComplete="new-password"
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn btn-primary btn-block btn-lg"
+            disabled={loading}
+            style={{ marginTop: 8 }}
+          >
+            {loading ? '提交中...' : '确认修改'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

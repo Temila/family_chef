@@ -11,7 +11,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def list_categories(
     type: Optional[str] = Query(None, description="分类类型"),
     tree: bool = Query(False, description="是否返回树形结构"),
@@ -29,7 +29,7 @@ async def list_categories(
         }
 
 
-@router.post("/", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)
 async def create_category(
     request: CategoryCreate,
     db: AsyncSession = Depends(get_db),

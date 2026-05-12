@@ -25,7 +25,7 @@ fi
 # 构建前端
 echo "🔨 构建前端..."
 cd "$FRONTEND_DIR"
-if [ ! -d "node_modules" ]; then
+if [ ! -f "node_modules/.bin/vite" ]; then
     echo "📦 安装前端依赖..."
     npm install
 fi
@@ -43,6 +43,9 @@ fi
 
 # 安装依赖（离线模式如已安装）
 uv sync
+
+# 创建数据目录
+mkdir -p "$BACKEND_DIR/data"
 
 # 启动后端（生产模式，无 reload）
 echo "🚀 启动后端服务 (端口 8000)..."

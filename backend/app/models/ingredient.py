@@ -9,11 +9,9 @@ class Ingredient(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
-    pinyin = Column(String(100))
     category = Column(String(50))
     description = Column(String)
     image_url = Column(String(500))
-    unit = Column(String(20))  # 单位：个、斤、克等
     is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())

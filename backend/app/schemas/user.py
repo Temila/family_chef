@@ -28,6 +28,8 @@ class UserResponse(BaseModel):
     display_name: Optional[str] = None
     role: str
     is_active: bool
+    force_pwd_change: bool = False
+    feishu_open_id: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -42,3 +44,8 @@ class TokenResponse(BaseModel):
 class RefreshTokenRequest(BaseModel):
     """刷新 Token 请求"""
     refresh_token: str
+
+class ChangePasswordRequest(BaseModel):
+    """修改密码请求"""
+    old_password: str
+    new_password: str

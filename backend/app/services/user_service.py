@@ -33,7 +33,7 @@ class UserService:
         search: Optional[str] = None,
     ) -> dict:
         """分页查询用户列表"""
-        query = select(User).where(User.is_active == True)
+        query = select(User)
 
         if role:
             query = query.where(User.role == role)
@@ -43,8 +43,7 @@ class UserService:
                 User.username.contains(search) | User.display_name.contains(search)
             )
 
-        # 总数
-        count_query = select(func.count(User.id)).where(User.is_active == True)
+        count_query = select(func.count(User.id))
         if role:
             count_query = count_query.where(User.role == role)
         if search:
@@ -102,6 +101,7 @@ class UserService:
         email: Optional[str] = None,
         role: Optional[str] = None,
         is_active: Optional[bool] = None,
+        feishu_open_id: Optional[str] = None,
     ) -> Optional[User]:
         """更新用户信息"""
         user = await UserService.get_user_by_id(db, user_id)
@@ -116,6 +116,8 @@ class UserService:
             user.role = role
         if is_active is not None:
             user.is_active = is_active
+        if feishu_open_id is not None:
+            user.feishu_open_id = feishu_open_id
 
         await db.flush()
         await db.refresh(user)

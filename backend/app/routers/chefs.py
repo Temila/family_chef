@@ -15,7 +15,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/", response_model=list[UserResponse])
+@router.get("", response_model=list[UserResponse])
 async def list_chefs(
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
