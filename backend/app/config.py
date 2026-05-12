@@ -6,6 +6,34 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 
 
+class SmartFeatureSettings(BaseSettings):
+    """智能化功能开关配置
+
+    每个智能化功能都有独立的开关，受总开关 SMART_ENABLED 控制。
+    当 SMART_ENABLED=False 时，所有智能化功能都不生效。
+    当 SMART_ENABLED=True 时，每个功能由各自的开关控制。
+    """
+
+    SMART_ENABLED: bool = False
+
+    SMART_INGREDIENT_EXTRACTION: bool = False
+
+    # LLM 模型配置
+    LLM_MODEL_REPO: str = "unsloth/Qwen3.5-0.8B-GGUF"
+    LLM_MODEL_FILENAME: str = "Qwen3.5-0.8B-Q4_K_M.gguf"
+    LLM_N_CTX: int = 2048
+    LLM_N_GPU_LAYERS: int = 0
+
+    def is_feature_enabled(self, feature_name: str) -> bool:
+        if not self.SMART_ENABLED:
+            return False
+        return getattr(self, feature_name, False)
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+
 class Settings(BaseSettings):
     """应用配置"""
     
@@ -42,3 +70,4 @@ class Settings(BaseSettings):
 
 # 全局配置实例
 settings = Settings()
+smart_settings = SmartFeatureSettings()
