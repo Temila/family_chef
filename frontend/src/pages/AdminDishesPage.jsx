@@ -44,7 +44,10 @@ export default function AdminDishesPage() {
   const [parseResult, setParseResult] = useState(null);
 
   const [showAddIngModal, setShowAddIngModal] = useState(false);
-  const [addIngForm, setAddIngForm] = useState({ name: '', category: '', description: '', aliases: '' });
+  const [batchItems, setBatchItems] = useState([]);
+  const [batchAllIngredients, setBatchAllIngredients] = useState([]);
+  const [batchDecisions, setBatchDecisions] = useState({});
+  const [batchImporting, setBatchImporting] = useState(false);
 
   useEffect(() => {
     loadDishes();
@@ -235,30 +238,82 @@ export default function AdminDishesPage() {
   const allIngredientsExist = (parseResult?.parsed_ingredients || []).length > 0 && !hasNewIngredients;
 
   const handleGoToAddIngredient = () => {
-    setAddIngForm({ name: '', category: '', description: '', aliases: '' });
+    const newItems = (parseResult?.parsed_ingredients || []).filter(p => !p.matched_ingredient_id);
+    const initial = {};
+    for (const item of newItems) {
+      initial[item.name] = { action: 'new', alias_for_id: null, category: '' };
+    }
+    setBatchItems(newItems);
+    setBatchAllIngredients(parseResult?.all_ingredients || []);
+    setBatchDecisions(initial);
     setShowAddIngModal(true);
   };
 
-  const handleAddIngredient = async () => {
-    if (!addIngForm.name.trim()) {
-      showToast('请输入食材名称', 'error');
+  const updateBatchDecision = (name, field, value) => {
+    setBatchDecisions(prev => ({
+      ...prev,
+      [name]: { ...prev[name], [field]: value },
+    }));
+  };
+
+  const removeBatchItem = (name) => {
+    setBatchItems(prev => prev.filter(p => p.name !== name));
+    setBatchDecisions(prev => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
+  const renameBatchItem = (oldName, newName) => {
+    setBatchItems(prev => prev.map(p => p.name === oldName ? { ...p, name: newName } : p));
+    setBatchDecisions(prev => {
+      const next = {};
+      for (const [k, v] of Object.entries(prev)) {
+        if (k === oldName) {
+          next[newName] = { ...v, editedName: newName };
+        } else {
+          next[k] = v;
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleBatchImport = async () => {
+    const items = Object.entries(batchDecisions)
+      .filter(([, d]) => d.action !== 'skip')
+      .map(([name, d]) => ({
+        name: d.editedName || name,
+        action: d.action,
+        alias_for_id: d.action === 'alias' ? d.alias_for_id : null,
+        category: d.action === 'new' ? d.category || null : null,
+      }));
+
+    if (items.length === 0) {
+      showToast('没有需要导入的食材', 'error');
       return;
     }
+
     try {
-      await api.createIngredient({
-        name: addIngForm.name,
-        category: addIngForm.category || null,
-        description: addIngForm.description || null,
-        aliases: addIngForm.aliases ? addIngForm.aliases.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
-      });
-      showToast('食材添加成功');
+      setBatchImporting(true);
+      const res = await api.batchImportIngredients(items);
+      const errors = (res.results || []).filter(r => r.status === 'error');
+      const success = (res.results || []).filter(r => r.status !== 'error');
+      if (errors.length > 0) {
+        showToast(`${success.length} 项成功，${errors.length} 项失败`, 'error');
+      } else {
+        showToast(`成功导入 ${success.length} 项食材`);
+      }
       setShowAddIngModal(false);
       const ingRes = await api.getIngredients();
       setAllIngredients(ingRes.items || []);
-      const newRes = await api.parseIngredientsFromText(extractText);
-      setParseResult(newRes);
+      const newParseRes = await api.parseIngredientsFromText(extractText);
+      setParseResult(newParseRes);
     } catch (err) {
-      showToast(err.message || '添加失败', 'error');
+      showToast(err.message || '导入失败', 'error');
+    } finally {
+      setBatchImporting(false);
     }
   };
 
@@ -622,35 +677,95 @@ export default function AdminDishesPage() {
 
       {showAddIngModal && (
         <div className="modal-overlay" onClick={() => setShowAddIngModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 700 }}>
             <div className="modal-header">
-              <h3>添加食材</h3>
+              <h3>添加新食材（{(batchItems || []).length} 个）</h3>
               <button className="modal-close" onClick={() => setShowAddIngModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">名称 *</label>
-                <input className="form-input" value={addIngForm.name} onChange={(e) => setAddIngForm({ ...addIngForm, name: e.target.value })} placeholder="如：西红柿" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">分类</label>
-                <select className="form-input" value={addIngForm.category} onChange={(e) => setAddIngForm({ ...addIngForm, category: e.target.value })}>
-                  <option value="">请选择</option>
-                  {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">描述</label>
-                <textarea className="form-input" rows={2} value={addIngForm.description} onChange={(e) => setAddIngForm({ ...addIngForm, description: e.target.value })} placeholder="可选描述" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">别名（逗号分隔）</label>
-                <input className="form-input" value={addIngForm.aliases} onChange={(e) => setAddIngForm({ ...addIngForm, aliases: e.target.value })} placeholder="如：番茄, 柿子" />
-              </div>
+              {batchItems.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)' }}>
+                  没有需要添加的新食材
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {batchItems.map((item) => {
+                    const decision = batchDecisions[item.name] || { action: 'new', alias_for_id: null, category: '' };
+                    const displayName = decision.editedName || item.name;
+                    return (
+                      <div
+                        key={item.name}
+                        style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 12 }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          <input
+                            className="form-input"
+                            style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem', padding: '4px 8px' }}
+                            value={displayName}
+                            onChange={(e) => renameBatchItem(item.name, e.target.value)}
+                          />
+                          <button
+                            onClick={() => removeBatchItem(item.name)}
+                            style={{
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              fontSize: '1.1rem', color: 'var(--danger)', padding: '0 4px', lineHeight: 1,
+                            }}
+                            title="移除"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <select
+                            className="form-input"
+                            style={{ width: 'auto', minWidth: 120, fontSize: '0.85rem' }}
+                            value={decision.action}
+                            onChange={(e) => updateBatchDecision(item.name, 'action', e.target.value)}
+                          >
+                            <option value="new">添加为新食材</option>
+                            <option value="alias">添加为已有食材的别名</option>
+                          </select>
+
+                          {decision.action === 'new' && (
+                            <select
+                              className="form-input"
+                              style={{ width: 'auto', minWidth: 100, fontSize: '0.85rem' }}
+                              value={decision.category}
+                              onChange={(e) => updateBatchDecision(item.name, 'category', e.target.value)}
+                            >
+                              <option value="">选择分类(可选)</option>
+                              {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                            </select>
+                          )}
+
+                          {decision.action === 'alias' && (
+                            <select
+                              className="form-input"
+                              style={{ width: 'auto', minWidth: 140, fontSize: '0.85rem' }}
+                              value={decision.alias_for_id || ''}
+                              onChange={(e) => updateBatchDecision(item.name, 'alias_for_id', Number(e.target.value))}
+                            >
+                              <option value="">选择目标食材</option>
+                              {batchAllIngredients.map(ing => (
+                                <option key={ing.id} value={ing.id}>
+                                  {ing.name}
+                                  {ing.aliases && ing.aliases.length > 0 ? ` (别名: ${ing.aliases.join('、')})` : ''}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <div className="modal-footer">
               <button className="btn btn-secondary" onClick={() => setShowAddIngModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleAddIngredient}>保存</button>
+              <button className="btn btn-primary" onClick={handleBatchImport} disabled={batchImporting}>
+                {batchImporting ? '导入中...' : '确认导入'}
+              </button>
             </div>
           </div>
         </div>
