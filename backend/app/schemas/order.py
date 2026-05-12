@@ -22,6 +22,7 @@ class OrderItemResponse(BaseModel):
     """订单项响应"""
     id: int
     dish_id: int
+    dish_name: Optional[str] = None
     quantity: int
     special_notes: Optional[str] = None
     
@@ -33,6 +34,7 @@ class OrderListResponse(BaseModel):
     id: int
     order_no: str
     status: str
+    items: List[OrderItemResponse] = []
     created_at: datetime
     
     class Config:

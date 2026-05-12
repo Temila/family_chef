@@ -1,7 +1,3 @@
-/**
- * DishDetailPage - 菜品详情页
- */
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,7 +7,6 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
-import { formatPrice } from '../utils';
 
 export default function DishDetailPage() {
   const { id } = useParams();
@@ -21,7 +16,6 @@ export default function DishDetailPage() {
 
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [addingToCart, setAddingToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -41,24 +35,35 @@ export default function DishDetailPage() {
     }
   };
 
-  const handleAddToCart = async () => {
+  const getCart = () => {
+    const saved = localStorage.getItem('fc_cart');
+    return saved ? JSON.parse(saved) : [];
+  };
+
+  const saveCart = (newCart) => {
+    localStorage.setItem('fc_cart', JSON.stringify(newCart));
+  };
+
+  const handleAddToCart = () => {
     if (!user) {
       showToast('请先登录', 'error');
       navigate('/login');
       return;
     }
-
-    if (addingToCart) return;
-
-    try {
-      setAddingToCart(true);
-      // 这里需要实现购物车逻辑，暂时显示提示
-      showToast(`已添加 ${quantity} 份到购物车`);
-    } catch (err) {
-      showToast('添加购物车失败', 'error');
-    } finally {
-      setAddingToCart(false);
+    const cart = getCart();
+    const existing = cart.find(item => item.dish_id === dish.id);
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cart.push({
+        dish_id: dish.id,
+        dish_name: dish.name,
+        quantity,
+      });
     }
+    saveCart(cart);
+    showToast(`已添加 ${quantity} 份 ${dish.name}`);
+    setQuantity(1);
   };
 
   const handleFavorite = async () => {
@@ -67,7 +72,6 @@ export default function DishDetailPage() {
       navigate('/login');
       return;
     }
-
     try {
       if (dish.is_favorite) {
         await api.removeFavorite(dish.id);
@@ -92,9 +96,12 @@ export default function DishDetailPage() {
     );
   }
 
-  if (!dish) {
-    return null;
-  }
+  if (!dish) return null;
+
+  const regionCategories = (dish.categories || []).filter(c => c.type === 'region');
+  const cuisineCategories = (dish.categories || []).filter(c => c.type === 'cuisine');
+  const tasteCategories = (dish.categories || []).filter(c => c.type === 'taste');
+  const seasonCategories = (dish.categories || []).filter(c => c.type === 'season');
 
   return (
     <div className="page-container">
@@ -112,7 +119,6 @@ export default function DishDetailPage() {
         }
       />
 
-      {/* Dish Image */}
       {dish.image_url && (
         <div className="hero-image">
           <img src={dish.image_url} alt={dish.name} />
@@ -120,98 +126,70 @@ export default function DishDetailPage() {
       )}
 
       <section className="section">
-        {/* Price & Status */}
         <div className="flex items-center gap-3 mb-4">
-          {dish.base_price !== null && (
-            <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>
-              ¥{formatPrice(dish.base_price)}
-            </span>
-          )}
-          <Badge status={dish.is_available ? 'published' : 'hidden'} />
-          {dish.is_featured && <Badge type="gold" text="推荐" />}
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700 }}>
+            {dish.name}
+          </h2>
+          <Badge status={dish.is_popular ? 'published' : 'hidden'} text={dish.is_popular ? '推荐' : ''} type={dish.is_popular ? 'gold' : undefined} />
         </div>
 
-        {/* Description */}
         {dish.description && (
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16, fontSize: '0.9rem' }}>
             {dish.description}
           </p>
         )}
 
-        {/* Info Pills */}
-        <div className="info-pills" style={{ marginBottom: 16 }}>
-          {dish.cuisine_name && (
-            <span className="info-pill">
-              🍜 {dish.cuisine_name}
+        {dish.dietary_warning && (
+          <div
+            className={`dietary-warning-card ${dish.dietary_warning.type === 'allergy' ? 'allergy' : 'dislike'}`}
+          >
+            <span>⚠️</span>
+            <span>
+              {dish.dietary_warning.type === 'allergy' ? '严格忌口' : '不爱吃'}: {dish.dietary_warning.ingredient}
             </span>
-          )}
-          {dish.category_name && (
-            <span className="info-pill">
-              📁 {dish.category_name}
-            </span>
-          )}
-          {dish.taste_names && dish.taste_names.length > 0 && (
-            <span className="info-pill">
-              👅 {dish.taste_names.join(', ')}
-            </span>
-          )}
-          {dish.region_names && dish.region_names.length > 0 && (
-            <span className="info-pill">
-              📍 {dish.region_names.join(', ')}
-            </span>
-          )}
-        </div>
-
-        {/* Ingredients */}
-        {dish.ingredients && dish.ingredients.length > 0 && (
-          <div style={{ marginTop: 24 }}>
-            <h3 className="section-title">🥗 主要食材</h3>
-            <div className="ingredient-item">
-              <span className="ingredient-icon">🧅</span>
-              <span style={{ flex: 1 }}>
-                {dish.ingredients.map(ing => ing.name).join(', ')}
-              </span>
-            </div>
           </div>
         )}
 
-        {/* Dietary Warning */}
-        {dish.dietary_warning && (
-          <div
-            className="card"
-            style={{
-              marginTop: 16,
-              padding: 12,
-              backgroundColor: 'var(--warn-light)',
-              borderColor: 'var(--warn)'
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <span>⚠️</span>
-              <span style={{ color: 'var(--warn)', fontSize: '0.85rem' }}>
-                {dish.dietary_warning}
-              </span>
-            </div>
+        <div className="info-pills" style={{ marginBottom: 16 }}>
+          {regionCategories.length > 0 && (
+            <span className="info-pill">📍 {regionCategories.map(c => c.name).join('、')}</span>
+          )}
+          {cuisineCategories.length > 0 && (
+            <span className="info-pill">🍜 {cuisineCategories.map(c => c.name).join('、')}</span>
+          )}
+          {tasteCategories.length > 0 && (
+            <span className="info-pill">👅 {tasteCategories.map(c => c.name).join('、')}</span>
+          )}
+          {seasonCategories.length > 0 && (
+            <span className="info-pill">🌤️ {seasonCategories.map(c => c.name).join('、')}</span>
+          )}
+        </div>
+
+        {dish.ingredients && dish.ingredients.length > 0 && (
+          <div style={{ marginTop: 24 }}>
+            <h3 className="section-title">🥗 食材列表</h3>
+            {dish.ingredients.map(ing => (
+              <div key={ing.id} className="ingredient-item">
+                <span className="ingredient-icon">🧅</span>
+                <span style={{ flex: 1, fontSize: '0.9rem' }}>{ing.name}</span>
+              </div>
+            ))}
           </div>
         )}
       </section>
 
-      {/* Quantity & Add to Cart */}
-      {dish.is_available && (
+      {dish.status === 'published' && (
         <div className="cart-bar">
           <div className="qty-stepper">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-              −
-            </button>
+            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
             <span className="qty-value">{quantity}</span>
             <button onClick={() => setQuantity(quantity + 1)}>+</button>
           </div>
           <button
             className="btn btn-primary"
             onClick={handleAddToCart}
-            disabled={addingToCart}
           >
-            {addingToCart ? '添加中...' : `加入购物车 · ¥${formatPrice((dish.base_price || 0) * quantity)}`}
+            加入已点菜品 · {quantity}份
           </button>
         </div>
       )}

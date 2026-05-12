@@ -3,7 +3,7 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.ingredient import Ingredient, IngredientAlias
-from app.utils.security import hash_password  # 复用 pinyin 生成逻辑
+from sqlalchemy.orm import selectinload
 
 
 class IngredientService:
@@ -25,15 +25,13 @@ class IngredientService:
         is_active: Optional[bool] = None,
     ) -> List[Ingredient]:
         """查询食材列表"""
-        query = select(Ingredient)
-        
+        query = select(Ingredient).options(selectinload(Ingredient.aliases))
         if category:
             query = query.where(Ingredient.category == category)
         if search:
             search_pattern = f"%{search}%"
             query = query.where(
-                Ingredient.name.like(search_pattern) |
-                Ingredient.pinyin.like(search_pattern)
+                Ingredient.name.like(search_pattern)
             )
         if is_active is not None:
             query = query.where(Ingredient.is_active == is_active)
@@ -47,15 +45,12 @@ class IngredientService:
     async def create_ingredient(
         db: AsyncSession,
         name: str,
-        pinyin: Optional[str] = None,
         category: Optional[str] = None,
         description: Optional[str] = None,
         image_url: Optional[str] = None,
-        unit: Optional[str] = None,
         aliases: Optional[List[str]] = None,
     ) -> Ingredient:
         """创建食材"""
-        # 检查名称是否已存在
         result = await db.execute(
             select(Ingredient).where(Ingredient.name == name)
         )
@@ -64,7 +59,6 @@ class IngredientService:
         
         ingredient = Ingredient(
             name=name,
-            pinyin=pinyin,
             category=category,
             description=description,
             image_url=image_url,
@@ -90,7 +84,6 @@ class IngredientService:
         db: AsyncSession,
         ingredient_id: int,
         name: Optional[str] = None,
-        pinyin: Optional[str] = None,
         category: Optional[str] = None,
         description: Optional[str] = None,
         image_url: Optional[str] = None,
@@ -113,8 +106,6 @@ class IngredientService:
             if result.scalar_one_or_none():
                 raise ValueError(f"食材 '{name}' 已存在")
             ingredient.name = name
-        if pinyin is not None:
-            ingredient.pinyin = pinyin
         if category is not None:
             ingredient.category = category
         if description is not None:

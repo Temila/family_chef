@@ -11,7 +11,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def list_ingredients(
     category: Optional[str] = Query(None, description="食材分类"),
     search: Optional[str] = Query(None, description="搜索关键词"),
@@ -27,9 +27,15 @@ async def list_ingredients(
     items = []
     for ing in ingredients:
         aliases = [alias.alias for alias in ing.aliases]
-        item = IngredientResponse.model_validate(ing)
-        item.aliases = aliases
-        items.append(item)
+        items.append({
+            "id": ing.id,
+            "name": ing.name,
+            "category": ing.category,
+            "description": ing.description,
+            "image_url": ing.image_url,
+            "is_active": ing.is_active,
+            "aliases": aliases,
+        })
     
     return {
         "total": len(items),
@@ -37,7 +43,7 @@ async def list_ingredients(
     }
 
 
-@router.post("/", response_model=IngredientResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=IngredientResponse, status_code=status.HTTP_201_CREATED)
 async def create_ingredient(
     request: IngredientCreate,
     db: AsyncSession = Depends(get_db),
@@ -48,11 +54,9 @@ async def create_ingredient(
         ingredient = await ingredient_service.create_ingredient(
             db,
             name=request.name,
-            pinyin=request.pinyin,
             category=request.category,
             description=request.description,
             image_url=request.image_url,
-            unit=request.unit,
             aliases=request.aliases,
         )
         await db.commit()
@@ -71,9 +75,15 @@ async def create_ingredient(
         
         # 构建响应
         aliases = [alias.alias for alias in ingredient.aliases]
-        response = IngredientResponse.model_validate(ingredient)
-        response.aliases = aliases
-        return response
+        return {
+            "id": ingredient.id,
+            "name": ingredient.name,
+            "category": ingredient.category,
+            "description": ingredient.description,
+            "image_url": ingredient.image_url,
+            "is_active": ingredient.is_active,
+            "aliases": aliases,
+        }
     except ValueError as e:
         await db.rollback()
         raise HTTPException(
@@ -95,7 +105,6 @@ async def update_ingredient(
             db,
             ingredient_id,
             name=request.name,
-            pinyin=request.pinyin,
             category=request.category,
             description=request.description,
             image_url=request.image_url,
@@ -109,7 +118,6 @@ async def update_ingredient(
             )
         await db.commit()
         
-        # 重新查询并预加载关系
         from sqlalchemy import select
         from sqlalchemy.orm import selectinload
         from app.models.ingredient import Ingredient
@@ -121,11 +129,16 @@ async def update_ingredient(
         )
         ingredient = result.scalar_one()
         
-        # 构建响应
         aliases = [alias.alias for alias in ingredient.aliases]
-        response = IngredientResponse.model_validate(ingredient)
-        response.aliases = aliases
-        return response
+        return {
+            "id": ingredient.id,
+            "name": ingredient.name,
+            "category": ingredient.category,
+            "description": ingredient.description,
+            "image_url": ingredient.image_url,
+            "is_active": ingredient.is_active,
+            "aliases": aliases,
+        }
     except ValueError as e:
         await db.rollback()
         raise HTTPException(

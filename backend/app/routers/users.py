@@ -19,6 +19,7 @@ class UserUpdateRequest(BaseModel):
     email: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
+    feishu_open_id: Optional[str] = None
 
 
 class PasswordChangeRequest(BaseModel):
@@ -26,7 +27,7 @@ class PasswordChangeRequest(BaseModel):
     new_password: str
 
 
-@router.get("/")
+@router.get("")
 async def list_users(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -53,6 +54,7 @@ async def list_users(
                 "display_name": u.display_name,
                 "role": u.role,
                 "is_active": u.is_active,
+                "feishu_open_id": u.feishu_open_id,
                 "created_at": u.created_at.isoformat() if u.created_at else None,
             }
             for u in result["items"]
@@ -100,6 +102,7 @@ async def update_user(
             email=request.email,
             role=request.role,
             is_active=request.is_active,
+            feishu_open_id=request.feishu_open_id,
         )
         if not user:
             raise HTTPException(

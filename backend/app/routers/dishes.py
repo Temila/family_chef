@@ -24,7 +24,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/", response_model=PageResponse[DishListResponse])
+@router.get("", response_model=PageResponse[DishListResponse])
 async def list_dishes(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -96,7 +96,7 @@ async def get_dish(
     return response
 
 
-@router.post("/", response_model=DishDetailResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DishDetailResponse, status_code=status.HTTP_201_CREATED)
 async def create_dish(
     dish_data: DishCreate,
     current_user: User = Depends(get_current_user_from_token),

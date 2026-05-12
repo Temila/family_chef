@@ -13,7 +13,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/", response_model=PreferenceResponse)
+@router.get("", response_model=PreferenceResponse)
 async def get_preferences(
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
@@ -23,7 +23,7 @@ async def get_preferences(
     return PreferenceResponse(**preferences)
 
 
-@router.put("/", response_model=PreferenceResponse)
+@router.put("", response_model=PreferenceResponse)
 async def update_preferences(
     preference_data: PreferenceUpdate,
     current_user: User = Depends(get_current_user_from_token),

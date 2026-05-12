@@ -16,7 +16,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.post("/", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
 async def add_favorite(
     favorite_data: FavoriteCreate,
     current_user: User = Depends(get_current_user_from_token),
@@ -61,7 +61,7 @@ async def remove_favorite(
     await db.commit()
 
 
-@router.get("/", response_model=PageResponse[DishListResponse])
+@router.get("", response_model=PageResponse[DishListResponse])
 async def list_favorites(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),

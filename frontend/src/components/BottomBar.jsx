@@ -1,7 +1,3 @@
-/**
- * BottomBar Component - 底部导航栏
- */
-
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,8 +13,9 @@ export default function BottomBar() {
 
   if (role === 'admin') {
     tabs = [
-      { id: 'admin-home', icon: '📊', label: '管理后台', path: '/admin' },
-      { id: 'admin-dishes', icon: '🍽', label: '菜品管理', path: '/admin/dishes' },
+      { id: 'admin-home', icon: '📊', label: '后台', path: '/admin' },
+      { id: 'admin-dishes', icon: '🍽', label: '菜品', path: '/admin/dishes' },
+      { id: 'admin-users', icon: '👥', label: '用户', path: '/admin/users' },
       { id: 'user-home', icon: '🏠', label: '首页', path: '/home' },
     ];
   } else if (role === 'chef') {
@@ -36,12 +33,17 @@ export default function BottomBar() {
     ];
   }
 
+  const isActive = (path) => {
+    if (path === '/home' && location.pathname === '/') return true;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
   return (
     <nav className="bottom-bar">
       {tabs.map(tab => (
         <button
           key={tab.id}
-          className={`tab-item ${location.pathname === tab.path ? 'active' : ''}`}
+          className={`tab-item ${isActive(tab.path) ? 'active' : ''}`}
           onClick={() => navigate(tab.path)}
         >
           <span className="tab-icon">{tab.icon}</span>

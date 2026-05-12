@@ -10,6 +10,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
+import { formatDate } from '../utils';
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
@@ -63,22 +64,40 @@ export default function AdminHomePage() {
       onClick: () => navigate('/admin/dishes')
     },
     {
+      icon: '🥬',
+      title: '食材管理',
+      desc: '管理食材、分类、别名',
+      onClick: () => navigate('/admin/ingredients')
+    },
+    {
+      icon: '📂',
+      title: '分类管理',
+      desc: '地区、菜系、口味、季节',
+      onClick: () => navigate('/admin/categories')
+    },
+    {
+      icon: '👨‍🍳',
+      title: '厨师管理',
+      desc: '厨师列表、飞书绑定',
+      onClick: () => navigate('/admin/chefs')
+    },
+    {
       icon: '👥',
       title: '用户管理',
       desc: '管理用户、厨师账号',
-      onClick: () => showToast('功能开发中')
+      onClick: () => navigate('/admin/users')
     },
     {
       icon: '📊',
       title: '数据统计',
       desc: '查看运营数据报表',
-      onClick: () => showToast('功能开发中')
+      onClick: () => navigate('/admin/stats')
     },
     {
       icon: '📝',
       title: '系统日志',
       desc: '查看系统操作记录',
-      onClick: () => showToast('功能开发中')
+      onClick: () => navigate('/admin/logs')
     }
   ];
 
