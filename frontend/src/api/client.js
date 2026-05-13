@@ -79,6 +79,7 @@ class ApiClient {
     if (params.seasons) params.seasons.forEach(v => qs.append('seasons', v));
     if (params.favorites_only) qs.set('favorites_only', 'true');
     if (params.sort) qs.set('sort', params.sort);
+    if (params.status) qs.set('status', params.status);
     return this.get(`/dishes?${qs}`);
   }
 
@@ -175,8 +176,8 @@ class ApiClient {
     return this.del(`/ingredients/${id}`);
   }
 
-  async parseIngredientsFromText(text) {
-    return this.post('/ingredients/parse', { text });
+  async parseIngredientsFromText(text, smartMode = true) {
+    return this.post('/ingredients/parse', { text, smart_mode: smartMode });
   }
 
   async batchImportIngredients(items) {

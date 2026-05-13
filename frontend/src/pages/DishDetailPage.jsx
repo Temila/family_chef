@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -13,6 +14,7 @@ export default function DishDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { getTypeMeta, categoryTypes } = useCategories();
 
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,10 +100,14 @@ export default function DishDetailPage() {
 
   if (!dish) return null;
 
-  const regionCategories = (dish.categories || []).filter(c => c.type === 'region');
-  const cuisineCategories = (dish.categories || []).filter(c => c.type === 'cuisine');
-  const tasteCategories = (dish.categories || []).filter(c => c.type === 'taste');
-  const seasonCategories = (dish.categories || []).filter(c => c.type === 'season');
+  const dishCategoryGroups = categoryTypes()
+    .filter(t => t.key !== 'ingredient')
+    .map(t => ({
+      type: t.key,
+      meta: t,
+      items: (dish.categories || []).filter(c => c.type === t.key),
+    }))
+    .filter(g => g.items.length > 0);
 
   return (
     <div className="page-container">
@@ -151,18 +157,9 @@ export default function DishDetailPage() {
         )}
 
         <div className="info-pills" style={{ marginBottom: 16 }}>
-          {regionCategories.length > 0 && (
-            <span className="info-pill">📍 {regionCategories.map(c => c.name).join('、')}</span>
-          )}
-          {cuisineCategories.length > 0 && (
-            <span className="info-pill">🍜 {cuisineCategories.map(c => c.name).join('、')}</span>
-          )}
-          {tasteCategories.length > 0 && (
-            <span className="info-pill">👅 {tasteCategories.map(c => c.name).join('、')}</span>
-          )}
-          {seasonCategories.length > 0 && (
-            <span className="info-pill">🌤️ {seasonCategories.map(c => c.name).join('、')}</span>
-          )}
+          {dishCategoryGroups.map(g => (
+            <span className="info-pill" key={g.type}>{g.meta.icon} {g.items.map(c => c.name).join('、')}</span>
+          ))}
         </div>
 
         {dish.ingredients && dish.ingredients.length > 0 && (

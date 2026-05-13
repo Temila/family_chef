@@ -94,6 +94,7 @@ async def create_ingredient(
 
 class ParseTextRequest(BaseModel):
     text: str
+    smart_mode: bool = True
 
 
 @router.post("/parse")
@@ -102,11 +103,10 @@ async def parse_ingredients_from_text(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role("admin", "chef")),
 ):
-    """从菜谱文本中解析食材，返回匹配结果和全部已有食材列表供用户决策"""
     if not request.text.strip():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="文本不能为空")
 
-    if smart_settings.is_feature_enabled("SMART_INGREDIENT_EXTRACTION"):
+    if request.smart_mode and smart_settings.is_feature_enabled("SMART_INGREDIENT_EXTRACTION"):
         try:
             from app.services.smart_ingredient_extractor import smart_ingredient_extractor
             extractor = smart_ingredient_extractor
@@ -142,7 +142,10 @@ async def parse_ingredients_from_text(
         if name in seen:
             continue
         seen.add(name)
-        match_info = next((m for m in matched if m["ingredient_name"] == name), None)
+        match_info = next(
+            (m for m in matched if m.get("matched_from") == name or m["ingredient_name"] == name),
+            None,
+        )
         parsed.append({
             "name": name,
             "matched_ingredient_id": match_info["ingredient_id"] if match_info else None,

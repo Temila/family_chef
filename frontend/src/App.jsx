@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { CategoriesProvider } from './contexts/CategoriesContext';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import UserHomePage from './pages/UserHomePage';
@@ -56,10 +57,11 @@ function RedirectRoute() {
 }
 
 function PcLayout() {
+  const location = useLocation();
   return (
     <div className="pc-layout">
       <Sidebar />
-      <main className="pc-main">
+      <main className="pc-main" key={location.pathname}>
         <Outlet />
       </main>
     </div>
@@ -70,8 +72,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ToastProvider>
-          <Routes>
+        <CategoriesProvider>
+          <ToastProvider>
+            <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
             <Route path="/" element={<RedirectRoute />} />
@@ -192,8 +195,9 @@ function App() {
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </ToastProvider>
+            </Routes>
+          </ToastProvider>
+        </CategoriesProvider>
       </AuthProvider>
     </BrowserRouter>
   );

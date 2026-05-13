@@ -117,6 +117,7 @@ class SmartIngredientExtractor:
                         "ingredient_name": ing.name,
                         "match_type": "exact",
                         "confidence": 1.0,
+                        "matched_from": name,
                     })
             elif name_lower in alias_to_id:
                 ing_id = alias_to_id[name_lower]
@@ -129,6 +130,7 @@ class SmartIngredientExtractor:
                             "ingredient_name": ing.name,
                             "match_type": "alias",
                             "confidence": 0.8,
+                            "matched_from": name,
                         })
 
         return matched

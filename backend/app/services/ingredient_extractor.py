@@ -45,13 +45,12 @@ class IngredientExtractor:
                     "ingredient_name": ing.name,
                     "match_type": "exact",
                     "confidence": 1.0,
+                    "matched_from": ing.name,
                 })
                 remaining_text = remaining_text.replace(ing.name, "")
 
-        # 别名匹配
         for alias_str, ingredient_id in alias_map.items():
             if alias_str in text:
-                # 检查是否已匹配
                 if not any(m["ingredient_id"] == ingredient_id for m in matched_ingredients):
                     ing = ingredient_map.get(ingredient_id)
                     if ing:
@@ -60,6 +59,7 @@ class IngredientExtractor:
                             "ingredient_name": ing.name,
                             "match_type": "alias",
                             "confidence": 0.8,
+                            "matched_from": alias_str,
                         })
                         remaining_text = remaining_text.replace(alias_str, "")
 

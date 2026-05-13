@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -7,17 +8,13 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
-const CATEGORY_OPTIONS = [
-  { value: 'meat', label: '肉类' },
-  { value: 'vegetable', label: '蔬菜' },
-  { value: 'seafood', label: '海鲜' },
-  { value: 'fruit', label: '水果' },
-  { value: 'seasoning', label: '调味品' },
-  { value: 'other', label: '其他' },
-];
-
 export default function AdminDishesPage() {
   const { showToast } = useToast();
+  const { getByType, getTypeMeta, categoryTypes, allCategories: contextCategories, reload: reloadCategories } = useCategories();
+
+  const dishCategoryTypes = categoryTypes().filter(t => t.key !== 'ingredient');
+  const ingredientCategories = getByType('ingredient');
+  const allCategories = contextCategories;
 
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +27,6 @@ export default function AdminDishesPage() {
     category_ids: [], ingredient_ids: [], recipe: '',
   });
 
-  const [allCategories, setAllCategories] = useState([]);
   const [allIngredients, setAllIngredients] = useState([]);
 
   const [showIngDropdown, setShowIngDropdown] = useState(false);
@@ -42,6 +38,11 @@ export default function AdminDishesPage() {
   const [extractText, setExtractText] = useState('');
   const [extracting, setExtracting] = useState(false);
   const [parseResult, setParseResult] = useState(null);
+  const [smartMode, setSmartMode] = useState(true);
+  const [removedParsedNames, setRemovedParsedNames] = useState([]);
+
+  const [showAdvFilter, setShowAdvFilter] = useState(false);
+  const [advCategoryIds, setAdvCategoryIds] = useState([]);
 
   const [showAddIngModal, setShowAddIngModal] = useState(false);
   const [batchItems, setBatchItems] = useState([]);
@@ -50,9 +51,12 @@ export default function AdminDishesPage() {
   const [batchImporting, setBatchImporting] = useState(false);
 
   useEffect(() => {
-    loadDishes();
-    loadAllData();
+    loadIngredients();
   }, []);
+
+  useEffect(() => {
+    loadDishes();
+  }, [advCategoryIds]);
 
   useEffect(() => {
     if (!showIngDropdown) return;
@@ -68,8 +72,15 @@ export default function AdminDishesPage() {
   const loadDishes = async () => {
     try {
       setLoading(true);
-      const params = { page: 1, page_size: 100 };
+      const params = { page: 1, page_size: 100, status: 'all' };
       if (searchQuery) params.search = searchQuery;
+      if (advCategoryIds.length > 0) {
+        for (const t of dishCategoryTypes) {
+          const typeCats = getByType(t.key);
+          const ids = advCategoryIds.filter(id => typeCats.some(c => c.id === id));
+          if (ids.length) params[t.key + 's'] = ids;
+        }
+      }
       const res = await api.getDishes(params);
       setDishes(res.items || []);
     } catch (err) {
@@ -79,25 +90,31 @@ export default function AdminDishesPage() {
     }
   };
 
-  const loadAllData = async () => {
+  const loadIngredients = async () => {
     try {
-      const [catRes, ingRes] = await Promise.all([
-        api.getCategories(),
-        api.getIngredients(),
-      ]);
-      setAllCategories(catRes.items || []);
+      const ingRes = await api.getIngredients();
       setAllIngredients(ingRes.items || []);
     } catch (err) {}
   };
 
   const regions = allCategories.filter(c => c.type === 'region');
+  const dishCatsByType = {};
+  for (const t of dishCategoryTypes) {
+    if (t.key !== 'region') {
+      dishCatsByType[t.key] = allCategories.filter(c => c.type === t.key);
+    }
+  }
+
   const cuisines = allCategories.filter(c => c.type === 'cuisine');
-  const tastes = allCategories.filter(c => c.type === 'taste');
-  const seasons = allCategories.filter(c => c.type === 'season');
 
   const selectedRegionIds = form.category_ids.filter(id => regions.some(r => r.id === id));
   const filteredCuisines = selectedRegionIds.length > 0
     ? cuisines.filter(c => selectedRegionIds.includes(c.parent_id))
+    : cuisines;
+
+  const advSelectedRegionIds = advCategoryIds.filter(id => regions.some(r => r.id === id));
+  const advFilteredCuisines = advSelectedRegionIds.length > 0
+    ? cuisines.filter(c => advSelectedRegionIds.includes(c.parent_id))
     : cuisines;
 
   const filteredIngForDropdown = allIngredients
@@ -115,18 +132,23 @@ export default function AdminDishesPage() {
     setShowDishModal(true);
   };
 
-  const openEdit = (dish) => {
-    setEditingDish(dish);
-    setForm({
-      name: dish.name || '',
-      description: dish.description || '',
-      image_url: dish.image_url || '',
-      status: dish.status || 'draft',
-      category_ids: (dish.categories || []).map(c => c.id),
-      ingredient_ids: (dish.ingredients || []).map(i => i.id),
-      recipe: dish.recipe || '',
-    });
-    setShowDishModal(true);
+  const openEdit = async (dish) => {
+    try {
+      const full = await api.getDish(dish.id);
+      setEditingDish(full);
+      setForm({
+        name: full.name || '',
+        description: full.description || '',
+        image_url: full.image_url || '',
+        status: full.status || 'draft',
+        category_ids: (full.categories || []).map(c => c.id),
+        ingredient_ids: (full.ingredients || []).map(i => i.id),
+        recipe: full.recipe || '',
+      });
+      setShowDishModal(true);
+    } catch (err) {
+      showToast('加载菜品详情失败', 'error');
+    }
   };
 
   const handleSave = async () => {
@@ -214,6 +236,7 @@ export default function AdminDishesPage() {
   const openExtractModal = () => {
     setExtractText('');
     setParseResult(null);
+    setRemovedParsedNames([]);
     setShowExtractModal(true);
   };
 
@@ -224,7 +247,8 @@ export default function AdminDishesPage() {
     }
     try {
       setExtracting(true);
-      const res = await api.parseIngredientsFromText(extractText);
+      setRemovedParsedNames([]);
+      const res = await api.parseIngredientsFromText(extractText, smartMode);
       setParseResult(res);
       showToast(`解析完成，识别到 ${(res.parsed_ingredients || []).length} 个食材`);
     } catch (err) {
@@ -234,11 +258,19 @@ export default function AdminDishesPage() {
     }
   };
 
-  const hasNewIngredients = (parseResult?.parsed_ingredients || []).some(p => !p.matched_ingredient_id);
-  const allIngredientsExist = (parseResult?.parsed_ingredients || []).length > 0 && !hasNewIngredients;
+  const removeParsedIngredient = (name) => {
+    setRemovedParsedNames(prev => [...prev, name]);
+  };
+
+  const activeParsedIngredients = (parseResult?.parsed_ingredients || []).filter(
+    p => !removedParsedNames.includes(p.name)
+  );
+
+  const hasNewIngredients = activeParsedIngredients.some(p => !p.matched_ingredient_id);
+  const hasAnyIngredients = activeParsedIngredients.length > 0;
 
   const handleGoToAddIngredient = () => {
-    const newItems = (parseResult?.parsed_ingredients || []).filter(p => !p.matched_ingredient_id);
+    const newItems = activeParsedIngredients.filter(p => !p.matched_ingredient_id);
     const initial = {};
     for (const item of newItems) {
       initial[item.name] = { action: 'new', alias_for_id: null, category: '' };
@@ -308,8 +340,9 @@ export default function AdminDishesPage() {
       setShowAddIngModal(false);
       const ingRes = await api.getIngredients();
       setAllIngredients(ingRes.items || []);
-      const newParseRes = await api.parseIngredientsFromText(extractText);
+      const newParseRes = await api.parseIngredientsFromText(extractText, smartMode);
       setParseResult(newParseRes);
+      setRemovedParsedNames([]);
     } catch (err) {
       showToast(err.message || '导入失败', 'error');
     } finally {
@@ -318,7 +351,7 @@ export default function AdminDishesPage() {
   };
 
   const handleNextStepFromExtract = () => {
-    const matchedIds = (parseResult?.parsed_ingredients || [])
+    const matchedIds = activeParsedIngredients
       .map(p => p.matched_ingredient_id)
       .filter(Boolean);
     setShowExtractModal(false);
@@ -375,7 +408,41 @@ export default function AdminDishesPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && loadDishes()}
         />
+        <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
+          <button className="btn btn-primary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={loadDishes}>搜索</button>
+          <button className="btn btn-secondary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => { setSearchQuery(''); setAdvCategoryIds([]); }}>清空</button>
+        </div>
       </div>
+
+      <div style={{ padding: '0 16px 4px' }}>
+        <button
+          className="btn btn-secondary btn-sm"
+          style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+          onClick={() => setShowAdvFilter(!showAdvFilter)}
+        >
+          {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
+        </button>
+      </div>
+
+      {showAdvFilter && (
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+          {renderCategorySection(getTypeMeta('region').label, regions, advCategoryIds, (id) => {
+            setAdvCategoryIds(prev => {
+              if (prev.includes(id)) {
+                const childCuisineIds = cuisines.filter(c => c.parent_id === id).map(c => c.id);
+                return prev.filter(x => x !== id && !childCuisineIds.includes(x));
+              }
+              return [...prev, id];
+            });
+          })}
+          {dishCategoryTypes.filter(t => t.key !== 'region').map(t => {
+            const items = t.key === 'cuisine' ? advFilteredCuisines : (dishCatsByType[t.key] || []);
+            return renderCategorySection(t.label, items, advCategoryIds, (id) => {
+              setAdvCategoryIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+            });
+          })}
+        </div>
+      )}
 
       {loading ? (
         <Loading />
@@ -495,10 +562,11 @@ export default function AdminDishesPage() {
 
               <div className="form-group">
                 <label className="form-label">分类</label>
-                {renderCategorySection('地区', regions, form.category_ids, toggleCategory)}
-                {renderCategorySection('菜系', filteredCuisines, form.category_ids, toggleCategory)}
-                {renderCategorySection('口味', tastes, form.category_ids, toggleCategory)}
-                {renderCategorySection('季节', seasons, form.category_ids, toggleCategory)}
+              {renderCategorySection(getTypeMeta('region').label, regions, form.category_ids, toggleCategory)}
+              {dishCategoryTypes.filter(t => t.key !== 'region').map(t => {
+                const items = t.key === 'cuisine' ? filteredCuisines : (dishCatsByType[t.key] || []);
+                return renderCategorySection(t.label, items, form.category_ids, toggleCategory);
+              })}
               </div>
 
               <div className="form-group" style={{ position: 'relative' }} ref={ingDropdownRef}>
@@ -547,14 +615,14 @@ export default function AdminDishesPage() {
                         >
                           全部
                         </button>
-                        {CATEGORY_OPTIONS.map(c => (
+                        {ingredientCategories.map(c => (
                           <button
-                            key={c.value}
-                            className={`filter-chip ${ingCategoryFilter === c.value ? 'active' : ''}`}
+                            key={c.id}
+                            className={`filter-chip ${ingCategoryFilter === c.name ? 'active' : ''}`}
                             style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                            onClick={() => setIngCategoryFilter(c.value)}
+                            onClick={() => setIngCategoryFilter(c.name)}
                           >
-                            {c.label}
+                            {c.name}
                           </button>
                         ))}
                       </div>
@@ -573,7 +641,7 @@ export default function AdminDishesPage() {
                             <input type="checkbox" checked readOnly style={{ marginRight: 6, pointerEvents: 'none' }} />
                             <span>{ing.name}</span>
                             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
-                              {CATEGORY_OPTIONS.find(c => c.value === ing.category)?.label || ''}
+                              {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
                             </span>
                           </div>
                         ))
@@ -604,7 +672,7 @@ export default function AdminDishesPage() {
         <div className="modal-overlay" onClick={() => setShowExtractModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
             <div className="modal-header">
-              <h3>从文本解析食材</h3>
+              <h3>解析菜谱</h3>
               <button className="modal-close" onClick={() => setShowExtractModal(false)}>✕</button>
             </div>
             <div className="modal-body">
@@ -618,6 +686,28 @@ export default function AdminDishesPage() {
                   placeholder="将菜谱文章、食材列表等文本粘贴到这里，系统会自动识别其中的食材..."
                 />
               </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={smartMode}
+                    onChange={(e) => setSmartMode(e.target.checked)}
+                    style={{ width: 16, height: 16 }}
+                  />
+                  智能解析
+                </label>
+                <span
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 18, height: 18, borderRadius: '50%',
+                    border: '1.5px solid var(--text-muted)', fontSize: '0.7rem',
+                    color: 'var(--text-muted)', cursor: 'help', position: 'relative',
+                  }}
+                  title="开启后使用AI模型智能识别食材名称和用量；关闭后仅通过食材库中的已有名称进行文本匹配，速度更快但不识别新食材名称"
+                >
+                  !
+                </span>
+              </div>
               <button
                 className="btn btn-primary btn-block"
                 onClick={handleExtract}
@@ -629,20 +719,29 @@ export default function AdminDishesPage() {
               {parseResult && (
                 <div style={{ marginTop: 16 }}>
                   <div className="form-label">
-                    解析结果（{(parseResult.parsed_ingredients || []).length} 个食材）
+                    解析结果（{activeParsedIngredients.length} 个食材）
                   </div>
-                  {(parseResult.parsed_ingredients || []).length > 0 ? (
+                  {activeParsedIngredients.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-                      {parseResult.parsed_ingredients.map((p) => (
+                      {activeParsedIngredients.map((p) => (
                         <span
                           key={p.name}
                           className="filter-chip"
-                          style={{ opacity: p.matched_ingredient_id ? 1 : 0.6 }}
+                          style={{ opacity: p.matched_ingredient_id ? 1 : 0.6, paddingRight: 4 }}
                         >
                           {p.matched_ingredient_id ? '✅' : '🆕'} {p.name}
                           {p.matched_ingredient_name && p.matched_ingredient_name !== p.name && (
                             <span style={{ fontSize: '0.7rem', marginLeft: 4 }}>→ {p.matched_ingredient_name}</span>
                           )}
+                          <button
+                            onClick={() => removeParsedIngredient(p.name)}
+                            style={{
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              fontSize: '0.9rem', color: 'var(--danger)', marginLeft: 4, padding: 0, lineHeight: 1,
+                            }}
+                          >
+                            ×
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -658,7 +757,7 @@ export default function AdminDishesPage() {
                     </div>
                   )}
 
-                  {allIngredientsExist && (
+                  {hasAnyIngredients && (
                     <div style={{ marginTop: 8 }}>
                       <button className="btn btn-primary btn-sm" onClick={handleNextStepFromExtract}>
                         下一步 → 创建菜品
@@ -734,7 +833,7 @@ export default function AdminDishesPage() {
                               onChange={(e) => updateBatchDecision(item.name, 'category', e.target.value)}
                             >
                               <option value="">选择分类(可选)</option>
-                              {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                              {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                             </select>
                           )}
 

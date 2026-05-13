@@ -32,9 +32,10 @@ async def startup():
     await init_db()
     
     # 创建初始化数据
-    from app.initial_data import create_initial_data, create_preset_categories
+    from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients
     await create_initial_data()
     await create_preset_categories()
+    await create_preset_ingredients()
     
     # 创建上传目录
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)

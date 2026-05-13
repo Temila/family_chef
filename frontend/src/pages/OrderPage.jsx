@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -13,6 +14,11 @@ export default function OrderPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { getByType, getTypeMeta, categoryTypes } = useCategories();
+
+  const regions = getByType('region');
+  const cuisines = getByType('cuisine');
+  const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine'].includes(t.key));
 
   const [dishes, setDishes] = useState([]);
   const [cart, setCart] = useState([]);
@@ -30,12 +36,11 @@ export default function OrderPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedCuisine, setSelectedCuisine] = useState(null);
-  const [selectedTastes, setSelectedTastes] = useState([]);
-  const [selectedSeasons, setSelectedSeasons] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({});
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sortBy, setSortBy] = useState('name');
 
-  const [categories, setCategories] = useState({ regions: [], cuisines: [], tastes: [], seasons: [] });
+  const [categories, setCategories] = useState({});
   const [showFilters, setShowFilters] = useState(false);
 
   const observer = useRef();
@@ -51,42 +56,33 @@ export default function OrderPage() {
   }, [loadingMore, hasMore]);
 
   useEffect(() => {
-    loadCategories();
     loadCart();
-  }, []);
+    setCategories({
+      regions,
+      cuisines,
+    });
+    for (const t of filterTypes) {
+      setCategories(prev => ({ ...prev, [t.key]: getByType(t.key) }));
+    }
+  }, [regions, cuisines, filterTypes]);
 
   useEffect(() => {
     loadDishes(1);
-  }, [searchQuery, selectedRegion, selectedCuisine, selectedTastes, selectedSeasons, favoritesOnly, sortBy]);
+  }, [searchQuery, selectedRegion, selectedCuisine, selectedFilters, favoritesOnly, sortBy]);
 
   useEffect(() => {
     if (page > 1) loadMoreDishes();
   }, [page]);
-
-  const loadCategories = async () => {
-    try {
-      const [regionsRes, cuisinesRes, tastesRes, seasonsRes] = await Promise.all([
-        api.getCategories('region'),
-        api.getCategories('cuisine'),
-        api.getCategories('taste'),
-        api.getCategories('season'),
-      ]);
-      setCategories({
-        regions: regionsRes.items || [],
-        cuisines: cuisinesRes.items || [],
-        tastes: tastesRes.items || [],
-        seasons: seasonsRes.items || [],
-      });
-    } catch (err) {}
-  };
 
   const buildParams = (pageNum) => {
     const params = { page: pageNum, page_size: 20 };
     if (searchQuery) params.search = searchQuery;
     if (selectedRegion) params.regions = [selectedRegion];
     if (selectedCuisine) params.cuisines = [selectedCuisine];
-    if (selectedTastes.length > 0) params.tastes = selectedTastes;
-    if (selectedSeasons.length > 0) params.seasons = selectedSeasons;
+    for (const t of filterTypes) {
+      const ids = selectedFilters[t.key] || [];
+      if (ids.length > 0) params[t.key + 's'] = ids;
+    }
     if (favoritesOnly) params.favorites_only = true;
     if (sortBy) params.sort = sortBy;
     return params;
@@ -238,12 +234,9 @@ export default function OrderPage() {
   };
 
   const filteredCuisines = selectedRegion
-    ? categories.cuisines.filter(c => c.parent_id === selectedRegion)
-    : categories.cuisines;
+    ? (categories.cuisines || []).filter(c => c.parent_id === selectedRegion)
+    : (categories.cuisines || []);
 
-  const toggleArrayFilter = (arr, setArr, val) => {
-    setArr(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]);
-  };
 
   return (
     <div className="page-container">
@@ -291,7 +284,7 @@ export default function OrderPage() {
       {showFilters && (
         <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
           <div className="filter-section">
-            <div className="filter-section-label">地区</div>
+            <div className="filter-section-label">{getTypeMeta('region').label}</div>
             <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
               <button
                 className={`filter-chip ${!selectedRegion ? 'active' : ''}`}
@@ -299,7 +292,7 @@ export default function OrderPage() {
               >
                 全部
               </button>
-              {categories.regions.map(r => (
+              {categories.regions?.map(r => (
                 <button
                   key={r.id}
                   className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
@@ -313,7 +306,7 @@ export default function OrderPage() {
 
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
-              <div className="filter-section-label">菜系</div>
+              <div className="filter-section-label">{getTypeMeta('cuisine').label}</div>
               <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
                 <button
                   className={`filter-chip ${!selectedCuisine ? 'active' : ''}`}
@@ -334,39 +327,36 @@ export default function OrderPage() {
             </div>
           )}
 
-          {categories.tastes.length > 0 && (
-            <div className="filter-section">
-              <div className="filter-section-label">口味</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                {categories.tastes.map(t => (
-                  <button
-                    key={t.id}
-                    className={`filter-chip ${selectedTastes.includes(t.id) ? 'active' : ''}`}
-                    onClick={() => toggleArrayFilter(selectedTastes, setSelectedTastes, t.id)}
-                  >
-                    {t.name}
-                  </button>
-                ))}
+          {filterTypes.map(t => {
+            const items = categories[t.key] || [];
+            if (items.length === 0) return null;
+            const meta = getTypeMeta(t.key);
+            const selectedArr = selectedFilters[t.key] || [];
+            return (
+              <div className="filter-section" key={t.key}>
+                <div className="filter-section-label">{meta.label}</div>
+                <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                  {items.map(item => (
+                    <button
+                      key={item.id}
+                      className={`filter-chip ${selectedArr.includes(item.id) ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedFilters(prev => {
+                          const arr = prev[t.key] || [];
+                          return {
+                            ...prev,
+                            [t.key]: arr.includes(item.id) ? arr.filter(v => v !== item.id) : [...arr, item.id],
+                          };
+                        });
+                      }}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          {categories.seasons.length > 0 && (
-            <div className="filter-section">
-              <div className="filter-section-label">季节</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                {categories.seasons.map(s => (
-                  <button
-                    key={s.id}
-                    className={`filter-chip ${selectedSeasons.includes(s.id) ? 'active' : ''}`}
-                    onClick={() => toggleArrayFilter(selectedSeasons, setSelectedSeasons, s.id)}
-                  >
-                    {s.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+            );
+          })}
         </div>
       )}
 

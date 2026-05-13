@@ -34,8 +34,8 @@ class DishService:
         result = await db.execute(
             select(Dish)
             .options(
-                selectinload(Dish.ingredients),
-                selectinload(Dish.categories),
+                selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
+                selectinload(Dish.categories).selectinload(DishCategory.category),
             )
             .where(Dish.id == dish_id)
         )
@@ -54,13 +54,18 @@ class DishService:
         favorites_only: bool = False,
         sort: str = "name",
         user_id: Optional[int] = None,
+        status_filter: Optional[str] = None,
     ) -> tuple[List[Dish], int]:
         """分页查询菜品列表（支持多维度筛选）"""
         # 基础查询
         query = select(Dish).options(
-            selectinload(Dish.ingredients),
-            selectinload(Dish.categories),
-        ).where(Dish.status == "published")
+            selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
+            selectinload(Dish.categories).selectinload(DishCategory.category),
+        )
+        if status_filter and status_filter != "all":
+            query = query.where(Dish.status == status_filter)
+        elif not status_filter:
+            query = query.where(Dish.status == "published")
 
         # 模糊搜索（菜名、食材名）
         if search:

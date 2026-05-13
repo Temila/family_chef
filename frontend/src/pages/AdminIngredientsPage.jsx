@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -7,22 +8,16 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
-const CATEGORY_OPTIONS = [
-  { value: 'meat', label: '肉类' },
-  { value: 'vegetable', label: '蔬菜' },
-  { value: 'seafood', label: '海鲜' },
-  { value: 'fruit', label: '水果' },
-  { value: 'seasoning', label: '调味品' },
-  { value: 'other', label: '其他' },
-];
-const categoryMap = Object.fromEntries(CATEGORY_OPTIONS.map(c => [c.value, c.label]));
-
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
+  const { getByType } = useCategories();
+  const ingredientCategories = getByType('ingredient');
 
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAdvFilter, setShowAdvFilter] = useState(false);
+  const [advCategory, setAdvCategory] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [form, setForm] = useState({ name: '', category: '', description: '', aliases: '' });
@@ -38,18 +33,24 @@ export default function AdminIngredientsPage() {
 
   useEffect(() => {
     loadIngredients();
-  }, []);
+  }, [advCategory]);
 
   const loadIngredients = async () => {
     try {
       setLoading(true);
-      const res = await api.getIngredients(null, searchQuery || null);
+      const category = advCategory || null;
+      const res = await api.getIngredients(category, searchQuery || null);
       setIngredients(res.items || []);
     } catch (err) {
       showToast('加载食材失败', 'error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClear = () => {
+    setSearchQuery('');
+    setAdvCategory('');
   };
 
   const openCreate = () => {
@@ -230,7 +231,45 @@ export default function AdminIngredientsPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && loadIngredients()}
         />
+        <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
+          <button className="btn btn-primary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={loadIngredients}>搜索</button>
+          <button className="btn btn-secondary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => { handleClear(); }}>清空</button>
+        </div>
       </div>
+
+      <div style={{ padding: '0 16px 4px' }}>
+        <button
+          className="btn btn-secondary btn-sm"
+          style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+          onClick={() => setShowAdvFilter(!showAdvFilter)}
+        >
+          {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
+        </button>
+      </div>
+
+      {showAdvFilter && (
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <button
+              className={`filter-chip ${!advCategory ? 'active' : ''}`}
+              style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+              onClick={() => setAdvCategory('')}
+            >
+              全部
+            </button>
+            {ingredientCategories.map(c => (
+              <button
+                key={c.id}
+                className={`filter-chip ${advCategory === c.name ? 'active' : ''}`}
+                style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+                onClick={() => setAdvCategory(c.name)}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <Loading />
@@ -253,7 +292,7 @@ export default function AdminIngredientsPage() {
                 {ingredients.map(item => (
                   <tr key={item.id}>
                     <td style={{ fontWeight: 600 }}>{item.name}</td>
-                    <td>{categoryMap[item.category] || item.category || '-'}</td>
+                    <td>{item.category || '-'}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                       {(item.aliases || []).join('、') || '-'}
                     </td>
@@ -284,7 +323,7 @@ export default function AdminIngredientsPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        {categoryMap[item.category] || item.category || ''}
+                        {item.category || ''}
                       </div>
                     </div>
                     <Badge status={item.is_active ? 'published' : 'hidden'} />
@@ -327,7 +366,7 @@ export default function AdminIngredientsPage() {
                 <label className="form-label">分类</label>
                 <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                   <option value="">请选择</option>
-                  {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
               </div>
               <div className="form-group">
@@ -446,7 +485,7 @@ export default function AdminIngredientsPage() {
                                   onChange={(e) => updateDecision(item.name, 'category', e.target.value)}
                                 >
                                   <option value="">选择分类(可选)</option>
-                                  {CATEGORY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                                  {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                                 </select>
                               )}
 

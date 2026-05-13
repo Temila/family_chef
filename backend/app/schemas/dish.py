@@ -1,5 +1,5 @@
 """菜品 Schema"""
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 
 
@@ -65,6 +65,16 @@ class DishListResponse(BaseModel):
     class Config:
         from_attributes = True
 
+    @field_validator('categories', mode='before')
+    @classmethod
+    def map_dish_categories(cls, v):
+        if v and hasattr(v[0], 'category_id'):
+            return [
+                {'id': dc.category.id, 'name': dc.category.name, 'type': dc.category.type}
+                for dc in v if dc.category is not None
+            ]
+        return v
+
 
 class DishDetailResponse(BaseModel):
     """菜品详情响应"""
@@ -81,44 +91,23 @@ class DishDetailResponse(BaseModel):
     
     class Config:
         from_attributes = True
-    
+
+    @field_validator('categories', mode='before')
     @classmethod
-    def model_validate(cls, obj, **kwargs):
-        """自定义验证逻辑，处理 DishIngredient 和 DishCategory 对象"""
-        # 转换 ingredients
-        if hasattr(obj, 'ingredients') and obj.ingredients:
-            ingredients = []
-            for dish_ing in obj.ingredients:
-                if hasattr(dish_ing, 'ingredient') and dish_ing.ingredient:
-                    ingredients.append({
-                        'id': dish_ing.ingredient.id,
-                        'name': dish_ing.ingredient.name,
-                    })
-                elif hasattr(dish_ing, 'id'):
-                    # 直接是 Ingredient 对象
-                    ingredients.append({
-                        'id': dish_ing.id,
-                        'name': dish_ing.name,
-                    })
-            obj._ingredients_data = ingredients
-        
-        # 转换 categories
-        if hasattr(obj, 'categories') and obj.categories:
-            categories = []
-            for dish_cat in obj.categories:
-                if hasattr(dish_cat, 'category') and dish_cat.category:
-                    categories.append({
-                        'id': dish_cat.category.id,
-                        'name': dish_cat.category.name,
-                        'type': dish_cat.category.type,
-                    })
-                elif hasattr(dish_cat, 'id'):
-                    # 直接是 Category 对象
-                    categories.append({
-                        'id': dish_cat.id,
-                        'name': dish_cat.name,
-                        'type': dish_cat.type,
-                    })
-            obj._categories_data = categories
-        
-        return super().model_validate(obj, **kwargs)
+    def map_categories(cls, v):
+        if v and hasattr(v[0], 'category_id'):
+            return [
+                {'id': dc.category.id, 'name': dc.category.name, 'type': dc.category.type}
+                for dc in v if dc.category is not None
+            ]
+        return v
+
+    @field_validator('ingredients', mode='before')
+    @classmethod
+    def map_ingredients(cls, v):
+        if v and hasattr(v[0], 'ingredient_id'):
+            return [
+                {'id': di.ingredient.id, 'name': di.ingredient.name}
+                for di in v if di.ingredient is not None
+            ]
+        return v

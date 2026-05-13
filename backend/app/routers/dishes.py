@@ -35,6 +35,7 @@ async def list_dishes(
     seasons: Optional[str] = Query(None, description="季节分类 ID 列表，逗号分隔"),
     favorites_only: bool = Query(False),
     sort: str = Query("name", description="排序方式：name, created, popular"),
+    status: Optional[str] = Query(None, description="筛选状态: published, hidden, draft, all"),
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
@@ -60,6 +61,7 @@ async def list_dishes(
         favorites_only=favorites_only,
         sort=sort,
         user_id=current_user.id,
+        status_filter=status,
     )
 
     items = [DishListResponse.model_validate(d) for d in dishes]

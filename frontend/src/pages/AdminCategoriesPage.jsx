@@ -1,26 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
-const CATEGORY_TYPES = [
-  { key: 'region', label: '地区', icon: '📍' },
-  { key: 'cuisine', label: '菜系', icon: '🍜' },
-  { key: 'taste', label: '口味', icon: '👅' },
-  { key: 'season', label: '季节', icon: '🌤️' },
-  { key: 'ingredient', label: '食材分类', icon: '🥬' },
-];
-
 export default function AdminCategoriesPage() {
   const { showToast } = useToast();
+  const { categoryTypes, getTypeMeta, reload } = useCategories();
 
   const [categories, setCategories] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeType, setActiveType] = useState('region');
+  const types = categoryTypes();
+  const [activeType, setActiveType] = useState(types.length > 0 ? types[0].key : 'region');
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [form, setForm] = useState({ name: '', parent_id: '', sort_order: 0 });
@@ -86,6 +81,7 @@ export default function AdminCategoriesPage() {
         showToast('创建成功');
       }
       setShowModal(false);
+      reload();
       loadAllCategories();
     } catch (err) {
       showToast(err.message || '操作失败', 'error');
@@ -97,6 +93,7 @@ export default function AdminCategoriesPage() {
     try {
       await api.deleteCategory(id);
       showToast('删除成功');
+      reload();
       loadAllCategories();
     } catch (err) {
       showToast(err.message || '删除失败', 'error');
@@ -113,7 +110,7 @@ export default function AdminCategoriesPage() {
       />
 
       <div className="filter-chips">
-        {CATEGORY_TYPES.map(t => (
+        {types.map(t => (
           <button
             key={t.key}
             className={`filter-chip ${activeType === t.key ? 'active' : ''}`}
@@ -134,7 +131,6 @@ export default function AdminCategoriesPage() {
             <table className="pc-data-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>名称</th>
                   <th>类型</th>
                   {activeType === 'cuisine' && <th>所属地区</th>}
@@ -148,9 +144,8 @@ export default function AdminCategoriesPage() {
                   const parent = item.parent_id ? allCategories.find(c => c.id === item.parent_id) : null;
                   return (
                     <tr key={item.id}>
-                      <td>{item.id}</td>
                       <td style={{ fontWeight: 600 }}>{item.name}</td>
-                      <td>{CATEGORY_TYPES.find(t => t.key === item.type)?.label || item.type}</td>
+                      <td>{getTypeMeta(item.type).label}</td>
                       {activeType === 'cuisine' && <td>{parent ? parent.name : '-'}</td>}
                       <td>{item.sort_order}</td>
                       <td>{item.is_active ? '✅' : '❌'}</td>
@@ -183,7 +178,7 @@ export default function AdminCategoriesPage() {
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                          {CATEGORY_TYPES.find(t => t.key === item.type)?.label}
+                          {getTypeMeta(item.type).label}
                           {parent ? ` · ${parent.name}` : ''}
                         </div>
                       </div>
@@ -210,7 +205,7 @@ export default function AdminCategoriesPage() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>{editingItem ? '编辑分类' : `添加${CATEGORY_TYPES.find(t => t.key === activeType)?.label}`}</h3>
+              <h3>{editingItem ? '编辑分类' : `添加${getTypeMeta(activeType).label}`}</h3>
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="modal-body">
