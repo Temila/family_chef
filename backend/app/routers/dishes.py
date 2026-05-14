@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token
+from app.middleware.logging import log_action
 from app.schemas.dish import (
     DishCreate,
     DishUpdate,
@@ -64,7 +65,14 @@ async def list_dishes(
         status_filter=status,
     )
 
-    items = [DishListResponse.model_validate(d) for d in dishes]
+    warnings_map = await dish_service.get_dietary_warnings_batch(db, dishes, current_user.id)
+
+    items = []
+    for d in dishes:
+        resp = DishListResponse.model_validate(d)
+        if d.id in warnings_map:
+            resp.dietary_warnings = warnings_map[d.id]
+        items.append(resp)
 
     return PageResponse[DishListResponse](
         total=total,
@@ -115,7 +123,6 @@ async def create_dish(
     dish = await dish_service.create_dish(db, dish_data, current_user.id)
     await db.commit()
     
-    # 重新查询并预加载关系
     result = await db.execute(
         select(Dish)
         .options(
@@ -125,8 +132,8 @@ async def create_dish(
         .where(Dish.id == dish.id)
     )
     dish = result.scalar_one()
+    await log_action(current_user.id, "create_dish", "dish", dish.id, f"创建菜品: {dish.name}")
     
-    # 手动构建响应
     ingredients = []
     for dish_ing in dish.ingredients:
         if dish_ing.ingredient:
@@ -183,8 +190,8 @@ async def update_dish(
         .where(Dish.id == dish.id)
     )
     dish = result.scalar_one()
+    await log_action(current_user.id, "update_dish", "dish", dish.id, f"更新菜品: {dish.name}")
     
-    # 手动构建响应
     ingredients = []
     for dish_ing in dish.ingredients:
         if dish_ing.ingredient:
@@ -229,6 +236,7 @@ async def delete_dish(
             detail="菜品不存在",
         )
     await db.commit()
+    await log_action(current_user.id, "delete_dish", "dish", dish_id, f"删除菜品 #{dish_id}")
 
 
 @router.put("/{dish_id}/status")

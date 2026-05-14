@@ -12,6 +12,7 @@ from app.routers.auth import get_current_user_from_token
 from app.schemas.order import OrderCreate, OrderStatusUpdate, OrderListResponse, OrderDetailResponse, OrderItemResponse
 from app.schemas.common import PageResponse
 from app.services.order_service import order_service
+from app.middleware.logging import log_action
 from app.models.user import User
 from app.models.order import Order
 from app.models.dish import Dish
@@ -208,6 +209,7 @@ async def cancel_order(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="订单不存在",
         )
-
     await db.commit()
+    await log_action(current_user.id, "create_order", "order", order.id, f"创建订单 #{order.id}")
+    
     return await build_order_detail(db, order)

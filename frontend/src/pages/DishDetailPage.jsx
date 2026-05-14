@@ -16,6 +16,16 @@ export default function DishDetailPage() {
   const { showToast } = useToast();
   const { getTypeMeta, categoryTypes } = useCategories();
 
+  const ING_CATEGORY_ICONS = {
+    '肉类': '🥩',
+    '蔬菜': '🥬',
+    '海鲜': '🦐',
+    '水果': '🍎',
+    '调味品': '🧂',
+    '辅料': '🧄',
+    '其他': '📦',
+  };
+
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -165,10 +175,25 @@ export default function DishDetailPage() {
         {dish.ingredients && dish.ingredients.length > 0 && (
           <div style={{ marginTop: 24 }}>
             <h3 className="section-title">🥗 食材列表</h3>
-            {dish.ingredients.map(ing => (
-              <div key={ing.id} className="ingredient-item">
-                <span className="ingredient-icon">🧅</span>
-                <span style={{ flex: 1, fontSize: '0.9rem' }}>{ing.name}</span>
+            {Object.entries(
+              dish.ingredients.reduce((acc, ing) => {
+                const cat = ing.category || '其他';
+                (acc[cat] = acc[cat] || []).push(ing);
+                return acc;
+              }, {})
+            ).map(([cat, items]) => (
+              <div key={cat} style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: '1rem' }}>{ING_CATEGORY_ICONS[cat] || '📦'}</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{cat}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {items.map(ing => (
+                    <span key={ing.id} className="ingredient-tag">
+                      {ing.name}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

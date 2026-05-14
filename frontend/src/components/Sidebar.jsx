@@ -22,8 +22,7 @@ export default function Sidebar() {
       { icon: '👥', label: '用户管理', path: '/admin/users' },
       { icon: '📈', label: '数据统计', path: '/admin/stats' },
       { icon: '📝', label: '系统日志', path: '/admin/logs' },
-      { icon: '🏠', label: '用户首页', path: '/home' },
-      { icon: '🍽', label: '点菜', path: '/order' },
+      { icon: '🍽', label: '点菜预览', path: '/order' },
     ];
   } else if (role === 'chef') {
     navItems = [
@@ -75,7 +74,6 @@ export default function Sidebar() {
           </div>
         </div>
         <div className="pc-sidebar-footer-actions">
-          <ThemeToggle />
           <button
             className="pc-sidebar-item"
             onClick={() => {

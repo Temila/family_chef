@@ -21,6 +21,14 @@ import AdminChefsPage from './pages/AdminChefsPage';
 import ForceChangePasswordPage from './pages/ForceChangePasswordPage';
 import './css/styles.css';
 
+const VALID_ROLES = ['admin', 'user', 'chef'];
+
+function getRoleHome(role) {
+  if (role === 'admin') return '/admin';
+  if (role === 'chef') return '/chef/orders';
+  return '/home';
+}
+
 function ProtectedRoute({ children, requiredRoles = [] }) {
   const { user, loading } = useAuth();
 
@@ -36,8 +44,12 @@ function ProtectedRoute({ children, requiredRoles = [] }) {
     return <Navigate to="/force-change-password" replace />;
   }
 
+  if (!VALID_ROLES.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to={getRoleHome(user.role)} replace />;
   }
 
   return children;
@@ -45,13 +57,8 @@ function ProtectedRoute({ children, requiredRoles = [] }) {
 
 function RedirectRoute() {
   const { user } = useAuth();
-  if (user) {
-    if (user.role === 'admin') {
-      return <Navigate to="/admin" replace />;
-    } else if (user.role === 'chef') {
-      return <Navigate to="/chef/orders" replace />;
-    }
-    return <Navigate to="/home" replace />;
+  if (user && VALID_ROLES.includes(user.role)) {
+    return <Navigate to={getRoleHome(user.role)} replace />;
   }
   return <Navigate to="/login" replace />;
 }
@@ -83,7 +90,7 @@ function App() {
               <Route
                 path="/home"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRoles={['user', 'chef']}>
                     <UserHomePage />
                   </ProtectedRoute>
                 }

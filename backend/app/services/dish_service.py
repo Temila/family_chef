@@ -418,6 +418,65 @@ class DishService:
         return [dish for _, dish in dish_safety]
 
     @staticmethod
+    async def get_dietary_warnings_batch(
+        db: AsyncSession,
+        dishes: List[Dish],
+        user_id: int,
+    ) -> dict:
+        """批量获取多个菜品的忌口提示，返回 {dish_id: [DietaryWarning]}"""
+        all_ingredient_ids = set()
+        dish_ing_map = {}
+        for dish in dishes:
+            for di in dish.ingredients:
+                all_ingredient_ids.add(di.ingredient_id)
+                dish_ing_map.setdefault(dish.id, []).append(di.ingredient_id)
+
+        if not all_ingredient_ids:
+            return {}
+
+        pref_result = await db.execute(
+            select(TastePreference).where(
+                and_(
+                    TastePreference.user_id == user_id,
+                    TastePreference.ingredient_id.in_(list(all_ingredient_ids)),
+                )
+            )
+        )
+        user_prefs = pref_result.scalars().all()
+
+        pref_map = {}
+        for pref in user_prefs:
+            pref_map[pref.ingredient_id] = pref.preference_type
+
+        ing_names = {}
+        if user_prefs:
+            ing_ids = list(pref_map.keys())
+            ing_result = await db.execute(
+                select(Ingredient).where(Ingredient.id.in_(ing_ids))
+            )
+            for ing in ing_result.scalars().all():
+                ing_names[ing.id] = ing.name
+
+        result = {}
+        for dish in dishes:
+            warnings = []
+            seen = set()
+            for ing_id in dish_ing_map.get(dish.id, []):
+                pref_type = pref_map.get(ing_id)
+                if pref_type and ing_id not in seen:
+                    seen.add(ing_id)
+                    warnings.append(
+                        DietaryWarning(
+                            type=pref_type,
+                            ingredient=ing_names.get(ing_id, ""),
+                        )
+                    )
+            if warnings:
+                result[dish.id] = warnings
+
+        return result
+
+    @staticmethod
     def generate_pinyin(name: str) -> str:
         """自动生成菜品拼音首字母"""
         try:

@@ -113,7 +113,7 @@ export default function UserHomePage() {
               </div>
               <div className="dish-grid">
                 {featuredDishes.slice(0, 6).map(dish => (
-                  <DishCard key={dish.id} dish={dish} />
+                  <DishCard key={dish.id} dish={dish} simple />
                 ))}
               </div>
             </section>
@@ -140,7 +140,7 @@ export default function UserHomePage() {
             {dishes.length > 0 ? (
               <div className="dish-grid">
                 {dishes.map(dish => (
-                  <DishCard key={dish.id} dish={dish} />
+                  <DishCard key={dish.id} dish={dish} simple />
                 ))}
               </div>
             ) : (

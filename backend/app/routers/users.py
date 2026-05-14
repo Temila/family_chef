@@ -5,11 +5,13 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token, require_role
 from app.services.user_service import user_service
+from app.middleware.logging import log_action
 from app.models.user import User
+from app.schemas.user import _sanitize, _check_unsafe
 
 router = APIRouter()
 
@@ -20,6 +22,20 @@ class UserUpdateRequest(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
     feishu_open_id: Optional[str] = None
+
+    @field_validator('display_name')
+    @classmethod
+    def validate_display_name(cls, v):
+        v = _sanitize(v)
+        _check_unsafe(v, '显示名')
+        return v
+
+    @field_validator('email')
+    @classmethod
+    def validate_email_safe(cls, v):
+        v = _sanitize(v)
+        _check_unsafe(v, '邮箱')
+        return v
 
 
 class PasswordChangeRequest(BaseModel):
@@ -110,6 +126,7 @@ async def update_user(
                 detail="用户不存在",
             )
         await db.commit()
+        await log_action(current_user.id, "update_user", "user", user_id, f"更新用户 #{user_id}")
         return {"message": "用户更新成功"}
     except Exception as e:
         await db.rollback()
@@ -178,4 +195,5 @@ async def delete_user(
         )
 
     await db.commit()
+    await log_action(current_user.id, "delete_user", "user", user_id, f"删除用户 #{user_id}")
     return None

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -12,11 +13,14 @@ export default function PreferencesPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { getByType } = useCategories();
+  const ingredientCategories = getByType('ingredient');
 
   const [preferences, setPreferences] = useState({ dislikes: [], allergies: [] });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [advCategory, setAdvCategory] = useState('');
   const [addingTo, setAddingTo] = useState(null);
 
   useEffect(() => {
@@ -40,12 +44,13 @@ export default function PreferencesPage() {
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
-    if (query.length < 2) {
+    if (!query.trim()) {
       setSearchResults([]);
       return;
     }
     try {
-      const res = await api.getIngredients(null, query);
+      const category = advCategory || null;
+      const res = await api.getIngredients(category, query);
       const items = res.items || [];
       const dislikeIds = preferences.dislikes.map(d => d.ingredient_id);
       const allergyIds = preferences.allergies.map(a => a.ingredient_id);
@@ -157,10 +162,30 @@ export default function PreferencesPage() {
           <span className="search-icon" style={{ left: 16 }}>🔍</span>
           <input
             type="text"
-            placeholder="搜索食材（输入2字以上）..."
+            placeholder="搜索食材..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
+        </div>
+
+        <div style={{ marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <button
+            className={`filter-chip ${!advCategory ? 'active' : ''}`}
+            style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+            onClick={() => { setAdvCategory(''); if (searchQuery.trim()) handleSearch(searchQuery); }}
+          >
+            全部
+          </button>
+          {ingredientCategories.map(c => (
+            <button
+              key={c.id}
+              className={`filter-chip ${advCategory === c.name ? 'active' : ''}`}
+              style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+              onClick={() => { setAdvCategory(c.name); if (searchQuery.trim()) handleSearch(searchQuery); }}
+            >
+              {c.name}
+            </button>
+          ))}
         </div>
 
         {searchResults.length > 0 && (

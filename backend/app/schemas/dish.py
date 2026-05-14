@@ -47,9 +47,17 @@ class IngredientInfo(BaseModel):
     """食材信息"""
     id: int
     name: str
+    category: Optional[str] = None
     
     class Config:
         from_attributes = True
+
+    @field_validator('category', mode='before')
+    @classmethod
+    def map_ingredient_category(cls, v):
+        if v and hasattr(v, 'name'):
+            return v.name
+        return v or None
 
 
 class DishListResponse(BaseModel):
@@ -107,7 +115,7 @@ class DishDetailResponse(BaseModel):
     def map_ingredients(cls, v):
         if v and hasattr(v[0], 'ingredient_id'):
             return [
-                {'id': di.ingredient.id, 'name': di.ingredient.name}
+                {'id': di.ingredient.id, 'name': di.ingredient.name, 'category': di.ingredient.category}
                 for di in v if di.ingredient is not None
             ]
         return v

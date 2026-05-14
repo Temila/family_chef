@@ -16,6 +16,8 @@ export default function OrderPage() {
   const { showToast } = useToast();
   const { getByType, getTypeMeta, categoryTypes } = useCategories();
 
+  const isAdmin = user?.role === 'admin';
+
   const regions = getByType('region');
   const cuisines = getByType('cuisine');
   const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine'].includes(t.key));
@@ -40,7 +42,6 @@ export default function OrderPage() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sortBy, setSortBy] = useState('name');
 
-  const [categories, setCategories] = useState({});
   const [showFilters, setShowFilters] = useState(false);
 
   const observer = useRef();
@@ -57,14 +58,7 @@ export default function OrderPage() {
 
   useEffect(() => {
     loadCart();
-    setCategories({
-      regions,
-      cuisines,
-    });
-    for (const t of filterTypes) {
-      setCategories(prev => ({ ...prev, [t.key]: getByType(t.key) }));
-    }
-  }, [regions, cuisines, filterTypes]);
+  }, []);
 
   useEffect(() => {
     loadDishes(1);
@@ -234,13 +228,13 @@ export default function OrderPage() {
   };
 
   const filteredCuisines = selectedRegion
-    ? (categories.cuisines || []).filter(c => c.parent_id === selectedRegion)
-    : (categories.cuisines || []);
+    ? cuisines.filter(c => c.parent_id === selectedRegion)
+    : cuisines;
 
 
   return (
     <div className="page-container">
-      <Header title="点菜" />
+      <Header title={isAdmin ? '点菜预览' : '点菜'} />
 
       <div className="search-bar">
         <span className="search-icon">🔍</span>
@@ -292,7 +286,7 @@ export default function OrderPage() {
               >
                 全部
               </button>
-              {categories.regions?.map(r => (
+              {regions.map(r => (
                 <button
                   key={r.id}
                   className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
@@ -328,7 +322,7 @@ export default function OrderPage() {
           )}
 
           {filterTypes.map(t => {
-            const items = categories[t.key] || [];
+            const items = getByType(t.key);
             if (items.length === 0) return null;
             const meta = getTypeMeta(t.key);
             const selectedArr = selectedFilters[t.key] || [];
@@ -407,15 +401,17 @@ export default function OrderPage() {
                             {dish.is_favorite ? '❤️' : '🤍'}
                           </button>
                         </div>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(dish);
-                          }}
-                        >
-                          点菜
-                        </button>
+                        {!isAdmin && (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(dish);
+                            }}
+                          >
+                            点菜
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -437,9 +433,10 @@ export default function OrderPage() {
         </section>
       )}
 
-      {cartCount > 0 && (
+      {!isAdmin && (
         <div className="cart-bar">
           <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
+            <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
             <span style={{ fontWeight: 600 }}>已点 {cartCount} 道菜</span>
             <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
@@ -448,14 +445,14 @@ export default function OrderPage() {
           <button
             className="btn btn-primary btn-sm"
             onClick={handleConfirmOrder}
-            disabled={submitting}
+            disabled={submitting || cartCount === 0}
           >
             {submitting ? '提交中...' : '确认点菜'}
           </button>
         </div>
       )}
 
-      {cartExpanded && cartCount > 0 && (
+      {!isAdmin && cartExpanded && (
         <div className="cart-detail-panel">
           {cart.map(item => (
             <div key={item.dish_id} className="cart-detail-item">
