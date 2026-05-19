@@ -12,7 +12,9 @@ from app.services.ingredient_extractor import ingredient_extractor
 from app.config import smart_settings
 from app.schemas.ingredient import IngredientCreate, IngredientUpdate, IngredientResponse
 from app.models.ingredient import Ingredient, IngredientAlias
+from app.models.dish import DishIngredient, Dish
 from app.models.user import User
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -29,7 +31,27 @@ async def list_ingredients(
         category=category,
         search=search,
     )
-    
+
+    ing_ids = [ing.id for ing in ingredients]
+    count_map = {}
+    dishes_map = {}
+    if ing_ids:
+        count_result = await db.execute(
+            select(DishIngredient.ingredient_id, func.count(DishIngredient.id))
+            .where(DishIngredient.ingredient_id.in_(ing_ids))
+            .group_by(DishIngredient.ingredient_id)
+        )
+        count_map = dict(count_result.all())
+
+        link_result = await db.execute(
+            select(DishIngredient.ingredient_id, Dish.id, Dish.name)
+            .join(Dish, DishIngredient.dish_id == Dish.id)
+            .where(DishIngredient.ingredient_id.in_(ing_ids))
+            .order_by(Dish.name)
+        )
+        for row in link_result.all():
+            dishes_map.setdefault(row[0], []).append({"id": row[1], "name": row[2]})
+
     items = []
     for ing in ingredients:
         aliases = [alias.alias for alias in ing.aliases]
@@ -41,6 +63,8 @@ async def list_ingredients(
             "image_url": ing.image_url,
             "is_active": ing.is_active,
             "aliases": aliases,
+            "dish_count": count_map.get(ing.id, 0),
+            "linked_dishes": dishes_map.get(ing.id, []),
         })
     
     return {
@@ -284,6 +308,14 @@ async def delete_ingredient(
     current_user: User = Depends(require_role("admin")),
 ):
     """删除食材"""
+    link_count = await db.scalar(
+        select(func.count(DishIngredient.id)).where(DishIngredient.ingredient_id == ingredient_id)
+    )
+    if link_count and link_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"该食材已被 {link_count} 个菜品关联，无法删除",
+        )
     success = await ingredient_service.delete_ingredient(db, ingredient_id)
     if not success:
         raise HTTPException(

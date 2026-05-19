@@ -16,6 +16,9 @@ from app.middleware.logging import log_action
 from app.models.user import User
 from app.models.order import Order
 from app.models.dish import Dish
+from app.models.dish import DishChef
+from app.models.preference import TastePreference
+from app.models.ingredient import Ingredient
 
 router = APIRouter()
 
@@ -27,6 +30,23 @@ async def build_order_detail(db, order):
         .where(Order.id == order.id)
     )
     order = result.scalar_one()
+
+    user_result = await db.execute(select(User).where(User.id == order.user_id))
+    order_user = user_result.scalar_one_or_none()
+
+    preferences = []
+    if order_user:
+        pref_result = await db.execute(
+            select(TastePreference, Ingredient.name)
+            .join(Ingredient, TastePreference.ingredient_id == Ingredient.id)
+            .where(TastePreference.user_id == order.user_id)
+        )
+        for pref, ing_name in pref_result.all():
+            preferences.append({
+                'type': pref.preference_type,
+                'ingredient': ing_name,
+            })
+
     item_responses = []
     for item in order.items:
         dish_result = await db.execute(select(Dish).where(Dish.id == item.dish_id))
@@ -37,7 +57,19 @@ async def build_order_detail(db, order):
             dish_name=dish.name if dish else f"菜品#{item.dish_id}",
             quantity=item.quantity,
             special_notes=item.special_notes,
+            recipe=dish.recipe if dish else None,
         ))
+
+    customer = None
+    if order_user:
+        from app.schemas.order import CustomerInfo
+        customer = CustomerInfo(
+            id=order_user.id,
+            username=order_user.username,
+            display_name=order_user.display_name,
+            preferences=preferences,
+        )
+
     return OrderDetailResponse(
         id=order.id,
         order_no=order.order_no,
@@ -46,18 +78,21 @@ async def build_order_detail(db, order):
         chef_id=order.chef_id,
         notes=order.notes,
         items=item_responses,
+        customer=customer,
+        meal_date=order.meal_date,
+        meal_type=order.meal_type,
         created_at=order.created_at,
         completed_at=order.completed_at,
     )
 
 
-@router.post("", response_model=OrderDetailResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_order(
     order_data: OrderCreate,
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
-    """创建订单"""
+    """创建订单（自动按厨师拆单）"""
     if not order_data.items:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -65,7 +100,7 @@ async def create_order(
         )
 
     try:
-        order = await order_service.create_order(db, order_data, current_user.id)
+        orders = await order_service.create_order_auto_split(db, order_data, current_user.id)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -74,7 +109,11 @@ async def create_order(
 
     await db.commit()
     
-    return await build_order_detail(db, order)
+    results = []
+    for order in orders:
+        results.append(await build_order_detail(db, order))
+    
+    return results
 
 
 @router.get("", response_model=PageResponse[OrderListResponse])
@@ -90,7 +129,6 @@ async def list_orders(
 
     params = PaginationParams(page=page, page_size=page_size)
 
-    # 普通用户只能查看自己的订单，厨师/管理员可查看所有
     user_id = current_user.id if current_user.role == "user" else None
     chef_id = current_user.id if current_user.role == "chef" else None
 
@@ -120,6 +158,8 @@ async def list_orders(
             order_no=o.order_no,
             status=o.status,
             items=item_responses,
+            meal_date=o.meal_date,
+            meal_type=o.meal_type,
             created_at=o.created_at,
         ))
 

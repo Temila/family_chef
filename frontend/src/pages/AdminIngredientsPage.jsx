@@ -1,17 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { getByType } = useCategories();
   const ingredientCategories = getByType('ingredient');
+  const dropdownRef = useRef(null);
 
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +25,7 @@ export default function AdminIngredientsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [form, setForm] = useState({ name: '', category: '', description: '', aliases: '' });
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   const [showParseModal, setShowParseModal] = useState(false);
   const [parseText, setParseText] = useState('');
@@ -34,6 +39,22 @@ export default function AdminIngredientsPage() {
   useEffect(() => {
     loadIngredients();
   }, [advCategory]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    if (openDropdown !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openDropdown]);
+
+  const toggleDropdown = (id) => {
+    setOpenDropdown(prev => prev === id ? null : id);
+  };
 
   const loadIngredients = async () => {
     try {
@@ -284,7 +305,7 @@ export default function AdminIngredientsPage() {
                   <th>名称</th>
                   <th>分类</th>
                   <th>别名</th>
-                  <th>状态</th>
+                  <th>关联菜品</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -296,17 +317,66 @@ export default function AdminIngredientsPage() {
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                       {(item.aliases || []).join('、') || '-'}
                     </td>
-                    <td><Badge status={item.is_active ? 'published' : 'hidden'} /></td>
+                    <td style={{ position: 'relative' }}>
+                      <span>{item.dish_count || 0}</span>
+                      {(item.linked_dishes || []).length > 0 && (
+                        <button
+                          className="btn btn-outline btn-sm"
+                          style={{ marginLeft: 6, padding: '1px 6px', fontSize: '0.7rem', verticalAlign: 'middle' }}
+                          onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                        >
+                          ▾
+                        </button>
+                      )}
+                      {openDropdown === item.id && (item.linked_dishes || []).length > 0 && (
+                        <div ref={dropdownRef} style={{
+                          position: 'absolute', top: '100%', left: 0, zIndex: 50,
+                          background: 'var(--bg-card)', border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                          minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
+                        }}>
+                          {item.linked_dishes.map(d => (
+                            <div
+                              key={d.id}
+                              onClick={() => {
+                                setOpenDropdown(null);
+                                const base = user?.role === 'admin' ? '/admin/dishes' : '/chef/dishes';
+                                navigate(`${base}?edit=${d.id}`);
+                              }}
+                              style={{
+                                padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
+                                fontSize: '0.85rem', color: 'var(--accent)',
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                            >
+                              {d.name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <div className="pc-action-btns">
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>编辑</button>
-                        <button
-                          className="btn btn-outline btn-sm"
-                          onClick={() => handleDelete(item.id)}
-                          style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
-                        >
-                          删除
-                        </button>
+                        {(item.dish_count || 0) > 0 ? (
+                          <button
+                            className="btn btn-outline btn-sm"
+                            disabled
+                            style={{ opacity: 0.4, cursor: 'not-allowed' }}
+                            title={`已被 ${item.dish_count} 个菜品关联，无法删除`}
+                          >
+                            删除
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-outline btn-sm"
+                            onClick={() => handleDelete(item.id)}
+                            style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                          >
+                            删除
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -322,11 +392,48 @@ export default function AdminIngredientsPage() {
                   <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        {item.category || ''}
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
+                        {(item.linked_dishes || []).length > 0 && (
+                          <span style={{ position: 'relative' }}>
+                            <button
+                              className="btn btn-outline btn-sm"
+                              style={{ padding: '0 4px', fontSize: '0.65rem', lineHeight: '18px' }}
+                              onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                            >
+                              ▾
+                            </button>
+                            {openDropdown === item.id && (
+                              <div style={{
+                                position: 'absolute', top: '100%', left: 0, zIndex: 50,
+                                background: 'var(--bg-card)', border: '1px solid var(--border)',
+                                borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                                minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
+                              }}>
+                                {item.linked_dishes.map(d => (
+                                  <div
+                                    key={d.id}
+                              onClick={() => {
+                                setOpenDropdown(null);
+                                const base = user?.role === 'admin' ? '/admin/dishes' : '/chef/dishes';
+                                navigate(`${base}?edit=${d.id}`);
+                              }}
+                                    style={{
+                                      padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
+                                      fontSize: '0.85rem', color: 'var(--accent)',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    {d.name}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <Badge status={item.is_active ? 'published' : 'hidden'} />
                   </div>
                   {(item.aliases || []).length > 0 && (
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
@@ -335,13 +442,24 @@ export default function AdminIngredientsPage() {
                   )}
                   <div className="flex gap-3">
                     <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(item)}>编辑</button>
-                    <button
-                      className="btn btn-outline btn-sm"
-                      onClick={() => handleDelete(item.id)}
-                      style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
-                    >
-                      删除
-                    </button>
+                    {(item.dish_count || 0) > 0 ? (
+                      <button
+                        className="btn btn-outline btn-sm"
+                        disabled
+                        style={{ opacity: 0.4, cursor: 'not-allowed' }}
+                        title={`已被 ${item.dish_count} 个菜品关联，无法删除`}
+                      >
+                        删除
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-outline btn-sm"
+                        onClick={() => handleDelete(item.id)}
+                        style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                      >
+                        删除
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

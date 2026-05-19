@@ -7,11 +7,15 @@ import LoginPage from './pages/LoginPage';
 import UserHomePage from './pages/UserHomePage';
 import DishDetailPage from './pages/DishDetailPage';
 import UserProfilePage from './pages/UserProfilePage';
+import UserOrdersPage from './pages/UserOrdersPage';
+import UserFavoritesPage from './pages/UserFavoritesPage';
 import OrderPage from './pages/OrderPage';
 import PreferencesPage from './pages/PreferencesPage';
 import ChefOrdersPage from './pages/ChefOrdersPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminDishesPage from './pages/AdminDishesPage';
+import ChefDishesPage from './pages/ChefDishesPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminStatsPage from './pages/AdminStatsPage';
 import AdminLogsPage from './pages/AdminLogsPage';
@@ -112,6 +116,22 @@ function App() {
                 }
               />
               <Route
+                path="/my-orders"
+                element={
+                  <ProtectedRoute>
+                    <UserOrdersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-favorites"
+                element={
+                  <ProtectedRoute>
+                    <UserFavoritesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/order"
                 element={
                   <ProtectedRoute>
@@ -136,6 +156,14 @@ function App() {
                 }
               />
               <Route
+                path="/orders/:id"
+                element={
+                  <ProtectedRoute requiredRoles={['chef', 'admin']}>
+                    <OrderDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin"
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
@@ -152,9 +180,17 @@ function App() {
                 }
               />
               <Route
-                path="/admin/ingredients"
+                path="/chef/dishes"
                 element={
-                  <ProtectedRoute requiredRoles={['admin']}>
+                  <ProtectedRoute requiredRoles={['chef']}>
+                    <ChefDishesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ingredients"
+                element={
+                  <ProtectedRoute requiredRoles={['admin', 'chef']}>
                     <AdminIngredientsPage />
                   </ProtectedRoute>
                 }
@@ -162,7 +198,7 @@ function App() {
               <Route
                 path="/admin/categories"
                 element={
-                  <ProtectedRoute requiredRoles={['admin']}>
+                  <ProtectedRoute requiredRoles={['admin', 'chef']}>
                     <AdminCategoriesPage />
                   </ProtectedRoute>
                 }

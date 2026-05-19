@@ -7,7 +7,9 @@
 export const theme = {
   initTheme() {
     const saved = localStorage.getItem('fc_theme');
-    if (saved === 'dark') {
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
   },
@@ -57,6 +59,10 @@ export const statusBadge = (status) => {
     published: { text: '已上架', cls: 'badge-success' },
     hidden: { text: '已下架', cls: 'badge-danger' },
     draft: { text: '草稿', cls: 'badge-info' },
+    enabled: { text: '已启用', cls: 'badge-success' },
+    disabled: { text: '已禁用', cls: 'badge-danger' },
+    active: { text: '启用', cls: 'badge-success' },
+    inactive: { text: '停用', cls: 'badge-danger' },
   };
   const s = map[status] || { text: status, cls: 'badge-info' };
   return { text: s.text, cls: s.cls };

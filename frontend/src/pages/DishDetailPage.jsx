@@ -143,10 +143,13 @@ export default function DishDetailPage() {
 
       <section className="section">
         <div className="flex items-center gap-3 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {dish.name}
           </h2>
-          <Badge status={dish.is_popular ? 'published' : 'hidden'} text={dish.is_popular ? '推荐' : ''} type={dish.is_popular ? 'gold' : undefined} />
+          {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}
+          {dish.is_semifinished && (
+            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)', fontWeight: 600 }}>半成品</span>
+          )}
         </div>
 
         {dish.description && (
@@ -198,9 +201,22 @@ export default function DishDetailPage() {
             ))}
           </div>
         )}
+
+        {dish.semifinished_ingredients && dish.semifinished_ingredients.length > 0 && (
+          <div style={{ marginTop: 24 }}>
+            <h3 className="section-title">🍳 半成品食材</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {dish.semifinished_ingredients.map(sf => (
+                <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)' }}>
+                  {sf.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
-      {dish.status === 'published' && (
+      {dish.status === 'published' && !dish.is_semifinished && (
         <div className="cart-bar">
           <div className="qty-stepper">
             <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>

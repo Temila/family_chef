@@ -4,12 +4,14 @@
 
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.order import Order, OrderItem
-from app.models.dish import Dish
+from app.models.dish import Dish, DishIngredient, DishChef
+from app.models.ingredient import Ingredient
 from app.models.user import User
+from app.models.preference import TastePreference
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.utils.pagination import PaginationParams
 
@@ -61,6 +63,9 @@ class OrderService:
             user_id=user_id,
             status="pending",
             notes=order_data.notes,
+            meal_date=order_data.meal_date,
+            meal_type=order_data.meal_type,
+            chef_id=order_data.chef_id,
         )
         db.add(order)
         await db.flush()
@@ -75,44 +80,146 @@ class OrderService:
             )
             db.add(order_item)
 
-        await db.flush()
-        await db.refresh(order)
+    @staticmethod
+    async def create_order_auto_split(
+        db: AsyncSession,
+        order_data: OrderCreate,
+        user_id: int,
+    ) -> List[Order]:
+        """按厨师自动拆单创建订单"""
+        dish_ids = [item.dish_id for item in order_data.items]
 
-        # 触发飞书通知（异步）
+        result = await db.execute(
+            select(Dish).where(
+                and_(
+                    Dish.id.in_(dish_ids),
+                    Dish.status == "published",
+                )
+            )
+        )
+        valid_dishes = {d.id: d for d in result.scalars().all()}
+
+        invalid_ids = set(dish_ids) - set(valid_dishes.keys())
+        if invalid_ids:
+            raise ValueError(f"以下菜品不存在或未上架: {', '.join(map(str, invalid_ids))}")
+
+        chef_result = await db.execute(
+            select(DishChef).where(DishChef.dish_id.in_(dish_ids))
+        )
+        dish_chef_map = {}
+        for dc in chef_result.scalars().all():
+            dish_chef_map[dc.dish_id] = dc.chef_id
+
+        all_chefs_result = await db.execute(
+            select(User).where(User.role == "chef", User.is_active == True)
+        )
+        all_chefs = {c.id: c for c in all_chefs_result.scalars().all()}
+
+        item_groups = {}
+        for item_data in order_data.items:
+            chef_id = dish_chef_map.get(item_data.dish_id)
+            if chef_id is None:
+                if all_chefs:
+                    chef_id = next(iter(all_chefs.keys()))
+                else:
+                    chef_id = None
+            item_groups.setdefault(chef_id, []).append(item_data)
+
+        created_orders = []
+        for chef_id, items in item_groups.items():
+            order_no = await OrderService.generate_order_no(db)
+            order = Order(
+                order_no=order_no,
+                user_id=user_id,
+                status="pending",
+                notes=order_data.notes,
+                meal_date=order_data.meal_date,
+                meal_type=order_data.meal_type,
+                chef_id=chef_id,
+            )
+            db.add(order)
+            await db.flush()
+
+            for item_data in items:
+                db.add(OrderItem(
+                    order_id=order.id,
+                    dish_id=item_data.dish_id,
+                    quantity=item_data.quantity,
+                    special_notes=item_data.special_notes,
+                ))
+
+            await db.flush()
+            await db.refresh(order)
+            created_orders.append(order)
+
+            await OrderService.notify_order(db, order, user_id)
+
+        return created_orders
+
+    @staticmethod
+    async def notify_order(db, order, user_id):
+        """发送飞书通知"""
         try:
             from app.integrations.feishu import feishu_client
-            # 获取厨师列表
+
             chefs_result = await db.execute(
                 select(User).where(User.role == "chef", User.is_active == True)
             )
             chefs = chefs_result.scalars().all()
-            
-            # 获取菜品信息
+
+            items_result = await db.execute(
+                select(OrderItem).where(OrderItem.order_id == order.id)
+            )
+            order_items = items_result.scalars().all()
+
+            user_result = await db.execute(select(User).where(User.id == user_id))
+            order_user = user_result.scalar_one_or_none()
+            user_name = order_user.display_name or order_user.username if order_user else "未知用户"
+
+            prefs_result = await db.execute(
+                select(TastePreference).where(TastePreference.user_id == user_id)
+            )
+            prefs = prefs_result.scalars().all()
+            ing_ids = list(set(p.ingredient_id for p in prefs if p.ingredient_id))
+            ing_map = {}
+            if ing_ids:
+                ing_result = await db.execute(select(Ingredient).where(Ingredient.id.in_(ing_ids)))
+                ing_map = {i.id: i.name for i in ing_result.scalars().all()}
+            dislikes = [ing_map.get(p.ingredient_id, '') for p in prefs if p.preference_type == "dislike" and p.ingredient_id in ing_map]
+            allergies = [ing_map.get(p.ingredient_id, '') for p in prefs if p.preference_type == "allergy" and p.ingredient_id in ing_map]
+
             items_info = []
-            for item in order.items:
+            all_ingredients = []
+            for oi in order_items:
                 dish_result = await db.execute(
-                    select(Dish).where(Dish.id == item.dish_id)
+                    select(Dish).options(
+                        selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient)
+                    ).where(Dish.id == oi.dish_id)
                 )
                 dish = dish_result.scalar_one_or_none()
                 if dish:
-                    items_info.append({
-                        "name": dish.name,
-                        "quantity": item.quantity,
-                    })
-            
-            # 通知所有厨师
+                    items_info.append({"name": dish.name, "quantity": oi.quantity})
+                    for di in (dish.ingredients or []):
+                        if di.ingredient:
+                            all_ingredients.append({"name": di.ingredient.name, "quantity": 1, "unit": ""})
+
+            notification_data = {
+                "order_no": order.order_no,
+                "status": order.status,
+                "user_name": user_name,
+                "items": items_info,
+                "ingredients": all_ingredients,
+                "meal_date": str(order.meal_date) if order.meal_date else "",
+                "meal_type": order.meal_type or "",
+                "dislikes": dislikes,
+                "allergies": allergies,
+            }
+
             for chef in chefs:
                 if chef.feishu_open_id:
-                    await feishu_client.send_order_notification(
-                        chef.feishu_open_id,
-                        order.order_no,
-                        order.status,
-                        items_info,
-                    )
+                    await feishu_client.send_order_notification(chef.feishu_open_id, notification_data)
         except Exception as e:
             print(f"⚠️ 飞书通知发送失败：{e}")
-
-        return order
 
     @staticmethod
     async def get_order_by_id(
@@ -146,9 +253,11 @@ class OrderService:
         if user_id:
             query = query.where(Order.user_id == user_id)
 
-        # 厨师查看所有分配给自己的订单
+        # 厨师查看未分配的订单 + 分配给自己的订单
         if chef_id:
-            query = query.where(Order.chef_id == chef_id)
+            query = query.where(
+                or_(Order.chef_id == None, Order.chef_id == chef_id)
+            )
 
         # 状态筛选
         if status:
@@ -162,7 +271,9 @@ class OrderService:
         if user_id:
             count_query = count_query.where(Order.user_id == user_id)
         if chef_id:
-            count_query = count_query.where(Order.chef_id == chef_id)
+            count_query = count_query.where(
+                or_(Order.chef_id == None, Order.chef_id == chef_id)
+            )
         if status:
             count_query = count_query.where(Order.status == status)
 
@@ -184,7 +295,7 @@ class OrderService:
     ) -> Optional[Order]:
         """更新订单状态"""
         valid_transitions = {
-            "pending": ["accepted", "cancelled"],
+            "pending": ["accepted", "cooking", "cancelled"],
             "accepted": ["cooking", "cancelled"],
             "cooking": ["completed"],
             "completed": [],

@@ -67,7 +67,7 @@ export default function AdminHomePage() {
       icon: '🥬',
       title: '食材管理',
       desc: '管理食材、分类、别名',
-      onClick: () => navigate('/admin/ingredients')
+      onClick: () => navigate('/ingredients')
     },
     {
       icon: '📂',

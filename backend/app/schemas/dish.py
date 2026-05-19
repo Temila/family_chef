@@ -10,9 +10,12 @@ class DishCreate(BaseModel):
     recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: bool = False
+    is_semifinished: bool = False
     category_ids: Optional[List[int]] = None
     ingredient_ids: Optional[List[int]] = None
-    status: Optional[str] = "draft"
+    semifinished_dish_ids: Optional[List[int]] = None
+    chef_ids: Optional[List[int]] = None
+    status: Optional[str] = "enabled"
 
 
 class DishUpdate(BaseModel):
@@ -22,9 +25,12 @@ class DishUpdate(BaseModel):
     recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: Optional[bool] = None
+    is_semifinished: Optional[bool] = None
     status: Optional[str] = None
     category_ids: Optional[List[int]] = None
     ingredient_ids: Optional[List[int]] = None
+    semifinished_dish_ids: Optional[List[int]] = None
+    chef_ids: Optional[List[int]] = None
 
 
 class DietaryWarning(BaseModel):
@@ -60,6 +66,37 @@ class IngredientInfo(BaseModel):
         return v or None
 
 
+class SemifinishedDishInfo(BaseModel):
+    """半成品菜品信息"""
+    id: int
+    name: str
+    image_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ChefInfo(BaseModel):
+    """厨师信息"""
+    id: int
+    username: str
+    display_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ChefInfoWithStatus(BaseModel):
+    """厨师信息（含上架状态）"""
+    id: int
+    username: str
+    display_name: Optional[str] = None
+    publish_status: str = "hidden"
+
+    class Config:
+        from_attributes = True
+
+
 class DishListResponse(BaseModel):
     """菜品列表项响应"""
     id: int
@@ -67,7 +104,9 @@ class DishListResponse(BaseModel):
     pinyin: Optional[str] = None
     image_url: Optional[str] = None
     status: str
+    is_semifinished: bool = False
     categories: List[CategoryInfo] = []
+    chefs: List[ChefInfoWithStatus] = []
     dietary_warnings: Optional[List[DietaryWarning]] = None
     
     class Config:
@@ -83,6 +122,16 @@ class DishListResponse(BaseModel):
             ]
         return v
 
+    @field_validator('chefs', mode='before')
+    @classmethod
+    def map_chefs(cls, v):
+        if v and hasattr(v[0], 'chef_id'):
+            return [
+                {'id': dc.chef.id, 'username': dc.chef.username, 'display_name': dc.chef.display_name, 'publish_status': dc.status}
+                for dc in v if dc.chef is not None
+            ]
+        return v
+
 
 class DishDetailResponse(BaseModel):
     """菜品详情响应"""
@@ -92,9 +141,12 @@ class DishDetailResponse(BaseModel):
     recipe: Optional[str] = None
     image_url: Optional[str] = None
     is_popular: bool
+    is_semifinished: bool = False
     status: str
     categories: List[CategoryInfo] = []
     ingredients: List[IngredientInfo] = []
+    semifinished_ingredients: List[SemifinishedDishInfo] = []
+    chefs: List[ChefInfoWithStatus] = []
     dietary_warning: Optional[DietaryWarning] = None
     
     class Config:
@@ -117,5 +169,25 @@ class DishDetailResponse(BaseModel):
             return [
                 {'id': di.ingredient.id, 'name': di.ingredient.name, 'category': di.ingredient.category}
                 for di in v if di.ingredient is not None
+            ]
+        return v
+
+    @field_validator('semifinished_ingredients', mode='before')
+    @classmethod
+    def map_semifinished_ingredients(cls, v):
+        if v and hasattr(v[0], 'semifinished_dish_id'):
+            return [
+                {'id': di.semifinished_dish.id, 'name': di.semifinished_dish.name, 'image_url': di.semifinished_dish.image_url}
+                for di in v if di.semifinished_dish is not None
+            ]
+        return v
+
+    @field_validator('chefs', mode='before')
+    @classmethod
+    def map_chefs(cls, v):
+        if v and hasattr(v[0], 'chef_id'):
+            return [
+                {'id': dc.chef.id, 'username': dc.chef.username, 'display_name': dc.chef.display_name, 'publish_status': dc.status}
+                for dc in v if dc.chef is not None
             ]
         return v

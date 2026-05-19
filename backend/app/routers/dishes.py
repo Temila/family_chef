@@ -19,7 +19,7 @@ from app.schemas.dish import (
 )
 from app.schemas.common import PageResponse
 from app.services.dish_service import dish_service
-from app.models.dish import Dish, DishIngredient, DishCategory
+from app.models.dish import Dish, DishIngredient, DishCategory, DishSemifinishedIngredient, DishChef
 from app.models.user import User
 
 router = APIRouter()
@@ -37,6 +37,8 @@ async def list_dishes(
     favorites_only: bool = Query(False),
     sort: str = Query("name", description="排序方式：name, created, popular"),
     status: Optional[str] = Query(None, description="筛选状态: published, hidden, draft, all"),
+    chef_filter: Optional[str] = Query(None, description="厨师筛选: all, my-published, not-yet-published"),
+    is_semifinished: Optional[bool] = Query(None, description="是否半成品"),
     current_user: User = Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
@@ -63,6 +65,8 @@ async def list_dishes(
         sort=sort,
         user_id=current_user.id,
         status_filter=status,
+        chef_filter=chef_filter,
+        is_semifinished=is_semifinished,
     )
 
     warnings_map = await dish_service.get_dietary_warnings_batch(db, dishes, current_user.id)
@@ -80,6 +84,23 @@ async def list_dishes(
         page_size=page_size,
         items=items,
     )
+
+
+@router.get("/semifinished/list")
+async def list_semifinished_dishes(
+    current_user: User = Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
+    """获取所有半成品菜品（用于作为食材选择）"""
+    dishes = await dish_service.list_semifinished_dishes(db)
+    return [
+        {
+            "id": d.id,
+            "name": d.name,
+            "image_url": d.image_url,
+        }
+        for d in dishes
+    ]
 
 
 @router.get("/{dish_id}", response_model=DishDetailResponse)
@@ -120,6 +141,9 @@ async def create_dish(
             detail="权限不足，仅管理员和厨师可创建菜品",
         )
 
+    if current_user.role == "admin":
+        dish_data.status = "enabled"
+
     dish = await dish_service.create_dish(db, dish_data, current_user.id)
     await db.commit()
     
@@ -128,6 +152,8 @@ async def create_dish(
         .options(
             selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
             selectinload(Dish.categories).selectinload(DishCategory.category),
+            selectinload(Dish.semifinished_ingredients).selectinload(DishSemifinishedIngredient.semifinished_dish),
+            selectinload(Dish.dish_chefs).selectinload(DishChef.chef),
         )
         .where(Dish.id == dish.id)
     )
@@ -151,6 +177,25 @@ async def create_dish(
                 'type': dish_cat.category.type,
             })
     
+    semifinished_ingredients = []
+    for sf_ing in dish.semifinished_ingredients:
+        if sf_ing.semifinished_dish:
+            semifinished_ingredients.append({
+                'id': sf_ing.semifinished_dish.id,
+                'name': sf_ing.semifinished_dish.name,
+                'image_url': sf_ing.semifinished_dish.image_url,
+            })
+    
+    chefs = []
+    for dc in dish.dish_chefs:
+        if dc.chef:
+            chefs.append({
+                'id': dc.chef.id,
+                'username': dc.chef.username,
+                'display_name': dc.chef.display_name,
+                'publish_status': dc.status,
+            })
+    
     return DishDetailResponse(
         id=dish.id,
         name=dish.name,
@@ -158,9 +203,12 @@ async def create_dish(
         recipe=dish.recipe,
         image_url=dish.image_url,
         is_popular=dish.is_popular,
+        is_semifinished=dish.is_semifinished,
         status=dish.status,
         categories=categories,
         ingredients=ingredients,
+        semifinished_ingredients=semifinished_ingredients,
+        chefs=chefs,
     )
 
 
@@ -186,6 +234,8 @@ async def update_dish(
         .options(
             selectinload(Dish.ingredients).selectinload(DishIngredient.ingredient),
             selectinload(Dish.categories).selectinload(DishCategory.category),
+            selectinload(Dish.semifinished_ingredients).selectinload(DishSemifinishedIngredient.semifinished_dish),
+            selectinload(Dish.dish_chefs).selectinload(DishChef.chef),
         )
         .where(Dish.id == dish.id)
     )
@@ -209,6 +259,25 @@ async def update_dish(
                 'type': dish_cat.category.type,
             })
     
+    semifinished_ingredients = []
+    for sf_ing in dish.semifinished_ingredients:
+        if sf_ing.semifinished_dish:
+            semifinished_ingredients.append({
+                'id': sf_ing.semifinished_dish.id,
+                'name': sf_ing.semifinished_dish.name,
+                'image_url': sf_ing.semifinished_dish.image_url,
+            })
+    
+    chefs = []
+    for dc in dish.dish_chefs:
+        if dc.chef:
+            chefs.append({
+                'id': dc.chef.id,
+                'username': dc.chef.username,
+                'display_name': dc.chef.display_name,
+                'publish_status': dc.status,
+            })
+    
     return DishDetailResponse(
         id=dish.id,
         name=dish.name,
@@ -216,9 +285,12 @@ async def update_dish(
         recipe=dish.recipe,
         image_url=dish.image_url,
         is_popular=dish.is_popular,
+        is_semifinished=dish.is_semifinished,
         status=dish.status,
         categories=categories,
         ingredients=ingredients,
+        semifinished_ingredients=semifinished_ingredients,
+        chefs=chefs,
     )
 
 
@@ -263,3 +335,24 @@ async def update_dish_status(
     await db.commit()
     
     return {"message": "菜品状态更新成功"}
+
+
+@router.put("/{dish_id}/chef-publish")
+async def toggle_chef_publish(
+    dish_id: int,
+    publish_data: dict,
+    current_user: User = Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
+    """厨师上架/下架菜品"""
+    if current_user.role not in ["chef", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="仅厨师可操作",
+        )
+
+    publish = publish_data.get("publish", True)
+    dc = await dish_service.toggle_chef_publish(db, dish_id, current_user.id, publish)
+    await db.commit()
+    
+    return {"message": "上架成功" if publish else "下架成功", "publish_status": dc.status}

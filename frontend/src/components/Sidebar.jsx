@@ -16,7 +16,7 @@ export default function Sidebar() {
     navItems = [
       { icon: '📊', label: '管理后台', path: '/admin' },
       { icon: '🍽️', label: '菜品管理', path: '/admin/dishes' },
-      { icon: '🥬', label: '食材管理', path: '/admin/ingredients' },
+      { icon: '🥬', label: '食材管理', path: '/ingredients' },
       { icon: '📂', label: '分类管理', path: '/admin/categories' },
       { icon: '👨‍🍳', label: '厨师管理', path: '/admin/chefs' },
       { icon: '👥', label: '用户管理', path: '/admin/users' },
@@ -26,9 +26,11 @@ export default function Sidebar() {
     ];
   } else if (role === 'chef') {
     navItems = [
-      { icon: '👨‍🍳', label: '订单管理', path: '/chef/orders' },
-      { icon: '🍽️', label: '点菜', path: '/order' },
       { icon: '🏠', label: '首页', path: '/home' },
+      { icon: '👨‍🍳', label: '订单管理', path: '/chef/orders' },
+      { icon: '🍽️', label: '菜品管理', path: '/chef/dishes' },
+      { icon: '🥬', label: '食材管理', path: '/ingredients' },
+      { icon: '🍽️', label: '点菜', path: '/order' },
       { icon: '👅', label: '口味偏好', path: '/preferences' },
       { icon: '👤', label: '我的', path: '/profile' },
     ];
