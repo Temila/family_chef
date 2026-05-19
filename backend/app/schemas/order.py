@@ -8,6 +8,7 @@ class OrderItemCreate(BaseModel):
     dish_id: int
     quantity: int = 1
     special_notes: Optional[str] = None
+    chef_id: Optional[int] = None
 
 class OrderCreate(BaseModel):
     """创建订单请求"""

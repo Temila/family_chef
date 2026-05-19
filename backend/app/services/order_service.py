@@ -44,7 +44,7 @@ class OrderService:
             select(Dish).where(
                 and_(
                     Dish.id.in_(dish_ids),
-                    Dish.status == "published",
+                    Dish.status == "enabled",
                 )
             )
         )
@@ -93,7 +93,7 @@ class OrderService:
             select(Dish).where(
                 and_(
                     Dish.id.in_(dish_ids),
-                    Dish.status == "published",
+                    Dish.status == "enabled",
                 )
             )
         )
@@ -117,12 +117,12 @@ class OrderService:
 
         item_groups = {}
         for item_data in order_data.items:
-            chef_id = dish_chef_map.get(item_data.dish_id)
+            chef_id = item_data.chef_id
+            if chef_id is None:
+                chef_id = dish_chef_map.get(item_data.dish_id)
             if chef_id is None:
                 if all_chefs:
                     chef_id = next(iter(all_chefs.keys()))
-                else:
-                    chef_id = None
             item_groups.setdefault(chef_id, []).append(item_data)
 
         created_orders = []
@@ -161,11 +161,6 @@ class OrderService:
         """发送飞书通知"""
         try:
             from app.integrations.feishu import feishu_client
-
-            chefs_result = await db.execute(
-                select(User).where(User.role == "chef", User.is_active == True)
-            )
-            chefs = chefs_result.scalars().all()
 
             items_result = await db.execute(
                 select(OrderItem).where(OrderItem.order_id == order.id)
@@ -215,9 +210,10 @@ class OrderService:
                 "allergies": allergies,
             }
 
-            for chef in chefs:
-                if chef.feishu_open_id:
-                    await feishu_client.send_order_notification(chef.feishu_open_id, notification_data)
+            chef_result = await db.execute(select(User).where(User.id == order.chef_id))
+            chef = chef_result.scalar_one_or_none()
+            if chef and chef.feishu_open_id:
+                await feishu_client.send_order_notification(chef.feishu_open_id, notification_data)
         except Exception as e:
             print(f"⚠️ 飞书通知发送失败：{e}")
 

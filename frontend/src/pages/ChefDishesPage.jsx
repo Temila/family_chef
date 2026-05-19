@@ -579,10 +579,10 @@ export default function ChefDishesPage() {
                     </td>
                     <td>{(dish.categories || []).map(c => c.name).join('、') || '-'}</td>
                     <td>
-                      {dish.chefs && dish.chefs.length > 0 ? (
+                      {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 ? (
                         <div style={{ display: 'flex' }}>
-                          {dish.chefs.slice(0, 5).map(c => (
-                            <div key={c.id} style={{
+                          {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
+                            <div key={`${dish.id}-${c.id}-${ci}`} style={{
                               width: 28, height: 28, borderRadius: '50%',
                               background: 'var(--accent)',
                               color: '#fff',
@@ -594,7 +594,7 @@ export default function ChefDishesPage() {
                               {(c.display_name || c.username).charAt(0).toUpperCase()}
                             </div>
                           ))}
-                          {dish.chefs.length > 5 && (
+                          {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
                             <div style={{
                               width: 28, height: 28, borderRadius: '50%',
                               background: 'var(--bg-elevated)',
@@ -604,18 +604,20 @@ export default function ChefDishesPage() {
                               border: '2px solid var(--bg-page)',
                               marginLeft: -6,
                             }}>
-                              +{dish.chefs.length - 5}
+                              +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
                             </div>
                           )}
                         </div>
                       ) : '-'}
                     </td>
-                    <td><Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} /></td>
+                    <td>{dish.is_semifinished ? <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>-</span> : <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />}</td>
                     <td>
                       <div className="pc-action-btns">
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
-                          {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
-                        </button>
+                        {!dish.is_semifinished && (
+                          <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
+                            {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
+                          </button>
+                        )}
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(dish)}>编辑</button>
                       </div>
                     </td>
@@ -639,14 +641,14 @@ export default function ChefDishesPage() {
                         {(dish.categories || []).map(c => c.name).join(' · ')}
                       </div>
                     </div>
-                    <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />
+                    {!dish.is_semifinished && <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />}
                   </div>
-                  {dish.chefs && dish.chefs.length > 0 && (
+                  {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>厨师：</span>
                       <div style={{ display: 'flex' }}>
-                        {dish.chefs.slice(0, 5).map(c => (
-                          <div key={c.id} style={{
+                        {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
+                          <div key={`${dish.id}-${c.id}-${ci}`} style={{
                             width: 24, height: 24, borderRadius: '50%',
                             background: 'var(--accent)',
                             color: '#fff',
@@ -658,7 +660,7 @@ export default function ChefDishesPage() {
                             {(c.display_name || c.username).charAt(0).toUpperCase()}
                           </div>
                         ))}
-                        {dish.chefs.length > 5 && (
+                        {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
                             background: 'var(--bg-elevated)',
@@ -668,16 +670,18 @@ export default function ChefDishesPage() {
                             border: '2px solid var(--bg-page)',
                             marginLeft: -4,
                           }}>
-                            +{dish.chefs.length - 5}
+                            +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
                           </div>
                         )}
                       </div>
                     </div>
                   )}
                   <div className="flex gap-3">
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
-                      {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
-                    </button>
+                    {!dish.is_semifinished && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
+                        {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
+                      </button>
+                    )}
                     <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(dish)}>编辑</button>
                   </div>
                 </div>

@@ -559,8 +559,8 @@ export default function AdminDishesPage() {
                     <td>
                       {dish.chefs && dish.chefs.length > 0 ? (
                         <div style={{ display: 'flex' }}>
-                          {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map(c => (
-                            <div key={c.id} style={{
+                          {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
+                            <div key={`${dish.id}-${c.id}-${ci}`} style={{
                               width: 28, height: 28, borderRadius: '50%',
                               background: 'var(--accent)',
                               color: '#fff',
@@ -626,8 +626,8 @@ export default function AdminDishesPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>厨师：</span>
                       <div style={{ display: 'flex' }}>
-                        {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map(c => (
-                          <div key={c.id} style={{
+                        {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
+                          <div key={`${dish.id}-${c.id}-${ci}`} style={{
                             width: 24, height: 24, borderRadius: '50%',
                             background: 'var(--accent)',
                             color: '#fff',

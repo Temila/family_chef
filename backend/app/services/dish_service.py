@@ -95,9 +95,9 @@ class DishService:
             )
         elif chef_filter == "my-hidden" and user_id:
             query = query.where(
-                exists(
+                ~exists(
                     select(DishChef.id).where(
-                        and_(DishChef.dish_id == Dish.id, DishChef.chef_id == user_id, DishChef.status == "hidden")
+                        and_(DishChef.dish_id == Dish.id, DishChef.chef_id == user_id, DishChef.status == "published")
                     )
                 )
             )
@@ -512,7 +512,12 @@ class DishService:
                 and_(DishChef.dish_id == dish_id, DishChef.chef_id == chef_id)
             )
         )
-        dc = result.scalar_one_or_none()
+        rows = result.scalars().all()
+        if len(rows) > 1:
+            for r in rows[1:]:
+                await db.delete(r)
+            await db.flush()
+        dc = rows[0] if rows else None
         if dc:
             dc.status = "published" if publish else "hidden"
             await db.flush()

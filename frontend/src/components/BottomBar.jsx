@@ -1,10 +1,18 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
+
+function Badge({ count }) {
+  if (!count) return null;
+  const display = count > 99 ? '99+' : count;
+  return <span className="badge-count">{display}</span>;
+}
 
 export default function BottomBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const pendingCount = usePendingOrderCount();
 
   if (!user) return null;
 
@@ -53,7 +61,10 @@ export default function BottomBar() {
             }
           }}
         >
-          <span className="tab-icon">{tab.icon}</span>
+          <span className="tab-icon">
+            {tab.icon}
+            {tab.id === 'chef-orders' && <Badge count={pendingCount} />}
+          </span>
           <span className="tab-label">{tab.label}</span>
         </button>
       ))}
