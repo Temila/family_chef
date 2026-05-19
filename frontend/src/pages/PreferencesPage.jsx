@@ -40,7 +40,7 @@ export default function PreferencesPage() {
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
-    if (query.length < 2) {
+    if (!query.trim()) {
       setSearchResults([]);
       return;
     }
@@ -157,7 +157,7 @@ export default function PreferencesPage() {
           <span className="search-icon" style={{ left: 16 }}>🔍</span>
           <input
             type="text"
-            placeholder="搜索食材（输入2字以上）..."
+            placeholder="搜索食材添加至口味偏好..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />

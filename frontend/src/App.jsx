@@ -1,16 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { CategoriesProvider } from './contexts/CategoriesContext';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import UserHomePage from './pages/UserHomePage';
 import DishDetailPage from './pages/DishDetailPage';
 import UserProfilePage from './pages/UserProfilePage';
+import UserOrdersPage from './pages/UserOrdersPage';
+import UserFavoritesPage from './pages/UserFavoritesPage';
 import OrderPage from './pages/OrderPage';
 import PreferencesPage from './pages/PreferencesPage';
 import ChefOrdersPage from './pages/ChefOrdersPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminDishesPage from './pages/AdminDishesPage';
+import ChefDishesPage from './pages/ChefDishesPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminStatsPage from './pages/AdminStatsPage';
 import AdminLogsPage from './pages/AdminLogsPage';
@@ -19,6 +24,14 @@ import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminChefsPage from './pages/AdminChefsPage';
 import ForceChangePasswordPage from './pages/ForceChangePasswordPage';
 import './css/styles.css';
+
+const VALID_ROLES = ['admin', 'user', 'chef'];
+
+function getRoleHome(role) {
+  if (role === 'admin') return '/admin';
+  if (role === 'chef') return '/chef/orders';
+  return '/home';
+}
 
 function ProtectedRoute({ children, requiredRoles = [] }) {
   const { user, loading } = useAuth();
@@ -35,8 +48,12 @@ function ProtectedRoute({ children, requiredRoles = [] }) {
     return <Navigate to="/force-change-password" replace />;
   }
 
+  if (!VALID_ROLES.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to={getRoleHome(user.role)} replace />;
   }
 
   return children;
@@ -44,22 +61,18 @@ function ProtectedRoute({ children, requiredRoles = [] }) {
 
 function RedirectRoute() {
   const { user } = useAuth();
-  if (user) {
-    if (user.role === 'admin') {
-      return <Navigate to="/admin" replace />;
-    } else if (user.role === 'chef') {
-      return <Navigate to="/chef/orders" replace />;
-    }
-    return <Navigate to="/home" replace />;
+  if (user && VALID_ROLES.includes(user.role)) {
+    return <Navigate to={getRoleHome(user.role)} replace />;
   }
   return <Navigate to="/login" replace />;
 }
 
 function PcLayout() {
+  const location = useLocation();
   return (
     <div className="pc-layout">
       <Sidebar />
-      <main className="pc-main">
+      <main className="pc-main" key={location.pathname}>
         <Outlet />
       </main>
     </div>
@@ -70,8 +83,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ToastProvider>
-          <Routes>
+        <CategoriesProvider>
+          <ToastProvider>
+            <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
             <Route path="/" element={<RedirectRoute />} />
@@ -80,7 +94,7 @@ function App() {
               <Route
                 path="/home"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRoles={['user', 'chef']}>
                     <UserHomePage />
                   </ProtectedRoute>
                 }
@@ -98,6 +112,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UserProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-orders"
+                element={
+                  <ProtectedRoute>
+                    <UserOrdersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-favorites"
+                element={
+                  <ProtectedRoute>
+                    <UserFavoritesPage />
                   </ProtectedRoute>
                 }
               />
@@ -126,6 +156,14 @@ function App() {
                 }
               />
               <Route
+                path="/orders/:id"
+                element={
+                  <ProtectedRoute requiredRoles={['chef', 'admin']}>
+                    <OrderDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin"
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
@@ -142,9 +180,17 @@ function App() {
                 }
               />
               <Route
-                path="/admin/ingredients"
+                path="/chef/dishes"
                 element={
-                  <ProtectedRoute requiredRoles={['admin']}>
+                  <ProtectedRoute requiredRoles={['chef']}>
+                    <ChefDishesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ingredients"
+                element={
+                  <ProtectedRoute requiredRoles={['admin', 'chef']}>
                     <AdminIngredientsPage />
                   </ProtectedRoute>
                 }
@@ -152,7 +198,7 @@ function App() {
               <Route
                 path="/admin/categories"
                 element={
-                  <ProtectedRoute requiredRoles={['admin']}>
+                  <ProtectedRoute requiredRoles={['admin', 'chef']}>
                     <AdminCategoriesPage />
                   </ProtectedRoute>
                 }
@@ -192,8 +238,9 @@ function App() {
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </ToastProvider>
+            </Routes>
+          </ToastProvider>
+        </CategoriesProvider>
       </AuthProvider>
     </BrowserRouter>
   );

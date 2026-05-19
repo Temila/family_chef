@@ -79,9 +79,6 @@ class CategoryService:
             parent = await CategoryService.get_category_by_id(db, parent_id)
             if not parent:
                 raise ValueError(f"父分类 {parent_id} 不存在")
-            # 确保类型一致
-            if parent.type != category_type:
-                raise ValueError(f"子分类类型必须与父分类一致")
         
         category = Category(
             name=name,
@@ -114,13 +111,10 @@ class CategoryService:
         if category_type is not None:
             category.type = category_type
         if parent_id is not None:
-            # 检查父分类是否存在
             if parent_id:
                 parent = await CategoryService.get_category_by_id(db, parent_id)
                 if not parent:
                     raise ValueError(f"父分类 {parent_id} 不存在")
-                if parent.type != category.type:
-                    raise ValueError(f"子分类类型必须与父分类一致")
             category.parent_id = parent_id
         if sort_order is not None:
             category.sort_order = sort_order

@@ -30,13 +30,14 @@ export default function UserProfilePage() {
   const loadStats = async () => {
     try {
       setLoading(true);
-      const [ordersRes, favoritesRes] = await Promise.all([
+      const [ordersRes, completedRes, favoritesRes] = await Promise.all([
         api.getOrders({ page: 1, page_size: 1 }),
+        api.getOrders({ page: 1, page_size: 1, status: 'completed' }),
         api.getFavorites({ page: 1, page_size: 1 }),
       ]);
       setStats({
         totalOrders: ordersRes.total || 0,
-        completedOrders: ordersRes.completed_count || 0,
+        completedOrders: completedRes.total || 0,
         favoriteDishes: favoritesRes.total || 0,
       });
     } catch (err) {
@@ -99,13 +100,13 @@ export default function UserProfilePage() {
       icon: '❤️',
       title: '我的收藏',
       desc: `${stats.favoriteDishes} 道菜品`,
-      onClick: () => navigate('/order'),
+      onClick: () => navigate('/my-favorites'),
     },
     {
       icon: '📝',
       title: '我的订单',
       desc: `${stats.totalOrders} 个订单`,
-      onClick: () => navigate('/order'),
+      onClick: () => navigate('/my-orders'),
     },
     {
       icon: '⚙️',

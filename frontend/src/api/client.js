@@ -79,6 +79,9 @@ class ApiClient {
     if (params.seasons) params.seasons.forEach(v => qs.append('seasons', v));
     if (params.favorites_only) qs.set('favorites_only', 'true');
     if (params.sort) qs.set('sort', params.sort);
+    if (params.status) qs.set('status', params.status);
+    if (params.chef_filter) qs.set('chef_filter', params.chef_filter);
+    if (params.is_semifinished !== undefined && params.is_semifinished !== null) qs.set('is_semifinished', String(params.is_semifinished));
     return this.get(`/dishes?${qs}`);
   }
 
@@ -102,13 +105,22 @@ class ApiClient {
     return this.put(`/dishes/${id}/status`, { status });
   }
 
+  async toggleChefPublish(dishId, publish) {
+    return this.put(`/dishes/${dishId}/chef-publish`, { publish });
+  }
+
   async getDietaryWarning(dishId) {
     return this.get(`/dishes/${dishId}/dietary_warning`);
   }
 
+  async getSemifinishedDishes() {
+    return this.get('/dishes/semifinished/list');
+  }
+
   // ─── Orders ─────────────────────────────────────
   async createOrder(data) {
-    return this.post('/orders', data);
+    const res = await this.post('/orders', data);
+    return Array.isArray(res) ? res : [res];
   }
 
   async getOrders(params = {}) {
@@ -173,6 +185,14 @@ class ApiClient {
 
   async deleteIngredient(id) {
     return this.del(`/ingredients/${id}`);
+  }
+
+  async parseIngredientsFromText(text, smartMode = true) {
+    return this.post('/ingredients/parse', { text, smart_mode: smartMode });
+  }
+
+  async batchImportIngredients(items) {
+    return this.post('/ingredients/batch-import', { items });
   }
 
   // ─── Favorites ─────────────────────────────────────

@@ -147,12 +147,12 @@ class UserService:
 
     @staticmethod
     async def delete_user(db: AsyncSession, user_id: int) -> bool:
-        """软删除用户"""
+        """删除用户"""
         user = await UserService.get_user_by_id(db, user_id)
         if not user:
             return False
 
-        user.is_active = False
+        await db.delete(user)
         await db.flush()
         return True
 

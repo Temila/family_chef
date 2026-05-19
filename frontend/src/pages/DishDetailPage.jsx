@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
@@ -13,6 +14,17 @@ export default function DishDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { getTypeMeta, categoryTypes } = useCategories();
+
+  const ING_CATEGORY_ICONS = {
+    '肉类': '🥩',
+    '蔬菜': '🥬',
+    '海鲜': '🦐',
+    '水果': '🍎',
+    '调味品': '🧂',
+    '辅料': '🧄',
+    '其他': '📦',
+  };
 
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,10 +110,14 @@ export default function DishDetailPage() {
 
   if (!dish) return null;
 
-  const regionCategories = (dish.categories || []).filter(c => c.type === 'region');
-  const cuisineCategories = (dish.categories || []).filter(c => c.type === 'cuisine');
-  const tasteCategories = (dish.categories || []).filter(c => c.type === 'taste');
-  const seasonCategories = (dish.categories || []).filter(c => c.type === 'season');
+  const dishCategoryGroups = categoryTypes()
+    .filter(t => t.key !== 'ingredient')
+    .map(t => ({
+      type: t.key,
+      meta: t,
+      items: (dish.categories || []).filter(c => c.type === t.key),
+    }))
+    .filter(g => g.items.length > 0);
 
   return (
     <div className="page-container">
@@ -127,10 +143,13 @@ export default function DishDetailPage() {
 
       <section className="section">
         <div className="flex items-center gap-3 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {dish.name}
           </h2>
-          <Badge status={dish.is_popular ? 'published' : 'hidden'} text={dish.is_popular ? '推荐' : ''} type={dish.is_popular ? 'gold' : undefined} />
+          {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}
+          {dish.is_semifinished && (
+            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)', fontWeight: 600 }}>半成品</span>
+          )}
         </div>
 
         {dish.description && (
@@ -151,34 +170,53 @@ export default function DishDetailPage() {
         )}
 
         <div className="info-pills" style={{ marginBottom: 16 }}>
-          {regionCategories.length > 0 && (
-            <span className="info-pill">📍 {regionCategories.map(c => c.name).join('、')}</span>
-          )}
-          {cuisineCategories.length > 0 && (
-            <span className="info-pill">🍜 {cuisineCategories.map(c => c.name).join('、')}</span>
-          )}
-          {tasteCategories.length > 0 && (
-            <span className="info-pill">👅 {tasteCategories.map(c => c.name).join('、')}</span>
-          )}
-          {seasonCategories.length > 0 && (
-            <span className="info-pill">🌤️ {seasonCategories.map(c => c.name).join('、')}</span>
-          )}
+          {dishCategoryGroups.map(g => (
+            <span className="info-pill" key={g.type}>{g.meta.icon} {g.items.map(c => c.name).join('、')}</span>
+          ))}
         </div>
 
         {dish.ingredients && dish.ingredients.length > 0 && (
           <div style={{ marginTop: 24 }}>
             <h3 className="section-title">🥗 食材列表</h3>
-            {dish.ingredients.map(ing => (
-              <div key={ing.id} className="ingredient-item">
-                <span className="ingredient-icon">🧅</span>
-                <span style={{ flex: 1, fontSize: '0.9rem' }}>{ing.name}</span>
+            {Object.entries(
+              dish.ingredients.reduce((acc, ing) => {
+                const cat = ing.category || '其他';
+                (acc[cat] = acc[cat] || []).push(ing);
+                return acc;
+              }, {})
+            ).map(([cat, items]) => (
+              <div key={cat} style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: '1rem' }}>{ING_CATEGORY_ICONS[cat] || '📦'}</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{cat}</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {items.map(ing => (
+                    <span key={ing.id} className="ingredient-tag">
+                      {ing.name}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
         )}
+
+        {dish.semifinished_ingredients && dish.semifinished_ingredients.length > 0 && (
+          <div style={{ marginTop: 24 }}>
+            <h3 className="section-title">🍳 半成品食材</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {dish.semifinished_ingredients.map(sf => (
+                <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)' }}>
+                  {sf.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
-      {dish.status === 'published' && (
+      {dish.status === 'published' && !dish.is_semifinished && (
         <div className="cart-bar">
           <div className="qty-stepper">
             <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>

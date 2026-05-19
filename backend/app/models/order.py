@@ -1,5 +1,5 @@
 """订单模型"""
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -13,6 +13,8 @@ class Order(Base):
     status = Column(String(20), nullable=False, default="pending")
     chef_id = Column(Integer, ForeignKey("users.id"))
     notes = Column(Text)
+    meal_date = Column(Date)
+    meal_type = Column(String(20))
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
     completed_at = Column(DateTime)

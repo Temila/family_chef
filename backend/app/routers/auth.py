@@ -9,6 +9,7 @@ from app.database import get_db
 from app.schemas.user import UserLogin, UserCreate, UserResponse, TokenResponse
 from app.services.auth_service import auth_service
 from app.utils.security import decode_access_token
+from app.middleware.logging import log_action
 
 router = APIRouter()
 security = HTTPBearer()
@@ -26,6 +27,7 @@ async def login(request: UserLogin, db: AsyncSession = Depends(get_db)):
         )
 
     tokens = auth_service.create_tokens(user)
+    await log_action(user.id, "login", detail=f"用户 {user.username} 登录")
     tokens["user"] = UserResponse.model_validate(user)
 
     return TokenResponse(**tokens)

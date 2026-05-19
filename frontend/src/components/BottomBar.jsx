@@ -1,10 +1,18 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
+
+function Badge({ count }) {
+  if (!count) return null;
+  const display = count > 99 ? '99+' : count;
+  return <span className="badge-count">{display}</span>;
+}
 
 export default function BottomBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const pendingCount = usePendingOrderCount();
 
   if (!user) return null;
 
@@ -16,7 +24,7 @@ export default function BottomBar() {
       { id: 'admin-home', icon: '📊', label: '后台', path: '/admin' },
       { id: 'admin-dishes', icon: '🍽', label: '菜品', path: '/admin/dishes' },
       { id: 'admin-users', icon: '👥', label: '用户', path: '/admin/users' },
-      { id: 'user-home', icon: '🏠', label: '首页', path: '/home' },
+      { id: 'logout', icon: '🚪', label: '退出', action: 'logout' },
     ];
   } else if (role === 'chef') {
     tabs = [
@@ -44,9 +52,19 @@ export default function BottomBar() {
         <button
           key={tab.id}
           className={`tab-item ${isActive(tab.path) ? 'active' : ''}`}
-          onClick={() => navigate(tab.path)}
+          onClick={() => {
+            if (tab.action === 'logout') {
+              logout();
+              navigate('/login');
+            } else {
+              navigate(tab.path);
+            }
+          }}
         >
-          <span className="tab-icon">{tab.icon}</span>
+          <span className="tab-icon">
+            {tab.icon}
+            {tab.id === 'chef-orders' && <Badge count={pendingCount} />}
+          </span>
           <span className="tab-label">{tab.label}</span>
         </button>
       ))}

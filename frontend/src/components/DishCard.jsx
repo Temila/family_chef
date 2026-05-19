@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
 
-export default function DishCard({ dish }) {
+export default function DishCard({ dish, simple }) {
   const navigate = useNavigate();
 
   const handleImageError = (e) => {
@@ -44,18 +44,22 @@ export default function DishCard({ dish }) {
 
       <div className="dish-card-body">
         <div className="dish-card-name">{dish.name}</div>
-        <div className="dish-card-meta">
-          {dish.cuisine_name && `${dish.cuisine_name} · `}
-          {dish.base_price !== null && `¥${formatPrice(dish.base_price)}`}
-        </div>
-        <div className="dish-card-footer">
-          <span className="badge badge-info">{dish.category_name || '默认'}</span>
-          {dish.is_available ? (
-            <span className="badge badge-success">可点</span>
-          ) : (
-            <span className="badge badge-danger">已售罄</span>
-          )}
-        </div>
+        {!simple && (
+          <div className="dish-card-meta">
+            {dish.cuisine_name && `${dish.cuisine_name} · `}
+            {dish.base_price !== null && `¥${formatPrice(dish.base_price)}`}
+          </div>
+        )}
+        {!simple && (
+          <div className="dish-card-footer">
+            <span className="badge badge-info">{dish.category_name || '默认'}</span>
+            {dish.is_available ? (
+              <span className="badge badge-success">可点</span>
+            ) : (
+              <span className="badge badge-danger">已售罄</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -10,8 +10,8 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
-export default function AdminDishesPage() {
-  const { user, isAdmin, isChef } = useAuth();
+export default function ChefDishesPage() {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
   const { getByType, getTypeMeta, categoryTypes, allCategories: contextCategories, reload: reloadCategories } = useCategories();
@@ -53,6 +53,7 @@ export default function AdminDishesPage() {
 
   const [showAdvFilter, setShowAdvFilter] = useState(false);
   const [advCategoryIds, setAdvCategoryIds] = useState([]);
+  const [publishFilter, setPublishFilter] = useState('all');
   const [sfFilter, setSfFilter] = useState('all');
 
   const [showAddIngModal, setShowAddIngModal] = useState(false);
@@ -67,7 +68,7 @@ export default function AdminDishesPage() {
 
   useEffect(() => {
     loadDishes();
-  }, [advCategoryIds, user?.role, sfFilter]);
+  }, [advCategoryIds, user?.role, publishFilter, sfFilter]);
 
   useEffect(() => {
     if (!showIngDropdown) return;
@@ -94,8 +95,12 @@ export default function AdminDishesPage() {
   const loadDishes = async () => {
     try {
       setLoading(true);
-      const params = { page: 1, page_size: 100 };
-      params.status = "all";
+      const params = { page: 1, page_size: 100, status: 'enabled' };
+      if (publishFilter === 'published') {
+        params.chef_filter = 'my-published';
+      } else if (publishFilter === 'unpublished') {
+        params.chef_filter = 'my-hidden';
+      }
       if (sfFilter === 'semifinished') params.is_semifinished = true;
       else if (sfFilter === 'normal') params.is_semifinished = false;
       if (searchQuery) params.search = searchQuery;
@@ -239,11 +244,12 @@ export default function AdminDishesPage() {
     }
   };
 
-  const handleToggleEnabled = async (dish) => {
-    const newStatus = dish.status === 'enabled' ? 'disabled' : 'enabled';
+  const handleTogglePublish = async (dish) => {
+    const myChef = dish.chefs?.find(c => c.id === user?.id);
+    const isPublished = myChef?.publish_status === 'published';
     try {
-      await api.updateDishStatus(dish.id, newStatus);
-      showToast(newStatus === 'enabled' ? '已启用' : '已禁用');
+      await api.toggleChefPublish(dish.id, !isPublished);
+      showToast(!isPublished ? '已上架' : '已下架');
       loadDishes();
     } catch (err) {
       showToast('操作失败', 'error');
@@ -470,7 +476,23 @@ export default function AdminDishesPage() {
         </div>
       </div>
 
-      <div style={{ padding: '0 16px 4px' }}>
+      <div style={{ padding: '0 16px 4px', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {[
+            { key: 'all', label: '全部' },
+            { key: 'published', label: '已上架' },
+            { key: 'unpublished', label: '未上架' },
+          ].map(f => (
+            <button
+              key={f.key}
+              className={`filter-chip ${publishFilter === f.key ? 'active' : ''}`}
+              style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+              onClick={() => setPublishFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
         <button
           className="btn btn-secondary btn-sm"
           style={{ fontSize: '0.75rem', padding: '2px 10px' }}
@@ -557,9 +579,9 @@ export default function AdminDishesPage() {
                     </td>
                     <td>{(dish.categories || []).map(c => c.name).join('、') || '-'}</td>
                     <td>
-                      {dish.chefs && dish.chefs.length > 0 ? (
+                      {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 ? (
                         <div style={{ display: 'flex' }}>
-                          {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
+                          {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
                             <div key={`${dish.id}-${c.id}-${ci}`} style={{
                               width: 28, height: 28, borderRadius: '50%',
                               background: 'var(--accent)',
@@ -572,7 +594,7 @@ export default function AdminDishesPage() {
                               {(c.display_name || c.username).charAt(0).toUpperCase()}
                             </div>
                           ))}
-                          {dish.chefs.filter(c => c.publish_status === "published").length > 5 && (
+                          {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
                             <div style={{
                               width: 28, height: 28, borderRadius: '50%',
                               background: 'var(--bg-elevated)',
@@ -582,22 +604,21 @@ export default function AdminDishesPage() {
                               border: '2px solid var(--bg-page)',
                               marginLeft: -6,
                             }}>
-                              +{dish.chefs.filter(c => c.publish_status === "published").length - 5}
+                              +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
                             </div>
                           )}
                         </div>
                       ) : '-'}
                     </td>
-                    <td><Badge status={dish.status} /></td>
+                    <td>{dish.is_semifinished ? <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>-</span> : <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />}</td>
                     <td>
                       <div className="pc-action-btns">
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleToggleEnabled(dish)}>
-                          {dish.status === 'enabled' ? '禁用' : '启用'}
-                        </button>
+                        {!dish.is_semifinished && (
+                          <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
+                            {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
+                          </button>
+                        )}
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(dish)}>编辑</button>
-                        <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
-                          删除
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -620,13 +641,13 @@ export default function AdminDishesPage() {
                         {(dish.categories || []).map(c => c.name).join(' · ')}
                       </div>
                     </div>
-                    <Badge status={dish.status} />
+                    {!dish.is_semifinished && <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />}
                   </div>
-                  {dish.chefs && dish.chefs.length > 0 && (
+                  {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>厨师：</span>
                       <div style={{ display: 'flex' }}>
-                        {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
+                        {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
                           <div key={`${dish.id}-${c.id}-${ci}`} style={{
                             width: 24, height: 24, borderRadius: '50%',
                             background: 'var(--accent)',
@@ -639,7 +660,7 @@ export default function AdminDishesPage() {
                             {(c.display_name || c.username).charAt(0).toUpperCase()}
                           </div>
                         ))}
-                        {dish.chefs.filter(c => c.publish_status === "published").length > 5 && (
+                        {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
                             background: 'var(--bg-elevated)',
@@ -649,20 +670,19 @@ export default function AdminDishesPage() {
                             border: '2px solid var(--bg-page)',
                             marginLeft: -4,
                           }}>
-                            +{dish.chefs.filter(c => c.publish_status === "published").length - 5}
+                            +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
                           </div>
                         )}
                       </div>
                     </div>
                   )}
                   <div className="flex gap-3">
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleToggleEnabled(dish)}>
-                      {dish.status === 'enabled' ? '禁用' : '启用'}
-                    </button>
+                    {!dish.is_semifinished && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleTogglePublish(dish)}>
+                        {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
+                      </button>
+                    )}
                     <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(dish)}>编辑</button>
-                    <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
-                      删除
-                    </button>
                   </div>
                 </div>
               </div>
@@ -874,7 +894,7 @@ export default function AdminDishesPage() {
                   <option value="disabled">禁用</option>
                 </select>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                  {isAdmin ? '管理员创建的菜品默认为启用状态，需由厨师上架' : '选择菜品状态'}
+                  菜品创建后需由厨师上架
                 </div>
               </div>
 

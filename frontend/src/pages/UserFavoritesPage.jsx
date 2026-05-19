@@ -1,0 +1,86 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
+import api from '../api/client';
+import Header from '../components/Header';
+import BottomBar from '../components/BottomBar';
+import Loading from '../components/Loading';
+import EmptyState from '../components/EmptyState';
+
+export default function UserFavoritesPage() {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadFavorites();
+  }, []);
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      const res = await api.getFavorites({ page: 1, page_size: 100 });
+      setDishes(res.items || []);
+    } catch (err) {
+      showToast('加载收藏失败', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveFavorite = async (dish) => {
+    try {
+      await api.removeFavorite(dish.id);
+      showToast(`已取消收藏 ${dish.name}`);
+      setDishes(prev => prev.filter(d => d.id !== dish.id));
+    } catch (err) {
+      showToast('取消收藏失败', 'error');
+    }
+  };
+
+  return (
+    <div className="page-container">
+      <Header title="我的收藏" showBack />
+
+      {loading ? (
+        <Loading />
+      ) : dishes.length === 0 ? (
+        <EmptyState icon="❤️" text="还没有收藏任何菜品" />
+      ) : (
+        <section className="section pt-0">
+          <div className="dish-grid">
+            {dishes.map(dish => (
+              <div
+                key={dish.id}
+                className="dish-card"
+                onClick={() => navigate(`/dishes/${dish.id}`)}
+              >
+                <div className="dish-card-image">
+                  {dish.image_url ? (
+                    <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
+                  ) : (
+                    <div className="placeholder-img">🍽️</div>
+                  )}
+                </div>
+                <div className="dish-card-body">
+                  <div className="dish-card-name">{dish.name}</div>
+                  <button
+                    className="btn btn-outline btn-sm btn-block"
+                    style={{ marginTop: 6 }}
+                    onClick={(e) => { e.stopPropagation(); handleRemoveFavorite(dish); }}
+                  >
+                    取消收藏
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <BottomBar />
+    </div>
+  );
+}

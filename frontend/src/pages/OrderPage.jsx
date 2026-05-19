@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import DishCard from '../components/DishCard';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
@@ -13,6 +13,13 @@ export default function OrderPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { getByType, getTypeMeta, categoryTypes } = useCategories();
+
+  const isAdmin = user?.role === 'admin';
+
+  const regions = getByType('region');
+  const cuisines = getByType('cuisine');
+  const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine'].includes(t.key));
 
   const [dishes, setDishes] = useState([]);
   const [cart, setCart] = useState([]);
@@ -23,20 +30,23 @@ export default function OrderPage() {
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [cartExpanded, setCartExpanded] = useState(false);
-  const [showChefModal, setShowChefModal] = useState(false);
-  const [chefs, setChefs] = useState([]);
-  const [selectedChef, setSelectedChef] = useState(null);
+  const [mealDate, setMealDate] = useState('');
+  const [mealType, setMealType] = useState('');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedCuisine, setSelectedCuisine] = useState(null);
-  const [selectedTastes, setSelectedTastes] = useState([]);
-  const [selectedSeasons, setSelectedSeasons] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({});
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sortBy, setSortBy] = useState('name');
 
-  const [categories, setCategories] = useState({ regions: [], cuisines: [], tastes: [], seasons: [] });
   const [showFilters, setShowFilters] = useState(false);
+
+  const [showChefPicker, setShowChefPicker] = useState(false);
+  const [chefPickerDish, setChefPickerDish] = useState(null);
+  const [chefPickerChefs, setChefPickerChefs] = useState([]);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const observer = useRef();
   const lastDishRef = useCallback(node => {
@@ -51,42 +61,26 @@ export default function OrderPage() {
   }, [loadingMore, hasMore]);
 
   useEffect(() => {
-    loadCategories();
     loadCart();
   }, []);
 
   useEffect(() => {
     loadDishes(1);
-  }, [searchQuery, selectedRegion, selectedCuisine, selectedTastes, selectedSeasons, favoritesOnly, sortBy]);
+  }, [searchQuery, selectedRegion, selectedCuisine, selectedFilters, favoritesOnly, sortBy]);
 
   useEffect(() => {
     if (page > 1) loadMoreDishes();
   }, [page]);
-
-  const loadCategories = async () => {
-    try {
-      const [regionsRes, cuisinesRes, tastesRes, seasonsRes] = await Promise.all([
-        api.getCategories('region'),
-        api.getCategories('cuisine'),
-        api.getCategories('taste'),
-        api.getCategories('season'),
-      ]);
-      setCategories({
-        regions: regionsRes.items || [],
-        cuisines: cuisinesRes.items || [],
-        tastes: tastesRes.items || [],
-        seasons: seasonsRes.items || [],
-      });
-    } catch (err) {}
-  };
 
   const buildParams = (pageNum) => {
     const params = { page: pageNum, page_size: 20 };
     if (searchQuery) params.search = searchQuery;
     if (selectedRegion) params.regions = [selectedRegion];
     if (selectedCuisine) params.cuisines = [selectedCuisine];
-    if (selectedTastes.length > 0) params.tastes = selectedTastes;
-    if (selectedSeasons.length > 0) params.seasons = selectedSeasons;
+    for (const t of filterTypes) {
+      const ids = selectedFilters[t.key] || [];
+      if (ids.length > 0) params[t.key + 's'] = ids;
+    }
     if (favoritesOnly) params.favorites_only = true;
     if (sortBy) params.sort = sortBy;
     return params;
@@ -131,29 +125,52 @@ export default function OrderPage() {
     localStorage.setItem('fc_cart', JSON.stringify(newCart));
   };
 
-  const addToCart = (dish, quantity = 1) => {
+  const getPublishedChefs = (dish) => {
+    return (dish.chefs || []).filter(c => c.publish_status === 'published');
+  };
+
+  const handleAddToCart = (dish) => {
+    const published = getPublishedChefs(dish);
+    if (published.length === 0) {
+      showToast('该菜品暂无厨师上架', 'error');
+      return;
+    }
+    if (published.length === 1) {
+      addDishToCart(dish, published[0]);
+    } else {
+      setChefPickerDish(dish);
+      setChefPickerChefs(published);
+      setShowChefPicker(true);
+    }
+  };
+
+  const addDishToCart = (dish, chef) => {
     const newCart = [...cart];
-    const existing = newCart.find(item => item.dish_id === dish.id);
+    const key = `${dish.id}_${chef.id}`;
+    const existing = newCart.find(item => item.cart_key === key);
     if (existing) {
-      existing.quantity += quantity;
+      existing.quantity += 1;
     } else {
       newCart.push({
+        cart_key: key,
         dish_id: dish.id,
         dish_name: dish.name,
-        quantity,
+        chef_id: chef.id,
+        chef_name: chef.display_name || chef.username,
+        quantity: 1,
       });
     }
     saveCart(newCart);
-    showToast(`已添加 ${dish.name}`);
+    showToast(`已添加 ${dish.name}（${chef.display_name || chef.username}）`);
   };
 
-  const removeFromCart = (dishId) => {
-    saveCart(cart.filter(item => item.dish_id !== dishId));
+  const removeFromCart = (cartKey) => {
+    saveCart(cart.filter(item => item.cart_key !== cartKey));
   };
 
-  const updateQuantity = (dishId, delta) => {
+  const updateQuantity = (cartKey, delta) => {
     const newCart = cart.map(item => {
-      if (item.dish_id === dishId) {
+      if (item.cart_key === cartKey) {
         const newQty = item.quantity + delta;
         return newQty > 0 ? { ...item, quantity: newQty } : null;
       }
@@ -164,38 +181,48 @@ export default function OrderPage() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleConfirmOrder = async () => {
+  const getDefaultMeal = () => {
+    const now = new Date();
+    const h = now.getHours();
+    const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    if (h >= 7 && h < 12) return { date: fmt(now), type: 'lunch' };
+    if (h >= 12 && h < 18) return { date: fmt(now), type: 'dinner' };
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return { date: fmt(tomorrow), type: 'breakfast' };
+  };
+
+  const handleConfirmOrder = () => {
     if (cart.length === 0) {
       showToast('购物车为空', 'error');
       return;
     }
-    try {
-      const chefsRes = await api.getChefs();
-      const chefList = chefsRes || [];
-      setChefs(chefList);
-      if (chefList.length === 1) {
-        setSelectedChef(chefList[0].id);
-      } else {
-        setSelectedChef(null);
-      }
-      setShowChefModal(true);
-    } catch (err) {
-      showToast('加载厨师列表失败', 'error');
-    }
+    const defaultMeal = getDefaultMeal();
+    setMealDate(defaultMeal.date);
+    setMealType(defaultMeal.type);
+    setShowConfirmModal(true);
   };
 
   const handleSubmitOrder = async () => {
+    if (!mealDate || !mealType) {
+      showToast('请选择用餐时间', 'error');
+      return;
+    }
     try {
       setSubmitting(true);
-      await api.createOrder({
+      const orders = await api.createOrder({
         items: cart.map(item => ({
           dish_id: item.dish_id,
           quantity: item.quantity,
+          chef_id: item.chef_id,
         })),
+        meal_date: mealDate,
+        meal_type: mealType,
       });
       saveCart([]);
-      setShowChefModal(false);
-      showToast('订单提交成功！已通知厨师');
+      setShowConfirmModal(false);
+      const count = orders.length;
+      showToast(`订单提交成功！${count > 1 ? `已拆分为 ${count} 个订单` : ''}，已通知厨师`);
       navigate('/profile');
     } catch (err) {
       showToast('提交订单失败', 'error');
@@ -238,16 +265,43 @@ export default function OrderPage() {
   };
 
   const filteredCuisines = selectedRegion
-    ? categories.cuisines.filter(c => c.parent_id === selectedRegion)
-    : categories.cuisines;
+    ? cuisines.filter(c => c.parent_id === selectedRegion)
+    : cuisines;
 
-  const toggleArrayFilter = (arr, setArr, val) => {
-    setArr(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]);
-  };
+  const renderChefAvatars = (published, size = 24) => (
+    <div style={{ display: 'flex', }}>
+      {published.slice(0, 3).map(c => (
+        <div key={c.id} style={{
+          width: size, height: size, borderRadius: '50%',
+          background: 'var(--accent)',
+          color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: size < 20 ? '0.55rem' : '0.65rem', fontWeight: 600,
+          border: '2px solid var(--bg-card)',
+          marginLeft: -6,
+        }} title={c.display_name || c.username}>
+          {(c.display_name || c.username).charAt(0).toUpperCase()}
+        </div>
+      ))}
+      {published.length > 3 && (
+        <div style={{
+          width: size, height: size, borderRadius: '50%',
+          background: 'var(--bg-elevated)',
+          color: 'var(--text-secondary)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '0.55rem', fontWeight: 600,
+          border: '2px solid var(--bg-card)',
+          marginLeft: -6,
+        }}>
+          +{published.length - 3}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="page-container">
-      <Header title="点菜" />
+      <Header title={isAdmin ? '点菜预览' : '点菜'} />
 
       <div className="search-bar">
         <span className="search-icon">🔍</span>
@@ -291,7 +345,7 @@ export default function OrderPage() {
       {showFilters && (
         <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
           <div className="filter-section">
-            <div className="filter-section-label">地区</div>
+            <div className="filter-section-label">{getTypeMeta('region').label}</div>
             <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
               <button
                 className={`filter-chip ${!selectedRegion ? 'active' : ''}`}
@@ -299,7 +353,7 @@ export default function OrderPage() {
               >
                 全部
               </button>
-              {categories.regions.map(r => (
+              {regions.map(r => (
                 <button
                   key={r.id}
                   className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
@@ -313,7 +367,7 @@ export default function OrderPage() {
 
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
-              <div className="filter-section-label">菜系</div>
+              <div className="filter-section-label">{getTypeMeta('cuisine').label}</div>
               <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
                 <button
                   className={`filter-chip ${!selectedCuisine ? 'active' : ''}`}
@@ -334,39 +388,36 @@ export default function OrderPage() {
             </div>
           )}
 
-          {categories.tastes.length > 0 && (
-            <div className="filter-section">
-              <div className="filter-section-label">口味</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                {categories.tastes.map(t => (
-                  <button
-                    key={t.id}
-                    className={`filter-chip ${selectedTastes.includes(t.id) ? 'active' : ''}`}
-                    onClick={() => toggleArrayFilter(selectedTastes, setSelectedTastes, t.id)}
-                  >
-                    {t.name}
-                  </button>
-                ))}
+          {filterTypes.map(t => {
+            const items = getByType(t.key);
+            if (items.length === 0) return null;
+            const meta = getTypeMeta(t.key);
+            const selectedArr = selectedFilters[t.key] || [];
+            return (
+              <div className="filter-section" key={t.key}>
+                <div className="filter-section-label">{meta.label}</div>
+                <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                  {items.map(item => (
+                    <button
+                      key={item.id}
+                      className={`filter-chip ${selectedArr.includes(item.id) ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedFilters(prev => {
+                          const arr = prev[t.key] || [];
+                          return {
+                            ...prev,
+                            [t.key]: arr.includes(item.id) ? arr.filter(v => v !== item.id) : [...arr, item.id],
+                          };
+                        });
+                      }}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          {categories.seasons.length > 0 && (
-            <div className="filter-section">
-              <div className="filter-section-label">季节</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                {categories.seasons.map(s => (
-                  <button
-                    key={s.id}
-                    className={`filter-chip ${selectedSeasons.includes(s.id) ? 'active' : ''}`}
-                    onClick={() => toggleArrayFilter(selectedSeasons, setSelectedSeasons, s.id)}
-                  >
-                    {s.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+            );
+          })}
         </div>
       )}
 
@@ -380,6 +431,7 @@ export default function OrderPage() {
             {dishes.map((dish, index) => {
               const warning = getWarningTag(dish);
               const isLast = index === dishes.length - 1;
+              const published = getPublishedChefs(dish);
               return (
                 <div
                   key={dish.id}
@@ -401,6 +453,11 @@ export default function OrderPage() {
                           {warning.label}
                         </div>
                       )}
+                      {published.length > 0 && (
+                        <div style={{ position: 'absolute', bottom: 8, right: 8 }}>
+                          {renderChefAvatars(published)}
+                        </div>
+                      )}
                     </div>
                     <div className="dish-card-body">
                       <div className="dish-card-name">{dish.name}</div>
@@ -417,15 +474,17 @@ export default function OrderPage() {
                             {dish.is_favorite ? '❤️' : '🤍'}
                           </button>
                         </div>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(dish);
-                          }}
-                        >
-                          点菜
-                        </button>
+                        {!isAdmin && (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToCart(dish);
+                            }}
+                          >
+                            点菜
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -447,9 +506,10 @@ export default function OrderPage() {
         </section>
       )}
 
-      {cartCount > 0 && (
+      {!isAdmin && (
         <div className="cart-bar">
           <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
+            <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
             <span style={{ fontWeight: 600 }}>已点 {cartCount} 道菜</span>
             <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
@@ -458,26 +518,31 @@ export default function OrderPage() {
           <button
             className="btn btn-primary btn-sm"
             onClick={handleConfirmOrder}
-            disabled={submitting}
+            disabled={submitting || cartCount === 0}
           >
             {submitting ? '提交中...' : '确认点菜'}
           </button>
         </div>
       )}
 
-      {cartExpanded && cartCount > 0 && (
+      {!isAdmin && cartExpanded && (
         <div className="cart-detail-panel">
           {cart.map(item => (
-            <div key={item.dish_id} className="cart-detail-item">
-              <span style={{ flex: 1, fontSize: '0.85rem' }}>{item.dish_name}</span>
+            <div key={item.cart_key} className="cart-detail-item">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '0.85rem' }}>{item.dish_name}</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 1 }}>
+                  👨‍🍳 {item.chef_name}
+                </div>
+              </div>
               <div className="qty-stepper">
-                <button onClick={() => updateQuantity(item.dish_id, -1)}>−</button>
+                <button onClick={() => updateQuantity(item.cart_key, -1)}>−</button>
                 <span className="qty-value">{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.dish_id, 1)}>+</button>
+                <button onClick={() => updateQuantity(item.cart_key, 1)}>+</button>
               </div>
               <button
                 className="btn-icon btn-sm"
-                onClick={() => removeFromCart(item.dish_id)}
+                onClick={() => removeFromCart(item.cart_key)}
                 style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
               >
                 ×
@@ -487,54 +552,115 @@ export default function OrderPage() {
         </div>
       )}
 
-      {showChefModal && (
-        <div className="modal-overlay" onClick={() => setShowChefModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      {showChefPicker && chefPickerDish && (
+        <div className="modal-overlay" onClick={() => setShowChefPicker(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 360 }}>
             <div className="modal-header">
               <h3>选择厨师</h3>
-              <button className="modal-close" onClick={() => setShowChefModal(false)}>✕</button>
+              <button className="modal-close" onClick={() => setShowChefPicker(false)}>✕</button>
             </div>
             <div className="modal-body">
-              {chefs.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 20, color: 'var(--text-muted)' }}>
-                  暂无可用厨师，将直接提交订单
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {chefs.map(chef => (
-                    <div
-                      key={chef.id}
-                      className={`chef-select-item ${selectedChef === chef.id ? 'active' : ''}`}
-                      onClick={() => setSelectedChef(chef.id)}
-                    >
-                      <div className="avatar avatar-sm">
-                        {(chef.display_name || chef.username).charAt(0).toUpperCase()}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>
-                          {chef.display_name || chef.username}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>厨师</div>
-                      </div>
-                      {selectedChef === chef.id && <span style={{ color: 'var(--accent)' }}>✓</span>}
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                「{chefPickerDish.name}」有多位厨师可做，请选择：
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {chefPickerChefs.map(chef => (
+                  <button
+                    key={chef.id}
+                    className="card"
+                    style={{
+                      padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--border)',
+                      display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
+                      background: 'var(--bg-elevated)', borderRadius: 'var(--radius-lg)',
+                    }}
+                    onClick={() => {
+                      addDishToCart(chefPickerDish, chef);
+                      setShowChefPicker(false);
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                  >
+                    <div style={{
+                      width: 36, height: 36, borderRadius: '50%',
+                      background: 'var(--accent)', color: '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
+                    }}>
+                      {(chef.display_name || chef.username).charAt(0).toUpperCase()}
                     </div>
-                  ))}
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{chef.display_name || chef.username}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmModal && (
+        <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>确认订单</h3>
+              <button className="modal-close" onClick={() => setShowConfirmModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label className="form-label">用餐时间</label>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                  {(() => {
+                    const today = new Date();
+                    const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    const weekday = (d) => ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+                    const dates = Array.from({ length: 7 }, (_, i) => {
+                      const d = new Date(today);
+                      d.setDate(d.getDate() + i);
+                      return { value: fmt(d), label: i === 0 ? '今天' : i === 1 ? '明天' : i === 2 ? '后天' : `${d.getMonth()+1}/${d.getDate()}`, sub: i === 0 ? '' : weekday(d) };
+                    });
+                    return dates.map(d => (
+                      <button
+                        key={d.value}
+                        type="button"
+                        className={`filter-chip ${mealDate === d.value ? 'active' : ''}`}
+                        style={{ flex: 1, minWidth: 0, padding: '6px 4px', textAlign: 'center', flexDirection: 'column', lineHeight: 1.3 }}
+                        onClick={() => { setMealDate(d.value); if (mealType === 'now') setMealType(''); }}
+                      >
+                        <span>{d.label}</span>
+                        {d.sub && <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{d.sub}</span>}
+                      </button>
+                    ));
+                  })()}
                 </div>
-              )}
+                <select
+                  className="form-input"
+                  value={mealType}
+                  onChange={(e) => setMealType(e.target.value)}
+                >
+                  <option value="breakfast">早餐</option>
+                  <option value="lunch">午餐</option>
+                  <option value="dinner">晚餐</option>
+                  {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
+                </select>
+              </div>
               <div style={{ marginTop: 16, padding: 12, background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
                   确认订单 ({cartCount} 道菜)
                 </div>
                 {cart.map(item => (
-                  <div key={item.dish_id} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{item.dish_name}</span>
+                  <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                    <span>
+                      {item.dish_name}
+                      <span style={{ color: 'var(--text-muted)', marginLeft: 4 }}>· {item.chef_name}</span>
+                    </span>
                     <span>×{item.quantity}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowChefModal(false)}>取消</button>
+              <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
               <button className="btn btn-primary" onClick={handleSubmitOrder} disabled={submitting}>
                 {submitting ? '提交中...' : '确认提交'}
               </button>

@@ -2,6 +2,7 @@
 家味 · Family Chef - 飞书集成客户端
 """
 
+import json
 import httpx
 from typing import Optional
 from app.config import settings
@@ -57,13 +58,15 @@ class FeishuClient:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{self.BASE_URL}/im/v1/messages",
+                params={"receive_id_type": "open_id"},
                 headers={
                     "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json; charset=utf-8",
                 },
                 json={
                     "receive_id": receive_id,
                     "msg_type": msg_type,
-                    "content": str(content),  # 飞书要求 content 为字符串
+                    "content": json.dumps(content),
                 },
             )
 
@@ -77,22 +80,93 @@ class FeishuClient:
         return False
 
     async def send_order_notification(
-        self,
-        receive_id: str,
-        order_no: str,
-        status: str,
-        items: list,
-    ) -> bool:
+            self,
+            receive_id: str,
+            data: dict,
+        ) -> bool:
         """发送订单通知（卡片消息）"""
+        order_no = data.get("order_no", "")
+        status = data.get("status", "")
         status_text = {
             "pending": "待处理",
-            "accepted": "已接受",
+            "accepted": "已接单",
             "cooking": "烹饪中",
             "completed": "已完成",
             "cancelled": "已取消",
         }.get(status, status)
 
-        # 构建卡片消息
+        user_name = data.get("user_name", "未知用户")
+        items = data.get("items", [])
+        ingredients = data.get("ingredients", [])
+        meal_date = data.get("meal_date", "")
+        meal_type = data.get("meal_type", "")
+        dislikes = data.get("dislikes", [])
+        allergies = data.get("allergies", [])
+
+        meal_type_map = {
+            "breakfast": "早餐",
+            "lunch": "午餐",
+            "dinner": "晚餐",
+            "now": "现在就想吃",
+        }
+        meal_type_text = meal_type_map.get(meal_type, meal_type)
+        meal_time_str = f"{meal_date} {meal_type_text}" if meal_date and meal_type else meal_date or meal_type or "未指定"
+
+        elements = [
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"**订单号：** {order_no}　**状态：** {status_text}\n**点单人：** {user_name}",
+                },
+            },
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"**预计用餐时间：** {meal_time_str}",
+                },
+            },
+        ]
+
+        if items:
+            dish_lines = "\n".join(f"- {item.get('name', '未知菜品')} x{item.get('quantity', 1)}" for item in items)
+            elements.append({
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"**菜品清单：**\n{dish_lines}",
+                },
+            })
+
+        if ingredients:
+            ing_lines = "、".join(f"{item.get('name', '')}{item.get('quantity', '')}{item.get('unit', '')}" for item in ingredients)
+            elements.append({
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"**食材清单：**\n{ing_lines}",
+                },
+            })
+
+        if allergies:
+            elements.append({
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"🚨 **严格忌口：** {'、'.join(allergies)}",
+                },
+            })
+
+        if dislikes:
+            elements.append({
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": f"⚠️ **不爱吃：** {'、'.join(dislikes)}",
+                },
+            })
+
         card_content = {
             "config": {
                 "wide_screen_mode": True,
@@ -100,29 +174,11 @@ class FeishuClient:
             "header": {
                 "title": {
                     "tag": "plain_text",
-                    "content": f"订单 {order_no} - {status_text}",
+                    "content": f"📋 订单 {order_no}",
                 },
                 "template": "blue",
             },
-            "elements": [
-                {
-                    "tag": "div",
-                    "text": {
-                        "tag": "lark_md",
-                        "content": f"**订单号：** {order_no}\n**状态：** {status_text}",
-                    },
-                },
-                {
-                    "tag": "div",
-                    "text": {
-                        "tag": "lark_md",
-                        "content": "**菜品列表：**\n" + "\n".join(
-                            f"- {item.get('name', '未知菜品')} x{item.get('quantity', 1)}"
-                            for item in items
-                        ),
-                    },
-                },
-            ],
+            "elements": elements,
         }
 
         return await self.send_message(
