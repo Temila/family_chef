@@ -154,14 +154,14 @@ family_chef/
 - Node.js 18+
 - [uv](https://github.com/astral-sh/uv)（Python 包管理器）
 
-### 1. 克隆项目
+### 克隆项目
 
 ```bash
 git clone https://github.com/Temila/family_chef.git
 cd family_chef
 ```
 
-### 2. 配置后端环境变量
+### 配置环境变量
 
 ```bash
 cd backend
@@ -175,43 +175,86 @@ SECRET_KEY=<替换为随机字符串>
 JWT_SECRET_KEY=<替换为随机字符串>
 ```
 
-完整配置项参见 `backend/.env.example`。
+飞书、LLM 等可选配置参见 `backend/.env.example`。
 
-### 3. 安装后端依赖
+---
+
+### 开发环境部署
+
+项目提供一键启动脚本，自动安装依赖并启动前后端：
 
 ```bash
-cd backend
-uv sync
+bash scripts/run-dev.sh
 ```
 
-### 4. 构建前端
+脚本会执行以下操作：
+1. 检查并安装前端依赖（`npm install`）
+2. 检查并安装后端依赖（`uv sync`，含智能食材提取 extras）
+3. 启动后端服务（端口 8000，热重载）
+4. 等待后端就绪后启动前端开发服务器（端口 5173，HMR 热更新）
+
+| 服务 | 地址 | 说明 |
+|------|------|------|
+| 前端 | `http://localhost:5173/` | Vite 开发服务器，支持热更新 |
+| 后端 | `http://localhost:8000/docs` | Swagger API 文档 |
+| 健康检查 | `http://localhost:8000/api/health` | 后端健康检查 |
+
+> 前端开发服务器会自动将 API 请求代理到后端 8000 端口。
+
+如需手动启动各服务：
 
 ```bash
+# 后端（热重载）
+cd backend
+uv sync --extra smart
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# 前端（HMR）
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+### 生产环境部署
+
+```bash
+bash scripts/run.sh
+```
+
+脚本会执行以下操作：
+1. 安装前端依赖并构建（`npm run build`）
+2. 安装后端依赖（`uv sync`）
+3. 启动后端服务（端口 8000，无热重载）
+
+构建产物位于 `frontend/dist/`，后端启动时会自动挂载到 `/app` 路径，通过同一端口提供前端页面。
+
+| 服务 | 地址 | 说明 |
+|------|------|------|
+| 前端 | `http://localhost:8000/` | 后端直接托管前端构建产物 |
+| API | `http://localhost:8000/docs` | Swagger API 文档 |
+| 健康检查 | `http://localhost:8000/api/health` | 后端健康检查 |
+
+如需手动构建和启动：
+
+```bash
+# 构建前端
 cd frontend
 npm install
 npm run build
-```
 
-构建产物位于 `frontend/dist/`，后端启动时会自动挂载到 `/app` 路径。
-
-### 5. 启动服务
-
-```bash
+# 启动后端
 cd backend
+uv sync
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-服务启动后自动创建数据库、初始化默认管理员账号和预设分类/食材。
+如需部署到服务器，建议配合 systemd、Nginx 反向代理使用。
 
-### 6. 访问系统
+---
 
-| 地址 | 说明 |
-|------|------|
-| `http://localhost:8000/` | 自动跳转前端首页 |
-| `http://localhost:8000/docs` | Swagger API 文档 |
-| `http://localhost:8000/api/health` | 健康检查 |
-
-### 7. 默认账号
+### 默认账号
 
 | 用户名 | 密码 | 角色 |
 |--------|------|------|
@@ -219,23 +262,7 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 > 首次登录后请立即修改密码。
 
-### 8. 开发模式
-
-前端开发服务器（热更新）：
-
-```bash
-cd frontend
-npm run dev
-```
-
-后端开发服务器（自动重载）：
-
-```bash
-cd backend
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 9. 运行测试
+### 运行测试
 
 ```bash
 cd backend
