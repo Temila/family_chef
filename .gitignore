@@ -67,3 +67,6 @@ uv.lock
 docs-dev/
 front-end-prototype/
 front-end-portotype/
+
+# Docker 部署配置（含敏感信息）
+docker/config.yaml

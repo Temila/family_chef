@@ -6,6 +6,7 @@
 """
 
 import logging
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -14,7 +15,7 @@ import yaml
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-_CONFIG_PATH = _PROJECT_ROOT / "config.yaml"
+_CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", str(_PROJECT_ROOT / "config.yaml")))
 
 
 def _load_yaml(path: Path) -> dict:
