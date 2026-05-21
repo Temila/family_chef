@@ -1,0 +1,27 @@
+name: Enforce PR target is dev
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  enforce-target:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate target branch
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+          if [[ "$SOURCE_BRANCH" =~ ^(feature/|fix/) ]] && [[ "$TARGET_BRANCH" != "dev" ]]; then
+            echo "::error::PRs from '$SOURCE_BRANCH' must target 'dev', not '$TARGET_BRANCH'"
+            gh pr close "${{ github.event.pull_request.number }}" \
+              --comment "⛔ 此 PR 的目标分支是 \`$TARGET_BRANCH\`，来自 \`$SOURCE_BRANCH\` 的 PR 只能以 \`dev\` 为目标分支。已自动关闭，请将目标分支改为 \`dev\` 后重新提交。" \
+              --repo "${{ github.repository }}"
+            exit 1
+          fi
+          echo "✅ Target branch '$TARGET_BRANCH' is valid for source '$SOURCE_BRANCH'"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
