@@ -13,7 +13,7 @@
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Data Foundation** - 数据库模型、迁移、邀请表结构就绪
-- [ ] **Phase 2: Backend Core** - 邀请服务、访客下单 API、飞书通知端到端可用
+- [x] **Phase 2: Backend Core** - 邀请服务、访客下单 API、飞书通知端到端可用
 - [ ] **Phase 3: Frontend Authenticated** - 注册用户可创建、分享、管理邀请链接
 - [ ] **Phase 4: Frontend Guest** - 访客通过移动端友好页面完成点菜全流程
 
@@ -48,7 +48,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 02-01-PLAN.md — 邀请创建 + 访客菜品浏览 API（INV-01/02, GORD-01/02）
-- [ ] 02-02-PLAN.md — 访客订单提交 + 飞书通知 + 已用链接摘要（GORD-05, DATA-04, NOTIF-01, GUX-04）
+- [x] 02-02-PLAN.md — 访客订单提交 + 飞书通知 + 已用链接摘要（GORD-05, DATA-04, NOTIF-01, GUX-04）
 
 ### Phase 3: Frontend Authenticated
 **Goal**: 注册用户可通过应用 UI 创建、分享和管理邀请链接，访客订单在厨师列表中可见
@@ -86,6 +86,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
-| 2. Backend Core | 1/2 | In Progress|  |
+| 2. Backend Core | 2/2 | ✓ Complete | 2026-05-25 |
 | 3. Frontend Authenticated | 0/? | Not started | - |
 | 4. Frontend Guest | 0/? | Not started | - |

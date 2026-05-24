@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-24T15:56:46.372Z"
-last_activity: 2026-05-24
+last_updated: "2026-05-25T12:00:00.000Z"
+last_activity: 2026-05-25 — Phase 2 complete
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 25
+  completed_plans: 3
+  percent: 50
 ---
 
 # Project State
@@ -24,31 +24,31 @@ See: .planning/PROJECT.md (updated 2026-05-24)
 
 ## Current Position
 
-Phase: 2 of 4 (Backend Core)
-Plan: 1 of 2 in current phase
-Status: Plan 01 complete, ready for Plan 02
-Last activity: 2026-05-24 — Completed 02-01 (guest invitation + dish browsing)
+Phase: 3 of 4 (Frontend Authenticated)
+Plan: 0 of 0 in current phase
+Status: ✓ Phase 2 complete — ready for Phase 3
+Last activity: 2026-05-25 — Phase 2 complete
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: ~14 min
-- Total execution time: 0.47 hours
+- Total execution time: 0.7 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Data Foundation | 1 | 15 min | 15 min |
-| 2. Backend Core | 1 | 13 min | 13 min |
+| 2. Backend Core | 2 | 26 min | 13 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 02-01 (13min), 01-01 (15min)
+- Last 5 plans: 02-02 (11min), 02-01 (13min), 01-01 (15min)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - 复用 DishService.list_dishes target_chef_id 参数过滤厨师上架菜品（02-01）
 - 惰性过期检查：每次 validate_invitation 时检查 expires_at 并更新 status（02-01）
 - 访客端点不使用 JWT 认证，通过路径参数 token 验证权限（02-01）
+- 访客订单原子性：同一事务内检查 status + 创建订单 + 更新 status=used（02-02）
+- 飞书通知扩展 is_guest 字段，访客订单显示【访客订单】橙色标签（02-02）
+- 已使用链接只读摘要通过 GET /{token}/summary 返回（02-02）
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-24T15:56:46.346Z
-Stopped at: Phase 2 planned, ready to execute
+Last session: 2026-05-25T12:00:00.000Z
+Stopped at: Phase 2 complete, ready for Phase 3
 Resume file: None
