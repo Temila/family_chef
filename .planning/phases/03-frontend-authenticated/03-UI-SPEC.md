@@ -41,20 +41,28 @@ created: 2026-05-25
 
 ## Spacing Scale
 
-Existing de facto scale from CSS (D-05 row layout uses 12px vertical padding matching `.list-item` pattern):
+Existing de facto scale from CSS. Values follow the 4-point system (`{4, 8, 16, 24, 32, 48, 64}`) with two justified exceptions (12px and 20px) that are baked into the existing codebase styles.
 
 | Token | Value | Usage |
 |-------|-------|-------|
 | 2xs | 4px | Badge inner padding top/bottom, inline icon gaps |
 | xs | 8px | Filter-chip gaps, modal-body padding sides |
-| sm | 12px | Row vertical padding (matching `.list-item`), grid gaps |
+| sm | 12px | **Exception** — Row vertical padding, grid gaps |
 | md | 16px | Section padding, card-body padding, modal-header padding |
-| lg | 20px | Modal-header `h3` margin (implicit via padding) |
+| lg | 20px | **Exception** — Modal header/body/footer padding |
 | xl | 24px | Profile card padding top/bottom, major section vertical breaks |
 | 2xl | 32px | Large page-level gaps |
 | 3xl | 48px | Not used in Phase 3 |
 
-Exceptions:
+**Justified exceptions:**
+
+| Exception | Value | Rationale | CSS Reference |
+|-----------|-------|-----------|---------------|
+| `sm` | 12px | Matches `.list-item` vertical padding, `.header` padding, `.dish-grid` gap — all existing CSS patterns reused in Phase 3 | `styles.css:146` (`.list-item { padding: 12px 16px }`), `styles.css:60` (`.header { padding: 12px 16px }`), `styles.css:176` (`.dish-grid { gap: 12px }`) |
+| `lg` | 20px | Matches `.modal-header`, `.modal-body`, `.modal-footer` padding — modal pattern reused for chef-select, create-link, and revoke-confirm modals | `styles.css:379` (`.modal-header { padding: 16px 20px }`), `styles.css:383` (`.modal-body { padding: 20px }`), `styles.css:384` (`.modal-footer { padding: 16px 20px }`) |
+
+**Touch target exceptions:**
+
 - **Icon-only touch targets:** `40px × 40px` minimum (matches existing `.btn-icon`). WCAG 2.1 recommends 44px, but existing codebase uses 40px — maintain consistency.
 - **Row list items:** Minimum 44px tap height (`.list-item` has 12px padding top/bottom × 2 + ~20px content height = 44px).
 
@@ -62,11 +70,11 @@ Exceptions:
 
 ## Typography
 
-Existing CSS sizes grouped into 4 functional roles. Phase 3 uses existing classes — no new font-size tokens needed.
+Existing CSS sizes grouped into 4 functional roles. Exactly 2 font weights used: 400 (body) and 600 (headings, labels, display). Phase 3 uses existing classes — no new font-size tokens needed.
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Caption/Label | 0.7rem (~11px) | 500 | 1.3 | Status badges, row meta text (dates, chef name) |
+| Caption/Label | 0.7rem (~11px) | 600 | 1.3 | Status badges, row meta text (dates, chef name) — weight 600 keeps small text crisp |
 | Body | 0.875rem (14px) | 400 | 1.6 | Row item content, modal body text, link URL display |
 | Heading | 1rem (16px) | 600 | 1.3 | Invitation section title, modal headers, "查看全部" button |
 | Display (serif) | 1.125rem (18px) | 600 | 1.2 | Section title "邀请访客" on UserHomePage |
