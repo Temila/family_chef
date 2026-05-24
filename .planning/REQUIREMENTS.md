@@ -9,8 +9,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Invitation Management
 
-- [ ] **INV-01**: Chef 角色用户可一键生成访客邀请链接（自动绑定自己为厨师）
-- [ ] **INV-02**: User 角色用户生成邀请链接时可选择指定一位厨师
+- [x] **INV-01**: Chef 角色用户可一键生成访客邀请链接（自动绑定自己为厨师）
+- [x] **INV-02**: User 角色用户生成邀请链接时可选择指定一位厨师
 - [ ] **INV-03**: 邀请链接生成后 2 小时内有效，过期自动失效
 - [ ] **INV-04**: 用户可复制邀请链接到剪贴板
 - [ ] **INV-05**: 用户可通过微信/短信分享邀请链接（Web Share API + 剪贴板降级）
@@ -19,8 +19,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Guest Ordering
 
-- [ ] **GORD-01**: 访客通过邀请链接访问点菜页面，无需注册或登录
-- [ ] **GORD-02**: 访客仅能看到邀请绑定的厨师所上架的菜品（含图片、食材信息）
+- [x] **GORD-01**: 访客通过邀请链接访问点菜页面，无需注册或登录
+- [x] **GORD-02**: 访客仅能看到邀请绑定的厨师所上架的菜品（含图片、食材信息）
 - [ ] **GORD-03**: 访客可将菜品加入购物车并设置数量
 - [ ] **GORD-04**: 访客提交订单时无需选择厨师（已绑定），直接提交
 - [ ] **GORD-05**: 一链接仅能提交一次订单，提交后链接变为只读（可查看订单内容）
@@ -84,15 +84,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-03 | Phase 1 | ✓ Verified |
 | DATA-04 | Phase 2 | Pending |
 | DATA-05 | Phase 1 | ✓ Verified |
-| INV-01 | Phase 2 | Pending |
-| INV-02 | Phase 2 | Pending |
+| INV-01 | Phase 2 | Complete |
+| INV-02 | Phase 2 | Complete |
 | INV-03 | Phase 1 | ✓ Verified |
 | INV-04 | Phase 3 | Pending |
 | INV-05 | Phase 3 | Pending |
 | INV-06 | Phase 3 | Pending |
 | INV-07 | Phase 3 | Pending |
-| GORD-01 | Phase 2 | Pending |
-| GORD-02 | Phase 2 | Pending |
+| GORD-01 | Phase 2 | Complete |
+| GORD-02 | Phase 2 | Complete |
 | GORD-03 | Phase 4 | Pending |
 | GORD-04 | Phase 4 | Pending |
 | GORD-05 | Phase 2 | Pending |

@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_execute
-last_updated: "2026-05-24T23:22:00.000Z"
-last_activity: 2026-05-24 — Phase 2 planning complete
+status: executing
+last_updated: "2026-05-24T15:56:46.372Z"
+last_activity: 2026-05-24
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 25
 ---
 
@@ -25,30 +25,31 @@ See: .planning/PROJECT.md (updated 2026-05-24)
 ## Current Position
 
 Phase: 2 of 4 (Backend Core)
-Plan: 0 of 2 in current phase
-Status: Phase 2 planned, ready to execute
-Last activity: 2026-05-24 — Phase 2 planning complete
+Plan: 1 of 2 in current phase
+Status: Plan 01 complete, ready for Plan 02
+Last activity: 2026-05-24 — Completed 02-01 (guest invitation + dish browsing)
 
-Progress: [██░░░░░░░░] 25%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: ~15 min
-- Total execution time: 0.25 hours
+- Total plans completed: 2
+- Average duration: ~14 min
+- Total execution time: 0.47 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Data Foundation | 1 | 15 min | 15 min |
+| 2. Backend Core | 1 | 13 min | 13 min |
 
 **Recent Trend:**
 
-- Last 5 plans: (none)
-- Trend: N/A
+- Last 5 plans: 02-01 (13min), 01-01 (15min)
+- Trend: steady
 
 *Updated after each plan completion*
 
@@ -64,6 +65,10 @@ Recent decisions affecting current work:
 - 访客订单复用现有 Order 模型（user_id 可为 NULL）
 - 访客点菜页独立于主 SPA（绕过 ProtectedRoute）
 - 2 小时过期在数据库层检查（无需后台定时任务）
+- Chef 角色自动绑定 chef_id，User 角色必须指定 chef_id（02-01）
+- 复用 DishService.list_dishes target_chef_id 参数过滤厨师上架菜品（02-01）
+- 惰性过期检查：每次 validate_invitation 时检查 expires_at 并更新 status（02-01）
+- 访客端点不使用 JWT 认证，通过路径参数 token 验证权限（02-01）
 
 ### Pending Todos
 
@@ -86,6 +91,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-24T23:22:00.000Z
+Last session: 2026-05-24T15:56:46.346Z
 Stopped at: Phase 2 planned, ready to execute
-Resume file: .planning/phases/02-backend-core/02-01-PLAN.md
+Resume file: None
