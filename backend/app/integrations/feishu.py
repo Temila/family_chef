@@ -86,6 +86,7 @@ class FeishuClient:
         ) -> bool:
         """发送订单通知（卡片消息）"""
         order_no = data.get("order_no", "")
+        is_guest = data.get("is_guest", False)
         status = data.get("status", "")
         status_text = {
             "pending": "待处理",
@@ -96,6 +97,9 @@ class FeishuClient:
         }.get(status, status)
 
         user_name = data.get("user_name", "未知用户")
+        # 访客订单标注（D-09）
+        if is_guest:
+            user_name = "访客"
         items = data.get("items", [])
         ingredients = data.get("ingredients", [])
         meal_date = data.get("meal_date", "")
@@ -167,6 +171,14 @@ class FeishuClient:
                 },
             })
 
+        # 访客订单使用橙色标题 + 【访客订单】标签（D-09）
+        if is_guest:
+            header_content = f"📋 订单 {order_no}【访客订单】"
+            header_template = "orange"
+        else:
+            header_content = f"📋 订单 {order_no}"
+            header_template = "blue"
+
         card_content = {
             "config": {
                 "wide_screen_mode": True,
@@ -174,9 +186,9 @@ class FeishuClient:
             "header": {
                 "title": {
                     "tag": "plain_text",
-                    "content": f"📋 订单 {order_no}",
+                    "content": header_content,
                 },
-                "template": "blue",
+                "template": header_template,
             },
             "elements": elements,
         }
