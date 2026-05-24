@@ -60,12 +60,13 @@ async def health_check():
 
 
 # 注册路由
-from app.routers import auth, users, dishes, orders, ingredients, categories, favorites, preferences, chefs, admin, feishu, tools, upload
+from app.routers import auth, users, dishes, orders, ingredients, categories, favorites, preferences, chefs, admin, feishu, tools, upload, guest
 
 app.include_router(auth.router, prefix="/api/auth", tags=["认证"])
 app.include_router(users.router, prefix="/api/users", tags=["用户管理"])
 app.include_router(dishes.router, prefix="/api/dishes", tags=["菜品管理"])
 app.include_router(orders.router, prefix="/api/orders", tags=["订单管理"])
+app.include_router(guest.router, prefix="/api/guest", tags=["访客邀请"])
 app.include_router(ingredients.router, prefix="/api/ingredients", tags=["食材管理"])
 app.include_router(categories.router, prefix="/api/categories", tags=["分类管理"])
 app.include_router(favorites.router, prefix="/api/favorites", tags=["收藏管理"])

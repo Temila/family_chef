@@ -26,7 +26,7 @@ async def sample_dish_for_chef(client: AsyncClient, admin_token: str) -> int:
 
     # 创建菜品（管理员）
     response = await client.post(
-        "/api/dishes/",
+        "/api/dishes",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={
             "name": "测试菜品-访客可见",
