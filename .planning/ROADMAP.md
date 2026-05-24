@@ -86,6 +86,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
-| 2. Backend Core | 0/2 | In progress | - |
+| 2. Backend Core | 0/2 | Planned | - |
 | 3. Frontend Authenticated | 0/? | Not started | - |
 | 4. Frontend Guest | 0/? | Not started | - |
