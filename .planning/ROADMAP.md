@@ -20,16 +20,19 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Data Foundation
-**Goal**: 数据库结构支持访客邀请和可空用户订单，为后端开发解除阻塞
+**Goal**: 数据库结构支持访客邀请和访客订单，为后端开发解除阻塞
 **Mode:** mvp
 **Depends on**: Nothing (first phase)
 **Requirements**: DATA-01, DATA-02, DATA-03, DATA-05, INV-03
 **Success Criteria** (what must be TRUE):
   1. `guest_invitations` 表存在，包含 UUID4 token、inviter_id、chef_id、status、expires_at 字段
-  2. `orders.user_id` 可为 NULL，允许创建无注册用户的访客订单
-  3. Alembic 迁移可正向执行且可回滚
-  4. 邀请记录在查询时自动检查 2 小时过期（惰性过期，无需后台任务）
-**Plans**: TBD
+  2. 虚拟 guest 用户存在于 users 表中 (is_active=False)，orders.user_id 保持 NOT NULL
+  3. `orders` 表有 `guest_invitation_id` 外键列 (nullable)，通过 IS NOT NULL 识别访客订单
+  4. Alembic 迁移可正向执行且可回滚
+  5. 邀请记录在查询时自动检查 2 小时过期（惰性过期，无需后台任务）
+**Plans**: 1 plan
+Plans:
+- [ ] 01-01-PLAN.md — 创建 GuestInvitation 模型 + Order FK + Alembic 迁移 + 虚拟 guest 用户
 
 ### Phase 2: Backend Core
 **Goal**: 所有邀请和访客下单 API 端到端可用（可通过 API 客户端完整测试）
@@ -79,7 +82,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Data Foundation | 0/? | Not started | - |
+| 1. Data Foundation | 0/1 | Planning complete | - |
 | 2. Backend Core | 0/? | Not started | - |
 | 3. Frontend Authenticated | 0/? | Not started | - |
 | 4. Frontend Guest | 0/? | Not started | - |
