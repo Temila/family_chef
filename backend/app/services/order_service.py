@@ -4,7 +4,9 @@
 
 from datetime import datetime
 from typing import Optional, List
+import uuid
 from sqlalchemy import select, and_, or_, func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.order import Order, OrderItem
@@ -21,15 +23,21 @@ class OrderService:
 
     @staticmethod
     async def generate_order_no(db: AsyncSession) -> str:
-        """生成订单号（ORD + 日期 + 序号）"""
+        """生成订单号（ORD + 日期 + 序号），含冲突重试"""
         today = datetime.now().strftime("%Y%m%d")
-        # 查询今天已有订单数
-        result = await db.execute(
-            select(func.count(Order.id)).where(Order.order_no.like(f"ORD{today}%"))
-        )
-        count = result.scalar() or 0
-        seq = str(count + 1).zfill(4)
-        return f"ORD{today}{seq}"
+        for _ in range(5):
+            result = await db.execute(
+                select(func.count(Order.id)).where(Order.order_no.like(f"ORD{today}%"))
+            )
+            count = result.scalar() or 0
+            seq = str(count + 1).zfill(4)
+            order_no = f"ORD{today}{seq}"
+            existing = await db.execute(
+                select(Order.id).where(Order.order_no == order_no)
+            )
+            if not existing.scalar_one_or_none():
+                return order_no
+        return f"ORD{today}{uuid.uuid4().hex[:8].upper()}"
 
     @staticmethod
     async def create_order(
@@ -344,11 +352,15 @@ class OrderService:
             
             # 通知用户
             if user and user.feishu_open_id:
+                notification_data = {
+                    "order_no": order.order_no,
+                    "status": order.status,
+                    "user_name": user.display_name or user.username,
+                    "items": items_info,
+                }
                 await feishu_client.send_order_notification(
                     user.feishu_open_id,
-                    order.order_no,
-                    order.status,
-                    items_info,
+                    notification_data,
                 )
         except Exception as e:
             print(f"⚠️ 飞书通知发送失败：{e}")

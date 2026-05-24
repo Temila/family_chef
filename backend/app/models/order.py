@@ -1,12 +1,13 @@
 """订单模型"""
-from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Order(Base):
     __tablename__ = "orders"
-    
+    __table_args__ = (UniqueConstraint("order_no", name="uq_order_no"),)
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     order_no = Column(String(20), nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
