@@ -4,7 +4,22 @@
 # ================================================
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ "${DOCKER_MODE:-0}" = "1" ]; then
+    echo "🍲 家味 · Family Chef 启动中 (Docker)..."
+
+    if [ ! -f "${CONFIG_PATH:-/app/config/config.yaml}" ]; then
+        echo "❌ 配置文件不存在: ${CONFIG_PATH:-/app/config/config.yaml}"
+        exit 1
+    fi
+
+    mkdir -p /app/backend/data
+
+    echo "🚀 启动后端服务 (端口 8000)..."
+    cd /app/backend
+    exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BACKEND_DIR="$PROJECT_DIR/backend"
 FRONTEND_DIR="$PROJECT_DIR/frontend"
@@ -35,8 +50,10 @@ npm run build
 echo "📦 检查后端依赖..."
 cd "$BACKEND_DIR"
 
+export PATH="$HOME/.local/bin:$PATH"
+
 # 检查 uv
-if ! command -v uv &> /dev/null; then
+if ! command -v uv > /dev/null 2>&1; then
     echo "❌ 未找到 uv，请先安装: pip install uv"
     exit 1
 fi

@@ -79,9 +79,4 @@ app.include_router(upload.router, prefix="/api/upload", tags=["文件上传"])
 # 挂载前端静态文件（生产构建产物）
 frontend_dist_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend/dist")
 if os.path.exists(frontend_dist_dir):
-    app.mount("/app", StaticFiles(directory=frontend_dist_dir, html=True), name="frontend")
-    # 根路径重定向到 /app/
-    from fastapi.responses import RedirectResponse
-    @app.get("/")
-    async def root_redirect():
-        return RedirectResponse(url="/app/")
+    app.mount("/", StaticFiles(directory=frontend_dist_dir, html=True), name="frontend")
