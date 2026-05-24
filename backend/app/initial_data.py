@@ -35,6 +35,27 @@ async def create_initial_data():
         print("✅ 默认管理员账号创建成功 (admin/admin)")
         print("⚠️  首次登录后请修改密码")
 
+        result = await session.execute(
+            select(User).where(User.username == "__guest__")
+        )
+        guest = result.scalar_one_or_none()
+
+        if guest:
+            print("✅ 虚拟访客用户已存在，跳过创建")
+            return
+
+        guest_user = User(
+            username="__guest__",
+            password_hash=hash_password("never-used-guest-account-placeholder-password-!@#$%"),
+            display_name="访客",
+            role="user",
+            is_active=False,
+            force_pwd_change=False,
+        )
+        session.add(guest_user)
+        await session.commit()
+        print("✅ 虚拟访客用户创建成功 (__guest__, is_active=False)")
+
 
 async def create_preset_categories():
     from app.models.category import Category
