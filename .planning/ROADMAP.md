@@ -45,7 +45,10 @@ Plans:
   3. 访客通过邀请 token 可浏览绑定厨师的上架菜品（无需认证）
   4. 访客通过 token 提交一次性订单后，链接自动变为只读，重复提交被拒绝
   5. 访客提交订单后绑定的厨师收到飞书通知（标注"访客订单"）
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — 邀请创建 + 访客菜品浏览 API（INV-01/02, GORD-01/02）
+- [ ] 02-02-PLAN.md — 访客订单提交 + 飞书通知 + 已用链接摘要（GORD-05, DATA-04, NOTIF-01, GUX-04）
 
 ### Phase 3: Frontend Authenticated
 **Goal**: 注册用户可通过应用 UI 创建、分享和管理邀请链接，访客订单在厨师列表中可见
@@ -83,6 +86,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
-| 2. Backend Core | 0/? | Not started | - |
+| 2. Backend Core | 0/2 | In progress | - |
 | 3. Frontend Authenticated | 0/? | Not started | - |
 | 4. Frontend Guest | 0/? | Not started | - |
