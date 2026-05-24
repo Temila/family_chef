@@ -12,7 +12,7 @@
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Data Foundation** - 数据库模型、迁移、邀请表结构就绪
+- [x] **Phase 1: Data Foundation** - 数据库模型、迁移、邀请表结构就绪
 - [ ] **Phase 2: Backend Core** - 邀请服务、访客下单 API、飞书通知端到端可用
 - [ ] **Phase 3: Frontend Authenticated** - 注册用户可创建、分享、管理邀请链接
 - [ ] **Phase 4: Frontend Guest** - 访客通过移动端友好页面完成点菜全流程
@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. 邀请记录在查询时自动检查 2 小时过期（惰性过期，无需后台任务）
 **Plans**: 1 plan
 Plans:
-- [ ] 01-01-PLAN.md — 创建 GuestInvitation 模型 + Order FK + Alembic 迁移 + 虚拟 guest 用户
+- [x] 01-01-PLAN.md — 创建 GuestInvitation 模型 + Order FK + Alembic 迁移 + 虚拟 guest 用户
 
 ### Phase 2: Backend Core
 **Goal**: 所有邀请和访客下单 API 端到端可用（可通过 API 客户端完整测试）
@@ -82,7 +82,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Data Foundation | 0/1 | Planning complete | - |
+| 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
 | 2. Backend Core | 0/? | Not started | - |
 | 3. Frontend Authenticated | 0/? | Not started | - |
 | 4. Frontend Guest | 0/? | Not started | - |

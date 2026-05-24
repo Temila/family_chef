@@ -79,14 +79,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | ✓ Verified |
+| DATA-02 | Phase 1 | ✓ Verified |
+| DATA-03 | Phase 1 | ✓ Verified |
 | DATA-04 | Phase 2 | Pending |
-| DATA-05 | Phase 1 | Pending |
+| DATA-05 | Phase 1 | ✓ Verified |
 | INV-01 | Phase 2 | Pending |
 | INV-02 | Phase 2 | Pending |
-| INV-03 | Phase 1 | Pending |
+| INV-03 | Phase 1 | ✓ Verified |
 | INV-04 | Phase 3 | Pending |
 | INV-05 | Phase 3 | Pending |
 | INV-06 | Phase 3 | Pending |
