@@ -1,0 +1,50 @@
+# ============================================================
+# 家味 · Family Chef - 全局配置文件示例
+# 复制为 config.yaml 并根据实际情况修改
+# cp config.example.yaml config.yaml
+# ============================================================
+
+# -------------------- 应用基础配置 --------------------
+app:
+  name: "家味·Family Chef"
+  version: "0.1.0"
+  debug: true
+  secret_key: "CHANGE-ME-TO-A-RANDOM-LONG-STRING"
+
+# -------------------- 数据库配置 --------------------
+database:
+  url: "sqlite+aiosqlite:///./data/family_chef.db"
+
+# -------------------- JWT 认证配置 --------------------
+jwt:
+  secret_key: "CHANGE-ME-TO-A-RANDOM-LONG-STRING"
+  algorithm: "HS256"
+  expire_minutes: 1440
+
+# -------------------- 飞书集成配置 --------------------
+feishu:
+  app_id: null
+  app_secret: null
+  app_token: null
+
+# -------------------- 文件上传配置 --------------------
+upload:
+  dir: "./data/uploads"
+  max_size: 5242880
+
+# -------------------- 跨域资源共享（CORS）配置 --------------------
+cors:
+  origins:
+    - "http://localhost:5173"
+    - "http://localhost:3000"
+
+# -------------------- 智能功能配置 --------------------
+smart:
+  enabled: true
+  features:
+    ingredient_extraction: true
+  llm:
+    model_repo: "unsloth/Qwen3.5-0.8B-GGUF"
+    model_filename: "Qwen3.5-0.8B-Q4_K_M.gguf"
+    n_ctx: 2048
+    hf_mirror: "https://hf-mirror.com"

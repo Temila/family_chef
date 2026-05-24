@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, field_validator
 from app.database import get_db
-from app.routers.auth import get_current_user_from_token, require_role
+from app.routers.auth import get_current_user_from_token, require_role, get_current_user_allow_force_pwd_change
 from app.services.user_service import user_service
 from app.middleware.logging import log_action
 from app.models.user import User
@@ -50,6 +50,7 @@ async def list_users(
     role: Optional[str] = None,
     search: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
 ):
     """用户列表"""
     result = await user_service.list_users(
@@ -82,6 +83,7 @@ async def list_users(
 async def get_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token),
 ):
     """用户详情"""
     user = await user_service.get_user_by_id(db, user_id)
@@ -141,7 +143,7 @@ async def update_password(
     user_id: int,
     request: PasswordChangeRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user_from_token),
+    current_user: User = Depends(get_current_user_allow_force_pwd_change),
 ):
     """修改密码"""
     # 用户只能修改自己的密码，管理员可以修改任何人的

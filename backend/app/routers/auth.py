@@ -2,7 +2,7 @@
 家味 · Family Chef - 认证路由
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
@@ -10,13 +10,14 @@ from app.schemas.user import UserLogin, UserCreate, UserResponse, TokenResponse
 from app.services.auth_service import auth_service
 from app.utils.security import decode_access_token
 from app.middleware.logging import log_action
+from app.middleware.rate_limit import rate_limit_auth
 
 router = APIRouter()
 security = HTTPBearer()
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(request: UserLogin, db: AsyncSession = Depends(get_db), _=Depends(rate_limit_auth)):
     """用户登录"""
     user = await auth_service.authenticate_user(db, request.username, request.password)
 
@@ -34,7 +35,7 @@ async def login(request: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(request: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(request: UserCreate, db: AsyncSession = Depends(get_db), _=Depends(rate_limit_auth)):
     """用户注册"""
     try:
         user = await auth_service.create_user(
@@ -90,6 +91,7 @@ async def refresh_token(
 async def get_current_user_from_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db),
+    _allow_force_pwd_change: bool = False,
 ):
     """从 Token 获取当前用户（依赖注入）"""
     token = credentials.credentials
@@ -101,7 +103,21 @@ async def get_current_user_from_token(
             detail="无效的 Token",
         )
 
+    if not _allow_force_pwd_change and user.force_pwd_change:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="首次登录请修改密码",
+        )
+
     return user
+
+
+def get_current_user_allow_force_pwd_change(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
+):
+    """允许 force_pwd_change 用户通过（用于修改密码接口）"""
+    return get_current_user_from_token(credentials, db, _allow_force_pwd_change=True)
 
 
 def require_role(*roles: str):

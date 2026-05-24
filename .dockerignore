@@ -17,5 +17,6 @@ frontend/dist
 *.md
 !frontend/README.md
 scripts/
+!scripts/run.sh
 docker/
 config.yaml

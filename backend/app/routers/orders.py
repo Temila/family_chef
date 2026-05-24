@@ -250,6 +250,6 @@ async def cancel_order(
             detail="订单不存在",
         )
     await db.commit()
-    await log_action(current_user.id, "create_order", "order", order.id, f"创建订单 #{order.id}")
+    await log_action(current_user.id, "cancel_order", "order", order.id, f"取消订单 #{order.id}")
     
     return await build_order_detail(db, order)
