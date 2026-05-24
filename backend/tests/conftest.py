@@ -71,6 +71,8 @@ async def clean_all_tables():
             "guest_invitations",
             "dish_categories",
             "dish_ingredients",
+            "dish_chefs",
+            "dish_semifinished_ingredients",
             "dishes",
             "taste_preferences",
             "favorites",
@@ -97,12 +99,16 @@ async def clean_all_tables():
         
         # 重新启用外键检查
         await conn.execute(text("PRAGMA foreign_keys = ON"))
+        await conn.commit()
 
 
 @pytest.fixture(autouse=True)
 async def clean_db(setup_database):
     """每次测试前清理数据库"""
     await clean_all_tables()
+    # 重置速率限制器（避免跨测试累积）
+    from app.middleware.rate_limit import auth_limiter
+    auth_limiter._requests.clear()
 
 
 @pytest.fixture
