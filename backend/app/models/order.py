@@ -19,10 +19,12 @@ class Order(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
     completed_at = Column(DateTime)
+    guest_invitation_id = Column(Integer, ForeignKey("guest_invitations.id"), nullable=True)
     
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     user = relationship("User", foreign_keys=[user_id])
     chef = relationship("User", foreign_keys=[chef_id])
+    guest_invitation = relationship("GuestInvitation", back_populates="orders")
 
 class OrderItem(Base):
     __tablename__ = "order_items"

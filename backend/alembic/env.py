@@ -8,7 +8,7 @@ from alembic import context
 
 # Import all models to register them with Base.metadata
 from app.database import Base
-from app.models import user, ingredient, category, dish, order, preference, favorite, schedule, log
+from app.models import user, ingredient, category, dish, order, preference, favorite, schedule, log, guest_invitation
 
 # this is the Alembic Config object
 config = context.config
