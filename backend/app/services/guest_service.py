@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional, List
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -313,6 +313,72 @@ class GuestService:
             "created_at": order.created_at,
             "items": items_info,
         }
+
+
+    @staticmethod
+    async def list_invitations(
+        db: AsyncSession,
+        inviter_id: int,
+        params,
+    ) -> tuple[list[GuestInvitation], int]:
+        """获取指定用户的邀请列表（分页）"""
+        from app.utils.pagination import PaginationParams
+
+        # 计数查询
+        count_result = await db.execute(
+            select(func.count()).select_from(GuestInvitation).where(
+                GuestInvitation.inviter_id == inviter_id
+            )
+        )
+        total = count_result.scalar()
+
+        # 数据查询（预加载厨师信息）
+        result = await db.execute(
+            select(GuestInvitation)
+            .where(GuestInvitation.inviter_id == inviter_id)
+            .options(selectinload(GuestInvitation.chef))
+            .order_by(GuestInvitation.created_at.desc())
+            .offset(params.offset)
+            .limit(params.limit)
+        )
+        invitations = list(result.scalars().all())
+
+        return invitations, total
+
+    @staticmethod
+    async def revoke_invitation(
+        db: AsyncSession,
+        invitation_id: int,
+        current_user_id: int,
+    ) -> GuestInvitation:
+        """撤销邀请（验证所有权和状态）"""
+        result = await db.execute(
+            select(GuestInvitation)
+            .where(GuestInvitation.id == invitation_id)
+            .options(selectinload(GuestInvitation.chef))
+        )
+        invitation = result.scalar_one_or_none()
+
+        if not invitation:
+            raise ValueError("邀请不存在")
+
+        if invitation.inviter_id != current_user_id:
+            raise ValueError("无权撤销此邀请")
+
+        if invitation.status != "active":
+            raise ValueError("仅活跃状态的邀请可撤销")
+
+        # 惰性过期检查
+        if invitation.expires_at < datetime.now():
+            invitation.status = "expired"
+            await db.flush()
+            raise ValueError("邀请已过期，无法撤销")
+
+        invitation.status = "revoked"
+        await db.flush()
+        await db.refresh(invitation)
+
+        return invitation
 
 
 # 全局访客邀请服务实例

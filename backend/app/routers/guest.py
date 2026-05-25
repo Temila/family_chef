@@ -15,6 +15,7 @@ from app.services.dish_service import dish_service
 from app.schemas.guest import (
     GuestInvitationCreate,
     GuestInvitationResponse,
+    GuestInvitationListResponse,
     GuestOrderCreate,
     GuestOrderSummaryResponse,
 )
@@ -41,6 +42,61 @@ async def create_invitation(
             detail=str(e),
         )
     return GuestInvitationResponse.model_validate(invitation)
+
+
+@router.get("/invitations", response_model=PageResponse[GuestInvitationListResponse])
+async def list_invitations(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=50),
+    current_user: User = Depends(require_role("chef", "user")),
+    db: AsyncSession = Depends(get_db),
+):
+    """获取当前用户的访客邀请列表"""
+    from app.utils.pagination import PaginationParams
+
+    params = PaginationParams(page=page, page_size=page_size)
+    try:
+        invitations, total = await guest_service.list_invitations(db, current_user.id, params)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    items = []
+    for inv in invitations:
+        inv_data = GuestInvitationListResponse.model_validate(inv)
+        inv_data.chef_name = inv.chef.display_name if inv.chef else None
+        items.append(inv_data)
+
+    return PageResponse[GuestInvitationListResponse](
+        total=total,
+        page=page,
+        page_size=page_size,
+        items=items,
+    )
+
+
+@router.put("/invitations/{invitation_id}/revoke")
+async def revoke_invitation(
+    invitation_id: int,
+    current_user: User = Depends(require_role("chef", "user")),
+    db: AsyncSession = Depends(get_db),
+):
+    """撤销访客邀请"""
+    try:
+        invitation = await guest_service.revoke_invitation(db, invitation_id, current_user.id)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    await db.commit()
+
+    inv_data = GuestInvitationListResponse.model_validate(invitation)
+    inv_data.chef_name = invitation.chef.display_name if invitation.chef else None
+    return inv_data
 
 
 @router.get("/{token}/dishes", response_model=PageResponse[DishListResponse])

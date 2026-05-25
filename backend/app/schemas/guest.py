@@ -23,6 +23,21 @@ class GuestInvitationResponse(BaseModel):
         from_attributes = True
 
 
+class GuestInvitationListResponse(BaseModel):
+    """访客邀请列表响应（含厨师名称）"""
+    id: int
+    token: str
+    inviter_id: int
+    chef_id: int
+    chef_name: Optional[str] = None
+    status: str
+    expires_at: datetime
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class GuestOrderItemCreate(BaseModel):
     """访客订单项创建请求"""
     dish_id: int
