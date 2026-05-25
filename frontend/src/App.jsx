@@ -23,6 +23,7 @@ import AdminIngredientsPage from './pages/AdminIngredientsPage';
 import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminChefsPage from './pages/AdminChefsPage';
 import ForceChangePasswordPage from './pages/ForceChangePasswordPage';
+import GuestOrderPage from './pages/GuestOrderPage';
 import './css/styles.css';
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
@@ -82,6 +83,12 @@ function PcLayout() {
 function App() {
   return (
     <BrowserRouter>
+      <ToastProvider>
+        <Routes>
+          <Route path="/guest/:token" element={<GuestOrderPage />} />
+        </Routes>
+      </ToastProvider>
+
       <AuthProvider>
         <CategoriesProvider>
           <ToastProvider>
