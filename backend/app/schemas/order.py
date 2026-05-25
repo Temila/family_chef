@@ -46,6 +46,7 @@ class OrderListResponse(BaseModel):
     id: int
     order_no: str
     status: str
+    is_guest: bool = False
     items: List[OrderItemResponse] = []
     meal_date: Optional[date] = None
     meal_type: Optional[str] = None
@@ -59,7 +60,9 @@ class OrderDetailResponse(BaseModel):
     id: int
     order_no: str
     user_id: int
+    guest_invitation_id: Optional[int] = None
     status: str
+    is_guest: bool = False
     chef_id: Optional[int] = None
     notes: Optional[str] = None
     items: List[OrderItemResponse] = []
