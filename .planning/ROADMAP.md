@@ -63,7 +63,7 @@ Plans:
    5. 访客订单在厨师的订单列表中显示，带"访客"标识
 **Plans**: 2 plans
 Plans:
-- [ ] 03-01-PLAN.md — 邀请列表/撤销 API + 订单 is_guest 字段 + 访客订单 Badge 集成
+- [x] 03-01-PLAN.md — 邀请列表/撤销 API + 订单 is_guest 字段 + 访客订单 Badge 集成
 - [ ] 03-02-PLAN.md — 用户首页邀请管理 UI（创建/分享/列表/撤销）
 **UI hint**: yes
 
@@ -90,5 +90,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
 | 2. Backend Core | 2/2 | ✓ Complete | 2026-05-25 |
-| 3. Frontend Authenticated | 0/? | Not started | - |
+| 3. Frontend Authenticated | 1/2 | In Progress|  |
 | 4. Frontend Guest | 0/? | Not started | - |

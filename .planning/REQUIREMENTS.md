@@ -38,7 +38,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Notification
 
 - [ ] **NOTIF-01**: 访客提交订单后通过飞书通知绑定的厨师（标注为"访客订单"）
-- [ ] **NOTIF-02**: 访客订单在厨师的订单列表中可见，带"访客"标识
+- [x] **NOTIF-02**: 访客订单在厨师的订单列表中可见，带"访客"标识
 
 ### Data & Security
 
@@ -104,7 +104,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GUX-04 | Phase 2 | Pending |
 | GUX-05 | Phase 4 | Pending |
 | NOTIF-01 | Phase 2 | Pending |
-| NOTIF-02 | Phase 3 | Pending |
+| NOTIF-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 26 total
