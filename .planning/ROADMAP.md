@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Data Foundation** - 数据库模型、迁移、邀请表结构就绪
 - [x] **Phase 2: Backend Core** - 邀请服务、访客下单 API、飞书通知端到端可用
 - [x] **Phase 3: Frontend Authenticated** - 注册用户可创建、分享、管理邀请链接
-- [ ] **Phase 4: Frontend Guest** - 访客通过移动端友好页面完成点菜全流程
+- [x] **Phase 4: Frontend Guest** - 访客通过移动端友好页面完成点菜全流程
 
 ## Phase Details
 
@@ -81,7 +81,7 @@ Plans:
   6. 访客页面在微信内置浏览器中正常工作
 **Plans**: 1 plan
 Plans:
-- [ ] 04-01-PLAN.md — 完整访客点菜流程（浏览/购物车/提交/确认/错误状态）
+- [x] 04-01-PLAN.md — 完整访客点菜流程（浏览/购物车/提交/确认/错误状态）
 **UI hint**: yes
 
 ## Progress
@@ -94,4 +94,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
 | 2. Backend Core | 2/2 | ✓ Complete | 2026-05-25 |
 | 3. Frontend Authenticated | 2/2 | ✓ Complete | 2026-05-25 |
-| 4. Frontend Guest | 0/1 | In progress | - |
+| 4. Frontend Guest | 1/1 | ✓ Complete | 2026-05-26 |
