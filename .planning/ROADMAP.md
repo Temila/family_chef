@@ -71,14 +71,17 @@ Plans:
 **Goal**: 访客通过手机打开邀请链接即可浏览菜品、加入购物车、提交订单，体验完整且移动端友好
 **Mode:** mvp
 **Depends on**: Phase 2
-**Requirements**: GORD-03, GORD-04, GORD-06, GORD-07, GUX-01, GUX-02, GUX-03, GUX-05
+**Requirements**: GORD-03, GORD-04, GORD-06, GORD-07, GUX-01, GUX-02, GUX-03, GUX-04, GUX-05
 **Success Criteria** (what must be TRUE):
   1. 访客打开邀请链接后看到移动端优先的菜品浏览页（无侧边栏、无导航栏）
-  2. 访客可将菜品加入购物车并设置数量，提交时可填写备注（最多 200 字）
+  2. 访客可将菜品加入购物车并设置数量（备注功能 GORD-06 已按 D-09 延期）
   3. 访客提交订单后看到确认页面，展示订单摘要
   4. 链接过期、已使用或无效时，访客看到友好的中文错误提示
-  5. 访客页面在微信内置浏览器中正常工作
-**Plans**: TBD
+  5. 已使用的链接显示只读订单摘要（非错误页）
+  6. 访客页面在微信内置浏览器中正常工作
+**Plans**: 1 plan
+Plans:
+- [ ] 04-01-PLAN.md — 完整访客点菜流程（浏览/购物车/提交/确认/错误状态）
 **UI hint**: yes
 
 ## Progress
@@ -91,4 +94,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Data Foundation | 1/1 | ✓ Complete | 2026-05-24 |
 | 2. Backend Core | 2/2 | ✓ Complete | 2026-05-25 |
 | 3. Frontend Authenticated | 2/2 | ✓ Complete | 2026-05-25 |
-| 4. Frontend Guest | 0/? | Not started | - |
+| 4. Frontend Guest | 0/1 | In progress | - |
