@@ -115,6 +115,7 @@ input, textarea, select { font-family: var(--font-body); }
 .badge-info { background: var(--info-light); color: var(--info); }
 .badge-accent { background: var(--accent-light); color: var(--accent); }
 .badge-gold { background: var(--gold-light); color: var(--gold); }
+.badge-muted { background: var(--bg-elevated); color: var(--text-muted); }
 
 .badge-count { position: absolute; top: -6px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #e74c3c; color: #fff; font-size: 0.6rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; }
 

@@ -289,6 +289,23 @@ class ApiClient {
     return this.post('/upload/image', formData, true);
   }
 
+  // ─── Guest Invitations ─────────────────────────────────────
+  async getInvitations(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    return this.get(`/guest/invitations?${qs}`);
+  }
+
+  async createInvitation(chefId) {
+    const body = chefId ? { chef_id: chefId } : undefined;
+    return this.post('/guest/invitations', body);
+  }
+
+  async revokeInvitation(id) {
+    return this.put(`/guest/invitations/${id}/revoke`);
+  }
+
   // ─── Tools ─────────────────────────────────────
   async extractIngredients(text) {
     return this.post('/tools/extract-ingredients', { text });

@@ -117,7 +117,7 @@ export default function AdminChefsPage() {
                     <td style={{ fontSize: '0.8rem', color: chef.feishu_open_id ? 'var(--success)' : 'var(--text-muted)' }}>
                       {chef.feishu_open_id ? '已绑定' : '未绑定'}
                     </td>
-                    <td><Badge status={chef.is_active ? 'active' : 'inactive'} /></td>
+                    <td><Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} /></td>
                     <td>
                       <button className="btn btn-outline btn-sm" onClick={() => openBindModal(chef)}>
                         {chef.feishu_open_id ? '管理绑定' : '绑定飞书'}
@@ -143,7 +143,7 @@ export default function AdminChefsPage() {
                         @{chef.username}
                       </div>
                     </div>
-                    <Badge status={chef.is_active ? 'active' : 'inactive'} />
+                    <Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} />
                   </div>
                   <div style={{ fontSize: '0.8rem', marginBottom: 12, color: chef.feishu_open_id ? 'var(--success)' : 'var(--text-muted)' }}>
                     飞书: {chef.feishu_open_id ? `已绑定 (${chef.feishu_open_id.substring(0, 10)}...)` : '未绑定'}

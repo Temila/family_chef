@@ -61,8 +61,11 @@ export const statusBadge = (status) => {
     draft: { text: '草稿', cls: 'badge-info' },
     enabled: { text: '已启用', cls: 'badge-success' },
     disabled: { text: '已禁用', cls: 'badge-danger' },
-    active: { text: '启用', cls: 'badge-success' },
+    active: { text: '活跃', cls: 'badge-success' },
     inactive: { text: '停用', cls: 'badge-danger' },
+    used: { text: '已使用', cls: 'badge-muted' },
+    expired: { text: '已过期', cls: 'badge-warn' },
+    revoked: { text: '已撤销', cls: 'badge-danger' },
   };
   const s = map[status] || { text: status, cls: 'badge-info' };
   return { text: s.text, cls: s.cls };
