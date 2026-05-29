@@ -66,6 +66,7 @@ export default function ChefOrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     if (filterStatus === 'all') return true;
+    if (filterStatus === 'guest') return order.is_guest;
     return order.status === filterStatus;
   });
 
@@ -99,6 +100,12 @@ export default function ChefOrdersPage() {
         >
           已完成 ({orders.filter(o => o.status === 'completed').length})
         </button>
+        <button
+          className={`filter-chip ${filterStatus === 'guest' ? 'active' : ''}`}
+          onClick={() => setFilterStatus('guest')}
+        >
+          访客订单 ({orders.filter(o => o.is_guest).length})
+        </button>
       </div>
 
       {loading ? (
@@ -110,7 +117,10 @@ export default function ChefOrdersPage() {
           {filteredOrders.map(order => (
             <div key={order.id} className="order-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/orders/${order.id}`)}>
               <div className="order-header">
-                <span className="order-no">#{order.id}</span>
+                <span className="order-no">
+                  #{order.id}
+                  {order.is_guest && <span className="badge badge-warn" style={{ marginLeft: 8 }}>访客订单</span>}
+                </span>
                 <span className="order-date">{formatDate(order.created_at)}</span>
               </div>
 

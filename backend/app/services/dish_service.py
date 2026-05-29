@@ -60,6 +60,7 @@ class DishService:
         status_filter: Optional[str] = None,
         chef_filter: Optional[str] = None,
         is_semifinished: Optional[bool] = None,
+        target_chef_id: Optional[int] = None,
     ) -> tuple[List[Dish], int]:
         """分页查询菜品列表（支持多维度筛选）"""
         # 基础查询
@@ -106,6 +107,16 @@ class DishService:
                 ~exists(
                     select(DishChef.id).where(
                         and_(DishChef.dish_id == Dish.id, DishChef.chef_id == user_id)
+                    )
+                )
+            )
+
+        # 按指定厨师的上架菜品筛选（访客场景）
+        if target_chef_id:
+            query = query.where(
+                exists(
+                    select(DishChef.id).where(
+                        and_(DishChef.dish_id == Dish.id, DishChef.chef_id == target_chef_id, DishChef.status == "published")
                     )
                 )
             )
@@ -335,6 +346,16 @@ class DishService:
                 ~exists(
                     select(DishChef.id).where(
                         and_(DishChef.dish_id == Dish.id, DishChef.chef_id == user_id)
+                    )
+                )
+            )
+
+        # 按指定厨师的上架菜品筛选（访客场景）
+        if target_chef_id:
+            count_query = count_query.where(
+                exists(
+                    select(DishChef.id).where(
+                        and_(DishChef.dish_id == Dish.id, DishChef.chef_id == target_chef_id, DishChef.status == "published")
                     )
                 )
             )

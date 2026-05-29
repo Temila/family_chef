@@ -23,6 +23,7 @@ import AdminIngredientsPage from './pages/AdminIngredientsPage';
 import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminChefsPage from './pages/AdminChefsPage';
 import ForceChangePasswordPage from './pages/ForceChangePasswordPage';
+import GuestOrderPage from './pages/GuestOrderPage';
 import './css/styles.css';
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
@@ -86,6 +87,7 @@ function App() {
         <CategoriesProvider>
           <ToastProvider>
             <Routes>
+            <Route path="/guest/:token" element={<GuestOrderPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
             <Route path="/" element={<RedirectRoute />} />

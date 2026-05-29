@@ -221,6 +221,7 @@ class OrderService:
             chef_result = await db.execute(select(User).where(User.id == order.chef_id))
             chef = chef_result.scalar_one_or_none()
             if chef and chef.feishu_open_id:
+                # D-08: verified call signature matches send_order_notification(receive_id, data)
                 await feishu_client.send_order_notification(chef.feishu_open_id, notification_data)
         except Exception as e:
             print(f"⚠️ 飞书通知发送失败：{e}")
@@ -358,6 +359,7 @@ class OrderService:
                     "user_name": user.display_name or user.username,
                     "items": items_info,
                 }
+                # D-08: verified call signature matches send_order_notification(receive_id, data)
                 await feishu_client.send_order_notification(
                     user.feishu_open_id,
                     notification_data,

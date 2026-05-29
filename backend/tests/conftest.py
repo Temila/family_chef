@@ -52,6 +52,7 @@ async def setup_database():
     from app.models.preference import TastePreference
     from app.models.schedule import ChefSchedule
     from app.models.log import SystemLog
+    from app.models.guest_invitation import GuestInvitation
     
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -67,8 +68,11 @@ async def clean_all_tables():
         tables = [
             "order_items",
             "orders",
+            "guest_invitations",
             "dish_categories",
             "dish_ingredients",
+            "dish_chefs",
+            "dish_semifinished_ingredients",
             "dishes",
             "taste_preferences",
             "favorites",
@@ -95,12 +99,16 @@ async def clean_all_tables():
         
         # 重新启用外键检查
         await conn.execute(text("PRAGMA foreign_keys = ON"))
+        await conn.commit()
 
 
 @pytest.fixture(autouse=True)
 async def clean_db(setup_database):
     """每次测试前清理数据库"""
     await clean_all_tables()
+    # 重置速率限制器（避免跨测试累积）
+    from app.middleware.rate_limit import auth_limiter
+    auth_limiter._requests.clear()
 
 
 @pytest.fixture
@@ -215,3 +223,23 @@ async def chef_token(client: AsyncClient) -> str:
     })
     data = response.json()
     return data["access_token"]
+
+
+@pytest.fixture
+async def guest_user():
+    """创建虚拟访客用户"""
+    from app.models.user import User
+    from app.utils.security import hash_password
+
+    async with test_session_factory() as session:
+        guest = User(
+            username="__guest__",
+            password_hash=hash_password("test-placeholder-password-for-guest"),
+            display_name="访客",
+            role="user",
+            is_active=False,
+            force_pwd_change=False,
+        )
+        session.add(guest)
+        await session.commit()
+        return guest.id

@@ -62,7 +62,14 @@ export default function OrderDetailPage() {
         <div className="card" style={{ marginBottom: 12 }}>
           <div className="card-body">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ margin: 0 }}>订单 #{order.id}</h3>
+              <h3 style={{ margin: 0 }}>
+                订单 #{order.id}
+                {order.is_guest && (
+                  <span className="badge badge-warn" style={{ marginLeft: 8, verticalAlign: 'middle' }}>
+                    访客订单
+                  </span>
+                )}
+              </h3>
               <Badge status={order.status} />
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 4 }}>

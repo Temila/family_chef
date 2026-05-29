@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
+import InvitationsSection from '../components/InvitationsSection';
 
 export default function UserHomePage() {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ export default function UserHomePage() {
           </div>
         ))}
       </div>
+
+      <InvitationsSection />
 
       <BottomBar />
     </div>

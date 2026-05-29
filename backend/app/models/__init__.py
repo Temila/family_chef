@@ -8,6 +8,7 @@ from app.models.preference import TastePreference
 from app.models.favorite import Favorite
 from app.models.schedule import ChefSchedule
 from app.models.log import SystemLog
+from app.models.guest_invitation import GuestInvitation
 
 __all__ = [
     "User",
@@ -22,6 +23,7 @@ __all__ = [
     "Favorite",
     "DishSemifinishedIngredient",
     "DishChef",
+    "GuestInvitation",
     "ChefSchedule",
     "SystemLog",
 ]
