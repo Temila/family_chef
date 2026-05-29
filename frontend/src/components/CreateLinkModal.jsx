@@ -13,7 +13,19 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
       await navigator.clipboard.writeText(linkUrl);
       showToast('链接已复制到剪贴板');
     } catch {
-      showToast('复制失败，请手动复制', 'error');
+      const ta = document.createElement('textarea');
+      ta.value = linkUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('链接已复制到剪贴板');
+      } catch {
+        showToast('复制失败，请手动复制', 'error');
+      }
+      document.body.removeChild(ta);
     }
   };
 

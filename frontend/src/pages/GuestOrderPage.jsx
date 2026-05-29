@@ -31,7 +31,9 @@ export default function GuestOrderPage() {
   const [orderSummary, setOrderSummary] = useState(null);
   const [chefName, setChefName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedCuisine, setSelectedCuisine] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState({});
   const [showFilters, setShowFilters] = useState(false);
   const [cartExpanded, setCartExpanded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -105,6 +107,22 @@ export default function GuestOrderPage() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const categoryTypes = {};
+  for (const cat of categories) {
+    const type = cat.type || 'other';
+    if (!categoryTypes[type]) categoryTypes[type] = [];
+    categoryTypes[type].push(cat);
+  }
+
+  const regions = categoryTypes.region || [];
+  const cuisines = categoryTypes.cuisine || [];
+  const filteredCuisines = selectedRegion
+    ? cuisines.filter(c => c.parent_id === selectedRegion)
+    : cuisines;
+  const filterTypes = Object.keys(categoryTypes).filter(t => !['region', 'cuisine', 'ingredient'].includes(t));
+
+  const typeLabels = { region: '地域', cuisine: '菜系', taste: '口味', season: '季节', ingredient: '食材', other: '其他' };
+
   const filteredDishes = dishes.filter(dish => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -112,9 +130,12 @@ export default function GuestOrderPage() {
       const pinyinMatch = dish.pinyin && dish.pinyin.toLowerCase().includes(q);
       if (!nameMatch && !pinyinMatch) return false;
     }
-    if (selectedCategories.length > 0) {
-      const dishCatIds = (dish.categories || []).map(c => c.id);
-      if (!selectedCategories.every(id => dishCatIds.includes(id))) return false;
+    const dishCatIds = (dish.categories || []).map(c => c.id);
+    if (selectedRegion && !dishCatIds.includes(selectedRegion)) return false;
+    if (selectedCuisine && !dishCatIds.includes(selectedCuisine)) return false;
+    for (const t of filterTypes) {
+      const ids = selectedFilters[t] || [];
+      if (ids.length > 0 && !ids.some(id => dishCatIds.includes(id))) return false;
     }
     return true;
   });
@@ -140,15 +161,6 @@ export default function GuestOrderPage() {
       setSubmitting(false);
     }
   };
-
-  const categoryTypes = {};
-  for (const cat of categories) {
-    const type = cat.type || 'other';
-    if (!categoryTypes[type]) categoryTypes[type] = [];
-    categoryTypes[type].push(cat);
-  }
-
-  const typeLabels = { region: '地域', cuisine: '菜系', taste: '口味', season: '季节', ingredient: '食材', other: '其他' };
 
   if (pageState === 'loading') {
     return (
@@ -249,28 +261,81 @@ export default function GuestOrderPage() {
 
       {showFilters && (
         <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
-          {Object.entries(categoryTypes).map(([type, cats]) => (
-            <div className="filter-section" key={type}>
-              <div className="filter-section-label">{typeLabels[type] || type}</div>
+          {regions.length > 0 && (
+            <div className="filter-section">
+              <div className="filter-section-label">{typeLabels.region}</div>
               <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                {cats.map(cat => (
+                <button
+                  className={`filter-chip ${!selectedRegion ? 'active' : ''}`}
+                  onClick={() => { setSelectedRegion(null); setSelectedCuisine(null); }}
+                >
+                  全部
+                </button>
+                {regions.map(r => (
                   <button
-                    key={cat.id}
-                    className={`filter-chip ${selectedCategories.includes(cat.id) ? 'active' : ''}`}
-                    onClick={() => {
-                      setSelectedCategories(prev =>
-                        prev.includes(cat.id)
-                          ? prev.filter(id => id !== cat.id)
-                          : [...prev, cat.id]
-                      );
-                    }}
+                    key={r.id}
+                    className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
+                    onClick={() => { setSelectedRegion(r.id); setSelectedCuisine(null); }}
                   >
-                    {cat.name}
+                    {r.name}
                   </button>
                 ))}
               </div>
             </div>
-          ))}
+          )}
+
+          {filteredCuisines.length > 0 && (
+            <div className="filter-section">
+              <div className="filter-section-label">{typeLabels.cuisine}</div>
+              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                <button
+                  className={`filter-chip ${!selectedCuisine ? 'active' : ''}`}
+                  onClick={() => setSelectedCuisine(null)}
+                >
+                  全部
+                </button>
+                {filteredCuisines.map(c => (
+                  <button
+                    key={c.id}
+                    className={`filter-chip ${selectedCuisine === c.id ? 'active' : ''}`}
+                    onClick={() => setSelectedCuisine(c.id)}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {filterTypes.map(t => {
+            const items = categoryTypes[t] || [];
+            if (items.length === 0) return null;
+            const selectedArr = selectedFilters[t] || [];
+            return (
+              <div className="filter-section" key={t}>
+                <div className="filter-section-label">{typeLabels[t] || t}</div>
+                <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                  {items.map(item => (
+                    <button
+                      key={item.id}
+                      className={`filter-chip ${selectedArr.includes(item.id) ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedFilters(prev => {
+                          const arr = prev[t] || [];
+                          return {
+                            ...prev,
+                            [t]: arr.includes(item.id) ? arr.filter(v => v !== item.id) : [...arr, item.id],
+                          };
+                        });
+                      }}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

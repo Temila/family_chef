@@ -83,16 +83,11 @@ function PcLayout() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <Routes>
-          <Route path="/guest/:token" element={<GuestOrderPage />} />
-        </Routes>
-      </ToastProvider>
-
       <AuthProvider>
         <CategoriesProvider>
           <ToastProvider>
             <Routes>
+            <Route path="/guest/:token" element={<GuestOrderPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
             <Route path="/" element={<RedirectRoute />} />
