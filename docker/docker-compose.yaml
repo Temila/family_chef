@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./config.yaml:/app/config/config.yaml:ro
+      - ../config.yaml:/app/config/config.yaml:ro
       - family-chef-data:/app/backend/data
     environment:
       - CONFIG_PATH=/app/config/config.yaml

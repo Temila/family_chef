@@ -1,0 +1,30 @@
+name: Clean .planning after dev→main merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  clean-planning:
+    if: github.event.pull_request.merged == true && github.head_ref == 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Remove .planning directory
+        run: |
+          if [ -d ".planning" ] && [ "$(ls -A .planning 2>/dev/null)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git rm -rf .planning/
+            git commit -m "chore: remove .planning/ after dev→main merge"
+            git push
+            echo "✅ .planning/ removed from main"
+          else
+            echo "ℹ️ No .planning/ directory to clean"
+          fi
