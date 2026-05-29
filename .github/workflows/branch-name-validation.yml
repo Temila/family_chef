@@ -11,8 +11,18 @@ jobs:
       - name: Check branch name pattern
         run: |
           SOURCE_BRANCH="${{ github.head_ref }}"
-          if [[ ! "$SOURCE_BRANCH" =~ ^(feature/|fix/|dev|main)$ ]]; then
-            echo "::error::Branch name '$SOURCE_BRANCH' is invalid. Branch names must start with 'feature/' or 'fix/'"
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          # merge 到 dev 时：只允许 feature/*, fix/*
+          if [[ "$TARGET_BRANCH" == "dev" ]] && [[ ! "$SOURCE_BRANCH" =~ ^(feature/|fix/) ]]; then
+            echo "::error::Branch name '$SOURCE_BRANCH' is invalid. Merging to 'dev' requires branch name to start with 'feature/' or 'fix/'"
             exit 1
           fi
-          echo "✅ Branch name '$SOURCE_BRANCH' is valid"
+
+          # merge 到 main 时：只允许 dev
+          if [[ "$TARGET_BRANCH" == "main" ]] && [[ "$SOURCE_BRANCH" != "dev" ]]; then
+            echo "::error::Branch name '$SOURCE_BRANCH' is invalid. Merging to 'main' requires source branch to be 'dev'"
+            exit 1
+          fi
+
+          echo "✅ Branch name '$SOURCE_BRANCH' is valid for target '$TARGET_BRANCH'"
