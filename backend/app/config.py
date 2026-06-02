@@ -75,6 +75,7 @@ class SmartFeatureSettings:
         llm = smart.get("llm", {})
         self.LLM_MODEL_REPO: str = llm.get("model_repo", "unsloth/Qwen3.5-0.8B-GGUF")
         self.LLM_MODEL_FILENAME: str = llm.get("model_filename", "Qwen3.5-0.8B-Q4_K_M.gguf")
+        self.LLM_MODEL_DIR: str = llm.get("model_dir", "./data/models")
         self.LLM_N_CTX: int = llm.get("n_ctx", 2048)
         self.LLM_N_GPU_LAYERS: int = llm.get("n_gpu_layers", 0)
         self.HF_MIRROR: Optional[str] = llm.get("hf_mirror") or None

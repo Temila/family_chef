@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
+import PasswordInput from '../components/PasswordInput';
 
 export default function ForceChangePasswordPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { showToast } = useToast();
 
   const [form, setForm] = useState({
@@ -14,7 +15,22 @@ export default function ForceChangePasswordPage() {
     new_password: '',
     confirm: '',
   });
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  if (loading) {
+    return <div className="loading"><div className="loading-spinner"></div>加载中...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user.force_pwd_change) {
+    const role = user.role;
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'chef') return <Navigate to="/chef/orders" replace />;
+    return <Navigate to="/home" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +49,7 @@ export default function ForceChangePasswordPage() {
     }
 
     try {
-      setLoading(true);
+      setSubmitting(true);
       await api.updatePassword(user.id, form.old_password, form.new_password);
       showToast('密码修改成功，请重新登录');
 
@@ -44,7 +60,7 @@ export default function ForceChangePasswordPage() {
     } catch (err) {
       showToast(err.message || '密码修改失败', 'error');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -57,9 +73,7 @@ export default function ForceChangePasswordPage() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">当前密码</label>
-            <input
-              className="form-input"
-              type="password"
+            <PasswordInput
               value={form.old_password}
               onChange={(e) => setForm({ ...form, old_password: e.target.value })}
               placeholder="请输入当前密码"
@@ -69,9 +83,7 @@ export default function ForceChangePasswordPage() {
           </div>
           <div className="form-group">
             <label className="form-label">新密码</label>
-            <input
-              className="form-input"
-              type="password"
+            <PasswordInput
               value={form.new_password}
               onChange={(e) => setForm({ ...form, new_password: e.target.value })}
               placeholder="至少 6 位"
@@ -82,9 +94,7 @@ export default function ForceChangePasswordPage() {
           </div>
           <div className="form-group">
             <label className="form-label">确认新密码</label>
-            <input
-              className="form-input"
-              type="password"
+            <PasswordInput
               value={form.confirm}
               onChange={(e) => setForm({ ...form, confirm: e.target.value })}
               placeholder="再次输入新密码"
@@ -95,10 +105,10 @@ export default function ForceChangePasswordPage() {
           <button
             type="submit"
             className="btn btn-primary btn-block btn-lg"
-            disabled={loading}
+            disabled={submitting}
             style={{ marginTop: 8 }}
           >
-            {loading ? '提交中...' : '确认修改'}
+            {submitting ? '提交中...' : '确认修改'}
           </button>
         </form>
       </div>

@@ -45,7 +45,13 @@ class ApiClient {
       return null;
     }
 
-    const data = JSON.parse(text);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      if (!res.ok) throw new Error(`请求失败 (${res.status}): ${text}`);
+      return null;
+    }
 
     if (!res.ok) {
       throw new Error(data.detail || '请求失败');

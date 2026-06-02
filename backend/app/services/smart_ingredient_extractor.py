@@ -6,7 +6,9 @@
 
 import json
 import logging
+import os
 import re
+from pathlib import Path
 from typing import List, Dict
 
 from sqlalchemy import select
@@ -55,9 +57,13 @@ class SmartIngredientExtractor:
                 "请运行: pip install llama-cpp-python huggingface-hub"
             ) from e
 
+        model_cache_dir = Path(smart_settings.LLM_MODEL_DIR)
+        model_cache_dir.mkdir(parents=True, exist_ok=True)
+
         model_path = hf_hub_download(
             repo_id=smart_settings.LLM_MODEL_REPO,
             filename=smart_settings.LLM_MODEL_FILENAME,
+            cache_dir=str(model_cache_dir),
         )
 
         self._llm = Llama(

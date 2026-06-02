@@ -30,6 +30,7 @@ RUN mkdir -p /app/backend/data/uploads && chmod +x ./scripts/run.sh
 
 ENV DOCKER_MODE=1
 ENV CONFIG_PATH=/app/config/config.yaml
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
