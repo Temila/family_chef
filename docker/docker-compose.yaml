@@ -7,12 +7,13 @@ services:
     container_name: family-chef
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "0.0.0.0:2305:8000"
     volumes:
       - ../config.yaml:/app/config/config.yaml:ro
       - family-chef-data:/app/backend/data
     environment:
       - CONFIG_PATH=/app/config/config.yaml
+      - HOST_PORT=2305
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s

@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import ThemeToggle from '../components/ThemeToggle';
+import PasswordInput from '../components/PasswordInput';
 import { theme } from '../utils';
 
 export default function LoginPage() {
@@ -59,9 +60,7 @@ export default function LoginPage() {
           </div>
           <div className="form-group">
             <label className="form-label">密码</label>
-            <input
-              className="form-input"
-              type="password"
+            <PasswordInput
               value={loginData.password}
               onChange={(e) =>
                 setLoginData({ ...loginData, password: e.target.value })

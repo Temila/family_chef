@@ -112,12 +112,12 @@ async def get_current_user_from_token(
     return user
 
 
-def get_current_user_allow_force_pwd_change(
+async def get_current_user_allow_force_pwd_change(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db),
 ):
     """允许 force_pwd_change 用户通过（用于修改密码接口）"""
-    return get_current_user_from_token(credentials, db, _allow_force_pwd_change=True)
+    return await get_current_user_from_token(credentials, db, _allow_force_pwd_change=True)
 
 
 def require_role(*roles: str):

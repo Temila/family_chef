@@ -5,6 +5,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
+import PasswordInput from '../components/PasswordInput';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -290,9 +291,7 @@ export default function AdminUsersPage() {
               </div>
               <div className="form-group">
                 <label className="form-label">{editingUser ? '重置密码（留空不修改）' : '密码'}</label>
-                <input
-                  className="form-input"
-                  type="password"
+                <PasswordInput
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder={editingUser ? '留空不修改' : '至少 6 位'}

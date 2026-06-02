@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
+import PasswordInput from '../components/PasswordInput';
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
@@ -208,9 +209,7 @@ export default function UserProfilePage() {
                 <div className="form-label" style={{ marginBottom: 12 }}>修改密码</div>
                 <div className="form-group">
                   <label className="form-label">旧密码</label>
-                  <input
-                    className="form-input"
-                    type="password"
+                  <PasswordInput
                     value={editForm.old_password}
                     onChange={(e) => setEditForm({ ...editForm, old_password: e.target.value })}
                     placeholder="输入旧密码"
@@ -218,9 +217,7 @@ export default function UserProfilePage() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">新密码（至少6位）</label>
-                  <input
-                    className="form-input"
-                    type="password"
+                  <PasswordInput
                     value={editForm.new_password}
                     onChange={(e) => setEditForm({ ...editForm, new_password: e.target.value })}
                     placeholder="输入新密码"
@@ -228,9 +225,7 @@ export default function UserProfilePage() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">确认新密码</label>
-                  <input
-                    className="form-input"
-                    type="password"
+                  <PasswordInput
                     value={editForm.confirm_password}
                     onChange={(e) => setEditForm({ ...editForm, confirm_password: e.target.value })}
                     placeholder="再次输入新密码"
