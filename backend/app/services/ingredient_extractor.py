@@ -2,7 +2,6 @@
 家味 · Family Chef - 食材抽取服务
 """
 
-import re
 from typing import List, Dict, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +35,6 @@ class IngredientExtractor:
 
         # 精确匹配（食材名称）
         matched_ingredients = []
-        remaining_text = text
 
         for ing in ingredients:
             if ing.name in text:
@@ -47,7 +45,6 @@ class IngredientExtractor:
                     "confidence": 1.0,
                     "matched_from": ing.name,
                 })
-                remaining_text = remaining_text.replace(ing.name, "")
 
         for alias_str, ingredient_id in alias_map.items():
             if alias_str in text:
@@ -61,18 +58,10 @@ class IngredientExtractor:
                             "confidence": 0.8,
                             "matched_from": alias_str,
                         })
-                        remaining_text = remaining_text.replace(alias_str, "")
-
-        # 未匹配的文本片段
-        unmatched = [
-            segment.strip()
-            for segment in re.split(r'[，,、\s]+', remaining_text)
-            if segment.strip() and len(segment.strip()) > 0
-        ]
 
         return {
             "matched": matched_ingredients,
-            "unmatched": unmatched,
+            "unmatched": [],
         }
 
 

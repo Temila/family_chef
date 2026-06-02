@@ -155,6 +155,7 @@ async def parse_ingredients_from_text(
     ]
 
     matched = result.get("matched", [])
+    matched_name_set = {m.get("matched_from", m["ingredient_name"]) for m in matched}
 
     raw_names = result.get("ingredients", [])
     if not raw_names:
