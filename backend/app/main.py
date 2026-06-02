@@ -163,30 +163,42 @@ class _DownloadProgress:
 
 
 def _download_model_async():
-    """在后台线程中异步下载 LLM 模型"""
+    """在后台线程中下载 LLM 模型到 config.yaml 配置的路径"""
 
     def _download():
         try:
+            from pathlib import Path
+
             from huggingface_hub import hf_hub_download
 
             repo = smart_settings.LLM_MODEL_REPO
             filename = smart_settings.LLM_MODEL_FILENAME
-            endpoint = smart_settings.HF_MIRROR
+            model_dir = Path(smart_settings.LLM_MODEL_DIR)
+            local_path = model_dir / filename
 
+            if local_path.exists():
+                _log(f"  ✅ 模型已存在: {local_path}")
+                return
+
+            model_dir.mkdir(parents=True, exist_ok=True)
+
+            endpoint = smart_settings.HF_MIRROR
             source = endpoint if endpoint else "huggingface.co"
             _log(f"  ⬇ 下载模型 {repo}/{filename}")
             _log(f"  ⬇ 来源: {source}")
+            _log(f"  ⬇ 存放: {model_dir.resolve()}")
 
             kwargs = {
                 "repo_id": repo,
                 "filename": filename,
+                "local_dir": str(model_dir.resolve()),
                 "tqdm_class": _DownloadProgress,
             }
             if endpoint:
                 kwargs["endpoint"] = endpoint
 
-            model_path = hf_hub_download(**kwargs)
-            _log(f"  ✅ 模型已缓存: {model_path}")
+            hf_hub_download(**kwargs)
+            _log(f"  ✅ 模型已下载: {local_path}")
         except ImportError:
             _log("  ⚠ 缺少依赖 huggingface-hub，请运行: pip install huggingface-hub")
         except Exception as e:

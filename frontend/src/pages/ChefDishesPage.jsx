@@ -61,6 +61,8 @@ export default function ChefDishesPage() {
   const [batchAllIngredients, setBatchAllIngredients] = useState([]);
   const [batchDecisions, setBatchDecisions] = useState({});
   const [batchImporting, setBatchImporting] = useState(false);
+  const [aliasSearchTexts, setAliasSearchTexts] = useState({});
+  const [aliasDropdownOpen, setAliasDropdownOpen] = useState({});
 
   useEffect(() => {
     loadIngredients();
@@ -1091,20 +1093,59 @@ export default function ChefDishesPage() {
                           )}
 
                           {decision.action === 'alias' && (
-                            <select
-                              className="form-input"
-                              style={{ width: 'auto', minWidth: 140, fontSize: '0.85rem' }}
-                              value={decision.alias_for_id || ''}
-                              onChange={(e) => updateBatchDecision(item.name, 'alias_for_id', Number(e.target.value))}
-                            >
-                              <option value="">选择目标食材</option>
-                              {batchAllIngredients.map(ing => (
-                                <option key={ing.id} value={ing.id}>
-                                  {ing.name}
-                                  {ing.aliases && ing.aliases.length > 0 ? ` (别名: ${ing.aliases.join('、')})` : ''}
-                                </option>
-                              ))}
-                            </select>
+                            <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+                              <input
+                                className="form-input"
+                                style={{ fontSize: '0.85rem', width: '100%' }}
+                                placeholder="输入食材名称搜索..."
+                                value={aliasSearchTexts[item.name] || (decision.alias_for_id ? batchAllIngredients.find(i => i.id === decision.alias_for_id)?.name || '' : '')}
+                                onChange={(e) => {
+                                  setAliasSearchTexts(prev => ({ ...prev, [item.name]: e.target.value }));
+                                  if (!e.target.value) {
+                                    updateBatchDecision(item.name, 'alias_for_id', null);
+                                  }
+                                  setAliasDropdownOpen(prev => ({ ...prev, [item.name]: true }));
+                                }}
+                                onFocus={() => setAliasDropdownOpen(prev => ({ ...prev, [item.name]: true }))}
+                              />
+                              {aliasDropdownOpen[item.name] && (aliasSearchTexts[item.name] !== undefined ? aliasSearchTexts[item.name] : !decision.alias_for_id) && (() => {
+                                const searchVal = aliasSearchTexts[item.name] || '';
+                                const filtered = batchAllIngredients.filter(ing => {
+                                  if (!searchVal) return true;
+                                  const q = searchVal.toLowerCase();
+                                  return ing.name.toLowerCase().includes(q) ||
+                                    (ing.aliases || []).some(a => a.toLowerCase().includes(q));
+                                });
+                                return (
+                                  <div style={{
+                                    position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
+                                    background: 'var(--bg-card)', border: '1px solid var(--border)',
+                                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
+                                    maxHeight: 180, overflowY: 'auto',
+                                  }}>
+                                    {filtered.length === 0 ? (
+                                      <div style={{ padding: 10, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>无匹配</div>
+                                    ) : filtered.slice(0, 20).map(ing => (
+                                      <div
+                                        key={ing.id}
+                                        className="preference-search-item"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => {
+                                          updateBatchDecision(item.name, 'alias_for_id', ing.id);
+                                          setAliasSearchTexts(prev => ({ ...prev, [item.name]: ing.name }));
+                                          setAliasDropdownOpen(prev => ({ ...prev, [item.name]: false }));
+                                        }}
+                                      >
+                                        <span>{ing.name}</span>
+                                        {ing.aliases && ing.aliases.length > 0 && (
+                                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: 6 }}>(别名: {ing.aliases.join('、')})</span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
+                            </div>
                           )}
                         </div>
                       </div>

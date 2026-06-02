@@ -73,3 +73,6 @@ docker/config.yaml
 
 # 本地配置（含敏感信息）
 config.yaml
+
+# docker镜像打包及推送脚本
+build-docker-images.sh
