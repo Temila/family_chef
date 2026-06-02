@@ -134,9 +134,6 @@ export default function ChefOrdersPage() {
 
               <div className="order-footer">
                 <Badge status={order.status} />
-                <span className="order-total">
-                  ¥{order.total_price?.toFixed(2) || '0.00'}
-                </span>
               </div>
 
               {/* Action Buttons */}
