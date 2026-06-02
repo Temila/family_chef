@@ -51,9 +51,11 @@ async def send_notify(
     if request.order_no and request.order_status:
         success = await feishu_client.send_order_notification(
             request.receive_id,
-            request.order_no,
-            request.order_status,
-            request.items or [],
+            {
+                "order_no": request.order_no,
+                "status": request.order_status,
+                "items": request.items or [],
+            },
         )
     else:
         raise HTTPException(
@@ -63,8 +65,8 @@ async def send_notify(
 
     if not success:
         raise HTTPException(
-            status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="飞书消息发送失败",
+            status_code=http_status.HTTP_502_BAD_GATEWAY,
+            detail="飞书消息发送失败，请检查 open_id 是否属于当前应用",
         )
 
     return {"message": "飞书消息发送成功"}
