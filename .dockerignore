@@ -18,5 +18,6 @@ frontend/dist
 !frontend/README.md
 scripts/
 !scripts/run.sh
+!scripts/build_llama.sh
 docker/
 config.yaml
