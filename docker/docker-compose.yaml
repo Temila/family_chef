@@ -1,6 +1,6 @@
 services:
   family-chef:
-    image: temila/family-chef:latest
+    image: registry.cn-chengdu.aliyuncs.com/boyangdockerspace/family-chef:latest 
     # build:
     #   context: ..
     #   dockerfile: docker/Dockerfile

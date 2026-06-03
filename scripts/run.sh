@@ -14,6 +14,8 @@ if [ "${DOCKER_MODE:-0}" = "1" ]; then
 
     mkdir -p /app/backend/data
 
+    /app/scripts/build_llama.sh
+
     export HOST_PORT="${HOST_PORT:-$PORT}"
 
     cd /app/backend

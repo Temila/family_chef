@@ -300,7 +300,7 @@ if os.path.exists(frontend_dist_dir):
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
         if full_path.startswith("uploads/"):
-            file_path = os.path.join(".", full_path)
+            file_path = os.path.join(settings.UPLOAD_DIR, full_path[len("uploads/"):])
             if os.path.isfile(file_path):
                 return FileResponse(file_path)
         file_path = os.path.join(frontend_dist_dir, full_path)
