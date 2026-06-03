@@ -12,11 +12,16 @@ FROM python:3.11-slim AS backend
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends bash && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash gcc g++ cmake && rm -rf /var/lib/apt/lists/*
+
+COPY scripts/build_llama.sh ./scripts/build_llama.sh
+RUN chmod +x ./scripts/build_llama.sh
 RUN pip install --no-cache-dir uv
 
 COPY backend/pyproject.toml ./backend/
-RUN cd backend && uv pip install --system --no-cache -r pyproject.toml
+RUN cd backend && sed -i '/llama-cpp-python/d' pyproject.toml && \
+    uv pip install --system --no-cache -r pyproject.toml
 
 COPY backend/alembic.ini ./backend/
 COPY backend/alembic/ ./backend/alembic/
