@@ -22,7 +22,6 @@ class IngredientService:
         db: AsyncSession,
         category: Optional[str] = None,
         search: Optional[str] = None,
-        is_active: Optional[bool] = None,
     ) -> List[Ingredient]:
         """查询食材列表"""
         query = select(Ingredient).options(selectinload(Ingredient.aliases))
@@ -33,8 +32,6 @@ class IngredientService:
             query = query.where(
                 Ingredient.name.like(search_pattern)
             )
-        if is_active is not None:
-            query = query.where(Ingredient.is_active == is_active)
         
         query = query.order_by(Ingredient.name)
         
@@ -87,7 +84,6 @@ class IngredientService:
         category: Optional[str] = None,
         description: Optional[str] = None,
         image_url: Optional[str] = None,
-        is_active: Optional[bool] = None,
         aliases: Optional[List[str]] = None,
     ) -> Optional[Ingredient]:
         """更新食材"""
@@ -112,8 +108,6 @@ class IngredientService:
             ingredient.description = description
         if image_url is not None:
             ingredient.image_url = image_url
-        if is_active is not None:
-            ingredient.is_active = is_active
         
         # 更新别名
         if aliases is not None:
@@ -141,12 +135,12 @@ class IngredientService:
     
     @staticmethod
     async def delete_ingredient(db: AsyncSession, ingredient_id: int) -> bool:
-        """删除食材（软删除）"""
+        """删除食材"""
         ingredient = await IngredientService.get_ingredient_by_id(db, ingredient_id)
         if not ingredient:
             return False
         
-        ingredient.is_active = False
+        await db.delete(ingredient)
         await db.flush()
         return True
 

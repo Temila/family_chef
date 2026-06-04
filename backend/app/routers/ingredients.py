@@ -61,7 +61,6 @@ async def list_ingredients(
             "category": ing.category,
             "description": ing.description,
             "image_url": ing.image_url,
-            "is_active": ing.is_active,
             "aliases": aliases,
             "dish_count": count_map.get(ing.id, 0),
             "linked_dishes": dishes_map.get(ing.id, []),
@@ -105,7 +104,6 @@ async def create_ingredient(
             "category": ingredient.category,
             "description": ingredient.description,
             "image_url": ingredient.image_url,
-            "is_active": ingredient.is_active,
             "aliases": aliases,
         }
     except ValueError as e:
@@ -267,7 +265,6 @@ async def update_ingredient(
             category=request.category,
             description=request.description,
             image_url=request.image_url,
-            is_active=request.is_active,
             aliases=request.aliases,
         )
         if not ingredient:
@@ -291,7 +288,6 @@ async def update_ingredient(
             "category": ingredient.category,
             "description": ingredient.description,
             "image_url": ingredient.image_url,
-            "is_active": ingredient.is_active,
             "aliases": aliases,
         }
     except ValueError as e:
