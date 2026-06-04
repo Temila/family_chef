@@ -19,7 +19,6 @@ class IngredientUpdate(BaseModel):
     category: Optional[str] = None
     description: Optional[str] = None
     image_url: Optional[str] = None
-    is_active: Optional[bool] = None
     aliases: Optional[List[str]] = None
 
 
@@ -30,7 +29,6 @@ class IngredientResponse(BaseModel):
     category: Optional[str] = None
     description: Optional[str] = None
     image_url: Optional[str] = None
-    is_active: bool
     aliases: List[str] = []
     
     class Config:
