@@ -133,7 +133,7 @@ export default function AdminCategoriesPage() {
                 <tr>
                   <th>名称</th>
                   <th>类型</th>
-                  {activeType === 'cuisine' && <th>所属地区</th>}
+                  {activeType === 'cuisine' && <th>所属种类</th>}
                   <th>排序</th>
                   <th>状态</th>
                   <th>操作</th>
@@ -220,7 +220,7 @@ export default function AdminCategoriesPage() {
               </div>
               {activeType === 'cuisine' && parentOptions.length > 0 && (
                 <div className="form-group">
-                  <label className="form-label">所属地区</label>
+                  <label className="form-label">所属种类</label>
                   <select
                     className="form-input"
                     value={form.parent_id}
