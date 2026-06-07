@@ -19,7 +19,7 @@ export default function OrderPage() {
 
   const regions = getByType('region');
   const cuisines = getByType('cuisine');
-  const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine'].includes(t.key));
+  const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine', 'region'].includes(t.key));
 
   const [dishes, setDishes] = useState([]);
   const [cart, setCart] = useState([]);

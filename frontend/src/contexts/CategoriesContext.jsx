@@ -4,7 +4,7 @@ import api from '../api/client';
 const CategoriesContext = createContext(null);
 
 const TYPE_META = {
-  region: { label: '地区', icon: '📍' },
+  region: { label: '种类', icon: '📂' },
   cuisine: { label: '菜系', icon: '🍜' },
   taste: { label: '口味', icon: '👅' },
   season: { label: '季节', icon: '🌤️' },

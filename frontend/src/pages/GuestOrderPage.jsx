@@ -121,7 +121,7 @@ export default function GuestOrderPage() {
     : cuisines;
   const filterTypes = Object.keys(categoryTypes).filter(t => !['region', 'cuisine', 'ingredient'].includes(t));
 
-  const typeLabels = { region: '地域', cuisine: '菜系', taste: '口味', season: '季节', ingredient: '食材', other: '其他' };
+  const typeLabels = { region: '种类', cuisine: '菜系', taste: '口味', season: '季节', ingredient: '食材', other: '其他' };
 
   const filteredDishes = dishes.filter(dish => {
     if (searchQuery) {

@@ -72,7 +72,7 @@ export default function AdminHomePage() {
     {
       icon: '📂',
       title: '分类管理',
-      desc: '地区、菜系、口味、季节',
+      desc: '种类、菜系、口味、季节',
       onClick: () => navigate('/admin/categories')
     },
     {
