@@ -21,7 +21,7 @@
 
 **Milestone Goal:** 让注册用户在菜单里找不到想吃的菜时，向厨师提交"愿望单"，厨师认领并推进（准备中 → 已上架 / 已拒绝），形成完整闭环。
 
-- [ ] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints
+- [x] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints (completed 2026-07-21)
 - [ ] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs
 - [ ] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge
 
@@ -43,15 +43,15 @@
 **Plans**: 3 plansPlans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Wish model + Pydantic schemas + Alembic migration (DATA-06, DATA-07)
+- [x] 05-01-PLAN.md — Wish model + Pydantic schemas + Alembic migration (DATA-06, DATA-07)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-02-PLAN.md — WishService + WishPermissionError + 8 lifecycle/permission methods (DATA-08, PERM-01..04)
+- [x] 05-02-PLAN.md — WishService + WishPermissionError + 8 lifecycle/permission methods (DATA-08, PERM-01..04)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 05-03-PLAN.md — Wishes router + main.py registration + 22 tests incl. 8 STRIDE security cases (WISH-01/02, FLOW-01..05)
+- [x] 05-03-PLAN.md — Wishes router + main.py registration + 22 tests incl. 8 STRIDE security cases (WISH-01/02, FLOW-01..05)
 
 ### Phase 6: Notifications Integration
 
@@ -95,6 +95,6 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 2. Backend Core | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 3. Frontend Authenticated | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
-| 5. Data Foundation & Wish Lifecycle API | v1.1 | 0/3 | Not started | - |
+| 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
 | 6. Notifications Integration | v1.1 | 0/TBD | Not started | - |
 | 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
