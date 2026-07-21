@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 访客点菜邀请** — Phases 1-4 (shipped 2026-05-29)
-- 🚧 **v1.1 菜品愿望单** — Phases 5-8 (in progress)
+- 🚧 **v1.1 菜品愿望单** — Phases 5-7 (in progress)
 
 ## Phases
 
@@ -23,8 +23,7 @@
 
 - [ ] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints
 - [ ] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs
-- [ ] **Phase 7: User Wish List Frontend** - User-side mobile UI: submit, list, edit, cancel with status badges
-- [ ] **Phase 8: Chef Workflow Frontend** - Chef-side mobile UI: claim, advance, link dish, reject, my claims
+- [ ] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge
 
 ## Phase Details
 
@@ -51,34 +50,24 @@
   4. When a submitter edits or cancels a claimed wish, the claiming chef receives a Feishu notification
 **Plans**: TBD
 
-### Phase 7: User Wish List Frontend
-**Goal**: Registered users can submit, browse, edit, and cancel their wishes from a mobile-friendly UI with clear status visuals
-**Depends on**: Phase 5
-**Requirements**: WISH-03, WISH-04, UX-01, UX-03
+### Phase 7: Wish List Frontend
+**Goal**: 注册用户和厨师都能通过移动端友好的 UI 完成各自的愿望单工作流——用户提交/查看/编辑/撤销，厨师认领/推进/关联菜品/拒绝/查看我的认领——共用统一的 WishCard + 状态徽章组件
+**Depends on**: Phase 5 (Phase 6 may run in parallel — no UI dependency on notifications)
+**Requirements**: WISH-03, WISH-04, UX-01, UX-02, UX-03
 **Success Criteria** (what must be TRUE):
-  1. User can submit a wish from a mobile-friendly form (dish name required, reference link and note optional)
-  2. User sees their wish list as cards with clear status badges/colors distinguishing 待处理 / 准备中 / 已上架 / 已拒绝
-  3. User can edit a wish's content (name / link / note) while it is not yet "已上架"
-  4. User can cancel (delete) a wish while it is not yet "已上架"
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 8: Chef Workflow Frontend
-**Goal**: Chefs can manage wishes end-to-end from a mobile-friendly interface — claim, advance, link to dish, reject, and track their own claims (reuses the WishCard + status badge component from Phase 7)
-**Depends on**: Phase 5, Phase 7
-**Requirements**: UX-02
-**Success Criteria** (what must be TRUE):
-  1. Chef can view the wish queue on mobile with filters by status and claiming chef
-  2. Chef can claim a pending wish; it immediately shows as theirs ("准备中")
-  3. Chef can advance a claimed wish by linking it to a published dish (→ 已上架) or reject it with a required reason
-  4. Chef can view their "我的认领" list of claimed wishes
+  1. User can submit a wish from a mobile-friendly form (dish name required, optional reference link and note) and browse their own wish list as cards
+  2. User can edit a wish's content (name / link / note) while it is not yet "已上架", and the change is reflected immediately in the list
+  3. User can cancel (delete) a wish while it is not yet "已上架", with the card disappearing from the list
+  4. Wish cards show clear status badges/colors distinguishing 待处理 / 准备中 / 已上架 / 已拒绝 — the same WishCard + status badge component is reused across user list and chef queue
+  5. Chef can view the wish queue on mobile with filters by status and claiming chef, and a separate "我的认领" view showing only their claimed wishes
+  6. Chef can claim a pending wish (immediately shows as theirs "准备中"), advance it by linking a published dish (→ 已上架), or reject it with a required reason — all from the shared card affordances
 **Plans**: TBD
 **UI hint**: yes
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 5 → 6 → 7 → 8. Phase 6 and Phase 7 may run in parallel after Phase 5; Phase 8 depends on Phase 7 (shared WishCard component).
+Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Phase 6 (Notifications) and Phase 7 (Wish List Frontend) may run in parallel after Phase 5 completes, as they have no mutual dependency (frontend consumes Phase 5 APIs; notifications wire up Phase 5 events).
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -88,5 +77,4 @@ Phases execute in numeric order: 5 → 6 → 7 → 8. Phase 6 and Phase 7 may ru
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 0/TBD | Not started | - |
 | 6. Notifications Integration | v1.1 | 0/TBD | Not started | - |
-| 7. User Wish List Frontend | v1.1 | 0/TBD | Not started | - |
-| 8. Chef Workflow Frontend | v1.1 | 0/TBD | Not started | - |
+| 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |

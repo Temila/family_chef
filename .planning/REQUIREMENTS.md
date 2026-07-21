@@ -101,7 +101,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTIF-05 | Phase 6 | Pending |
 | NOTIF-06 | Phase 6 | Pending |
 | UX-01 | Phase 7 | Pending |
-| UX-02 | Phase 8 | Pending |
+| UX-02 | Phase 7 | Pending |
 | UX-03 | Phase 7 | Pending |
 | DATA-06 | Phase 5 | Pending |
 | DATA-07 | Phase 5 | Pending |
@@ -113,9 +113,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 - Unmapped: 0 ✓
 - Phase 5 (Backend): 14 — DATA-06, DATA-07, DATA-08, WISH-01, WISH-02, FLOW-01..05, PERM-01..04
 - Phase 6 (Notifications): 4 — NOTIF-03..06
-- Phase 7 (User Frontend): 4 — WISH-03, WISH-04, UX-01, UX-03
-- Phase 8 (Chef Frontend): 1 — UX-02
+- Phase 7 (Wish List Frontend, merged): 5 — WISH-03, WISH-04, UX-01, UX-02, UX-03
 
 ---
 *Requirements defined: 2026-07-21*
-*Last updated: 2026-07-21 after v1.1 roadmap creation (23/23 requirements mapped to Phases 5-8)*
+*Last updated: 2026-07-21 after v1.1 roadmap revision (frontend phases merged → 23/23 requirements mapped to Phases 5-7)*
