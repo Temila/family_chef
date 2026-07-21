@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
 status: planning
-last_updated: "2026-07-21T03:00:05.418Z"
-last_activity: 2026-07-21
+last_updated: "2026-07-21T03:15:59.399Z"
+last_activity: 2026-07-21 — v1.1 roadmap created, Phase 5 ready to plan
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-29)
+See: .planning/PROJECT.md (updated 2026-07-21)
 
-**Core value:** 让未注册的访客通过一次性链接安全、简单地完成点菜，一次提交、即时通知厨师
-**Current focus:** v1.0 shipped — planning next milestone
+**Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
+**Current focus:** v1.1 菜品愿望单 — Phase 5 (Data Foundation & Wish Lifecycle API) ready to plan
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 5 of 8 (Data Foundation & Wish Lifecycle API) — first phase of v1.1
 Plan: —
-Status: Defining requirements
-Last activity: 2026-07-21 — Milestone v1.1 started
+Status: Ready to plan
+Last activity: 2026-07-21 — v1.1 roadmap created (4 phases, 23 requirements mapped)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Deferred Items
 
@@ -40,6 +42,6 @@ Items acknowledged and carried forward from v1.0 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-29
-Stopped at: v1.0 milestone complete, archived to .planning/milestones/
-Next: `/gsd-new-milestone` to start next version
+Last session: 2026-07-21
+Stopped at: v1.1 roadmap created — Phases 5-8 defined, 23/23 requirements mapped
+Next: `/gsd-plan-phase 5` (or `/gsd-discuss-phase 5`) to plan the first v1.1 phase

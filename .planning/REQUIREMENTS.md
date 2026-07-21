@@ -83,35 +83,39 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WISH-01 | — | Pending |
-| WISH-02 | — | Pending |
-| WISH-03 | — | Pending |
-| WISH-04 | — | Pending |
-| FLOW-01 | — | Pending |
-| FLOW-02 | — | Pending |
-| FLOW-03 | — | Pending |
-| FLOW-04 | — | Pending |
-| FLOW-05 | — | Pending |
-| PERM-01 | — | Pending |
-| PERM-02 | — | Pending |
-| PERM-03 | — | Pending |
-| PERM-04 | — | Pending |
-| NOTIF-03 | — | Pending |
-| NOTIF-04 | — | Pending |
-| NOTIF-05 | — | Pending |
-| NOTIF-06 | — | Pending |
-| UX-01 | — | Pending |
-| UX-02 | — | Pending |
-| UX-03 | — | Pending |
-| DATA-06 | — | Pending |
-| DATA-07 | — | Pending |
-| DATA-08 | — | Pending |
+| WISH-01 | Phase 5 | Pending |
+| WISH-02 | Phase 5 | Pending |
+| WISH-03 | Phase 7 | Pending |
+| WISH-04 | Phase 7 | Pending |
+| FLOW-01 | Phase 5 | Pending |
+| FLOW-02 | Phase 5 | Pending |
+| FLOW-03 | Phase 5 | Pending |
+| FLOW-04 | Phase 5 | Pending |
+| FLOW-05 | Phase 5 | Pending |
+| PERM-01 | Phase 5 | Pending |
+| PERM-02 | Phase 5 | Pending |
+| PERM-03 | Phase 5 | Pending |
+| PERM-04 | Phase 5 | Pending |
+| NOTIF-03 | Phase 6 | Pending |
+| NOTIF-04 | Phase 6 | Pending |
+| NOTIF-05 | Phase 6 | Pending |
+| NOTIF-06 | Phase 6 | Pending |
+| UX-01 | Phase 7 | Pending |
+| UX-02 | Phase 8 | Pending |
+| UX-03 | Phase 7 | Pending |
+| DATA-06 | Phase 5 | Pending |
+| DATA-07 | Phase 5 | Pending |
+| DATA-08 | Phase 5 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- v1.1 requirements: 23 total
+- Mapped to phases: 23
+- Unmapped: 0 ✓
+- Phase 5 (Backend): 14 — DATA-06, DATA-07, DATA-08, WISH-01, WISH-02, FLOW-01..05, PERM-01..04
+- Phase 6 (Notifications): 4 — NOTIF-03..06
+- Phase 7 (User Frontend): 4 — WISH-03, WISH-04, UX-01, UX-03
+- Phase 8 (Chef Frontend): 1 — UX-02
 
 ---
 *Requirements defined: 2026-07-21*
-*Last updated: 2026-07-21 after v1.1 milestone definition*
+*Last updated: 2026-07-21 after v1.1 roadmap creation (23/23 requirements mapped to Phases 5-8)*
