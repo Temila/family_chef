@@ -438,3 +438,256 @@ async def test_reject_wish_requires_reason(client: AsyncClient, user_token: str,
         json={"reject_reason": ""},
     )
     assert r.status_code == 422
+
+
+# =============================================================================
+# Security Tests — 8 STRIDE-mapped cases from 05-RESEARCH.md § Security Domain
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# STRIDE Elevation of Privilege: Regular user cannot call claim/advance/reject
+# T-5-14
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_regular_user_cannot_claim(client: AsyncClient, user_token: str, user_wish: int):
+    """普通用户调用 POST /api/wishes/{id}/claim → 403（require_role 拦截）"""
+    r = await client.post(
+        f"/api/wishes/{user_wish}/claim",
+        headers={"Authorization": f"Bearer {user_token}"},
+    )
+    assert r.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_regular_user_cannot_advance(client: AsyncClient, user_token: str, user_wish: int):
+    """普通用户调用 POST /api/wishes/{id}/advance → 403"""
+    r = await client.post(
+        f"/api/wishes/{user_wish}/advance",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"related_dish_id": 999},
+    )
+    assert r.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_regular_user_cannot_reject(client: AsyncClient, user_token: str, user_wish: int):
+    """普通用户调用 POST /api/wishes/{id}/reject → 403"""
+    r = await client.post(
+        f"/api/wishes/{user_wish}/reject",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"reject_reason": "理由"},
+    )
+    assert r.status_code == 403
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Information Disclosure: ID enumeration prevention
+# T-5-16 / D-03
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_unauthorized_read_returns_404_not_403(client: AsyncClient, user_token: str, user2_token: str):
+    """用户 A 的愿望 ID 对用户 B 不可读 → 404 而非 403（D-03 ID 枚举防护）"""
+    # 用户 A 提交愿望
+    r = await client.post(
+        "/api/wishes",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"dish_name": "secret dish"},
+    )
+    assert r.status_code == 201
+    wish_id = r.json()["id"]
+
+    # 用户 B 尝试读取（应返回 404，不返回 403）
+    r = await client.get(
+        f"/api/wishes/{wish_id}",
+        headers={"Authorization": f"Bearer {user2_token}"},
+    )
+    assert r.status_code == 404
+    assert r.json()["detail"] == "愿望不存在"
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Elevation of Privilege: Horizontal — chef cannot mutate other chef's claim
+# T-5-15 / D-04
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_chef_cannot_advance_other_chef_claim(
+    client: AsyncClient, user_token: str, chef_token: str, chef2_token: str, user_wish: int
+):
+    """厨师 A 认领的愿望，厨师 B 无法推进 → 403 + 包含认领厨师姓名的错误（D-04）"""
+    # chef_token 认领愿望
+    r = await client.post(
+        f"/api/wishes/{user_wish}/claim",
+        headers={"Authorization": f"Bearer {chef_token}"},
+    )
+    assert r.status_code == 200
+
+    # chef2_token 尝试推进（应被拒绝）
+    r = await client.post(
+        f"/api/wishes/{user_wish}/advance",
+        headers={"Authorization": f"Bearer {chef2_token}"},
+        json={"related_dish_id": 999},  # dish_id 不重要，权限检查先执行
+    )
+    assert r.status_code == 403
+    detail = r.json()["detail"]
+    assert "厨师" in detail  # 认领厨师姓名出现在错误消息中（D-04 合同）
+
+
+@pytest.mark.asyncio
+async def test_chef_cannot_reject_other_chef_claim(
+    client: AsyncClient, user_token: str, chef_token: str, chef2_token: str, user_wish: int
+):
+    """厨师 A 认领的愿望，厨师 B 无法拒绝 → 403"""
+    # chef_token 认领愿望
+    r = await client.post(
+        f"/api/wishes/{user_wish}/claim",
+        headers={"Authorization": f"Bearer {chef_token}"},
+    )
+    assert r.status_code == 200
+
+    # chef2_token 尝试拒绝
+    r = await client.post(
+        f"/api/wishes/{user_wish}/reject",
+        headers={"Authorization": f"Bearer {chef2_token}"},
+        json={"reject_reason": "随便拒绝"},
+    )
+    assert r.status_code == 403
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Tampering: Concurrent claim race — atomic UPDATE guarantees exactly one wins
+# T-5-17 / D-01 / D-02
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_concurrent_claim_only_one_wins(
+    client: AsyncClient, user_token: str, chef_token: str, chef2_token: str, user_wish: int
+):
+    """两个厨师并发认领同一愿望：恰好一个成功（200），一个失败（400）（D-01/D-02）"""
+    # chef_token 和 chef2_token 并发认领
+    responses = await asyncio.gather(
+        client.post(
+            f"/api/wishes/{user_wish}/claim",
+            headers={"Authorization": f"Bearer {chef_token}"},
+        ),
+        client.post(
+            f"/api/wishes/{user_wish}/claim",
+            headers={"Authorization": f"Bearer {chef2_token}"},
+        ),
+    )
+
+    # 恰好一个 200，一个 400
+    status_codes = sorted([r.status_code for r in responses])
+    assert status_codes == [200, 400], f"Expected [200, 400], got {status_codes}"
+
+    # 失败的响应包含中文错误消息（D-02）
+    failure = next(r for r in responses if r.status_code == 400)
+    assert "认领" in failure.json()["detail"]
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Tampering: Advance with unpublished dish — business rule bypass
+# T-5-18 / D-09
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_advance_rejects_unpublished_dish(
+    client: AsyncClient, user_token: str, chef_token: str, user_wish: int
+):
+    """推进愿望时关联未发布菜品 → 400 + exact Chinese message（D-09）"""
+    # chef 认领愿望
+    r = await client.post(
+        f"/api/wishes/{user_wish}/claim",
+        headers={"Authorization": f"Bearer {chef_token}"},
+    )
+    assert r.status_code == 200
+
+    # 尝试用不存在的 dish_id 推进
+    r = await client.post(
+        f"/api/wishes/{user_wish}/advance",
+        headers={"Authorization": f"Bearer {chef_token}"},
+        json={"related_dish_id": 999999},
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"] == "你未发布此菜品或菜品不可用"
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Repudiation: Reject without reason
+# T-5-19 / FLOW-04
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_reject_without_reason_returns_422(client: AsyncClient, user_token: str, chef_token: str, user_wish: int):
+    """拒绝愿望时无 reject_reason → 422（Pydantic schema 验证）"""
+    # chef 认领
+    r = await client.post(
+        f"/api/wishes/{user_wish}/claim",
+        headers={"Authorization": f"Bearer {chef_token}"},
+    )
+    assert r.status_code == 200
+
+    # 空 body {} → 422（Pydantic 验证失败：reject_reason 缺失）
+    r = await client.post(
+        f"/api/wishes/{user_wish}/reject",
+        headers={"Authorization": f"Bearer {chef_token}"},
+        json={},
+    )
+    assert r.status_code == 422
+
+    # 空字符串 "" → 422（Pydantic min_length=1）
+    r = await client.post(
+        f"/api/wishes/{user_wish}/reject",
+        headers={"Authorization": f"Bearer {chef_token}"},
+        json={"reject_reason": ""},
+    )
+    assert r.status_code == 422
+
+    # 纯空白字符串 "   " → 400（服务层防御：strip 后为空，服务 raise ValueError → 400）
+    r = await client.post(
+        f"/api/wishes/{user_wish}/reject",
+        headers={"Authorization": f"Bearer {chef_token}"},
+        json={"reject_reason": "   "},
+    )
+    assert r.status_code == 400
+
+
+# -----------------------------------------------------------------------------
+# V5 Input Validation: Submit with empty dish_name
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_submit_empty_dish_name_returns_422(client: AsyncClient, user_token: str):
+    """dish_name 为空时 Pydantic 验证失败 → 422"""
+    r = await client.post(
+        "/api/wishes",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"dish_name": ""},
+    )
+    assert r.status_code == 422
+
+
+# -----------------------------------------------------------------------------
+# STRIDE Tampering: Mass-assignment protection
+# T-5-20 / D-20
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_mass_assignment_status_ignored(client: AsyncClient, user_token: str):
+    """POST 时传入 WishCreate 不存在的字段（status, claimed_by_chef_id）被静默丢弃"""
+    r = await client.post(
+        "/api/wishes",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={
+            "dish_name": "鱼香肉丝",
+            "status": "已上架",           # WishCreate 中不存在此字段
+            "claimed_by_chef_id": 999,   # WishCreate 中不存在此字段
+        },
+    )
+    assert r.status_code == 201
+    data = r.json()
+    assert data["status"] == "待处理"  # 字段被丢弃，默认为"待处理"
+    assert data["claimed_by_chef_id"] is None  # 不可赋值
+
