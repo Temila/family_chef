@@ -53,6 +53,7 @@ async def setup_database():
     from app.models.schedule import ChefSchedule
     from app.models.log import SystemLog
     from app.models.guest_invitation import GuestInvitation
+    from app.models.wish import Wish
     
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -68,6 +69,7 @@ async def clean_all_tables():
         tables = [
             "order_items",
             "orders",
+            "wishes",
             "guest_invitations",
             "dish_categories",
             "dish_ingredients",
@@ -220,6 +222,58 @@ async def chef_token(client: AsyncClient) -> str:
     response = await client.post("/api/auth/login", json={
         "username": "chef",
         "password": "chef123"
+    })
+    data = response.json()
+    return data["access_token"]
+
+
+@pytest.fixture
+async def chef2_token(client: AsyncClient) -> str:
+    """获取第二个厨师 Token"""
+    from app.models.user import User
+    from app.utils.security import hash_password
+
+    async with test_session_factory() as session:
+        chef2 = User(
+            username="chef2",
+            password_hash=hash_password("chef123"),
+            display_name="厨师二",
+            role="chef",
+            is_active=True,
+            force_pwd_change=False,
+        )
+        session.add(chef2)
+        await session.commit()
+
+    response = await client.post("/api/auth/login", json={
+        "username": "chef2",
+        "password": "chef123"
+    })
+    data = response.json()
+    return data["access_token"]
+
+
+@pytest.fixture
+async def user2_token(client: AsyncClient) -> str:
+    """获取第二个普通用户 Token"""
+    from app.models.user import User
+    from app.utils.security import hash_password
+
+    async with test_session_factory() as session:
+        user2 = User(
+            username="testuser2",
+            password_hash=hash_password("user123"),
+            display_name="测试用户二",
+            role="user",
+            is_active=True,
+            force_pwd_change=False,
+        )
+        session.add(user2)
+        await session.commit()
+
+    response = await client.post("/api/auth/login", json={
+        "username": "testuser2",
+        "password": "user123"
     })
     data = response.json()
     return data["access_token"]
