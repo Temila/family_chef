@@ -37,7 +37,11 @@
   3. The claiming chef can advance a wish to "已上架" by linking a published dish, or reject it with a required reason; both terminal transitions lock further user edits
   4. Chefs/admins can list all wishes filtered by status and claiming chef, and a chef can list their own "我的认领"
   5. Visibility and ownership rules are enforced — non-permitted users receive 403/404; users can only edit/cancel their own non-published wishes
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 05-01-PLAN.md — Wish model + Pydantic schemas + Alembic migration (DATA-06, DATA-07)
+- [ ] 05-02-PLAN.md — WishService + WishPermissionError + 8 lifecycle/permission methods (DATA-08, PERM-01..04)
+- [ ] 05-03-PLAN.md — Wishes router + main.py registration + 22 tests incl. 8 STRIDE security cases (WISH-01/02, FLOW-01..05)
 
 ### Phase 6: Notifications Integration
 **Goal**: Wish lifecycle events trigger the right notifications — in-app unread badges for submitters and Feishu pushes for chefs
@@ -75,6 +79,6 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 2. Backend Core | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 3. Frontend Authenticated | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
-| 5. Data Foundation & Wish Lifecycle API | v1.1 | 0/TBD | Not started | - |
+| 5. Data Foundation & Wish Lifecycle API | v1.1 | 0/3 | Not started | - |
 | 6. Notifications Integration | v1.1 | 0/TBD | Not started | - |
 | 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
