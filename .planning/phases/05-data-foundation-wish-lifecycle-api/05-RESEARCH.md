@@ -1032,22 +1032,25 @@ async def test_unauthorized_read_returns_404(client: AsyncClient, user_token: st
 
 **All other claims in this research were verified by reading actual code in this session** (versions via `uv pip list`, alembic head via `alembic heads`, code patterns via Read tool on `order.py`, `order_service.py`, `orders.py`, `guest.py`, `auth.py`, `dish.py`, `user.py`, `conftest.py`, `test_orders.py`, and the latest two alembic revisions).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `list_wishes` for admin support a `user_id` (submitter) filter?**
    - What we know: FLOW-01 specifies "按状态/认领厨师筛选" — submitter filter not mentioned.
    - What's unclear: Whether admin debugging needs to filter by submitter (e.g., "show all wishes from user X").
    - Recommendation: Add `user_id: Optional[int] = Query(None)` as an undocumented/admin-only query param. Trivial to add now; painful to retrofit if Phase 7 frontend needs it.
+   - **RESOLVED:** Not added — planner followed literal FLOW-01 text (status/claimed_by_chef_id filters only) in Plan 05-03 Task 1. Can be retrofitted if Phase 7 frontend needs it.
 
 2. **Should `WishUpdate` allow changing `dish_name` while a chef has the wish claimed?**
    - What we know: D-06 explicitly allows editing during `准备中`. But if a chef is mid-cooking and the user changes "宫保鸡丁" to "麻婆豆腐", the chef's work is invalidated.
    - What's unclear: Whether D-06 was intentional about allowing `dish_name` changes during `准备中` or just `reference_url`/`note`.
    - Recommendation: Follow D-06 literally (allow all three fields). Phase 6 NOTIF-06 will notify the chef on edit; if the edit is significant the chef can reject. Document this behavior in service docstring.
+   - **RESOLVED:** Followed recommendation — Plan 05-02 Task 1 `WishUpdate` allows all 3 fields (`dish_name`, `reference_url`, `note`) per D-06 literal text.
 
 3. **Should the `mine=True` shortcut also work for admins?**
    - What we know: FLOW-05 is a chef feature ("我的认领"). Admins using `mine=True` would query `claimed_by_chef_id == admin.id` — probably returns empty since admins typically don't claim.
    - What's unclear: Whether admin role even has `claimed_by_chef_id` writes (D-05 says admin can claim via mutate permission).
    - Recommendation: Allow `mine=True` for any role; for admin it returns wishes they personally claimed. Trivial filter; no special-casing.
+   - **RESOLVED:** Followed recommendation — Plan 05-02 Task 1 `list_wishes` accepts `mine=True` for any role.
 
 ## Environment Availability
 

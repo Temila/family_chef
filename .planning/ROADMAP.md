@@ -28,43 +28,59 @@
 ## Phase Details
 
 ### Phase 5: Data Foundation & Wish Lifecycle API
+
 **Goal**: Wish data model, migration, and complete lifecycle API (submit, list, claim, advance, reject) with visibility/permission enforcement — ready for frontend and notifications to consume
 **Depends on**: Phase 4 (v1.0 complete)
 **Requirements**: DATA-06, DATA-07, DATA-08, WISH-01, WISH-02, FLOW-01, FLOW-02, FLOW-03, FLOW-04, FLOW-05, PERM-01, PERM-02, PERM-03, PERM-04
 **Success Criteria** (what must be TRUE):
+
   1. A registered user can submit a wish (dish name + optional reference URL/note) via API and retrieve their own wish list
   2. A chef can claim a pending wish; the wish becomes "准备中" with that chef as exclusive owner, and concurrent claims are safely rejected (no double-claim)
   3. The claiming chef can advance a wish to "已上架" by linking a published dish, or reject it with a required reason; both terminal transitions lock further user edits
   4. Chefs/admins can list all wishes filtered by status and claiming chef, and a chef can list their own "我的认领"
   5. Visibility and ownership rules are enforced — non-permitted users receive 403/404; users can only edit/cancel their own non-published wishes
-**Plans**: 3 plans
-Plans:
+
+**Plans**: 3 plansPlans:
+**Wave 1**
+
 - [ ] 05-01-PLAN.md — Wish model + Pydantic schemas + Alembic migration (DATA-06, DATA-07)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 05-02-PLAN.md — WishService + WishPermissionError + 8 lifecycle/permission methods (DATA-08, PERM-01..04)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 05-03-PLAN.md — Wishes router + main.py registration + 22 tests incl. 8 STRIDE security cases (WISH-01/02, FLOW-01..05)
 
 ### Phase 6: Notifications Integration
+
 **Goal**: Wish lifecycle events trigger the right notifications — in-app unread badges for submitters and Feishu pushes for chefs
 **Depends on**: Phase 5
 **Requirements**: NOTIF-03, NOTIF-04, NOTIF-05, NOTIF-06
 **Success Criteria** (what must be TRUE):
+
   1. When a wish's status changes (claimed / 准备中 / 已上架 / 已拒绝), the submitter has an unread badge surfaced via API
   2. After the submitter views the wish detail, the unread badge is cleared
   3. When a new wish is submitted, chefs receive a Feishu push notification carrying the wish info
   4. When a submitter edits or cancels a claimed wish, the claiming chef receives a Feishu notification
+
 **Plans**: TBD
 
 ### Phase 7: Wish List Frontend
+
 **Goal**: 注册用户和厨师都能通过移动端友好的 UI 完成各自的愿望单工作流——用户提交/查看/编辑/撤销，厨师认领/推进/关联菜品/拒绝/查看我的认领——共用统一的 WishCard + 状态徽章组件
 **Depends on**: Phase 5 (Phase 6 may run in parallel — no UI dependency on notifications)
 **Requirements**: WISH-03, WISH-04, UX-01, UX-02, UX-03
 **Success Criteria** (what must be TRUE):
+
   1. User can submit a wish from a mobile-friendly form (dish name required, optional reference link and note) and browse their own wish list as cards
   2. User can edit a wish's content (name / link / note) while it is not yet "已上架", and the change is reflected immediately in the list
   3. User can cancel (delete) a wish while it is not yet "已上架", with the card disappearing from the list
   4. Wish cards show clear status badges/colors distinguishing 待处理 / 准备中 / 已上架 / 已拒绝 — the same WishCard + status badge component is reused across user list and chef queue
   5. Chef can view the wish queue on mobile with filters by status and claiming chef, and a separate "我的认领" view showing only their claimed wishes
   6. Chef can claim a pending wish (immediately shows as theirs "准备中"), advance it by linking a published dish (→ 已上架), or reject it with a required reason — all from the shared card affordances
+
 **Plans**: TBD
 **UI hint**: yes
 
