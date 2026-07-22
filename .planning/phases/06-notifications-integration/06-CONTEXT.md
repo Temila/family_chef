@@ -69,16 +69,29 @@ Fields:
 
 ### Phase 6 Hook Wiring
 
-**D-H01 — Hook locations in wish_service.py:** Phase 5 left `# Phase 6 hook:` comments at these 5 locations:
-1. `update_wish()` line 177 — when submitter edits a claimed wish (status=准备中)
-2. `cancel_wish()` line 214 — when submitter cancels a claimed wish
-3. `claim_wish()` line 246 — when a chef claims a wish (→ notify submitter badge)
-4. `advance_wish()` line 308 — when chef advances to 已上架 (→ notify submitter badge)
-5. `reject_wish()` line 357 — when chef rejects (→ notify submitter badge)
+**D-H01 — Hook locations and unread-write boundary (LOCKED, non-negotiable):** Phase 5 left `# Phase 6 hook:` comments at these 5 locations, each with an explicit responsibility pinned by this decision. The mapping below is the **only** correct mapping; no implementation may add, remove, or reinterpret any row.
 
-Each hook needs:
-- Badge update (set `last_status_change_at = now()`)
-- Feishu push (for `update_wish`/`cancel_wish` → NOTIF-06 to claiming chef; for `claim_wish`/`advance_wish`/`reject_wish` → NOTIF-05 is already fired by `submit_wish`, so these are badge-only for submitter)
+| # | Hook location | Service method | Status transition | Notify claimer (NOTIF-06) | Write `last_status_change_at` | Submitter Feishu |
+|---|---------------|----------------|-------------------|---------------------------|--------------------------------|-------------------|
+| 1 | `update_wish()` line 177 | `WishService.update_wish` | None (content-only patch while status is `待处理` or `准备中`) | **Yes** when `was_claimed` (claim was already true pre-mutation) | **No** — must never write | No |
+| 2 | `cancel_wish()` line 214 | `WishService.cancel_wish` | `待处理`/`准备中` → `已撤销` (successful) | **Yes** when `was_claimed` | **Yes** — write before flush | No |
+| 3 | `claim_wish()` line 246 | `WishService.claim_wish` | `待处理` → `准备中` (atomic UPDATE wins rowcount==1) | No | **Yes** — write inside the same atomic `.values(...)` | No |
+| 4 | `advance_wish()` line 308 | `WishService.advance_wish` | `准备中` → `已上架` (successful, status machine allows) | No | **Yes** — write before flush | No |
+| 5 | `reject_wish()` line 357 | `WishService.reject_wish` | `准备中` → `已拒绝` (successful, reason non-empty) | No | **Yes** — write before flush | No |
+
+**Locked unread rule (the content-edit boundary — explicit, testable, non-negotiable):**
+
+1. After the creation-time `server_default=func.now()` from D-M01, **only successful status-changing operations** — `claim_wish()`, `advance_wish()`, `reject_wish()`, and `cancel_wish()` — may advance `last_status_change_at`. No other code path may write it.
+2. A content-only `update_wish()` edit **must never write `last_status_change_at`** and therefore must not create a submitter badge — even when the wish is currently claimed. It only sends NOTIF-06 to the stored claimer (D-F03/D-F04) when the wish was claimed before the mutation. A badge after a submitter's own edit is a bug.
+3. **Failed or invalid transitions** (e.g., a second concurrent `claim_wish` returning rowcount==0; an `advance_wish` blocked by D-09/D-12; a `reject_wish` with empty reason; a `cancel_wish` already in `已上架`) **must leave both notification timestamps unchanged**. They never touch `last_status_change_at` and never send a Feishu card.
+4. **No submitter Feishu push** for any of these lifecycle events. Submitters learn about status changes only through NOTIF-03/04 (the in-app badge backed by the two timestamps).
+
+This rule overrides any interpretation that "every Phase 6 hook updates the badge" and overrides any future proposal to write `last_status_change_at` inside `update_wish()`. Tests in `06-02-PLAN.md` and `06-03-PLAN.md` exist specifically to enforce both sides of this boundary — a content-only edit never flips the badge, and every successful status transition does flip it back after a prior clear.
+
+Hook responsibilities (verbal summary; the table above is authoritative):
+- `update_wish()` → claimed-wish Feishu notification only when pre-claim was true; **no** badge timestamp write, ever
+- `cancel_wish()` → badge timestamp write plus claimed-wish Feishu notification when pre-claim was true
+- `claim_wish()` / `advance_wish()` / `reject_wish()` → badge timestamp write only; no submitter Feishu push, no claimer Feishu push
 
 **D-H02 — submit_wish Feishu fire location:** When `submit_wish` completes, AFTER the `flush()` and `refresh()`, fire NOTIF-05 Feishu push to all chefs. Query all chefs with `feishu_open_id IS NOT NULL` and fan out.
 
