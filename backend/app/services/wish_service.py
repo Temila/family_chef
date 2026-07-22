@@ -8,6 +8,7 @@ from app.models.dish import Dish, DishChef
 from app.models.user import User
 from app.schemas.wish import WishCreate, WishUpdate, WishAdvance, WishReject
 from app.utils.pagination import PaginationParams
+from app.utils.datetime_utils import naive_utc_now
 
 
 class WishPermissionError(ValueError):
@@ -47,6 +48,11 @@ class WishService:
         db.add(wish)
         await db.flush()
         await db.refresh(wish)
+
+        # NOTIF-05: 新愿望推送给所有绑定了飞书的厨师（D-H02）
+        from app.services.notification_service import wish_notification_service
+        await wish_notification_service.notify_new_wish(db, wish, current_user)
+
         return wish
 
     @staticmethod
@@ -168,13 +174,27 @@ class WishService:
 
         # 仅应用明确提供的字段（mass-assignment 防护）
         patch = update_data.model_dump(exclude_unset=True)
+
+        # D-H01: 在变更前捕获旧状态和认领信息（Pitfall 7 — capture pre-mutation）
+        old_note = wish.note
+        was_claimed = wish.status == "准备中" and wish.claimed_by_chef_id is not None
+        claimed_by_chef_id = wish.claimed_by_chef_id
+
         for field, value in patch.items():
             setattr(wish, field, value)
 
         await db.flush()
         await db.refresh(wish)
 
-        # Phase 6 hook: notify claiming chef
+        # NOTIF-06: 已认领愿望内容变更时通知认领厨师（D-H01 规则 2 — 不写 last_status_change_at）
+        if was_claimed:
+            from app.services.notification_service import wish_notification_service
+            await wish_notification_service.notify_claimed_wish_change(
+                db=db, wish=wish, submitter=current_user,
+                notification_type="edit",
+                claimed_by_chef_id=claimed_by_chef_id,
+                old_note=old_note,
+            )
 
         return wish
 
@@ -205,13 +225,31 @@ class WishService:
         if wish.status not in ("待处理", "准备中"):
             raise ValueError(f"无法撤销状态为 '{wish.status}' 的愿望")
 
+        # D-H01: 在变更前捕获旧状态和认领信息（Pitfall 7）
+        old_note = wish.note
+        was_claimed = wish.claimed_by_chef_id is not None
+        claimed_by_chef_id = wish.claimed_by_chef_id
+
         # 软删除
         wish.status = "已撤销"
 
         await db.flush()
         await db.refresh(wish)
 
-        # Phase 6 hook: notify claiming chef
+        # D-B01: 成功撤销写入 last_status_change_at（D-H01 规则 1）
+        wish.last_status_change_at = naive_utc_now()
+        await db.flush()
+        await db.refresh(wish, ["updated_at"])
+
+        # NOTIF-06: 已认领愿望被撤销时通知认领厨师
+        if was_claimed:
+            from app.services.notification_service import wish_notification_service
+            await wish_notification_service.notify_claimed_wish_change(
+                db=db, wish=wish, submitter=current_user,
+                notification_type="cancel",
+                claimed_by_chef_id=claimed_by_chef_id,
+                old_note=old_note,
+            )
 
         return wish
 
@@ -234,7 +272,7 @@ class WishService:
         result = await db.execute(
             update(Wish)
             .where(Wish.id == wish_id, Wish.status == "待处理")
-            .values(status="准备中", claimed_by_chef_id=current_user.id)
+            .values(status="准备中", claimed_by_chef_id=current_user.id, last_status_change_at=naive_utc_now())
         )
         if result.rowcount == 0:
             # 区分：不存在（-> 404）vs 已被认领（-> 400）
@@ -243,7 +281,8 @@ class WishService:
                 return None  # 路由: 404 (D-03)
             raise ValueError("该愿望已被认领或状态已变更")  # 路由: 400 (D-02)
 
-        # Phase 6 hook: notify submitter that wish was claimed
+        # D-B01: last_status_change_at 已写入原子 .values() 中（D-H01 规则 1 / 原子并发边界）
+        # 不发送飞书通知 — 提交者仅通过红点获知（NOTIF-03）
 
         # Re-fetch with relationships loaded for response serialization
         result = await db.execute(
@@ -298,14 +337,13 @@ class WishService:
         if dc_result.scalar_one_or_none() is None:
             raise ValueError("你未发布此菜品或菜品不可用")
 
-        # 应用状态转换
+        # 应用状态转换（D-B01: 写入 last_status_change_at，D-H01 规则 1）
         wish.status = "已上架"
         wish.related_dish_id = advance_data.related_dish_id
+        wish.last_status_change_at = naive_utc_now()
 
         await db.flush()
-        await db.refresh(wish)
-
-        # Phase 6 hook: notify submitter wish was fulfilled
+        await db.refresh(wish, ["updated_at"])
 
         return wish
 
@@ -347,14 +385,13 @@ class WishService:
         if not reason or not reason.strip():
             raise ValueError("拒绝原因不能为空")
 
-        # 应用状态转换
+        # 应用状态转换（D-B01: 写入 last_status_change_at，D-H01 规则 1）
         wish.status = "已拒绝"
         wish.reject_reason = reason.strip()
+        wish.last_status_change_at = naive_utc_now()
 
         await db.flush()
-        await db.refresh(wish)
-
-        # Phase 6 hook: notify submitter wish was rejected
+        await db.refresh(wish, ["updated_at"])
 
         return wish
 
