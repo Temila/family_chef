@@ -65,7 +65,15 @@
   3. When a new wish is submitted, chefs receive a Feishu push notification carrying the wish info
   4. When a submitter edits or cancels a claimed wish, the claiming chef receives a Feishu notification
 
-**Plans**: TBD
+**Plans**: 3 plansPlans:
+**Wave 1**
+
+- [ ] 06-01-PLAN.md — Data layer: naive_utc_now helper + APP_URL setting + 2 Wish columns + Alembic batch migration (NOTIF-03/04 foundation)
+
+**Wave 2** *(blocked on Wave 1 completion; 06-02 and 06-03 are parallel — non-overlapping files)*
+
+- [ ] 06-02-PLAN.md — Badge API: WishListResponse.has_unread + router compute/clear side-effect + badge lifecycle tests (NOTIF-03/04)
+- [ ] 06-03-PLAN.md — Feishu + Service + Hooks: send_wish_notification + WishNotificationService + 5 hook wirings + integration tests (NOTIF-03/05/06)
 
 ### Phase 7: Wish List Frontend
 
@@ -96,5 +104,5 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 3. Frontend Authenticated | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
-| 6. Notifications Integration | v1.1 | 0/TBD | Not started | - |
+| 6. Notifications Integration | v1.1 | 0/3 | Not started | - |
 | 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
