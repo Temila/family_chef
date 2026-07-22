@@ -4,7 +4,7 @@ from sqlalchemy import select, or_, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.wish import Wish
-from app.models.dish import Dish, DishChef
+from app.models.dish import DishChef
 from app.models.user import User
 from app.schemas.wish import WishCreate, WishUpdate, WishAdvance, WishReject
 from app.utils.pagination import PaginationParams
