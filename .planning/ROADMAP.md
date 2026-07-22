@@ -89,7 +89,13 @@
   5. Chef can view the wish queue on mobile with filters by status and claiming chef, and a separate "我的认领" view showing only their claimed wishes
   6. Chef can claim a pending wish (immediately shows as theirs "准备中"), advance it by linking a published dish (→ 已上架), or reject it with a required reason — all from the shared card affordances
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Foundation: ApiClient 8 wish methods (status→status_filter) + statusBadge extension + CSS tokens + ConfirmModal a11y + WishCard + WishFormModal + WishRejectModal + WishAdvanceModal
+- [ ] 07-02-PLAN.md — Pages: UserWishesPage (create/edit/cancel/FAB) + ChefWishesPage (tabs/polling/claim/advance/reject) + AdminWishesPage (viewAsAdmin wrapper)
+- [ ] 07-03-PLAN.md — Integration: App.jsx routes + Sidebar/BottomBar nav entries + Phase-6 /wishes/:id deep-link redirect + ?wish=:id highlight + verification gate
+
 **UI hint**: yes
 
 ## Progress
@@ -105,4 +111,4 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
 | 6. Notifications Integration | v1.1 | 3/3 | Complete   | 2026-07-22 |
-| 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
+| 7. Wish List Frontend | v1.1 | 0/3 | Not started | - |
