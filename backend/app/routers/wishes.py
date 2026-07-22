@@ -19,6 +19,23 @@ from app.schemas.wish import (
 )
 from app.schemas.common import PageResponse
 from app.utils.pagination import PaginationParams
+from app.utils.datetime_utils import naive_utc_now
+
+
+def compute_has_unread(wish, current_user) -> bool:
+    """计算愿望的未读红点状态（D-B01 未读公式 + D-A01/Pitfall 5 身份屏蔽）。
+
+    仅对该愿望的提交者返回真实未读状态；其他观看者恒为 False。
+    未读判定：last_status_change_at 非空，且
+      （submitter_last_viewed_at 为空 或 last_status_change_at > submitter_last_viewed_at）。
+    """
+    if wish.user_id != current_user.id:
+        return False
+    if wish.last_status_change_at is None:
+        return False
+    if wish.submitter_last_viewed_at is None:
+        return True
+    return wish.last_status_change_at > wish.submitter_last_viewed_at
 
 
 router = APIRouter()
@@ -69,6 +86,8 @@ async def list_wishes(
         item = WishListResponse.model_validate(w)
         item.submitter_name = w.submitter.display_name if w.submitter else None
         item.claimed_by_chef_name = w.claimer.display_name if w.claimer else None
+        # NOTIF-03/04：仅提交者可见真实红点，其他观看者被 compute_has_unread 屏蔽为 False
+        item.has_unread = compute_has_unread(w, current_user)
         items.append(item)
 
     return PageResponse[WishListResponse](
@@ -95,6 +114,17 @@ async def get_wish(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="愿望不存在",
         )
+
+    # NOTIF-04：仅当调用者恰好是该愿望的提交者时清除红点（Pitfall 4 精确身份校验）。
+    # 厨师（即使已认领）与管理员的详情查看均不得写入 submitter_last_viewed_at。
+    # 仅 flush 不 commit — commit 由 get_db() 在请求结束时统一完成（D-B03）。
+    if wish.user_id == current_user.id:
+        wish.submitter_last_viewed_at = naive_utc_now()
+        await db.flush()
+        # flush 后 onupdate=func.now() 使 updated_at 被数据库更新并过期，
+        # 需重新加载该列以避免 Pydantic 序列化时触发 async 懒加载（MissingGreenlet）。
+        # 仅刷新 updated_at 一列，不影响已 selectinload 的 submitter/claimer 关系。
+        await db.refresh(wish, ["updated_at"])
 
     resp = WishDetailResponse.model_validate(wish)
     resp.submitter_name = wish.submitter.display_name if wish.submitter else None

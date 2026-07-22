@@ -51,11 +51,13 @@ class WishResponse(BaseModel):
 
 
 class WishListResponse(WishResponse):
-    """愿望列表项（路由层注入扁平化 name 字段）"""
+    """愿望列表项（路由层注入扁平化 name 字段 + has_unread 红点）"""
     model_config = ConfigDict(from_attributes=True)
 
     submitter_name: Optional[str] = None
     claimed_by_chef_name: Optional[str] = None
+    # NOTIF-03/04 未读红点：仅对该愿望的提交者披露真实值，其他观看者恒为 False
+    has_unread: bool = False
 
 
 class WishDetailResponse(WishResponse):
