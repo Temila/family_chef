@@ -72,7 +72,7 @@
 
 **Wave 2** *(blocked on Wave 1 completion; 06-02 and 06-03 are parallel — non-overlapping files)*
 
-- [ ] 06-02-PLAN.md — Badge API: WishListResponse.has_unread + router compute/clear side-effect + badge lifecycle tests (NOTIF-03/04)
+- [x] 06-02-PLAN.md — Badge API: WishListResponse.has_unread + router compute/clear side-effect + badge lifecycle tests (NOTIF-03/04)
 - [ ] 06-03-PLAN.md — Feishu + Service + Hooks: send_wish_notification + WishNotificationService + 5 hook wirings + integration tests (NOTIF-03/05/06)
 
 ### Phase 7: Wish List Frontend
