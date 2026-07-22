@@ -26,6 +26,12 @@ class Wish(Base):
     reject_reason = Column(Text)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+    # Phase 6 通知状态时间戳（D-M01）
+    # last_status_change_at: 创建时由 server_default 自动填充；
+    #   仅 claim/advance/reject/cancel 成功的状态变更可推进（D-H01）
+    # submitter_last_viewed_at: 提交者查看愿望详情时更新，初始为 NULL
+    last_status_change_at = Column(DateTime, nullable=True, server_default=func.now())
+    submitter_last_viewed_at = Column(DateTime, nullable=True)
 
     submitter = relationship("User", foreign_keys=[user_id])
     claimer = relationship("User", foreign_keys=[claimed_by_chef_id])
