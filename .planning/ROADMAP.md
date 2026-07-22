@@ -22,7 +22,7 @@
 **Milestone Goal:** 让注册用户在菜单里找不到想吃的菜时，向厨师提交"愿望单"，厨师认领并推进（准备中 → 已上架 / 已拒绝），形成完整闭环。
 
 - [x] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints (completed 2026-07-21)
-- [ ] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs
+- [x] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs (completed 2026-07-22)
 - [ ] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge
 
 ## Phase Details
@@ -73,7 +73,7 @@
 **Wave 2** *(blocked on Wave 1 completion; 06-02 and 06-03 are parallel — non-overlapping files)*
 
 - [x] 06-02-PLAN.md — Badge API: WishListResponse.has_unread + router compute/clear side-effect + badge lifecycle tests (NOTIF-03/04)
-- [ ] 06-03-PLAN.md — Feishu + Service + Hooks: send_wish_notification + WishNotificationService + 5 hook wirings + integration tests (NOTIF-03/05/06)
+- [x] 06-03-PLAN.md — Feishu + Service + Hooks: send_wish_notification + WishNotificationService + 5 hook wirings + integration tests (NOTIF-03/05/06)
 
 ### Phase 7: Wish List Frontend
 
@@ -104,5 +104,5 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 3. Frontend Authenticated | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
-| 6. Notifications Integration | v1.1 | 1/3 | In Progress|  |
+| 6. Notifications Integration | v1.1 | 3/3 | Complete   | 2026-07-22 |
 | 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
