@@ -31,8 +31,8 @@
 
 ### NOTIF — 通知（续 v1.0 NOTIF-02）
 
-- [ ] **NOTIF-03**: 愿望状态变化时（认领/准备中/已上架/已拒绝），提交者在应用内看到红点未读提示
-- [ ] **NOTIF-04**: 用户查看愿望详情后，红点消除
+- [x] **NOTIF-03**: 愿望状态变化时（认领/准备中/已上架/已拒绝），提交者在应用内看到红点未读提示
+- [x] **NOTIF-04**: 用户查看愿望详情后，红点消除
 - [ ] **NOTIF-05**: 新愿望提交时，飞书推送愿望信息给厨师端（复用 feishu_client）
 - [ ] **NOTIF-06**: 愿望被用户编辑/撤销时，认领厨师收到飞书通知
 
@@ -96,8 +96,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERM-02 | Phase 5 | Pending |
 | PERM-03 | Phase 5 | Pending |
 | PERM-04 | Phase 5 | Pending |
-| NOTIF-03 | Phase 6 | Pending |
-| NOTIF-04 | Phase 6 | Pending |
+| NOTIF-03 | Phase 6 | Complete |
+| NOTIF-04 | Phase 6 | Complete |
 | NOTIF-05 | Phase 6 | Pending |
 | NOTIF-06 | Phase 6 | Pending |
 | UX-01 | Phase 7 | Pending |

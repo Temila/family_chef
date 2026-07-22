@@ -68,7 +68,7 @@
 **Plans**: 3 plansPlans:
 **Wave 1**
 
-- [ ] 06-01-PLAN.md — Data layer: naive_utc_now helper + APP_URL setting + 2 Wish columns + Alembic batch migration (NOTIF-03/04 foundation)
+- [x] 06-01-PLAN.md — Data layer: naive_utc_now helper + APP_URL setting + 2 Wish columns + Alembic batch migration (NOTIF-03/04 foundation)
 
 **Wave 2** *(blocked on Wave 1 completion; 06-02 and 06-03 are parallel — non-overlapping files)*
 
@@ -104,5 +104,5 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 3. Frontend Authenticated | v1.0 | 2/2 | ✓ Complete | 2026-05-25 |
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
-| 6. Notifications Integration | v1.1 | 0/3 | Not started | - |
+| 6. Notifications Integration | v1.1 | 1/3 | In Progress|  |
 | 7. Wish List Frontend | v1.1 | 0/TBD | Not started | - |
