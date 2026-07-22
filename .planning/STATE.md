@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
 status: executing
-last_updated: "2026-07-22T01:08:49.266Z"
-last_activity: 2026-07-21 -- Phase 05 execution started
+last_updated: "2026-07-22T07:01:17.796Z"
+last_activity: 2026-07-22 -- Phase 06 execution started
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 3
+  total_plans: 6
   completed_plans: 3
   percent: 33
 ---
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 05 — data-foundation-wish-lifecycle-api
+**Current focus:** Phase 06 — notifications-integration
 
 ## Current Position
 
-Phase: 05 (data-foundation-wish-lifecycle-api) — EXECUTING
+Phase: 06 (notifications-integration) — EXECUTING
 Plan: 1 of 3
-Status: Executing Phase 05
-Last activity: 2026-07-21 -- Phase 05 execution started
+Status: Executing Phase 06
+Last activity: 2026-07-22 -- Phase 06 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
