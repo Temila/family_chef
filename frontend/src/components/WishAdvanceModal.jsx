@@ -132,12 +132,16 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
             {loading ? (
               <Loading />
             ) : showEmpty ? (
-              <>
-                <EmptyState icon="🍽️" text="你还没有发布任何菜品，无法推进愿望" />
-                <div style={{ textAlign: 'center', marginTop: 8 }}>
-                  <Link to="/chef/dishes">前往菜品管理 →</Link>
-                </div>
-              </>
+              query ? (
+                <EmptyState icon="🔍" text="没有找到匹配的菜品" />
+              ) : (
+                <>
+                  <EmptyState icon="🍽️" text="你还没有发布任何菜品，无法推进愿望" />
+                  <div style={{ textAlign: 'center', marginTop: 8 }}>
+                    <Link to="/chef/dishes">前往菜品管理 →</Link>
+                  </div>
+                </>
+              )
             ) : (
               hasDishes &&
               filteredDishes.map((dish) => (
