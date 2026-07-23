@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
-status: milestone_complete
-last_updated: 2026-07-23T02:45:16.845Z
-last_activity: 2026-07-23
+status: executing
+last_updated: "2026-07-23T07:15:01.329Z"
+last_activity: 2026-07-23 -- Phase 07 execution started
 progress:
   total_phases: 3
-  completed_phases: 3
-  total_plans: 9
+  completed_phases: 2
+  total_plans: 10
   completed_plans: 9
-  percent: 100
-stopped_at: Milestone complete (Phase 07 was final phase)
+  percent: 67
 ---
 
 # Project State
@@ -21,14 +20,14 @@ stopped_at: Milestone complete (Phase 07 was final phase)
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Milestone complete
+**Current focus:** Phase 07 — wish-list-frontend
 
 ## Current Position
 
-Phase: 07
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-07-23
+Phase: 07 (wish-list-frontend) — EXECUTING
+Plan: 1 of 4
+Status: Executing Phase 07
+Last activity: 2026-07-23 -- Phase 07 execution started
 
 Progress: [██████████] 100%
 
@@ -40,6 +39,7 @@ Items acknowledged and carried forward from v1.0 milestone close:
 |----------|------|--------|-------------|
 | requirement | GORD-06 访客备注功能 | Deferred to v2 | 2026-05-29 |
 | technical-debt | CORS allow_origins ["*"] | Needs tightening | 2026-05-29 |
+| technical-debt | Backend test-suite drift (107 fail: 405s/JSON decode across test_users/test_orders/test_dishes) | Pre-existing, proven at f59f76e before 07-04; unrelated to gap-closure. Needs separate remediation phase. | 2026-07-23 |
 
 ## Session Continuity
 
