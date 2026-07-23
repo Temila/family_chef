@@ -66,6 +66,12 @@ export const statusBadge = (status) => {
     used: { text: '已使用', cls: 'badge-muted' },
     expired: { text: '已过期', cls: 'badge-warn' },
     revoked: { text: '已撤销', cls: 'badge-danger' },
+    // ── Wish lifecycle (Phase 7) — backend returns raw Chinese statuses (Phase 5 D-11) ──
+    '待处理': { text: '待处理', cls: 'badge-warn' },
+    '准备中': { text: '准备中', cls: 'badge-info' },
+    '已上架': { text: '已上架', cls: 'badge-success' },
+    '已拒绝': { text: '已拒绝', cls: 'badge-danger' },
+    '已撤销': { text: '已撤销', cls: 'badge-muted' }, // D-16: wish '已撤销' uses muted gray (distinct from English 'revoked')
   };
   const s = map[status] || { text: status, cls: 'badge-info' };
   return { text: s.text, cls: s.cls };
