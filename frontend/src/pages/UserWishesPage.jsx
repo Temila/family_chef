@@ -276,19 +276,7 @@ export default function UserWishesPage() {
 
   return (
     <div className="page-container">
-      <Header
-        title="我的愿望"
-        actions={
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={openCreate}
-            aria-label="新建愿望"
-          >
-            + 新建愿望
-          </button>
-        }
-      />
+      <Header title="我的愿望" />
 
       {loading ? (
         <Loading />
