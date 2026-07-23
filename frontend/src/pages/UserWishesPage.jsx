@@ -38,37 +38,37 @@ export default function UserWishesPage() {
   const [cancelSubmitting, setCancelSubmitting] = useState(false);
   const requestSeqRef = useRef(0);
   const cancelSubmittingRef = useRef(false);
+  const relatedDishNamesRef = useRef({});
+
+  useEffect(() => {
+    relatedDishNamesRef.current = relatedDishNames;
+  }, [relatedDishNames]);
 
   // 后端返回的 related_dish_id 是数字，但被加载过的菜品名也需要按数字 id 索引。
   // 用 parallel Promise.allSettled 拉取、合并到现有 map 中，避免重复请求。
   const loadRelatedDishNames = useCallback(async (items) => {
     if (!items || items.length === 0) return;
-    setRelatedDishNames((prev) => {
-      const missing = [
-        ...new Set(
-          items
-            .map((w) => w.related_dish_id)
-            .filter((id) => id != null && !(String(id) in prev))
-        ),
-      ];
-      if (missing.length === 0) return prev;
+    const knownNames = relatedDishNamesRef.current;
+    const missing = [
+      ...new Set(
+        items
+          .map((w) => w.related_dish_id)
+          .filter((id) => id != null && !(String(id) in knownNames))
+      ),
+    ];
+    if (missing.length === 0) return;
 
-      // 副作用：并行拉取缺失的菜品名
-      Promise.allSettled(missing.map((id) => api.getDish(id))).then((results) => {
-        const next = {};
-        results.forEach((result, index) => {
-          if (result.status === 'fulfilled' && result.value?.name) {
-            next[String(missing[index])] = result.value.name;
-          }
-        });
-        if (Object.keys(next).length > 0) {
-          setRelatedDishNames((cur) => ({ ...cur, ...next }));
-        }
-      });
-
-      // 返回 prev 保持本次渲染的引用一致；真正的更新由上面的 setRelatedDishNames 完成
-      return prev;
+    const results = await Promise.allSettled(missing.map((id) => api.getDish(id)));
+    const next = {};
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value?.name) {
+        next[String(missing[index])] = result.value.name;
+      }
     });
+    if (Object.keys(next).length > 0) {
+      relatedDishNamesRef.current = { ...relatedDishNamesRef.current, ...next };
+      setRelatedDishNames((current) => ({ ...current, ...next }));
+    }
   }, []);
 
   // 拉取愿望列表；background=true 时显示加载中按钮而不是全屏 Loading。

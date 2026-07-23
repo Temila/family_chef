@@ -56,6 +56,11 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [highlightedId, setHighlightedId] = useState(null);
   const requestSeqRef = useRef(0);
+  const relatedDishNamesRef = useRef({});
+
+  useEffect(() => {
+    relatedDishNamesRef.current = relatedDishNames;
+  }, [relatedDishNames]);
 
   // 标签切换：写回 URL，触发 activeTab 重算并重置列表
   const selectTab = useCallback(
@@ -73,30 +78,29 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
   );
 
   // 并行去重拉取 related_dish_name（与 UserWishesPage 相同模式）
-  const loadRelatedDishNames = useCallback((items) => {
+  const loadRelatedDishNames = useCallback(async (items) => {
     if (!items || items.length === 0) return;
-    setRelatedDishNames((prev) => {
-      const missing = [
-        ...new Set(
-          items
-            .map((w) => w.related_dish_id)
-            .filter((id) => id != null && !(String(id) in prev))
-        ),
-      ];
-      if (missing.length === 0) return prev;
-      Promise.allSettled(missing.map((id) => api.getDish(id))).then((results) => {
-        const next = {};
-        results.forEach((result, index) => {
-          if (result.status === 'fulfilled' && result.value?.name) {
-            next[String(missing[index])] = result.value.name;
-          }
-        });
-        if (Object.keys(next).length > 0) {
-          setRelatedDishNames((cur) => ({ ...cur, ...next }));
-        }
-      });
-      return prev;
+    const knownNames = relatedDishNamesRef.current;
+    const missing = [
+      ...new Set(
+        items
+          .map((w) => w.related_dish_id)
+          .filter((id) => id != null && !(String(id) in knownNames))
+      ),
+    ];
+    if (missing.length === 0) return;
+
+    const results = await Promise.allSettled(missing.map((id) => api.getDish(id)));
+    const next = {};
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value?.name) {
+        next[String(missing[index])] = result.value.name;
+      }
     });
+    if (Object.keys(next).length > 0) {
+      relatedDishNamesRef.current = { ...relatedDishNamesRef.current, ...next };
+      setRelatedDishNames((current) => ({ ...current, ...next }));
+    }
   }, []);
 
   // 拉取当前 tab 的愿望列表。
