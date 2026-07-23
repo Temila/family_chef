@@ -28,7 +28,6 @@ export default function UserWishesPage() {
 
   const [wishes, setWishes] = useState([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [relatedDishNames, setRelatedDishNames] = useState({});
@@ -39,6 +38,8 @@ export default function UserWishesPage() {
   const requestSeqRef = useRef(0);
   const cancelSubmittingRef = useRef(false);
   const relatedDishNamesRef = useRef({});
+  const pageRef = useRef(1);
+  const loadMoreInFlightRef = useRef(false);
 
   useEffect(() => {
     relatedDishNamesRef.current = relatedDishNames;
@@ -82,6 +83,7 @@ export default function UserWishesPage() {
         const res = await api.getWishes({ page: targetPage, page_size: PAGE_SIZE });
         if (seq !== requestSeqRef.current) return; // 过期响应，丢弃
         const items = res.items || [];
+        if (targetPage === 1) pageRef.current = 1;
         setWishes((prev) => (targetPage === 1 ? items : [...prev, ...items]));
         setTotal(res.total || 0);
         loadRelatedDishNames(items);
@@ -242,11 +244,19 @@ export default function UserWishesPage() {
     [user, showToast]
   );
 
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = useCallback(async () => {
+    if (loadMoreInFlightRef.current) return;
+    loadMoreInFlightRef.current = true;
+    const nextPage = pageRef.current + 1;
+    pageRef.current = nextPage;
     setLoadingMore(true);
-    setPage((p) => p + 1);
-    loadWishes({ page: page + 1 });
-  }, [loadWishes, page]);
+    try {
+      await loadWishes({ page: nextPage, background: true });
+    } finally {
+      loadMoreInFlightRef.current = false;
+      setLoadingMore(false);
+    }
+  }, [loadWishes]);
 
   const openCreate = useCallback(() => setShowCreate(true), []);
 
