@@ -48,6 +48,9 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
   const [wishes, setWishes] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  // 仅在 .then 成功分支（seq 未过期且 setWishes 已执行）置 true；
+  // .finally(setLoading(false)) 在过期响应下仍会执行，loading 单独不足以判定"列表已就绪"。
+  const [fetchedOnce, setFetchedOnce] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [relatedDishNames, setRelatedDishNames] = useState({});
   const [actingId, setActingId] = useState(null);
@@ -143,6 +146,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
           const items = res.items || [];
           setWishes(items);
           setTotal(res.total || 0);
+          setFetchedOnce(true);
           loadRelatedDishNames(items);
         })
         .catch(() => showToast('加载愿望失败', 'error'))
@@ -168,7 +172,10 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     const targetWish = wishes.find((w) => String(w.id) === String(highlightId));
     if (!targetWish) {
       // 列表仍在加载中 — 等待 wishes 更新后再次进入本 effect 判定，避免误报"未找到"
-      if (loading) return undefined;
+      // fetchedOnce 守门：.finally(setLoading(false)) 在 requestSeqRef 丢弃的过期响应下仍会执行，
+      // 造成 wishes=[] && loading=false 的瞬态窗口；此时 fetchedOnce 仍为 false，阻止误判。
+      if (loading || !fetchedOnce) return undefined;
+      // 100ms（而非 0ms）给后续 setWishes commit + cleanup 一个窗口清理本定时器，兜底其它潜在 race
       const missingTimer = setTimeout(() => {
         showToast('未找到该愿望，可能已撤销或需要切换标签', 'error');
         setSearchParams(
@@ -180,7 +187,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
           { replace: true }
         );
         setHighlightedId(null);
-      }, 0);
+      }, 100);
       return () => clearTimeout(missingTimer);
     }
     const applyTimer = setTimeout(() => {
@@ -204,7 +211,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       clearTimeout(applyTimer);
       clearTimeout(clearTimer);
     };
-  }, [wishes, highlightId, setSearchParams, showToast, loading]);
+  }, [wishes, highlightId, setSearchParams, showToast, loading, fetchedOnce]);
 
   // 生命周期动作：认领（管理员总览只读）
   const handleClaim = useCallback(
