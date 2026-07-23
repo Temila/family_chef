@@ -4,8 +4,9 @@
  * 不直接调用 API（依据 UI-SPEC §6.2 / §7.5 / §8.10）。
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import { trapFocusWithin } from '../utils';
 
 const MAX_NAME = 100;
 const MAX_URL = 500;
@@ -54,12 +55,24 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const dialogRef = useRef(null);
+  const initialFocusRef = useRef(null);
 
-  // 背景滚动锁定（W3C WAI modal 模式）
+  // 锁定背景滚动、聚焦首个字段，并在关闭后把焦点还给触发元素。
   useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    initialFocusRef.current?.focus();
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      if (
+        previouslyFocused &&
+        typeof previouslyFocused.focus === 'function' &&
+        document.contains(previouslyFocused)
+      ) {
+        previouslyFocused.focus();
+      }
     };
   }, []);
 
@@ -126,12 +139,16 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         style={{ maxWidth: 480 }}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => trapFocusWithin(e, dialogRef.current)}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby="wish-form-description"
+        tabIndex={-1}
       >
         <div className="modal-header">
           <h3 id={titleId}>{isEdit ? '编辑愿望' : '新建愿望'}</h3>
@@ -146,6 +163,9 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
         </div>
 
         <form className="modal-body" onSubmit={handleSubmit}>
+          <p id="wish-form-description" className="sr-only">
+            请填写想吃的菜名，可选填写参考链接和备注。
+          </p>
           {/* NOTIF-06 副作用提示：编辑已被认领的愿望会通知认领厨师 */}
           {isEdit && wish?.claimed_by_chef_name && (
             <div className="info-pill" style={{ marginBottom: 16, width: 'fit-content' }}>
@@ -158,6 +178,7 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
               菜名 *
             </label>
             <input
+              ref={initialFocusRef}
               id="wish-dish-name"
               type="text"
               className="form-input"
@@ -165,7 +186,6 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
               onChange={handleChange('dish_name')}
               placeholder="请输入想吃的菜名"
               maxLength={MAX_NAME}
-              autoFocus
             />
             <div className={'form-error' + (errors.dish_name ? ' show' : '')}>
               {errors.dish_name}

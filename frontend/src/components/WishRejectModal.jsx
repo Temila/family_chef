@@ -3,7 +3,8 @@
  * 必填拒绝原因（1-500 字），提交通过 onSuccess(reason) 回调委托给父页面。
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { trapFocusWithin } from '../utils';
 
 const MAX_REASON = 500;
 
@@ -11,12 +12,24 @@ export default function WishRejectModal({ onClose, onSuccess }) {
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const dialogRef = useRef(null);
+  const initialFocusRef = useRef(null);
 
-  // 背景滚动锁定（W3C WAI modal 模式）
+  // 锁定背景滚动、聚焦原因字段，并在关闭后把焦点还给触发元素。
   useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    initialFocusRef.current?.focus();
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      if (
+        previouslyFocused &&
+        typeof previouslyFocused.focus === 'function' &&
+        document.contains(previouslyFocused)
+      ) {
+        previouslyFocused.focus();
+      }
     };
   }, []);
 
@@ -52,12 +65,16 @@ export default function WishRejectModal({ onClose, onSuccess }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         style={{ maxWidth: 420 }}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => trapFocusWithin(e, dialogRef.current)}
         role="dialog"
         aria-modal="true"
         aria-labelledby="wish-reject-title"
+        aria-describedby="wish-reject-description"
+        tabIndex={-1}
       >
         <div className="modal-header">
           <h3 id="wish-reject-title">拒绝愿望</h3>
@@ -72,11 +89,15 @@ export default function WishRejectModal({ onClose, onSuccess }) {
         </div>
 
         <form className="modal-body" onSubmit={handleSubmit}>
+          <p id="wish-reject-description" className="sr-only">
+            请填写拒绝愿望的原因。
+          </p>
           <div className="form-group">
             <label className="form-label" htmlFor="wish-reject-reason">
               拒绝原因 *
             </label>
             <textarea
+              ref={initialFocusRef}
               id="wish-reject-reason"
               className="form-input"
               rows={4}
@@ -84,7 +105,6 @@ export default function WishRejectModal({ onClose, onSuccess }) {
               onChange={handleChange}
               placeholder="请说明拒绝原因（必填）"
               maxLength={MAX_REASON}
-              autoFocus
             />
             <div className={'form-error' + (error ? ' show' : '')}>{error}</div>
           </div>

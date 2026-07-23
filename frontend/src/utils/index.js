@@ -88,6 +88,38 @@ export const formatPrice = (price) => {
   return parseFloat(price).toFixed(2);
 };
 
+// ─── Modal Focus Trap ─────────────────────────────────────
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
+export const trapFocusWithin = (event, container) => {
+  if (event.key !== 'Tab' || !container) return;
+
+  const focusable = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR));
+  if (focusable.length === 0) {
+    event.preventDefault();
+    container.focus();
+    return;
+  }
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+  if (event.shiftKey && (active === first || !container.contains(active))) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && (active === last || !container.contains(active))) {
+    event.preventDefault();
+    first.focus();
+  }
+};
+
 // ─── Debounce ─────────────────────────────────────
 export const debounce = (func, wait) => {
   let timeout;
@@ -115,6 +147,7 @@ export default {
   statusBadge,
   emptyState,
   formatPrice,
+  trapFocusWithin,
   debounce,
   truncate
 };
