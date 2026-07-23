@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
-import ThemeToggle from './ThemeToggle';
 
 function Badge({ count }) {
   if (!count) return null;
@@ -19,7 +18,7 @@ export default function Sidebar() {
 
   const role = user.role;
 
-  let navItems = [];
+  let navItems;
   if (role === 'admin') {
     navItems = [
       { icon: '📊', label: '管理后台', path: '/admin' },
@@ -31,6 +30,7 @@ export default function Sidebar() {
       { icon: '📈', label: '数据统计', path: '/admin/stats' },
       { icon: '📝', label: '系统日志', path: '/admin/logs' },
       { icon: '🍽', label: '点菜预览', path: '/order' },
+      { icon: '💡', label: '愿望总览', path: '/admin/wishes' },
     ];
   } else if (role === 'chef') {
     navItems = [
@@ -40,6 +40,7 @@ export default function Sidebar() {
       { icon: '🥬', label: '食材管理', path: '/ingredients' },
       { icon: '🍽️', label: '点菜', path: '/order' },
       { icon: '👅', label: '口味偏好', path: '/preferences' },
+      { icon: '💡', label: '愿望管理', path: '/chef/wishes' },
       { icon: '👤', label: '我的', path: '/profile' },
     ];
   } else {
@@ -47,6 +48,7 @@ export default function Sidebar() {
       { icon: '🏠', label: '首页', path: '/home' },
       { icon: '🍽️', label: '点菜', path: '/order' },
       { icon: '👅', label: '口味偏好', path: '/preferences' },
+      { icon: '💡', label: '我的愿望', path: '/my-wishes' },
       { icon: '👤', label: '我的', path: '/profile' },
     ];
   }

@@ -17,12 +17,13 @@ export default function BottomBar() {
   if (!user) return null;
 
   const role = user.role;
-  let tabs = [];
+  let tabs;
 
   if (role === 'admin') {
     tabs = [
       { id: 'admin-home', icon: '📊', label: '后台', path: '/admin' },
       { id: 'admin-dishes', icon: '🍽', label: '菜品', path: '/admin/dishes' },
+      { id: 'admin-wishes', icon: '💡', label: '愿望', path: '/admin/wishes' },
       { id: 'admin-users', icon: '👥', label: '用户', path: '/admin/users' },
       { id: 'logout', icon: '🚪', label: '退出', action: 'logout' },
     ];
@@ -30,6 +31,7 @@ export default function BottomBar() {
     tabs = [
       { id: 'chef-orders', icon: '👨‍🍳', label: '订单', path: '/chef/orders' },
       { id: 'order-dish', icon: '🍽', label: '点菜', path: '/order' },
+      { id: 'chef-wishes', icon: '💡', label: '愿望', path: '/chef/wishes' },
       { id: 'user-home', icon: '🏠', label: '首页', path: '/home' },
       { id: 'user-profile', icon: '👤', label: '我的', path: '/profile' },
     ];
@@ -37,6 +39,7 @@ export default function BottomBar() {
     tabs = [
       { id: 'user-home', icon: '🏠', label: '首页', path: '/home' },
       { id: 'order-dish', icon: '🍽', label: '点菜', path: '/order' },
+      { id: 'user-wishes', icon: '💡', label: '愿望', path: '/my-wishes' },
       { id: 'user-profile', icon: '👤', label: '我的', path: '/profile' },
     ];
   }
