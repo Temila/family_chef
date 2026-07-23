@@ -90,10 +90,17 @@
   6. Chef can claim a pending wish (immediately shows as theirs "准备中"), advance it by linking a published dish (→ 已上架), or reject it with a required reason — all from the shared card affordances
 
 **Plans**: 3 plans
-
 Plans:
+**Wave 1**
+
 - [ ] 07-01-PLAN.md — Foundation: ApiClient 8 wish methods (status→status_filter) + statusBadge extension + CSS tokens + ConfirmModal a11y + WishCard + WishFormModal + WishRejectModal + WishAdvanceModal
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 07-02-PLAN.md — Pages: UserWishesPage (create/edit/cancel/FAB) + ChefWishesPage (tabs/polling/claim/advance/reject) + AdminWishesPage (viewAsAdmin wrapper)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 07-03-PLAN.md — Integration: App.jsx routes + Sidebar/BottomBar nav entries + Phase-6 /wishes/:id deep-link redirect + ?wish=:id highlight + verification gate
 
 **UI hint**: yes
