@@ -31,12 +31,15 @@ export default function WishCard({
   if (!wish) return null;
 
   const isUserView = currentRole === 'user' && !viewAsAdmin;
-  const isChefLikeView = !isUserView; // chef 或 admin 的生命周期视图
+  const isAdminView = currentRole === 'admin' || viewAsAdmin;
+  const isChefLikeView = !isUserView; // chef 或 admin 的只读/生命周期视图
   const isOwnClaim =
     wish.claimed_by_chef_id != null && wish.claimed_by_chef_id === currentUser?.id;
 
-  // D-07 行动按钮矩阵：按 角色 × 状态 × 认领人 决定渲染哪些按钮
+  // D-07 行动按钮矩阵：管理员仅查看，用户/厨师按角色、状态和认领人显示动作
   const renderActions = () => {
+    if (isAdminView) return null;
+
     // 用户视图：仅在 待处理 / 准备中 可编辑/撤销自己的愿望
     if (isUserView) {
       if (
@@ -66,7 +69,7 @@ export default function WishCard({
       return null;
     }
 
-    // 厨师/管理员生命周期视图
+    // 厨师生命周期视图
     if (wish.status === '待处理' && !wish.claimed_by_chef_id) {
       return (
         <button
@@ -78,7 +81,7 @@ export default function WishCard({
         </button>
       );
     }
-    if (wish.status === '准备中' && (viewAsAdmin || isOwnClaim)) {
+    if (wish.status === '准备中' && isOwnClaim) {
       return (
         <>
           <button

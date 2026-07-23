@@ -200,10 +200,10 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     };
   }, [wishes, highlightId, setSearchParams, showToast, loading]);
 
-  // 生命周期动作：认领
+  // 生命周期动作：认领（管理员总览只读）
   const handleClaim = useCallback(
     async (wish) => {
-      if (actingId) return;
+      if (viewAsAdmin || actingId) return;
       setActingId(wish.id);
       try {
         await api.claimWish(wish.id);
@@ -215,13 +215,13 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
         setActingId(null);
       }
     },
-    [actingId, loadWishes, showToast]
+    [actingId, loadWishes, showToast, viewAsAdmin]
   );
 
   // 生命周期动作：推进（关联本人已发布的菜品）
   const handleAdvance = useCallback(
     async (wish, relatedDishId, dishName) => {
-      if (actingId) return;
+      if (viewAsAdmin || actingId) return;
       setActingId(wish.id);
       try {
         await api.advanceWish(wish.id, relatedDishId);
@@ -234,13 +234,13 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
         setActingId(null);
       }
     },
-    [actingId, loadWishes, showToast]
+    [actingId, loadWishes, showToast, viewAsAdmin]
   );
 
   // 生命周期动作：拒绝（必填原因）
   const handleReject = useCallback(
     async (wish, reason) => {
-      if (actingId) return;
+      if (viewAsAdmin || actingId) return;
       setActingId(wish.id);
       try {
         await api.rejectWish(wish.id, reason);
@@ -253,7 +253,21 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
         setActingId(null);
       }
     },
-    [actingId, loadWishes, showToast]
+    [actingId, loadWishes, showToast, viewAsAdmin]
+  );
+
+  const openAdvance = useCallback(
+    (wish) => {
+      if (!viewAsAdmin) setAdvanceTarget(wish);
+    },
+    [viewAsAdmin]
+  );
+
+  const openReject = useCallback(
+    (wish) => {
+      if (!viewAsAdmin) setRejectTarget(wish);
+    },
+    [viewAsAdmin]
   );
 
   const handleLoadMore = useCallback(() => {
@@ -318,8 +332,8 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
               relatedDishName={relatedDishNames[String(w.related_dish_id)]}
               highlighted={highlightedId === String(w.id)}
               onClaim={handleClaim}
-              onAdvance={(wish) => setAdvanceTarget(wish)}
-              onReject={(wish) => setRejectTarget(wish)}
+              onAdvance={openAdvance}
+              onReject={openReject}
             />
           ))}
 
@@ -339,13 +353,13 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       )}
 
       {/* 单 overlay 不变量：同时只渲染一个弹窗 */}
-      {advanceTarget && (
+      {!viewAsAdmin && advanceTarget && (
         <WishAdvanceModal
           onClose={() => setAdvanceTarget(null)}
           onSuccess={(dishId, dishName) => handleAdvance(advanceTarget, dishId, dishName)}
         />
       )}
-      {rejectTarget && (
+      {!viewAsAdmin && rejectTarget && (
         <WishRejectModal
           onClose={() => setRejectTarget(null)}
           onSuccess={(reason) => handleReject(rejectTarget, reason)}
