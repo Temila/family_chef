@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { CategoriesProvider } from './contexts/CategoriesContext';
@@ -24,6 +24,9 @@ import AdminCategoriesPage from './pages/AdminCategoriesPage';
 import AdminChefsPage from './pages/AdminChefsPage';
 import ForceChangePasswordPage from './pages/ForceChangePasswordPage';
 import GuestOrderPage from './pages/GuestOrderPage';
+import UserWishesPage from './pages/UserWishesPage';
+import ChefWishesPage from './pages/ChefWishesPage';
+import AdminWishesPage from './pages/AdminWishesPage';
 import './css/styles.css';
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
@@ -80,6 +83,21 @@ function PcLayout() {
   );
 }
 
+// Phase-6 飞书通知中的 /wishes/:id 深链兼容入口：按当前用户角色重定向到对应的愿望页，
+// 保留 ?wish=:id 高亮指令（由各愿望页消费）。
+function WishDeepLinkRedirect() {
+  const { user } = useAuth();
+  const { id } = useParams();
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  let base;
+  if (user.role === 'admin') base = '/admin/wishes';
+  else if (user.role === 'chef') base = '/chef/wishes';
+  else base = '/my-wishes';
+  return <Navigate to={base + '?wish=' + id} replace />;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -90,6 +108,14 @@ function App() {
             <Route path="/guest/:token" element={<GuestOrderPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
+            <Route
+              path="/wishes/:id"
+              element={
+                <ProtectedRoute>
+                  <WishDeepLinkRedirect />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<RedirectRoute />} />
 
             <Route element={<PcLayout />}>
@@ -234,6 +260,30 @@ function App() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <AdminLogsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-wishes"
+                element={
+                  <ProtectedRoute>
+                    <UserWishesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/chef/wishes"
+                element={
+                  <ProtectedRoute requiredRoles={['chef', 'admin']}>
+                    <ChefWishesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/wishes"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <AdminWishesPage />
                   </ProtectedRoute>
                 }
               />
