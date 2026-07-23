@@ -8,9 +8,11 @@
 
 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备。
 
-## Current Milestone: v1.1 菜品愿望单 (Dish Wish List)
+## Current Milestone: v1.1 菜品愿望单 (Dish Wish List) — COMPLETE
 
 **Goal:** 让注册用户在菜单里找不到想吃的菜时，向厨师提交"愿望单"，厨师认领并推进（准备中 → 已上架 / 已拒绝），形成完整闭环。
+
+**Status:** 3/3 phases delivered (Phase 5: Data Foundation & Wish Lifecycle API, Phase 6: Notifications Integration, Phase 7: Wish List Frontend). Awaiting human UAT (5 mobile-UX items in `07-HUMAN-UAT.md`).
 
 **Target features:**
 - 用户提交愿望（菜名 + 参考链接 + 备注）；所有注册用户可提交，不含访客
@@ -34,11 +36,11 @@
 - ✓ 订单创建（按厨师自动拆单） — existing
 - ✓ 飞书卡片消息通知 — existing
 - ✓ 收藏、口味偏好管理 — existing
+- ✓ 菜品愿望单（WISH-01~04, FLOW-01~05, PERM-01~04, DATA-06~08, NOTIF-03~06, UX-01~03） — Validated in Phase 5-7: v1.1
 
 ### Active
 
-- [ ] 菜品愿望单（v1.1 — 见 Current Milestone 目标特性）
-- [ ] 访客备注功能（GORD-06，延期自 v1.0）
+- [ ] 访客备注功能（GORD-06，延期自 v1.0 → v2）
 
 ### Out of Scope
 
@@ -50,9 +52,9 @@
 ## Context
 
 - **Shipped v1.0**: 访客点菜邀请功能完整交付，4 phases / 6 plans / 52 commits
+- **Shipped v1.1**: 菜品愿望单后端+通知+前端完整交付，3 phases / 9 plans（Phase 5-7），等待人工 UAT
 - **Tech stack**: FastAPI + SQLAlchemy 2.0 (async) + React 19 + Vite + SQLite
-- **UAT**: 10/10 tests passed, 3 issues found and fixed inline
-- **Feature branch**: feature/guest_order, ready for merge
+- **Feature branch**: feature/guest_order
 
 ## Constraints
 
@@ -78,4 +80,4 @@
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-07-21 after v1.1 milestone start*
+*Last updated: 2026-07-23 after Phase 7 / v1.1 milestone completion*
