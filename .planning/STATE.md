@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
 status: executing
-last_updated: "2026-07-23T01:19:07.309Z"
-last_activity: 2026-07-23 -- Phase 07 planning complete
+last_updated: "2026-07-23T01:35:52.430Z"
+last_activity: 2026-07-23
 progress:
   total_phases: 3
   completed_phases: 2
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 06 — notifications-integration
+**Current focus:** Phase 07 — wish-list-frontend
 
 ## Current Position
 
-Phase: 06 (notifications-integration) — EXECUTING
-Plan: 3 of 3
+Phase: 07 (wish-list-frontend) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-07-23 -- Phase 07 planning complete
+Last activity: 2026-07-23
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 67%
 
 ## Deferred Items
 
@@ -42,8 +42,8 @@ Items acknowledged and carried forward from v1.0 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-22T09:05:14.004Z
-Stopped at: Phase 07 context gathered
+Last session: 2026-07-23T01:35:52.420Z
+Stopped at: Completed 07-01-PLAN.md
 Next: Phase 07 (frontend integration)
 
 ## Performance Metrics
@@ -53,6 +53,7 @@ Next: Phase 07 (frontend integration)
 | Phase 06 P01 | 12min | 2 tasks | 7 files |
 | Phase 06 P02 | 15min | 2 tasks | 3 files |
 | Phase 06 P03 | 18min | 3 tasks | 4 files |
+| Phase 07 P01 | 11min | 3 tasks tasks | 8 files files |
 
 ## Decisions
 
@@ -61,3 +62,7 @@ Next: Phase 07 (frontend integration)
 - [Phase 06]: has_unread 红点仅对愿望提交者披露真实值（compute_has_unread 身份屏蔽）；详情清除副作用仅提交者触发（精确身份校验非角色判断）
 - [Phase 06]: flush 后 onupdate=func.now() 导致 updated_at 过期触发 async 懒加载错误 — 使用 db.refresh(wish, ['updated_at']) 定向刷新修复
 - [Phase 06 Plan 03]: WishNotificationService — separate module keeps recipient resolution + failure isolation out of integration layer
+- [Phase ?]: [Phase 07-01] ApiClient.getWishes 将 params.status 序列化为后端的 status_filter 查询键，并支持 mine=true — 符合 Phase 5 后端契约
+- [Phase ?]: [Phase 07-01] WishRejectModal 自身即为破坏性确认（D-08），不再叠加 ConfirmModal；红色提交按钮 + 必填拒绝原因构成确认
+- [Phase ?]: [Phase 07-01] 中文键愿望状态与现有英文键共存：'已撤销'(badge-muted) 与 'revoked'(badge-danger) 区分保留，单源 statusBadge 映射
+- [Phase ?]: [Phase 07-01] WishAdvanceModal 采用 setTimeout-in-effect 防抖(200ms) + 过期响应保护，替代 utils.debounce — 惯用 React 写法

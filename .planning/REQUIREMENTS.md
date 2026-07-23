@@ -38,9 +38,9 @@
 
 ### UX — 移动端体验
 
-- [ ] **UX-01**: 用户端愿望列表与提交入口移动端友好
-- [ ] **UX-02**: 厨师端愿望管理界面（认领/推进/拒绝）移动端友好
-- [ ] **UX-03**: 状态在愿望卡片上有清晰视觉标识（徽章/颜色）
+- [x] **UX-01**: 用户端愿望列表与提交入口移动端友好
+- [x] **UX-02**: 厨师端愿望管理界面（认领/推进/拒绝）移动端友好
+- [x] **UX-03**: 状态在愿望卡片上有清晰视觉标识（徽章/颜色）
 
 ### DATA — 数据模型（续 v1.0 DATA-05）
 
@@ -100,9 +100,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTIF-04 | Phase 6 | Complete |
 | NOTIF-05 | Phase 6 | Complete |
 | NOTIF-06 | Phase 6 | Complete |
-| UX-01 | Phase 7 | Pending |
-| UX-02 | Phase 7 | Pending |
-| UX-03 | Phase 7 | Pending |
+| UX-01 | Phase 7 | Complete |
+| UX-02 | Phase 7 | Complete |
+| UX-03 | Phase 7 | Complete |
 | DATA-06 | Phase 5 | Pending |
 | DATA-07 | Phase 5 | Pending |
 | DATA-08 | Phase 5 | Pending |
