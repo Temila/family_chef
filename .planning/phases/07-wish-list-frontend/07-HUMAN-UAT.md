@@ -1,9 +1,9 @@
 ---
-status: partial
+status: diagnosed
 phase: 07-wish-list-frontend
 source: [07-VERIFICATION.md]
 started: 2026-07-23T12:30:00Z
-updated: 2026-07-23T12:30:00Z
+updated: 2026-07-23T14:45:00Z
 ---
 
 ## Current Test
@@ -16,7 +16,9 @@ updated: 2026-07-23T12:30:00Z
 
 **Test:** On a 375px-wide viewport (iPhone-class), open `/my-wishes`, submit a wish via the FAB, browse the list, edit a wish, and cancel one.
 expected: FAB is reachable by thumb; form fields are scannable; cards stack single-column with readable text; modal doesn't overflow; bottom-bar 愿望 tab is visible.
-result: [pending]
+result: issue
+reported: "打开我的愿望时持续报错加载愿望单失败"
+severity: blocker
 
 ### H-2: Mobile UX feel for chef wish queue
 
@@ -46,9 +48,30 @@ result: [pending]
 
 total: 5
 passed: 0
-issues: 0
-pending: 5
+issues: 1
+pending: 4
 skipped: 0
 blocked: 0
 
 ## Gaps
+
+<!-- YAML format for plan-phase --gaps consumption -->
+- truth: "用户打开 /my-wishes 可以正常加载并浏览自己的愿望卡片列表"
+  status: failed
+  reason: "User reported: 打开我的愿望时持续报错加载愿望单失败"
+  severity: blocker
+  test: 1
+  root_cause: "Phase 6 Alembic migration `3a41e4977098_add_wish_notification_timestamps.py` was never applied to backend/data/family_chef.db. The wishes table is missing `last_status_change_at` and `submitter_last_viewed_at` columns that backend/app/models/wish.py:33-34 declares. Every SELECT against wishes fails with `sqlite3.OperationalError: no such column: wishes.last_status_change_at` → HTTP 500 → frontend toast '加载愿望失败'."
+  artifacts:
+    - path: "backend/data/family_chef.db"
+      issue: "alembic_version stuck at 72b56533bb6d; wishes table missing last_status_change_at and submitter_last_viewed_at columns"
+    - path: "backend/alembic/versions/3a41e4977098_add_wish_notification_timestamps.py"
+      issue: "Migration exists but was never applied to the running DB"
+    - path: "backend/app/models/wish.py"
+      issue: "Lines 33-34 declare the columns that the DB lacks"
+    - path: "backend/app/routers/wishes.py"
+      issue: "compute_has_unread (lines 34-38) reads missing columns on every list query"
+  missing:
+    - "Run alembic upgrade head against backend/data/family_chef.db to apply the pending Phase-6 migration"
+    - "Verify no auto-migration hook in backend/app/main.py startup — consider adding one"
+  debug_session: .planning/debug/resolved/wish-list-load-failure.md
