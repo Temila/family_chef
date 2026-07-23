@@ -37,11 +37,16 @@ export default function WishRejectModal({ onClose, onSuccess }) {
     if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting || !isValid) return;
     setSubmitting(true);
-    onSuccess?.(trimmed);
+    // 父页面在失败时会吞掉异常并保持弹窗打开，try/finally 确保无论成功失败 submitting 都复位
+    try {
+      await onSuccess?.(trimmed);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

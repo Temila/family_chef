@@ -95,7 +95,7 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
     return errs;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
     const errs = validate();
@@ -111,7 +111,12 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
     }
 
     setSubmitting(true);
-    onSuccess?.(payload);
+    // 父页面在失败时会吞掉异常并保持弹窗打开，try/finally 确保无论成功失败 submitting 都复位
+    try {
+      await onSuccess?.(payload);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const closeLabel = isEdit ? '放弃修改' : '暂不提交';

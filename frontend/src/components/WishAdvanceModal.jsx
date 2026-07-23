@@ -79,11 +79,16 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
     setSelectedDishName(dish.name || '');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting || selectedDishId == null) return;
     setSubmitting(true);
-    onSuccess?.(selectedDishId, selectedDishName);
+    // 父页面在失败时会吞掉异常并保持弹窗打开，try/finally 确保无论成功失败 submitting 都复位
+    try {
+      await onSuccess?.(selectedDishId, selectedDishName);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const hasDishes = !loading && filteredDishes.length > 0;

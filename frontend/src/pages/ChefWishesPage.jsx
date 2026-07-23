@@ -161,6 +161,8 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     if (!highlightId) return undefined;
     const targetWish = wishes.find((w) => String(w.id) === String(highlightId));
     if (!targetWish) {
+      // 列表仍在加载中 — 等待 wishes 更新后再次进入本 effect 判定，避免误报"未找到"
+      if (loading) return undefined;
       const missingTimer = setTimeout(() => {
         showToast('未找到该愿望，可能已撤销或需要切换标签', 'error');
         setSearchParams(
@@ -196,7 +198,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       clearTimeout(applyTimer);
       clearTimeout(clearTimer);
     };
-  }, [wishes, highlightId, setSearchParams, showToast]);
+  }, [wishes, highlightId, setSearchParams, showToast, loading]);
 
   // 生命周期动作：认领
   const handleClaim = useCallback(
