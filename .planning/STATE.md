@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
-status: executing
-last_updated: "2026-07-23T01:46:45.173Z"
+status: verifying
+last_updated: "2026-07-23T02:04:43.713Z"
 last_activity: 2026-07-23
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 8
-  percent: 67
+  completed_plans: 9
+  percent: 100
 ---
 
 # Project State
@@ -26,10 +26,10 @@ See: .planning/PROJECT.md (updated 2026-07-21)
 
 Phase: 07 (wish-list-frontend) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-07-23
 
-Progress: [█████████░] 89%
+Progress: [██████████] 100%
 
 ## Deferred Items
 
@@ -42,7 +42,7 @@ Items acknowledged and carried forward from v1.0 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-23T01:46:10.357Z
+Last session: 2026-07-23T02:02:47.121Z
 Stopped at: Completed 07-01-PLAN.md
 Next: Phase 07 (frontend integration)
 
@@ -55,6 +55,7 @@ Next: Phase 07 (frontend integration)
 | Phase 06 P03 | 18min | 3 tasks | 4 files |
 | Phase 07 P01 | 11min | 3 tasks tasks | 8 files files |
 | Phase 07 P02 | 5min | 3 tasks | 3 files |
+| Phase 07 P03 | 9min | 3 tasks | 5 files |
 
 ## Decisions
 
@@ -68,3 +69,5 @@ Next: Phase 07 (frontend integration)
 - [Phase ?]: [Phase 07-01] 中文键愿望状态与现有英文键共存：'已撤销'(badge-muted) 与 'revoked'(badge-danger) 区分保留，单源 statusBadge 映射
 - [Phase ?]: [Phase 07-01] WishAdvanceModal 采用 setTimeout-in-effect 防抖(200ms) + 过期响应保护，替代 utils.debounce — 惯用 React 写法
 - [Phase 07-02]: [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍 — [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍
+- [Phase ?]: [Phase 07-03] WishDeepLinkRedirect 硬编码 role→path 映射；仅数字 wish id 插入目标，无路径遍历向量
+- [Phase ?]: [Phase 07-03] 高亮 effect setState 经 setTimeout(0) 延迟，规避 react-hooks/set-state-in-effect（与 Wave 2 queueMicrotask 同类）

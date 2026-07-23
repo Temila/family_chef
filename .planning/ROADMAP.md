@@ -23,7 +23,7 @@
 
 - [x] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints (completed 2026-07-21)
 - [x] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs (completed 2026-07-22)
-- [ ] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge
+- [x] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge (completed 2026-07-23)
 
 ## Phase Details
 
@@ -101,7 +101,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 07-03-PLAN.md — Integration: App.jsx routes + Sidebar/BottomBar nav entries + Phase-6 /wishes/:id deep-link redirect + ?wish=:id highlight + verification gate
+- [x] 07-03-PLAN.md — Integration: App.jsx routes + Sidebar/BottomBar nav entries + Phase-6 /wishes/:id deep-link redirect + ?wish=:id highlight + verification gate
 
 **UI hint**: yes
 
@@ -118,4 +118,4 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
 | 6. Notifications Integration | v1.1 | 3/3 | Complete   | 2026-07-22 |
-| 7. Wish List Frontend | v1.1 | 2/3 | In Progress|  |
+| 7. Wish List Frontend | v1.1 | 3/3 | Complete   | 2026-07-23 |
