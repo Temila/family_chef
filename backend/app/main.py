@@ -229,6 +229,9 @@ async def startup():
     """应用启动事件"""
     _print_startup_info()
 
+    # NOTE(07-04): No automatic `alembic upgrade head` runs at startup.
+    # New migrations must be applied manually via `cd backend && uv run alembic upgrade head`.
+    # See .planning/phases/07-wish-list-frontend/07-04-PLAN.md for context.
     await init_db()
 
     from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients
