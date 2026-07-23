@@ -156,6 +156,14 @@ None — no external service configuration required. No new packages installed.
 - Wave 2 pages can call `api.getWishes({ status: '待处理', mine: true })`, render `<Badge status={'已上架'} />`, and compose `<WishCard />` + the modals without re-deriving any contract
 - No blockers
 
+## Self-Check: PASSED
+- All 4 created component files exist on disk (WishCard, WishFormModal, WishRejectModal, WishAdvanceModal)
+- All 4 modified files exist on disk (client.js, utils/index.js, styles.css, ConfirmModal.jsx)
+- SUMMARY.md present in plan directory
+- All 4 commit hashes verified in git log (b0028d7, a11920e, 29d4047, 519a53c)
+- `npm run build` exits 0; ESLint --max-warnings=0 on all 7 plan files passes
+- No TDD gate applicable (plan `type: execute`, not `tdd`)
+
 ---
 *Phase: 07-wish-list-frontend*
 *Completed: 2026-07-23*
