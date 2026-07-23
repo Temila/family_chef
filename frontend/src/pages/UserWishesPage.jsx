@@ -18,6 +18,7 @@ import WishCard from '../components/WishCard';
 import WishFormModal from '../components/WishFormModal';
 
 const PAGE_SIZE = 20;
+const FOCUS_REFRESH_DEDUPE_MS = 2000;
 
 export default function UserWishesPage() {
   const { user } = useAuth();
@@ -40,6 +41,7 @@ export default function UserWishesPage() {
   const relatedDishNamesRef = useRef({});
   const pageRef = useRef(1);
   const loadMoreInFlightRef = useRef(false);
+  const lastRefreshRef = useRef(0);
 
   useEffect(() => {
     relatedDishNamesRef.current = relatedDishNames;
@@ -115,9 +117,14 @@ export default function UserWishesPage() {
       .finally(() => setLoading(false));
   }, [loadRelatedDishNames, showToast]);
 
-  // 提交者刷新模式：仅 visibilitychange → visible + window focus 时静默拉取（无 30s 轮询）
+  // 提交者刷新模式：visibilitychange 与 focus 可能连续触发，2 秒内只静默刷新一次。
   useEffect(() => {
-    const refresh = () => loadWishes({ page: 1, background: true });
+    const refresh = () => {
+      const now = Date.now();
+      if (now - lastRefreshRef.current < FOCUS_REFRESH_DEDUPE_MS) return;
+      lastRefreshRef.current = now;
+      loadWishes({ page: 1, background: true });
+    };
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') refresh();
     };
