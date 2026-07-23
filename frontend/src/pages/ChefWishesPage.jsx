@@ -294,9 +294,6 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
   const title = viewAsAdmin ? '愿望总览' : '愿望管理';
   const empty = EMPTY_STATES[activeTab] || EMPTY_STATES.all;
 
-  const pendingCount = wishes.filter((w) => w.status === '待处理').length;
-  const mineCount = wishes.filter((w) => w.claimed_by_chef_id === user?.id).length;
-
   return (
     <div className="page-container">
       <Header title={title} />
@@ -307,21 +304,21 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
           className={'filter-chip' + (activeTab === 'all' ? ' active' : '')}
           onClick={() => selectTab('all')}
         >
-          全部 ({wishes.length})
+          全部
         </button>
         <button
           type="button"
           className={'filter-chip' + (activeTab === 'pending' ? ' active' : '')}
           onClick={() => selectTab('pending')}
         >
-          待处理 ({pendingCount})
+          待处理
         </button>
         <button
           type="button"
           className={'filter-chip' + (activeTab === 'mine' ? ' active' : '')}
           onClick={() => selectTab('mine')}
         >
-          我的认领 ({mineCount})
+          我的认领
         </button>
       </div>
 
