@@ -1,7 +1,11 @@
 /**
  * ConfirmModal Component - 通用确认弹窗
- * 支持 danger 模式（红色确认按钮）
+ * 支持 danger 模式（红色确认按钮）。
+ * 无障碍增强（Phase 7）：role=dialog / aria-modal / aria-labelledby / ESC 关闭 / 背景滚动锁定，
+ * 使撤销愿望等复用场景满足 UI-SPEC §7.5 的 W3C WAI modal 模式。
  */
+
+import { useEffect } from 'react';
 
 export default function ConfirmModal({
   title,
@@ -12,16 +16,43 @@ export default function ConfirmModal({
   onCancel,
   danger = false,
 }) {
+  // 背景滚动锁定
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  // ESC 关闭
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Escape') onCancel?.();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onCancel]);
+
   return (
-    <div className="modal-overlay" onClick={onCancel}>
+    <div
+      className="modal-overlay"
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-modal-title"
+    >
       <div
         className="modal-content"
         style={{ maxWidth: 360 }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>{title}</h3>
-          <button className="modal-close" onClick={onCancel}>
+          <h3 id="confirm-modal-title">{title}</h3>
+          <button
+            className="modal-close"
+            onClick={onCancel}
+            aria-label={`关闭${title}窗口`}
+          >
             ✕
           </button>
         </div>
