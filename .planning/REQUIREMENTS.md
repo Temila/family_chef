@@ -11,8 +11,8 @@
 
 - [ ] **WISH-01**: 注册用户可提交愿望，包含菜名（必填）、参考链接（可选）、备注（可选）
 - [ ] **WISH-02**: 用户可查看自己提交的所有愿望列表及当前状态
-- [ ] **WISH-03**: 用户可在愿望"已上架"前编辑愿望内容（菜名/参考链接/备注）
-- [ ] **WISH-04**: 用户可在愿望"已上架"前撤销（软删除, status='已撤销'）愿望
+- [x] **WISH-03**: 用户可在愿望"已上架"前编辑愿望内容（菜名/参考链接/备注）
+- [x] **WISH-04**: 用户可在愿望"已上架"前撤销（软删除, status='已撤销'）愿望
 
 ### FLOW — 厨师认领与推进工作流
 
@@ -85,8 +85,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | WISH-01 | Phase 5 | Pending |
 | WISH-02 | Phase 5 | Pending |
-| WISH-03 | Phase 7 | Pending |
-| WISH-04 | Phase 7 | Pending |
+| WISH-03 | Phase 7 | Complete |
+| WISH-04 | Phase 7 | Complete |
 | FLOW-01 | Phase 5 | Pending |
 | FLOW-02 | Phase 5 | Pending |
 | FLOW-03 | Phase 5 | Pending |

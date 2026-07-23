@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
 status: executing
-last_updated: "2026-07-23T01:35:52.430Z"
+last_updated: "2026-07-23T01:46:45.173Z"
 last_activity: 2026-07-23
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 9
-  completed_plans: 6
+  completed_plans: 8
   percent: 67
 ---
 
@@ -25,11 +25,11 @@ See: .planning/PROJECT.md (updated 2026-07-21)
 ## Current Position
 
 Phase: 07 (wish-list-frontend) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-07-23
 
-Progress: [███████░░░] 67%
+Progress: [█████████░] 89%
 
 ## Deferred Items
 
@@ -42,7 +42,7 @@ Items acknowledged and carried forward from v1.0 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-23T01:35:52.420Z
+Last session: 2026-07-23T01:46:10.357Z
 Stopped at: Completed 07-01-PLAN.md
 Next: Phase 07 (frontend integration)
 
@@ -54,6 +54,7 @@ Next: Phase 07 (frontend integration)
 | Phase 06 P02 | 15min | 2 tasks | 3 files |
 | Phase 06 P03 | 18min | 3 tasks | 4 files |
 | Phase 07 P01 | 11min | 3 tasks tasks | 8 files files |
+| Phase 07 P02 | 5min | 3 tasks | 3 files |
 
 ## Decisions
 
@@ -66,3 +67,4 @@ Next: Phase 07 (frontend integration)
 - [Phase ?]: [Phase 07-01] WishRejectModal 自身即为破坏性确认（D-08），不再叠加 ConfirmModal；红色提交按钮 + 必填拒绝原因构成确认
 - [Phase ?]: [Phase 07-01] 中文键愿望状态与现有英文键共存：'已撤销'(badge-muted) 与 'revoked'(badge-danger) 区分保留，单源 statusBadge 映射
 - [Phase ?]: [Phase 07-01] WishAdvanceModal 采用 setTimeout-in-effect 防抖(200ms) + 过期响应保护，替代 utils.debounce — 惯用 React 写法
+- [Phase 07-02]: [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍 — [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍

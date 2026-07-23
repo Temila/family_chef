@@ -93,11 +93,11 @@
 Plans:
 **Wave 1**
 
-- [ ] 07-01-PLAN.md — Foundation: ApiClient 8 wish methods (status→status_filter) + statusBadge extension + CSS tokens + ConfirmModal a11y + WishCard + WishFormModal + WishRejectModal + WishAdvanceModal
+- [x] 07-01-PLAN.md — Foundation: ApiClient 8 wish methods (status→status_filter) + statusBadge extension + CSS tokens + ConfirmModal a11y + WishCard + WishFormModal + WishRejectModal + WishAdvanceModal
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 07-02-PLAN.md — Pages: UserWishesPage (create/edit/cancel/FAB) + ChefWishesPage (tabs/polling/claim/advance/reject) + AdminWishesPage (viewAsAdmin wrapper)
+- [x] 07-02-PLAN.md — Pages: UserWishesPage (create/edit/cancel/FAB) + ChefWishesPage (tabs/polling/claim/advance/reject) + AdminWishesPage (viewAsAdmin wrapper)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -118,4 +118,4 @@ Phases execute in numeric order: 5 → (6 ∥ 7). Phase 5 is the foundation; Pha
 | 4. Frontend Guest | v1.0 | 1/1 | ✓ Complete | 2026-05-26 |
 | 5. Data Foundation & Wish Lifecycle API | v1.1 | 3/3 | Complete   | 2026-07-21 |
 | 6. Notifications Integration | v1.1 | 3/3 | Complete   | 2026-07-22 |
-| 7. Wish List Frontend | v1.1 | 0/3 | Planned    |  |
+| 7. Wish List Frontend | v1.1 | 2/3 | In Progress|  |
