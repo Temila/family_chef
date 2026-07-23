@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 菜品愿望单
-status: milestone_complete
-last_updated: 2026-07-23T08:05:05.944Z
-last_activity: 2026-07-23 -- Phase 07 execution started
+status: completed
+last_updated: "2026-07-23T09:31:07.153Z"
+last_activity: 2026-07-23
 progress:
   total_phases: 3
-  completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 67
-stopped_at: Milestone complete (Phase 07 was final phase)
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -21,13 +20,13 @@ stopped_at: Milestone complete (Phase 07 was final phase)
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Milestone complete
+**Current focus:** Phase 07 complete — H-3 gap closure ready for human UAT confirmation
 
 ## Current Position
 
 Phase: 07
-Plan: Not started
-Status: Milestone complete
+Plan: 05 of 05
+Status: Complete
 Last activity: 2026-07-23
 
 Progress: [██████████] 100%
@@ -44,9 +43,9 @@ Items acknowledged and carried forward from v1.0 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-23T02:02:47.121Z
-Stopped at: Completed 07-01-PLAN.md
-Next: Phase 07 (frontend integration)
+Last session: 2026-07-23T09:31:07.143Z
+Stopped at: Completed 07-05-PLAN.md
+Next: Re-run H-3 human UAT, then archive v1.1 milestone
 
 ## Performance Metrics
 
@@ -58,6 +57,7 @@ Next: Phase 07 (frontend integration)
 | Phase 07 P01 | 11min | 3 tasks tasks | 8 files files |
 | Phase 07 P02 | 5min | 3 tasks | 3 files |
 | Phase 07 P03 | 9min | 3 tasks | 5 files |
+| Phase 07 P05 | 9min | 3 tasks | 3 files |
 
 ## Decisions
 
@@ -73,3 +73,4 @@ Next: Phase 07 (frontend integration)
 - [Phase 07-02]: [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍 — [Phase 07-02] loadWishes 不在函数体内同步 setLoading(true) — 规避 react-hooks/set-state-in-effect；mount effect 改用内联 .then() 链，chef tab-change effect 改用 queueMicrotask 延迟一拍
 - [Phase ?]: [Phase 07-03] WishDeepLinkRedirect 硬编码 role→path 映射；仅数字 wish id 插入目标，无路径遍历向量
 - [Phase ?]: [Phase 07-03] 高亮 effect setState 经 setTimeout(0) 延迟，规避 react-hooks/set-state-in-effect（与 Wave 2 queueMicrotask 同类）
+- [Phase 07-05]: 采用 fetchedOnce + setTimeout(100) 组合闭合深链高亮 race，保持 requestSeqRef 与 .finally(setLoading(false)) 不变 — 区分数据真正提交与过期请求 finally 翻转 loading，并保留现有请求抢占优化
