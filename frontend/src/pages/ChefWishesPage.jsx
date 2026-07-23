@@ -43,6 +43,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
 
   const requestedTab = searchParams.get('tab') || 'all';
   const activeTab = VALID_TABS.has(requestedTab) ? requestedTab : 'all';
+  const highlightId = searchParams.get('wish');
 
   const [wishes, setWishes] = useState([]);
   const [total, setTotal] = useState(0);
@@ -53,6 +54,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
   const [actingId, setActingId] = useState(null);
   const [advanceTarget, setAdvanceTarget] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
+  const [highlightedId, setHighlightedId] = useState(null);
   const requestSeqRef = useRef(0);
 
   // 标签切换：写回 URL，触发 activeTab 重算并重置列表
@@ -151,6 +153,50 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     }, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [loadWishes]);
+
+  // 深链高亮：?wish=:id 命中时，匹配卡片描边 4s 并滚动入视；未命中则提示并清除指令。
+  // setState 通过 setTimeout 延迟到下一个 tick 执行，规避 react-hooks/set-state-in-effect
+  // （与 Wave 2 的 queueMicrotask 同类处理）。admin 视图（viewAsAdmin）与本引擎共享同一行为。
+  useEffect(() => {
+    if (!highlightId) return undefined;
+    const targetWish = wishes.find((w) => String(w.id) === String(highlightId));
+    if (!targetWish) {
+      const missingTimer = setTimeout(() => {
+        showToast('未找到该愿望，可能已撤销或需要切换标签', 'error');
+        setSearchParams(
+          (cur) => {
+            const next = new URLSearchParams(cur);
+            next.delete('wish');
+            return next;
+          },
+          { replace: true }
+        );
+        setHighlightedId(null);
+      }, 0);
+      return () => clearTimeout(missingTimer);
+    }
+    const applyTimer = setTimeout(() => {
+      setHighlightedId(String(highlightId));
+      document
+        .querySelector('[data-wish-id="' + highlightId + '"]')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
+    const clearTimer = setTimeout(() => {
+      setHighlightedId(null);
+      setSearchParams(
+        (cur) => {
+          const next = new URLSearchParams(cur);
+          next.delete('wish');
+          return next;
+        },
+        { replace: true }
+      );
+    }, 4000);
+    return () => {
+      clearTimeout(applyTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [wishes, highlightId, setSearchParams, showToast]);
 
   // 生命周期动作：认领
   const handleClaim = useCallback(
@@ -268,6 +314,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
               currentRole={currentRole}
               viewAsAdmin={viewAsAdmin}
               relatedDishName={relatedDishNames[String(w.related_dish_id)]}
+              highlighted={highlightedId === String(w.id)}
               onClaim={handleClaim}
               onAdvance={(wish) => setAdvanceTarget(wish)}
               onReject={(wish) => setRejectTarget(wish)}

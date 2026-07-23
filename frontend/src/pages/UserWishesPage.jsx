@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
@@ -21,6 +22,9 @@ const PAGE_SIZE = 20;
 export default function UserWishesPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = searchParams.get('wish');
+  const [highlightedId, setHighlightedId] = useState(null);
 
   const [wishes, setWishes] = useState([]);
   const [total, setTotal] = useState(0);
@@ -122,6 +126,52 @@ export default function UserWishesPage() {
       window.removeEventListener('focus', refresh);
     };
   }, [loadWishes]);
+
+  // 深链高亮：?wish=:id 命中时，匹配卡片描边 4s 并滚动入视；未命中则提示并清除指令。
+  // setState 通过 setTimeout 延迟到下一个 tick 执行，规避 react-hooks/set-state-in-effect
+  // （与 Wave 2 的 queueMicrotask 同类处理）。重复导航会重新触发本 effect，旧定时器由 cleanup 清理。
+  useEffect(() => {
+    if (!highlightId) return undefined;
+    const targetWish = wishes.find((w) => String(w.id) === String(highlightId));
+    if (!targetWish) {
+      // 未在已加载列表中命中 — 提示并清除 URL 指令
+      const missingTimer = setTimeout(() => {
+        showToast('未找到该愿望，可能已撤销或需要切换标签', 'error');
+        setSearchParams(
+          (cur) => {
+            const next = new URLSearchParams(cur);
+            next.delete('wish');
+            return next;
+          },
+          { replace: true }
+        );
+        setHighlightedId(null);
+      }, 0);
+      return () => clearTimeout(missingTimer);
+    }
+    // 命中 — 应用描边、滚动入视，4s 后清除描边与 URL 指令
+    const applyTimer = setTimeout(() => {
+      setHighlightedId(String(highlightId));
+      document
+        .querySelector('[data-wish-id="' + highlightId + '"]')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
+    const clearTimer = setTimeout(() => {
+      setHighlightedId(null);
+      setSearchParams(
+        (cur) => {
+          const next = new URLSearchParams(cur);
+          next.delete('wish');
+          return next;
+        },
+        { replace: true }
+      );
+    }, 4000);
+    return () => {
+      clearTimeout(applyTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [wishes, highlightId, setSearchParams, showToast]);
 
   const handleCreateSubmit = useCallback(
     async (payload) => {
@@ -227,6 +277,7 @@ export default function UserWishesPage() {
               currentUser={user}
               currentRole="user"
               relatedDishName={relatedDishNames[String(w.related_dish_id)]}
+              highlighted={highlightedId === String(w.id)}
               onEdit={(wish) => setEditingWish(wish)}
               onCancel={(wish) => setCancelTarget(wish)}
               onTap={handleCardTap}
