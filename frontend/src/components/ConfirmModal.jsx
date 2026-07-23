@@ -15,6 +15,7 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
   danger = false,
+  confirming = false,
 }) {
   // 背景滚动锁定
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function ConfirmModal({
           {message}
         </div>
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onCancel}>
+          <button className="btn btn-secondary" onClick={onCancel} disabled={confirming}>
             {cancelText}
           </button>
           <button
@@ -74,6 +75,7 @@ export default function ConfirmModal({
                 : undefined
             }
             onClick={onConfirm}
+            disabled={confirming}
           >
             {confirmText}
           </button>

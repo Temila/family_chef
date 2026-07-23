@@ -32,12 +32,12 @@ export default function UserWishesPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [relatedDishNames, setRelatedDishNames] = useState({});
-  // 注：actingId 在用户页没有消费者（ConfirmModal 无 disabled prop），故省略。
-  // 撤销期间的 in-flight 保护由 ConfirmModal 自身保证：成功即关闭，失败保持打开。
   const [showCreate, setShowCreate] = useState(false);
   const [editingWish, setEditingWish] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelSubmitting, setCancelSubmitting] = useState(false);
   const requestSeqRef = useRef(0);
+  const cancelSubmittingRef = useRef(false);
 
   // 后端返回的 related_dish_id 是数字，但被加载过的菜品名也需要按数字 id 索引。
   // 用 parallel Promise.allSettled 拉取、合并到现有 map 中，避免重复请求。
@@ -210,7 +210,9 @@ export default function UserWishesPage() {
   );
 
   const handleCancelConfirm = useCallback(async () => {
-    if (!cancelTarget) return;
+    if (!cancelTarget || cancelSubmittingRef.current) return;
+    cancelSubmittingRef.current = true;
+    setCancelSubmitting(true);
     try {
       await api.cancelWish(cancelTarget.id);
       setCancelTarget(null);
@@ -218,6 +220,9 @@ export default function UserWishesPage() {
       loadWishes({ page: 1, background: true });
     } catch (err) {
       showToast(err.message || '撤销失败', 'error');
+    } finally {
+      cancelSubmittingRef.current = false;
+      setCancelSubmitting(false);
     }
   }, [cancelTarget, loadWishes, showToast]);
 
@@ -333,6 +338,7 @@ export default function UserWishesPage() {
           message={`撤销后无法恢复，确定要撤销「${cancelTarget.dish_name}」吗？`}
           confirmText="确认撤销"
           danger={true}
+          confirming={cancelSubmitting}
           onConfirm={handleCancelConfirm}
           onCancel={() => setCancelTarget(null)}
         />
