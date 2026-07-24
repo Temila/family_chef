@@ -116,7 +116,7 @@ export default function WishRejectModal({ onClose, onSuccess }) {
             <button
               type="submit"
               className="btn"
-              style={{ background: 'var(--danger)', color: '#fff' }}
+              style={{ background: 'var(--md-color-error)', color: 'var(--md-color-on-error)' }}
               disabled={!isValid || submitting}
             >
               确认拒绝

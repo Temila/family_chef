@@ -143,17 +143,17 @@ export default function DishDetailPage() {
 
       <section className="section">
         <div className="flex items-center gap-3 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--md-color-on-surface)' }}>
             {dish.name}
           </h2>
           {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}
           {dish.is_semifinished && (
-            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)', fontWeight: 600 }}>半成品</span>
+            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)', fontWeight: 600 }}>半成品</span>
           )}
         </div>
 
         {dish.description && (
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16, fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--md-color-on-surface-variant)', lineHeight: 1.6, marginBottom: 16, fontSize: '0.9rem' }}>
             {dish.description}
           </p>
         )}
@@ -188,7 +188,7 @@ export default function DishDetailPage() {
               <div key={cat} style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                   <span style={{ fontSize: '1rem' }}>{ING_CATEGORY_ICONS[cat] || '📦'}</span>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{cat}</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)' }}>{cat}</span>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {items.map(ing => (
@@ -207,7 +207,7 @@ export default function DishDetailPage() {
             <h3 className="section-title">🍳 半成品食材</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {dish.semifinished_ingredients.map(sf => (
-                <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)' }}>
+                <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>
                   {sf.name}
                 </span>
               ))}

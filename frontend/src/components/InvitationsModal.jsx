@@ -70,7 +70,7 @@ export default function InvitationsModal({
                   <div
                     style={{
                       fontSize: '0.75rem',
-                      color: 'var(--text-muted)',
+                      color: 'var(--md-color-on-surface-variant)',
                     }}
                   >
                     {formatDate(inv.created_at)}
@@ -79,7 +79,7 @@ export default function InvitationsModal({
                     <div
                       style={{
                         fontSize: '0.75rem',
-                        color: 'var(--text-secondary)',
+                        color: 'var(--md-color-on-surface-variant)',
                       }}
                     >
                       {inv.chef_name}
@@ -107,8 +107,8 @@ export default function InvitationsModal({
                       <button
                         className="btn btn-outline btn-sm"
                         style={{
-                          borderColor: 'var(--danger)',
-                          color: 'var(--danger)',
+                          borderColor: 'var(--md-color-error)',
+                          color: 'var(--md-color-error)',
                         }}
                         onClick={() => {
                           onRevoke(inv);

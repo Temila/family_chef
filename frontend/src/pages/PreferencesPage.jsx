@@ -171,14 +171,14 @@ export default function PreferencesPage() {
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button
                     className="btn btn-sm"
-                    style={{ background: 'var(--warn-light)', color: 'var(--warn)', border: 'none' }}
+                    style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-tertiary)', border: 'none' }}
                     onClick={() => handleAddDislike(ingredient)}
                   >
                     不爱吃
                   </button>
                   <button
                     className="btn btn-sm"
-                    style={{ background: 'var(--danger-light)', color: 'var(--danger)', border: 'none' }}
+                    style={{ background: 'var(--md-color-error-container)', color: 'var(--md-color-error)', border: 'none' }}
                     onClick={() => handleAddAllergy(ingredient)}
                   >
                     忌口
@@ -191,16 +191,16 @@ export default function PreferencesPage() {
 
         <div className="preference-section">
           <div className="preference-section-header">
-            <span className="preference-section-icon" style={{ background: 'var(--warn-light)' }}>💛</span>
+            <span className="preference-section-icon" style={{ background: 'var(--md-color-tertiary-container)' }}>💛</span>
             <div>
               <div style={{ fontWeight: 600 }}>不爱吃的食材</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                 点菜时会以黄色标签提醒
               </div>
             </div>
           </div>
           {preferences.dislikes.length === 0 ? (
-            <div style={{ padding: '16px 0', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
+            <div style={{ padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
               暂无设置，搜索食材添加
             </div>
           ) : (
@@ -217,16 +217,16 @@ export default function PreferencesPage() {
 
         <div className="preference-section">
           <div className="preference-section-header">
-            <span className="preference-section-icon" style={{ background: 'var(--danger-light)' }}>🔴</span>
+            <span className="preference-section-icon" style={{ background: 'var(--md-color-error-container)' }}>🔴</span>
             <div>
               <div style={{ fontWeight: 600 }}>严格忌口的食材</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                 点菜时会以红色标签警告
               </div>
             </div>
           </div>
           {preferences.allergies.length === 0 ? (
-            <div style={{ padding: '16px 0', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
+            <div style={{ padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
               暂无设置，搜索食材添加
             </div>
           ) : (

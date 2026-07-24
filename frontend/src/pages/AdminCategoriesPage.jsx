@@ -155,7 +155,7 @@ export default function AdminCategoriesPage() {
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={() => handleDelete(item.id)}
-                            style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                            style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
                           </button>
@@ -177,7 +177,7 @@ export default function AdminCategoriesPage() {
                     <div className="flex items-center gap-3 mb-4">
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                           {getTypeMeta(item.type).label}
                           {parent ? ` · ${parent.name}` : ''}
                         </div>
@@ -188,7 +188,7 @@ export default function AdminCategoriesPage() {
                       <button
                         className="btn btn-outline btn-sm"
                         onClick={() => handleDelete(item.id)}
-                        style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                        style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       >
                         删除
                       </button>

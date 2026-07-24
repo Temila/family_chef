@@ -76,7 +76,7 @@ export default function ConfirmModal({
         <div
           id="confirm-modal-body"
           className="modal-body"
-          style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}
+          style={{ color: 'var(--md-color-on-surface-variant)', lineHeight: 1.6 }}
         >
           {message}
         </div>
@@ -90,7 +90,7 @@ export default function ConfirmModal({
             className={danger ? 'btn btn-outline' : 'btn btn-primary'}
             style={
               danger
-                ? { borderColor: 'var(--danger)', color: 'var(--danger)' }
+                ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }
                 : undefined
             }
             onClick={onConfirm}

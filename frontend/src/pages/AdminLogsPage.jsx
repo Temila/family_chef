@@ -86,7 +86,7 @@ export default function AdminLogsPage() {
               <tbody>
                 {logs.map(log => (
                   <tr key={log.id}>
-                    <td style={{ whiteSpace: 'nowrap', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <td style={{ whiteSpace: 'nowrap', fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                       {formatDate(log.created_at)}
                     </td>
                     <td>
@@ -97,7 +97,7 @@ export default function AdminLogsPage() {
                     <td style={{ fontSize: '0.85rem' }}>
                       {log.target_type || '-'}{log.target_id ? ` #${log.target_id}` : ''}
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {log.detail || '-'}
                     </td>
                   </tr>
@@ -114,15 +114,15 @@ export default function AdminLogsPage() {
                     <span className="badge badge-info">
                       {actionLabels[log.action] || log.action}
                     </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto' }}>
                       {formatDate(log.created_at)}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)' }}>
                     {log.target_type || '-'}{log.target_id ? ` #${log.target_id}` : ''}
                   </div>
                   {log.detail && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
                       {log.detail}
                     </div>
                   )}
@@ -140,7 +140,7 @@ export default function AdminLogsPage() {
               >
                 上一页
               </button>
-              <span style={{ lineHeight: '32px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              <span style={{ lineHeight: '32px', fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)' }}>
                 {page} / {totalPages}
               </span>
               <button

@@ -269,7 +269,7 @@ export default function AdminIngredientsPage() {
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             <button
               className={`filter-chip ${!advCategory ? 'active' : ''}`}
@@ -314,7 +314,7 @@ export default function AdminIngredientsPage() {
                   <tr key={item.id}>
                     <td style={{ fontWeight: 600 }}>{item.name}</td>
                     <td>{item.category || '-'}</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                    <td style={{ color: 'var(--md-color-on-surface-variant)', fontSize: '0.8rem' }}>
                       {(item.aliases || []).join('、') || '-'}
                     </td>
                     <td style={{ position: 'relative' }}>
@@ -331,8 +331,8 @@ export default function AdminIngredientsPage() {
                       {openDropdown === item.id && (item.linked_dishes || []).length > 0 && (
                         <div ref={dropdownRef} style={{
                           position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                          background: 'var(--bg-card)', border: '1px solid var(--border)',
-                          borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                          borderRadius: 'var(--radius-lg)', boxShadow: 'var(--md-elevation-2)',
                           minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
                         }}>
                           {item.linked_dishes.map(d => (
@@ -345,9 +345,9 @@ export default function AdminIngredientsPage() {
                               }}
                               style={{
                                 padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
-                                fontSize: '0.85rem', color: 'var(--accent)',
+                                fontSize: '0.85rem', color: 'var(--md-color-primary)',
                               }}
-                              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+                              onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
                               {d.name}
@@ -372,7 +372,7 @@ export default function AdminIngredientsPage() {
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={() => handleDelete(item.id)}
-                            style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                            style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
                           </button>
@@ -392,7 +392,7 @@ export default function AdminIngredientsPage() {
                   <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
                         {(item.linked_dishes || []).length > 0 && (
                           <span style={{ position: 'relative' }}>
@@ -406,8 +406,8 @@ export default function AdminIngredientsPage() {
                             {openDropdown === item.id && (
                               <div style={{
                                 position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                                background: 'var(--bg-card)', border: '1px solid var(--border)',
-                                borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                                background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                                borderRadius: 'var(--radius-lg)', boxShadow: 'var(--md-elevation-2)',
                                 minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
                               }}>
                                 {item.linked_dishes.map(d => (
@@ -420,9 +420,9 @@ export default function AdminIngredientsPage() {
                               }}
                                     style={{
                                       padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
-                                      fontSize: '0.85rem', color: 'var(--accent)',
+                                      fontSize: '0.85rem', color: 'var(--md-color-primary)',
                                     }}
-                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
                                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                   >
                                     {d.name}
@@ -436,7 +436,7 @@ export default function AdminIngredientsPage() {
                     </div>
                   </div>
                   {(item.aliases || []).length > 0 && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
                       别名：{item.aliases.join('、')}
                     </div>
                   )}
@@ -455,7 +455,7 @@ export default function AdminIngredientsPage() {
                       <button
                         className="btn btn-outline btn-sm"
                         onClick={() => handleDelete(item.id)}
-                        style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                        style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       >
                         删除
                       </button>
@@ -530,7 +530,7 @@ export default function AdminIngredientsPage() {
               ) : (
                 <div>
                   {parsedIngredients.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)' }}>
+                    <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
                       未识别到任何食材
                     </div>
                   ) : (
@@ -543,7 +543,7 @@ export default function AdminIngredientsPage() {
                           <div
                             key={item.name}
                             style={{
-                              border: '1px solid var(--border)',
+                              border: '1px solid var(--md-color-outline-variant)',
                               borderRadius: 'var(--radius-lg)',
                               padding: 12,
                             }}
@@ -558,8 +558,8 @@ export default function AdminIngredientsPage() {
                               {isMatched && (
                                 <span style={{
                                   fontSize: '0.75rem',
-                                  background: 'var(--accent)',
-                                  color: '#fff',
+                                  background: 'var(--md-color-primary)',
+                                  color: 'var(--md-color-on-primary)',
                                   padding: '2px 8px',
                                   borderRadius: 999,
                                   whiteSpace: 'nowrap',
@@ -574,7 +574,7 @@ export default function AdminIngredientsPage() {
                                   border: 'none',
                                   cursor: 'pointer',
                                   fontSize: '1.1rem',
-                                  color: 'var(--danger)',
+                                  color: 'var(--md-color-error)',
                                   padding: '0 4px',
                                   lineHeight: 1,
                                 }}

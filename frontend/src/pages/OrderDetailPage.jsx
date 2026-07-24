@@ -72,7 +72,7 @@ export default function OrderDetailPage() {
               </h3>
               <Badge status={order.status} />
             </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div>下单时间：{new Date(order.created_at).toLocaleString('zh-CN')}</div>
               {order.meal_date && (
                 <div>用餐时间：{order.meal_date} {mealTypeMap[order.meal_type] || order.meal_type}</div>
@@ -104,8 +104,8 @@ export default function OrderDetailPage() {
                         className={`filter-chip ${p.type === 'allergy' ? 'active' : ''}`}
                         style={{
                           fontSize: '0.7rem', padding: '2px 8px',
-                          background: p.type === 'allergy' ? 'var(--danger, #e74c3c)' : p.type === 'dislike' ? 'var(--warning-bg, #FFF3E0)' : undefined,
-                          color: p.type === 'allergy' ? '#fff' : undefined,
+                          background: p.type === 'allergy' ? 'var(--md-color-error)' : p.type === 'dislike' ? 'var(--md-color-tertiary-container)' : undefined,
+                          color: p.type === 'allergy' ? 'var(--md-color-on-error)' : undefined,
                         }}
                       >
                         {p.type === 'allergy' ? '忌口' : '不爱吃'}: {p.ingredient}
@@ -122,16 +122,16 @@ export default function OrderDetailPage() {
           <div className="card-body">
             <h4 style={{ margin: '0 0 8px' }}>菜品</h4>
             {order.items && order.items.map(item => (
-              <div key={item.id} style={{ borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 8 }}>
+              <div key={item.id} style={{ borderBottom: '1px solid var(--md-color-outline-variant)', paddingBottom: 8, marginBottom: 8 }}>
                 <div
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                   onClick={() => setExpandedDish(expandedDish === item.dish_id ? null : item.dish_id)}
                 >
                   <div>
                     <span style={{ fontWeight: 600 }}>{item.dish_name}</span>
-                    <span style={{ color: 'var(--text-muted)', marginLeft: 8 }}>×{item.quantity}</span>
+                    <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 8 }}>×{item.quantity}</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                     {item.recipe ? (expandedDish === item.dish_id ? '收起 ▲' : '查看菜谱 ▼') : ''}
                   </span>
                 </div>
@@ -139,7 +139,7 @@ export default function OrderDetailPage() {
                   <div
                     style={{
                       marginTop: 8, padding: 12,
-                      background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)',
+                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--radius-md)',
                       fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'left',
                     }}
                     className="markdown-body"

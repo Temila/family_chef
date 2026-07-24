@@ -114,7 +114,7 @@ export default function AdminChefsPage() {
                       </div>
                     </td>
                     <td>{chef.username}</td>
-                    <td style={{ fontSize: '0.8rem', color: chef.feishu_open_id ? 'var(--success)' : 'var(--text-muted)' }}>
+                    <td style={{ fontSize: '0.8rem', color: chef.feishu_open_id ? 'var(--md-color-primary)' : 'var(--md-color-on-surface-variant)' }}>
                       {chef.feishu_open_id ? '已绑定' : '未绑定'}
                     </td>
                     <td><Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} /></td>
@@ -139,13 +139,13 @@ export default function AdminChefsPage() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{chef.display_name || chef.username}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                         @{chef.username}
                       </div>
                     </div>
                     <Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} />
                   </div>
-                  <div style={{ fontSize: '0.8rem', marginBottom: 12, color: chef.feishu_open_id ? 'var(--success)' : 'var(--text-muted)' }}>
+                  <div style={{ fontSize: '0.8rem', marginBottom: 12, color: chef.feishu_open_id ? 'var(--md-color-primary)' : 'var(--md-color-on-surface-variant)' }}>
                     飞书: {chef.feishu_open_id ? `已绑定 (${chef.feishu_open_id.substring(0, 10)}...)` : '未绑定'}
                   </div>
                   <button
@@ -177,8 +177,8 @@ export default function AdminChefsPage() {
                   onChange={(e) => setFeishuId(e.target.value)}
                   placeholder="输入飞书用户的 open_id"
                 />
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                  在飞书开放平台获取用户的 open_id，<a href="https://open.feishu.cn/document/faq/trouble-shooting/how-to-obtain-openid" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>查看操作指南</a>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
+                  在飞书开放平台获取用户的 open_id，<a href="https://open.feishu.cn/document/faq/trouble-shooting/how-to-obtain-openid" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-color-primary)' }}>查看操作指南</a>
                 </div>
               </div>
 
@@ -188,8 +188,8 @@ export default function AdminChefsPage() {
                   borderRadius: 'var(--radius-md)',
                   marginBottom: 12,
                   fontSize: '0.85rem',
-                  background: testResult.success ? 'var(--success-light)' : 'var(--danger-light)',
-                  color: testResult.success ? 'var(--success)' : 'var(--danger)',
+                  background: testResult.success ? 'var(--md-color-primary-container)' : 'var(--md-color-error-container)',
+                  color: testResult.success ? 'var(--md-color-primary)' : 'var(--md-color-error)',
                 }}>
                   {testResult.message}
                 </div>

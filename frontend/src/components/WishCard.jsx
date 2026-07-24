@@ -9,7 +9,7 @@ import Badge from './Badge';
 import { formatDate } from '../utils';
 
 // 危险操作按钮（撤销/拒绝）的红色描边样式 — 与 ConfirmModal danger 模式一致
-const DANGER_BTN_STYLE = { borderColor: 'var(--danger)', color: 'var(--danger)' };
+const DANGER_BTN_STYLE = { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' };
 
 // reference_url 仅在以 http:// 或 https:// 开头时渲染为链接（T-07-T02 反向 tabnabbing 缓解）
 const HTTP_URL_RE = /^https?:\/\//i;

@@ -39,12 +39,12 @@ export default function AdminStatsPage() {
   if (!stats) return null;
 
   const statCards = [
-    { label: '用户总数', value: stats.users?.total || 0, sub: `${stats.users?.active || 0} 活跃`, icon: '👥', color: 'var(--accent)' },
-    { label: '菜品总数', value: stats.dishes?.total || 0, sub: `${stats.dishes?.published || 0} 已上架`, icon: '🍽️', color: 'var(--success)' },
-    { label: '今日订单', value: stats.orders?.today || 0, sub: '今日', icon: '📋', color: 'var(--warn)' },
-    { label: '本周订单', value: stats.orders?.week || 0, sub: '本周', icon: '📅', color: 'var(--info)' },
-    { label: '本月订单', value: stats.orders?.month || 0, sub: '本月', icon: '📊', color: 'var(--gold)' },
-    { label: '订单总数', value: stats.orders?.total || 0, sub: '累计', icon: '📦', color: 'var(--accent)' },
+    { label: '用户总数', value: stats.users?.total || 0, sub: `${stats.users?.active || 0} 活跃`, icon: '👥', color: 'var(--md-color-primary)' },
+    { label: '菜品总数', value: stats.dishes?.total || 0, sub: `${stats.dishes?.published || 0} 已上架`, icon: '🍽️', color: 'var(--md-color-primary)' },
+    { label: '今日订单', value: stats.orders?.today || 0, sub: '今日', icon: '📋', color: 'var(--md-color-tertiary)' },
+    { label: '本周订单', value: stats.orders?.week || 0, sub: '本周', icon: '📅', color: 'var(--md-color-secondary)' },
+    { label: '本月订单', value: stats.orders?.month || 0, sub: '本月', icon: '📊', color: 'var(--md-color-tertiary)' },
+    { label: '订单总数', value: stats.orders?.total || 0, sub: '累计', icon: '📦', color: 'var(--md-color-primary)' },
   ];
 
   const dishStats = [
@@ -64,7 +64,7 @@ export default function AdminStatsPage() {
               <div style={{ fontSize: '1.5rem', marginBottom: 4 }}>{s.icon}</div>
               <div className="stat-value">{s.value}</div>
               <div className="stat-label">{s.label}</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 2 }}>{s.sub}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 2 }}>{s.sub}</div>
             </div>
           ))}
         </div>
