@@ -143,7 +143,7 @@ export default function DishDetailPage() {
 
       <section className="section">
         <div className="flex items-center gap-3 mb-4">
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--md-color-on-surface)' }}>
+          <h2 style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--md-color-on-surface)' }}>
             {dish.name}
           </h2>
           {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}

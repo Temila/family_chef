@@ -332,7 +332,7 @@ export default function AdminIngredientsPage() {
                         <div ref={dropdownRef} style={{
                           position: 'absolute', top: '100%', left: 0, zIndex: 50,
                           background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                          borderRadius: 'var(--radius-lg)', boxShadow: 'var(--md-elevation-2)',
+                          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
                           minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
                         }}>
                           {item.linked_dishes.map(d => (
@@ -344,7 +344,7 @@ export default function AdminIngredientsPage() {
                                 navigate(`${base}?edit=${d.id}`);
                               }}
                               style={{
-                                padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
+                                      padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                 fontSize: '0.85rem', color: 'var(--md-color-primary)',
                               }}
                               onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
@@ -407,7 +407,7 @@ export default function AdminIngredientsPage() {
                               <div style={{
                                 position: 'absolute', top: '100%', left: 0, zIndex: 50,
                                 background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                                borderRadius: 'var(--radius-lg)', boxShadow: 'var(--md-elevation-2)',
+                                borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
                                 minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
                               }}>
                                 {item.linked_dishes.map(d => (
@@ -419,7 +419,7 @@ export default function AdminIngredientsPage() {
                                 navigate(`${base}?edit=${d.id}`);
                               }}
                                     style={{
-                                      padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--radius)',
+                                padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                       fontSize: '0.85rem', color: 'var(--md-color-primary)',
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
@@ -544,7 +544,7 @@ export default function AdminIngredientsPage() {
                             key={item.name}
                             style={{
                               border: '1px solid var(--md-color-outline-variant)',
-                              borderRadius: 'var(--radius-lg)',
+                              borderRadius: 'var(--md-radius-md)',
                               padding: 12,
                             }}
                           >

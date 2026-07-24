@@ -544,7 +544,7 @@ export default function AdminDishesPage() {
                       <td>
                         <div className="pc-user-cell">
                           {dish.image_url ? (
-                            <img src={dish.image_url} alt="" style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
+                            <img src={dish.image_url} alt="" style={{ width: 36, height: 36, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                           ) : (
                             <div className="avatar avatar-sm">🍽</div>
                           )}
@@ -700,7 +700,7 @@ export default function AdminDishesPage() {
                 <label className="form-label">封面图</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   {form.image_url && (
-                    <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
+                    <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                   )}
                   <input type="file" accept="image/*" onChange={handleUploadImage} style={{ fontSize: '0.8rem' }} />
                 </div>
@@ -741,7 +741,7 @@ export default function AdminDishesPage() {
                   <div style={{
                     position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
                     background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--md-elevation-3)',
+                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                     maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                   }}>
                     <div style={{ padding: '8px 8px 0' }}>
@@ -823,7 +823,7 @@ export default function AdminDishesPage() {
                     <div style={{
                       position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
                       background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                      borderRadius: 'var(--radius-md)', boxShadow: 'var(--md-elevation-3)',
+                      borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                       maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                     }}>
                       <div style={{ padding: '8px 8px 0' }}>
@@ -1029,7 +1029,7 @@ export default function AdminDishesPage() {
                     return (
                       <div
                         key={item.name}
-                        style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--radius-lg)', padding: 12 }}
+                        style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--md-radius-md)', padding: 12 }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                           <input
@@ -1100,7 +1100,7 @@ export default function AdminDishesPage() {
                                   <div style={{
                                     position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
                                     background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--md-elevation-3)',
+                                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                                     maxHeight: 180, overflowY: 'auto',
                                   }}>
                                     {filtered.length === 0 ? (

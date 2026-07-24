@@ -66,7 +66,7 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
               wordBreak: 'break-all',
               background: 'var(--md-color-surface-container)',
               padding: 12,
-              borderRadius: 'var(--radius-md)',
+              borderRadius: 'var(--md-radius-sm)',
               color: 'var(--md-color-on-surface-variant)',
               marginBottom: 12,
             }}

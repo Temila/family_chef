@@ -132,7 +132,7 @@ export default function UserOrdersPage() {
               </div>
 
               {expandedOrder === order.id && (
-                <div style={{ marginTop: 12, padding: '12px', background: 'var(--md-color-surface-container)', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ marginTop: 12, padding: '12px', background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
                   <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
                     <div>订单号：{order.order_no}</div>
                     <div>下单时间：{new Date(order.created_at).toLocaleString()}</div>

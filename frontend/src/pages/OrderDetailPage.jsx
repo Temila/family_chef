@@ -139,7 +139,7 @@ export default function OrderDetailPage() {
                   <div
                     style={{
                       marginTop: 8, padding: 12,
-                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--radius-md)',
+                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)',
                       fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'left',
                     }}
                     className="markdown-body"

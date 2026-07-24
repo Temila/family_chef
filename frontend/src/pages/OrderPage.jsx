@@ -571,7 +571,7 @@ export default function OrderPage() {
                     style={{
                       padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--md-color-outline-variant)',
                       display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--radius-lg)',
+                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-md)',
                     }}
                     onClick={() => {
                       addDishToCart(chefPickerDish, chef);
@@ -644,7 +644,7 @@ export default function OrderPage() {
                   {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
                 </select>
               </div>
-              <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
                 <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
                   确认订单 ({cartCount} 道菜)
                 </div>

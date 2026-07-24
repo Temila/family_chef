@@ -185,7 +185,7 @@ export default function AdminChefsPage() {
               {testResult && (
                 <div style={{
                   padding: 10,
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--md-radius-sm)',
                   marginBottom: 12,
                   fontSize: '0.85rem',
                   background: testResult.success ? 'var(--md-color-primary-container)' : 'var(--md-color-error-container)',
