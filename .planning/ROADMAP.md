@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 访客点菜邀请** — Phases 1-4 (shipped 2026-05-29)
-- 🚧 **v1.1 菜品愿望单** — Phases 5-7 (in progress)
+- ✅ **v1.1 菜品愿望单** — Phases 5-7 (shipped 2026-07-24)
 
 ## Phases
 
@@ -17,13 +17,14 @@
 
 </details>
 
-### 🚧 v1.1 菜品愿望单 (In Progress)
+<details>
+<summary>✅ v1.1 菜品愿望单 (Phases 5-7) — SHIPPED 2026-07-24</summary>
 
-**Milestone Goal:** 让注册用户在菜单里找不到想吃的菜时，向厨师提交"愿望单"，厨师认领并推进（准备中 → 已上架 / 已拒绝），形成完整闭环。
+- [x] Phase 5: Data Foundation & Wish Lifecycle API (3/3 plans) — completed 2026-07-21
+- [x] Phase 6: Notifications Integration (3/3 plans) — completed 2026-07-22
+- [x] Phase 7: Wish List Frontend (5/5 plans, incl. 07-04 + 07-05 gap-closure) — completed 2026-07-23
 
-- [x] **Phase 5: Data Foundation & Wish Lifecycle API** - Wish model, Alembic migration, service layer with status machine, permissions, and REST endpoints (completed 2026-07-21)
-- [x] **Phase 6: Notifications Integration** - In-app unread badge backend for submitters + Feishu push reuse for chefs (completed 2026-07-22)
-- [x] **Phase 7: Wish List Frontend** - Unified mobile UI for users (submit/list/edit/cancel) and chefs (claim/advance/link/reject/my-claims), reusing a shared WishCard + status badge (completed 2026-07-23)
+</details>
 
 ## Phase Details
 
