@@ -561,7 +561,7 @@ export default function AdminIngredientsPage() {
                                   background: 'var(--md-color-primary)',
                                   color: 'var(--md-color-on-primary)',
                                   padding: '2px 8px',
-                                  borderRadius: 999,
+                                  borderRadius: 'var(--md-radius-full)',
                                   whiteSpace: 'nowrap',
                                 }}>
                                   已匹配: {item.matched_ingredient_name}

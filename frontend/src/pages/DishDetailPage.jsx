@@ -148,7 +148,7 @@ export default function DishDetailPage() {
           </h2>
           {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}
           {dish.is_semifinished && (
-            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)', fontWeight: 600 }}>半成品</span>
+            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)', fontWeight: 600 }}>半成品</span>
           )}
         </div>
 

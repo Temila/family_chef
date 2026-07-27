@@ -551,7 +551,7 @@ export default function AdminDishesPage() {
                           <div>
                             <div className="pc-user-name">
                               {dish.name}
-                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
+                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                             </div>
                             <div className="pc-user-sub">{dish.description ? dish.description.substring(0, 30) + '...' : ''}</div>
                         </div>
@@ -616,7 +616,7 @@ export default function AdminDishesPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>
                         {dish.name}
-                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
+                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                         {(dish.categories || []).map(c => c.name).join(' · ')}
