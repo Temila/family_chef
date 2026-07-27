@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
+import Ripple from './Ripple';
 
 function Badge({ count }) {
   if (!count) return null;
@@ -62,17 +63,18 @@ export default function Sidebar() {
 
       <nav className="pc-sidebar-nav">
         {navItems.map(item => (
-          <button
-            key={item.path}
-            className={`pc-sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
-            onClick={() => navigate(item.path)}
-          >
-            <span className="pc-sidebar-icon">
-              {item.icon}
-              {item.path === '/chef/orders' && <Badge count={pendingCount} />}
-            </span>
-            <span>{item.label}</span>
-          </button>
+          <Ripple key={item.path} style={{ width: '100%' }}>
+            <button
+              className={`pc-sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={() => navigate(item.path)}
+            >
+              <span className="pc-sidebar-icon">
+                {item.icon}
+                {item.path === '/chef/orders' && <Badge count={pendingCount} />}
+              </span>
+              <span>{item.label}</span>
+            </button>
+          </Ripple>
         ))}
       </nav>
 
@@ -89,16 +91,18 @@ export default function Sidebar() {
           </div>
         </div>
         <div className="pc-sidebar-footer-actions">
-          <button
-            className="pc-sidebar-item"
-            onClick={() => {
-              logout();
-              navigate('/login');
-            }}
-            style={{ flex: 1, justifyContent: 'center' }}
-          >
-            退出
-          </button>
+          <Ripple style={{ width: '100%' }}>
+            <button
+              className="pc-sidebar-item"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              style={{ flex: 1, justifyContent: 'center' }}
+            >
+              退出
+            </button>
+          </Ripple>
         </div>
       </div>
     </aside>

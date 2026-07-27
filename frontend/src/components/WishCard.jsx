@@ -7,6 +7,7 @@
 import { Link } from 'react-router-dom';
 import Badge from './Badge';
 import { formatDate } from '../utils';
+import Ripple from './Ripple';
 
 // 危险操作按钮（撤销/拒绝）的红色描边样式 — 与 ConfirmModal danger 模式一致
 const DANGER_BTN_STYLE = { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' };
@@ -146,14 +147,15 @@ export default function WishCard({
     (wish.status === '已拒绝' && wish.reject_reason);
 
   return (
-    <div
-      className={rootClass}
-      data-wish-id={wish.id}
-      onClick={canTap ? () => onTap?.(wish) : undefined}
-      onKeyDown={canTap ? handleKeyDown : undefined}
-      role={canTap ? 'button' : undefined}
-      tabIndex={canTap ? 0 : undefined}
-    >
+    <Ripple disabled={!canTap} style={{ width: '100%' }}>
+      <div
+        className={rootClass}
+        data-wish-id={wish.id}
+        onClick={canTap ? () => onTap?.(wish) : undefined}
+        onKeyDown={canTap ? handleKeyDown : undefined}
+        role={canTap ? 'button' : undefined}
+        tabIndex={canTap ? 0 : undefined}
+      >
       {/* 顶行：菜名（大号）+ 未读红点 + 状态徽章 */}
       <div className="wish-card-top">
         <div className="wish-card-name">{wish.dish_name}</div>
@@ -201,6 +203,7 @@ export default function WishCard({
           {actions}
         </div>
       )}
-    </div>
+      </div>
+    </Ripple>
   );
 }
