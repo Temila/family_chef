@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "check:tokens": "bash ../scripts/check-tokens.sh",
     "gen:tokens": "node ../scripts/generate-tokens.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
