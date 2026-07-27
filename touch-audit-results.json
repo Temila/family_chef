@@ -1,0 +1,95 @@
+{
+  "auditDate": "2026-07-27T04:41:37.650Z",
+  "pagesAudited": 1,
+  "pagesSkipped": 11,
+  "totalViolations": 0,
+  "status": "PARTIAL",
+  "statusReason": "PASS for audited page (Login). 11/12 pages skipped due to missing JWT — auth-required pages deferred to manual UAT with real token (per plan Task 3 done criterion: partial result acceptable with documentation). CSS min-width/min-height:48px global rule + 7 element-specific compensations cover all known-small selectors programmatically (verified via static grep: 7 min-width:48px occurrences, 7 min-height:48px occurrences, all old 28/30/32/36/40px widths removed from interactive selectors).",
+  "minTouchTarget": 48,
+  "cssRulesApplied": {
+    "globalRule": "min-width: 48px; min-height: 48px on 22 interactive selectors (button, a, input, .btn, .card, .dish-card, .tab-item, .filter-chip, .pc-sidebar-item, .header-back, .theme-toggle, .modal-close, .qty-stepper button, .fab, .menu-item, .chef-select-item, .wish-picker-item, .guest-add-btn, .dish-fav-btn, .preference-tag button, .quick-action, .wish-card)",
+    "elementCompensations": [
+      ".qty-stepper button: min 48x48 + padding:9px (visual 30dp)",
+      ".theme-toggle: min 48x48 (visual 36dp circle)",
+      ".header-back: min 48x48 (visual 36dp circle)",
+      ".modal-close: min 48x48 + padding:8px (visual 32dp)",
+      ".dish-fav-btn: min 48x48 + padding:10px + flex (visual 28dp)",
+      ".guest-add-btn: min 48x48 + padding:8px (visual 32dp)",
+      ".btn-icon: width:48px height:48px (was 40x40)"
+    ]
+  },
+  "howToReRun": "1. cd frontend && npm install  2. npx playwright install chromium  3. AUDIT_BASE_URL=http://localhost:5174 FC_TEST_TOKEN=<JWT> npm run audit:touch",
+  "pages": [
+    {
+      "page": "Login",
+      "url": "http://localhost:5174/login",
+      "violations": []
+    },
+    {
+      "page": "User Home",
+      "url": "/home",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Chef Orders",
+      "url": "/chef/orders",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Admin Dishes",
+      "url": "/admin/dishes",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "User Wishes",
+      "url": "/my-wishes",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Chef Wishes",
+      "url": "/chef/wishes",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Admin Wishes",
+      "url": "/admin/wishes",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Admin Chefs",
+      "url": "/admin/chefs",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Order Page",
+      "url": "/order",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Profile",
+      "url": "/profile",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Preferences",
+      "url": "/preferences",
+      "error": "auth required, no token provided",
+      "violations": []
+    },
+    {
+      "page": "Stats",
+      "url": "/admin/stats",
+      "error": "auth required, no token provided",
+      "violations": []
+    }
+  ]
+}
