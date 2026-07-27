@@ -54,12 +54,12 @@ input, textarea, select { font-family: var(--md-font-body); }
 .btn:disabled, .btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none; filter: none; pointer-events: none; }
 
 /* Cards */
-.card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; transition: all var(--md-motion-duration-medium) var(--md-motion-easing-standard); }
+.card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; transition: all var(--md-motion-duration-medium) var(--md-motion-easing-emphasized); }
 .card:hover { border-color: var(--md-color-outline); box-shadow: var(--md-elevation-2); }
 .card-body { padding: 16px; }
 
 /* Dish Card */
-.dish-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; transition: all var(--md-motion-duration-medium) var(--md-motion-easing-standard); position: relative; cursor: pointer; display: flex; flex-direction: column; }
+.dish-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; transition: all var(--md-motion-duration-medium) var(--md-motion-easing-emphasized); position: relative; cursor: pointer; display: flex; flex-direction: column; }
 .dish-card:hover { border-color: var(--md-color-outline); box-shadow: var(--md-elevation-2); transform: translateY(-2px); }
 .dish-card-image { width: 100%; aspect-ratio: 4/3; background: var(--md-color-surface-container); position: relative; overflow: hidden; flex-shrink: 0; }
 .dish-card-image img { width: 100%; height: 100%; object-fit: cover; }
@@ -92,7 +92,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .search-bar { position: relative; margin-bottom: 16px; padding: 0 16px; display: flex; align-items: center; gap: 8px; }
 .search-bar input { flex: 1; padding: 12px 16px 12px 44px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-full); color: var(--md-color-on-surface); font-size: 0.9rem; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); outline: none; }
 .search-bar input::placeholder { color: var(--md-color-on-surface-variant); }
-.search-bar input:focus { border-color: var(--md-color-primary); box-shadow: 0 0 0 3px var(--md-color-primary-container); }
+.search-bar input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
 .search-bar .search-icon { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); color: var(--md-color-on-surface-variant); font-size: 1rem; pointer-events: none; }
 
 /* Sections */
@@ -160,7 +160,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--md-color-on-surface-variant); margin-bottom: 6px; }
 .form-input { width: 100%; padding: 12px 16px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm); color: var(--md-color-on-surface); font-size: 0.9rem; outline: none; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.form-input:focus { border-color: var(--md-color-primary); box-shadow: 0 0 0 3px var(--md-color-primary-container); }
+.form-input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
 .form-error { color: var(--md-color-error); font-size: 0.8rem; margin-top: 4px; display: none; }
 .form-error.show { display: block; }
 
@@ -176,7 +176,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .stat-label { font-size: 0.75rem; color: var(--md-color-on-surface-variant); margin-top: 4px; }
 
 /* Quick Action Card */
-.quick-action { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
+.quick-action { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all var(--md-motion-duration-medium) var(--md-motion-easing-emphasized); }
 .quick-action:hover { border-color: var(--md-color-primary); box-shadow: var(--md-elevation-1); }
 .quick-action-icon { width: 48px; height: 48px; border-radius: var(--md-radius-sm); background: var(--md-color-primary-container); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 .quick-action-text { font-weight: 500; color: var(--md-color-on-surface); }
@@ -465,3 +465,21 @@ input, textarea, select { font-family: var(--md-font-body); }
 .guest-error-icon { font-size: 4rem; margin-bottom: 16px; }
 .guest-error-title { font-family: var(--md-font-display); font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
 .guest-error-desc { color: var(--md-color-on-surface-variant); font-size: 0.85rem; line-height: 1.6; }
+
+/* === MD3 焦点环 (Wave 3 — MOTION-04 / UX-02) === */
+/* 全局焦点环基线：键盘 Tab 聚焦时显示主色描边，鼠标点击不显示，保证无障碍可达性 */
+:focus-visible { outline: 2px solid var(--md-color-primary); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+/* 表面背景交互元素 —— 使用外环 (--md-focus-ring-outer: On-Primary) */
+.btn:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+.filter-chip:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+.list-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: -2px; }
+.dish-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+.card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+.order-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+
+/* 填充背景交互元素 (Primary 背景) —— 使用内环 (--md-focus-ring-inner: Surface)，确保环在主色背景上可见 */
+.btn-primary:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
+.filter-chip.active:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
+.fab:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
