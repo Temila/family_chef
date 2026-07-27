@@ -56,7 +56,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* Header */
 .header { position: sticky; top: 0; z-index: 100; background: var(--md-color-surface-container-low); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--md-color-outline-variant); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
 .header-title { font-family: var(--md-font-display); font-size: 1.125rem; font-weight: 600; color: var(--md-color-on-surface); }
-.header-back { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--md-color-on-surface); font-size: 1.25rem; border-radius: var(--md-radius-full); transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
+.header-back { display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--md-color-on-surface); font-size: 1.25rem; border-radius: var(--md-radius-full); transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
 .header-back::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .header-back:hover::before { opacity: var(--md-state-layer-hover); }
 .header-back:active::before { opacity: var(--md-state-layer-pressed); }
@@ -93,7 +93,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .btn-outline::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .btn-outline:hover::before { opacity: var(--md-state-layer-hover); }
 .btn-outline:active::before { opacity: var(--md-state-layer-pressed); }
-.btn-icon { width: 40px; height: 40px; padding: 0; border-radius: var(--md-radius-full); background: var(--md-color-surface-container); border: 1px solid var(--md-color-outline-variant); color: var(--md-color-on-surface-variant); display: flex; align-items: center; justify-content: center; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
+.btn-icon { width: 48px; height: 48px; padding: 0; border-radius: var(--md-radius-full); background: var(--md-color-surface-container); border: 1px solid var(--md-color-outline-variant); color: var(--md-color-on-surface-variant); display: flex; align-items: center; justify-content: center; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
 .btn-icon::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .btn-icon:hover::before { opacity: var(--md-state-layer-hover); }
 .btn-icon:active::before { opacity: var(--md-state-layer-pressed); }
@@ -182,7 +182,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .avatar-lg { width: 56px; height: 56px; font-size: 1.2rem; }
 
 /* Toggle */
-.theme-toggle { position: relative; top: auto; right: auto; z-index: 0; width: 36px; height: 36px; border-radius: var(--md-radius-full); background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); overflow: hidden; }
+.theme-toggle { position: relative; top: auto; right: auto; z-index: 0; border-radius: var(--md-radius-full); background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); overflow: hidden; }
 .theme-toggle::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .theme-toggle:hover::before { opacity: var(--md-state-layer-hover); }
 .theme-toggle:active::before { opacity: var(--md-state-layer-pressed); }
@@ -209,7 +209,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* Quantity Stepper */
 .qty-stepper { display: inline-flex; align-items: center; gap: 0; border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-full); overflow: hidden; }
-.qty-stepper button { width: 30px; height: 30px; border: none; background: var(--md-color-surface-container); color: var(--md-color-on-surface-variant); font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
+.qty-stepper button { border: none; background: var(--md-color-surface-container); color: var(--md-color-on-surface-variant); font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
 .qty-stepper button::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .qty-stepper button:hover::before { opacity: var(--md-state-layer-hover); }
 .qty-stepper button:active::before { opacity: var(--md-state-layer-pressed); }
@@ -365,7 +365,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .pc-sidebar-user-name { font-size: 0.85rem; font-weight: 600; color: var(--md-color-on-surface); }
 .pc-sidebar-user-role { font-size: 0.7rem; color: var(--md-color-on-surface-variant); }
 .pc-sidebar-footer-actions { display: flex; align-items: center; gap: 4px; }
-.pc-sidebar-footer-actions .theme-toggle { width: 32px; height: 32px; font-size: 0.9rem; }
+.pc-sidebar-footer-actions .theme-toggle { font-size: 0.9rem; }
 
 .pc-main { flex: 1; min-width: 0; }
 
@@ -428,7 +428,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .modal-content { background: var(--md-color-surface-container-lowest); border-radius: var(--md-radius-lg); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--md-elevation-3); }
 .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--md-color-outline-variant); }
 .modal-header h3 { font-size: 1rem; font-weight: 600; color: var(--md-color-on-surface); margin: 0; }
-.modal-close { width: 32px; height: 32px; border: none; background: var(--md-color-surface-container); border-radius: var(--md-radius-full); font-size: 1rem; color: var(--md-color-on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; z-index: 0; }
+.modal-close { border: none; background: var(--md-color-surface-container); border-radius: var(--md-radius-full); font-size: 1rem; color: var(--md-color-on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; z-index: 0; }
 .modal-close::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .modal-close:hover::before { opacity: var(--md-state-layer-hover); }
 .modal-close:hover { color: var(--md-color-on-surface); }
@@ -450,7 +450,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* ═══ Dish Card Actions ═══════════════════ */
 .dish-card-actions { display: flex; gap: 4px; }
-.dish-fav-btn { width: 28px; height: 28px; border: none !important; background: transparent !important; font-size: 1rem; padding: 0; }
+.dish-fav-btn { border: none !important; background: transparent !important; font-size: 1rem; padding: 0; }
 
 /* ═══ Cart Detail Panel ═══════════════════ */
 .cart-detail-panel { position: fixed; bottom: calc(52px + var(--md-nav-height)); left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md) var(--md-radius-md) 0 0; box-shadow: var(--md-elevation-3); z-index: 149; max-height: 300px; overflow-y: auto; }
@@ -543,7 +543,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .guest-page .dish-card { cursor: default; }
 .guest-page .dish-card::before { display: none; }
 
-.guest-add-btn { width: 32px; height: 32px; border-radius: var(--md-radius-full); font-size: 1.1rem; display: flex; align-items: center; justify-content: center; padding: 0; }
+.guest-add-btn { border-radius: var(--md-radius-full); font-size: 1.1rem; display: flex; align-items: center; justify-content: center; padding: 0; }
 
 .guest-confirm { text-align: center; padding: 60px 24px 24px; }
 .guest-confirm-icon { font-size: 4rem; margin-bottom: 16px; }
@@ -605,3 +605,73 @@ input, textarea, select { font-family: var(--md-font-body); }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+ * MD3 触控目标 ≥48dp（Phase 9 — UX-03）
+ * Material Accessibility guideline: 所有交互元素 hit area ≥48dp。
+ * 全局规则覆盖所有标准交互元素 + 项目自定义交互类。
+ * ════════════════════════════════════════════════════════════════════ */
+button, a, input, select, textarea,
+[role="button"], [tabindex]:not([tabindex="-1"]),
+.btn, .btn-icon, .list-item, .tab-item,
+.filter-chip, .pc-sidebar-item, .header-back,
+.theme-toggle, .modal-close, .qty-stepper button,
+.fab, .menu-item, .chef-select-item, .wish-picker-item,
+.guest-add-btn, .dish-fav-btn, .preference-tag button,
+.quick-action, .wish-card {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * 已知极小组件 padding 补偿（视觉尺寸保持原状，触控区扩展至 48dp）
+ * 这些元素的原始 width/height 已在主样式块中移除，
+ * 此处通过 min-width/min-height + padding 让 hit area 达到 48dp，
+ * 同时 padding 维持内部图标视觉尺寸。
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* 1. qty-stepper button: 原 30x30 → 48x48 hit area, padding:9px 居中视觉 */
+.qty-stepper button {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 9px;
+}
+
+/* 2. theme-toggle: 原 36x36 → 48x48 hit area（圆环由 border-radius:full 决定） */
+.theme-toggle {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* 3. header-back: 原 36x36 → 48x48 hit area */
+.header-back {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* 4. modal-close: 原 32x32 → 48x48 hit area, padding:8px 维持视觉 */
+.modal-close {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 8px;
+}
+
+/* 5. dish-fav-btn: 原 28x28 → 48x48 hit area, padding:10px + flex 居中 */
+.dish-fav-btn {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 6. guest-add-btn: 原 32x32 → 48x48 hit area, padding:8px */
+.guest-add-btn {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 8px;
+}
+
+/* 7. btn-icon: 原 40x40 → 48x48 hit area, 直接放大（视觉与 hit 同形） */
+/* 已在 .btn-icon 主规则中改为 width: 48px; height: 48px; — 无需额外规则 */
