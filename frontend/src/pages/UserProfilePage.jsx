@@ -176,7 +176,7 @@ export default function UserProfilePage() {
             key={index}
             className="menu-item"
             onClick={item.onClick}
-            style={item.danger ? { color: 'var(--danger)' } : {}}
+            style={item.danger ? { color: 'var(--md-color-error)' } : {}}
           >
             <div className="menu-icon">{item.icon}</div>
             <div className="menu-text">
@@ -205,7 +205,7 @@ export default function UserProfilePage() {
                   placeholder="输入昵称"
                 />
               </div>
-              <div style={{ borderTop: '1px solid var(--border)', margin: '16px 0', paddingTop: 16 }}>
+              <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: '16px 0', paddingTop: 16 }}>
                 <div className="form-label" style={{ marginBottom: 12 }}>修改密码</div>
                 <div className="form-group">
                   <label className="form-label">旧密码</label>

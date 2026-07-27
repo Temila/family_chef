@@ -224,7 +224,7 @@ export default function GuestOrderPage() {
             ))}
           </div>
           {chefName && (
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 16 }}>
               👨‍🍳 {chefName}
             </div>
           )}
@@ -254,13 +254,13 @@ export default function GuestOrderPage() {
         >
           {showFilters ? '收起筛选 ▲' : '展开筛选 ▼'}
         </button>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '28px' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: '28px' }}>
           共 {filteredDishes.length} 道
         </span>
       </div>
 
       {showFilters && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           {regions.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{typeLabels.region}</div>
@@ -359,7 +359,7 @@ export default function GuestOrderPage() {
         <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
           <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
           <span style={{ fontWeight: 600 }}>已选 {cartCount} 道菜</span>
-          <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
             {cartExpanded ? '收起 ▲' : '展开 ▼'}
           </span>
         </div>
@@ -376,7 +376,7 @@ export default function GuestOrderPage() {
         <>
           <div
             style={{
-              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)',
+              position: 'fixed', inset: 0, background: 'var(--md-color-scrim)',
               zIndex: 148,
             }}
             onClick={() => setCartExpanded(false)}
@@ -398,7 +398,7 @@ export default function GuestOrderPage() {
                 <button
                   className="btn-icon btn-sm"
                   onClick={() => setCart(prev => prev.filter(c => c.dish_id !== item.dish_id))}
-                  style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                  style={{ color: 'var(--md-color-error)', borderColor: 'var(--md-color-error)' }}
                 >
                   ×
                 </button>

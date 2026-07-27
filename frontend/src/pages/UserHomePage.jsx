@@ -46,7 +46,7 @@ export default function UserHomePage() {
           >
             <div style={{ fontSize: '1.5rem', marginBottom: 4 }}>{entry.icon}</div>
             <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{entry.title}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{entry.desc}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)' }}>{entry.desc}</div>
           </div>
         ))}
       </div>

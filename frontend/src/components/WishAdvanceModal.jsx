@@ -186,7 +186,7 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
                       <span aria-hidden="true">🍽️</span>
                     )}
                   </div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--md-color-on-surface)', flex: 1, minWidth: 0 }}>
                     {dish.name}
                   </div>
                 </div>

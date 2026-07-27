@@ -151,7 +151,7 @@ export default function AdminHomePage() {
                 <div className="quick-action-text">{action.title}</div>
                 <div className="quick-action-desc">{action.desc}</div>
               </div>
-              <span style={{ color: 'var(--text-muted)' }}>›</span>
+              <span style={{ color: 'var(--md-color-on-surface-variant)' }}>›</span>
             </div>
           ))}
         </div>

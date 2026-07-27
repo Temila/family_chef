@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "check:tokens": "bash ../scripts/check-tokens.sh",
+    "gen:tokens": "node ../scripts/generate-tokens.cjs",
+    "audit:touch": "node scripts/audit-touch-targets.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -17,6 +20,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@material/material-color-utilities": "^0.4.0",
+    "@playwright/test": "^1.52.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -24,6 +29,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "material-symbols": "^0.45.9",
     "vite": "^8.0.10"
   }
 }

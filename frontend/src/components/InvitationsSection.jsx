@@ -132,7 +132,7 @@ export default function InvitationsSection() {
               onClick={() => setShowFullList(true)}
               style={{
                 fontSize: '0.85rem',
-                color: 'var(--accent)',
+                color: 'var(--md-color-primary)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -172,14 +172,14 @@ export default function InvitationsSection() {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
+                  color: 'var(--md-color-on-surface-variant)',
                   whiteSpace: 'nowrap',
                 }}
               >
                 {formatDate(inv.created_at)}
               </div>
               {user?.role !== 'chef' && inv.chef_name && (
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                   {inv.chef_name}
                 </div>
               )}
@@ -205,8 +205,8 @@ export default function InvitationsSection() {
                   <button
                     className="btn btn-outline btn-sm"
                     style={{
-                      borderColor: 'var(--danger)',
-                      color: 'var(--danger)',
+                      borderColor: 'var(--md-color-error)',
+                      color: 'var(--md-color-error)',
                     }}
                     onClick={() => setRevokeTarget(inv)}
                   >

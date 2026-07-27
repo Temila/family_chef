@@ -283,7 +283,7 @@ export default function UserWishesPage() {
       ) : wishes.length === 0 ? (
         <>
           <EmptyState icon="💡" text="还没有愿望，去提交一个吧" />
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <div style={{ textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.875rem' }}>
             点击右下角「+」新建一个愿望
           </div>
         </>

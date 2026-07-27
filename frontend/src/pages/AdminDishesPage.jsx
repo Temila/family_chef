@@ -423,7 +423,7 @@ export default function AdminDishesPage() {
     if (items.length === 0) return null;
     return (
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>{label}</div>
+        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>{label}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {items.map(c => (
             <button
@@ -483,7 +483,7 @@ export default function AdminDishesPage() {
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           {renderCategorySection(getTypeMeta('region').label, regions, advCategoryIds, (id) => {
             setAdvCategoryIds(prev => {
               if (prev.includes(id)) {
@@ -500,7 +500,7 @@ export default function AdminDishesPage() {
             })}</div>;
           })}
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>半成品</div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>半成品</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {[
                 { key: 'all', label: '全部' },
@@ -544,14 +544,14 @@ export default function AdminDishesPage() {
                       <td>
                         <div className="pc-user-cell">
                           {dish.image_url ? (
-                            <img src={dish.image_url} alt="" style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
+                            <img src={dish.image_url} alt="" style={{ width: 36, height: 36, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                           ) : (
                             <div className="avatar avatar-sm">🍽</div>
                           )}
                           <div>
                             <div className="pc-user-name">
                               {dish.name}
-                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)' }}>半成品</span>}
+                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                             </div>
                             <div className="pc-user-sub">{dish.description ? dish.description.substring(0, 30) + '...' : ''}</div>
                         </div>
@@ -564,11 +564,11 @@ export default function AdminDishesPage() {
                           {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
                             <div key={`${dish.id}-${c.id}-${ci}`} style={{
                               width: 28, height: 28, borderRadius: '50%',
-                              background: 'var(--accent)',
-                              color: '#fff',
+                              background: 'var(--md-color-primary)',
+                              color: 'var(--md-color-on-primary)',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                               fontSize: '0.7rem', fontWeight: 600,
-                              border: '2px solid var(--bg-page)',
+                              border: '2px solid var(--md-color-surface-container-low)',
                               marginLeft: -6,
                             }} title={c.display_name || c.username}>
                               {(c.display_name || c.username).charAt(0).toUpperCase()}
@@ -577,11 +577,11 @@ export default function AdminDishesPage() {
                           {dish.chefs.filter(c => c.publish_status === "published").length > 5 && (
                             <div style={{
                               width: 28, height: 28, borderRadius: '50%',
-                              background: 'var(--bg-elevated)',
-                              color: 'var(--text-muted)',
+                              background: 'var(--md-color-surface-container)',
+                              color: 'var(--md-color-on-surface-variant)',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                               fontSize: '0.65rem',
-                              border: '2px solid var(--bg-page)',
+                              border: '2px solid var(--md-color-surface-container-low)',
                               marginLeft: -6,
                             }}>
                               +{dish.chefs.filter(c => c.publish_status === "published").length - 5}
@@ -597,7 +597,7 @@ export default function AdminDishesPage() {
                           {dish.status === 'enabled' ? '禁用' : '启用'}
                         </button>
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(dish)}>编辑</button>
-                        <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
+                        <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
                           删除
                         </button>
                       </div>
@@ -616,9 +616,9 @@ export default function AdminDishesPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>
                         {dish.name}
-                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--warning-bg, #FFF3E0)', color: 'var(--warning-text, #E65100)' }}>半成品</span>}
+                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                         {(dish.categories || []).map(c => c.name).join(' · ')}
                       </div>
                     </div>
@@ -626,16 +626,16 @@ export default function AdminDishesPage() {
                   </div>
                   {dish.chefs && dish.chefs.length > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>厨师：</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>厨师：</span>
                       <div style={{ display: 'flex' }}>
                         {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
                           <div key={`${dish.id}-${c.id}-${ci}`} style={{
                             width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--accent)',
-                            color: '#fff',
+                            background: 'var(--md-color-primary)',
+                            color: 'var(--md-color-on-primary)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '0.65rem', fontWeight: 600,
-                            border: '2px solid var(--bg-page)',
+                            border: '2px solid var(--md-color-surface-container-low)',
                             marginLeft: -4,
                           }} title={c.display_name || c.username}>
                             {(c.display_name || c.username).charAt(0).toUpperCase()}
@@ -644,11 +644,11 @@ export default function AdminDishesPage() {
                         {dish.chefs.filter(c => c.publish_status === "published").length > 5 && (
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--bg-elevated)',
-                            color: 'var(--text-muted)',
+                            background: 'var(--md-color-surface-container)',
+                            color: 'var(--md-color-on-surface-variant)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '0.6rem',
-                            border: '2px solid var(--bg-page)',
+                            border: '2px solid var(--md-color-surface-container-low)',
                             marginLeft: -4,
                           }}>
                             +{dish.chefs.filter(c => c.publish_status === "published").length - 5}
@@ -662,7 +662,7 @@ export default function AdminDishesPage() {
                       {dish.status === 'enabled' ? '禁用' : '启用'}
                     </button>
                     <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(dish)}>编辑</button>
-                    <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
+                    <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
                       删除
                     </button>
                   </div>
@@ -700,7 +700,7 @@ export default function AdminDishesPage() {
                 <label className="form-label">封面图</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   {form.image_url && (
-                    <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
+                    <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                   )}
                   <input type="file" accept="image/*" onChange={handleUploadImage} style={{ fontSize: '0.8rem' }} />
                 </div>
@@ -731,7 +731,7 @@ export default function AdminDishesPage() {
 
                 <div
                   className="form-input"
-                  style={{ cursor: 'pointer', color: 'var(--text-muted)', minHeight: 38, display: 'flex', alignItems: 'center' }}
+                  style={{ cursor: 'pointer', color: 'var(--md-color-on-surface-variant)', minHeight: 38, display: 'flex', alignItems: 'center' }}
                   onClick={() => setShowIngDropdown(!showIngDropdown)}
                 >
                   {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
@@ -740,8 +740,8 @@ export default function AdminDishesPage() {
                 {showIngDropdown && (
                   <div style={{
                     position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                    background: 'var(--bg-card)', border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
+                    background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                     maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                   }}>
                     <div style={{ padding: '8px 8px 0' }}>
@@ -775,7 +775,7 @@ export default function AdminDishesPage() {
                     </div>
                     <div style={{ overflowY: 'auto', flex: 1 }}>
                       {filteredIngForDropdown.length === 0 ? (
-                        <div style={{ padding: 12, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>无匹配食材</div>
+                        <div style={{ padding: 12, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
                       ) : (
                         filteredIngForDropdown.slice(0, 50).map(ing => (
                           <div
@@ -785,7 +785,7 @@ export default function AdminDishesPage() {
                             style={{ cursor: 'pointer' }}
                           >
                             <span>{ing.name}</span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto' }}>
                               {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
                             </span>
                           </div>
@@ -813,7 +813,7 @@ export default function AdminDishesPage() {
 
                   <div
                     className="form-input"
-                    style={{ cursor: 'pointer', color: 'var(--text-muted)', minHeight: 38, display: 'flex', alignItems: 'center' }}
+                    style={{ cursor: 'pointer', color: 'var(--md-color-on-surface-variant)', minHeight: 38, display: 'flex', alignItems: 'center' }}
                     onClick={() => setShowSfDropdown(!showSfDropdown)}
                   >
                     {showSfDropdown ? '搜索并选择半成品...' : '点击选择半成品食材...'}
@@ -822,8 +822,8 @@ export default function AdminDishesPage() {
                   {showSfDropdown && (
                     <div style={{
                       position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                      background: 'var(--bg-card)', border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
+                      background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                      borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                       maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                     }}>
                       <div style={{ padding: '8px 8px 0' }}>
@@ -841,7 +841,7 @@ export default function AdminDishesPage() {
                           .filter(d => !form.semifinished_dish_ids.includes(d.id))
                           .filter(d => !sfSearch || d.name.includes(sfSearch))
                           .length === 0 ? (
-                          <div style={{ padding: 12, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>无匹配半成品</div>
+                          <div style={{ padding: 12, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
                         ) : (
                           semifinishedDishes
                             .filter(d => !form.semifinished_dish_ids.includes(d.id))
@@ -854,7 +854,7 @@ export default function AdminDishesPage() {
                                 onClick={() => { toggleSemifinishedDish(d.id); }}
                                 style={{ cursor: 'pointer' }}
                               >
-                                <span style={{ fontSize: '0.8rem', color: 'var(--warning-text, #E65100)', marginRight: 6 }}>🍳</span>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 6 }}>🍳</span>
                                 <span>{d.name}</span>
                               </div>
                             ))
@@ -875,7 +875,7 @@ export default function AdminDishesPage() {
                   <option value="enabled">启用</option>
                   <option value="disabled">禁用</option>
                 </select>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
                   {isAdmin ? '管理员创建的菜品默认为启用状态，需由厨师上架' : '选择菜品状态'}
                 </div>
               </div>
@@ -890,7 +890,7 @@ export default function AdminDishesPage() {
                   />
                   <span className="form-label" style={{ marginBottom: 0 }}>标记为半成品</span>
                 </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
                   半成品菜品不会出现在用户点菜菜单中，但可作为特殊食材被其他菜品选择
                 </div>
               </div>
@@ -935,8 +935,8 @@ export default function AdminDishesPage() {
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 18, height: 18, borderRadius: '50%',
-                    border: '1.5px solid var(--text-muted)', fontSize: '0.7rem',
-                    color: 'var(--text-muted)', cursor: 'help', position: 'relative',
+                    border: '1.5px solid var(--md-color-on-surface-variant)', fontSize: '0.7rem',
+                    color: 'var(--md-color-on-surface-variant)', cursor: 'help', position: 'relative',
                   }}
                   title="开启后使用AI模型智能识别食材名称和用量；关闭后仅通过食材库中的已有名称进行文本匹配，速度更快但不识别新食材名称"
                 >
@@ -972,7 +972,7 @@ export default function AdminDishesPage() {
                             onClick={() => removeParsedIngredient(p.name)}
                             style={{
                               background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: '0.9rem', color: 'var(--danger)', marginLeft: 4, padding: 0, lineHeight: 1,
+                              fontSize: '0.9rem', color: 'var(--md-color-error)', marginLeft: 4, padding: 0, lineHeight: 1,
                             }}
                           >
                             ×
@@ -981,7 +981,7 @@ export default function AdminDishesPage() {
                       ))}
                     </div>
                   ) : (
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>未识别到食材</div>
+                    <div style={{ color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>未识别到食材</div>
                   )}
 
                   {hasNewIngredients && (
@@ -1018,7 +1018,7 @@ export default function AdminDishesPage() {
             </div>
             <div className="modal-body">
               {batchItems.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)' }}>
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
                   没有需要添加的新食材
                 </div>
               ) : (
@@ -1029,7 +1029,7 @@ export default function AdminDishesPage() {
                     return (
                       <div
                         key={item.name}
-                        style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 12 }}
+                        style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--md-radius-md)', padding: 12 }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                           <input
@@ -1042,7 +1042,7 @@ export default function AdminDishesPage() {
                             onClick={() => removeBatchItem(item.name)}
                             style={{
                               background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: '1.1rem', color: 'var(--danger)', padding: '0 4px', lineHeight: 1,
+                              fontSize: '1.1rem', color: 'var(--md-color-error)', padding: '0 4px', lineHeight: 1,
                             }}
                             title="移除"
                           >
@@ -1099,12 +1099,12 @@ export default function AdminDishesPage() {
                                 return (
                                   <div style={{
                                     position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                                    background: 'var(--bg-card)', border: '1px solid var(--border)',
-                                    borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
+                                    background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                                     maxHeight: 180, overflowY: 'auto',
                                   }}>
                                     {filtered.length === 0 ? (
-                                      <div style={{ padding: 10, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>无匹配</div>
+                                      <div style={{ padding: 10, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配</div>
                                     ) : filtered.slice(0, 20).map(ing => (
                                       <div
                                         key={ing.id}
@@ -1118,7 +1118,7 @@ export default function AdminDishesPage() {
                                       >
                                         <span>{ing.name}</span>
                                         {ing.aliases && ing.aliases.length > 0 && (
-                                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: 6 }}>(别名: {ing.aliases.join('、')})</span>
+                                          <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 6 }}>(别名: {ing.aliases.join('、')})</span>
                                         )}
                                       </div>
                                     ))}

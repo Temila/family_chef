@@ -1,0 +1,238 @@
+/* ═══════════════════════════════════════════════════════════════════
+   家味 · Family Chef — MD3 Design Tokens
+   由 scripts/generate-tokens.cjs 自动生成（勿手动编辑）
+
+   Key Colors (CONTEXT.md D-01):
+     Primary   #34834E（深绿 —— 食材/自然）
+     Secondary #506446（橄榄绿）
+     Tertiary  #F5B43C（暖琥珀 —— 烹饪/温暖）
+     Error     #B3261E（MD3 标准错误色）
+
+   重新生成：cd frontend && npm run gen:tokens
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 语义颜色角色（Light Mode） ── */
+  --md-color-primary: #056d37;
+  --md-color-on-primary: #ffffff;
+  --md-color-primary-container: #9cf6b1;
+  --md-color-on-primary-container: #00210c;
+  --md-color-secondary: #506352;
+  --md-color-on-secondary: #ffffff;
+  --md-color-secondary-container: #d3e8d3;
+  --md-color-on-secondary-container: #0e1f12;
+  --md-color-tertiary: #3a656e;
+  --md-color-on-tertiary: #ffffff;
+  --md-color-tertiary-container: #bdeaf5;
+  --md-color-on-tertiary-container: #001f25;
+  --md-color-error: #ba1a1a;
+  --md-color-on-error: #ffffff;
+  --md-color-error-container: #ffdad6;
+  --md-color-on-error-container: #410002;
+  --md-color-background: #fcfdf7;
+  --md-color-on-background: #191c19;
+  --md-color-surface: #fcfdf7;
+  --md-color-on-surface: #191c19;
+  --md-color-on-surface-variant: #414941;
+  --md-color-outline: #717971;
+  --md-color-outline-variant: #c1c9bf;
+  --md-color-scrim: #000000;
+  --md-color-shadow: #000000;
+  --md-color-inverse-surface: #2e312e;
+  --md-color-inverse-on-surface: #f0f1ec;
+  --md-color-inverse-primary: #81d997;
+  --md-color-surface-dim: #d9dbd5;
+  --md-color-surface-bright: #f9faf4;
+  --md-color-surface-container-lowest: #ffffff;
+  --md-color-surface-container-low: #f3f4ef;
+  --md-color-surface-container: #edeee9;
+  --md-color-surface-container-high: #e7e9e3;
+  --md-color-surface-container-highest: #e2e3de;
+  --md-color-surface-tint: #056d37;
+  --md-color-surface-variant: #dde5da;
+
+  /* ── Tonal Palette（13 tones × 6 families，HCT 色彩空间派生）
+     tone 0 = 纯黑，tone 100 = 纯白
+     light mode: surface 用 tone 95-99，primary 用 tone 40
+     dark mode: surface 用 tone 10-20，primary 用 tone 80 ── */
+  /* primary 家族 */
+  --md-palette-primary-0: #000000;
+  --md-palette-primary-10: #00210c;
+  --md-palette-primary-20: #003919;
+  --md-palette-primary-30: #005227;
+  --md-palette-primary-40: #056d37;
+  --md-palette-primary-50: #2e874d;
+  --md-palette-primary-60: #4aa265;
+  --md-palette-primary-70: #66bd7e;
+  --md-palette-primary-80: #81d997;
+  --md-palette-primary-90: #9cf6b1;
+  --md-palette-primary-95: #c4ffcd;
+  --md-palette-primary-99: #f5fff3;
+  --md-palette-primary-100: #ffffff;
+  /* secondary 家族 */
+  --md-palette-secondary-0: #000000;
+  --md-palette-secondary-10: #0e1f12;
+  --md-palette-secondary-20: #233426;
+  --md-palette-secondary-30: #394b3b;
+  --md-palette-secondary-40: #506352;
+  --md-palette-secondary-50: #687c6a;
+  --md-palette-secondary-60: #829683;
+  --md-palette-secondary-70: #9cb19d;
+  --md-palette-secondary-80: #b7ccb7;
+  --md-palette-secondary-90: #d3e8d3;
+  --md-palette-secondary-95: #e1f7e1;
+  --md-palette-secondary-99: #f5fff3;
+  --md-palette-secondary-100: #ffffff;
+  /* tertiary 家族 */
+  --md-palette-tertiary-0: #000000;
+  --md-palette-tertiary-10: #001f25;
+  --md-palette-tertiary-20: #01363f;
+  --md-palette-tertiary-30: #204d56;
+  --md-palette-tertiary-40: #3a656e;
+  --md-palette-tertiary-50: #537e87;
+  --md-palette-tertiary-60: #6d98a2;
+  --md-palette-tertiary-70: #87b2bd;
+  --md-palette-tertiary-80: #a2ced9;
+  --md-palette-tertiary-90: #bdeaf5;
+  --md-palette-tertiary-95: #d5f6ff;
+  --md-palette-tertiary-99: #f7fdff;
+  --md-palette-tertiary-100: #ffffff;
+  /* neutral 家族 */
+  --md-palette-neutral-0: #000000;
+  --md-palette-neutral-10: #191c19;
+  --md-palette-neutral-20: #2e312e;
+  --md-palette-neutral-30: #454744;
+  --md-palette-neutral-40: #5c5f5b;
+  --md-palette-neutral-50: #757873;
+  --md-palette-neutral-60: #8f918d;
+  --md-palette-neutral-70: #aaaca7;
+  --md-palette-neutral-80: #c5c7c2;
+  --md-palette-neutral-90: #e2e3de;
+  --md-palette-neutral-95: #f0f1ec;
+  --md-palette-neutral-99: #fcfdf7;
+  --md-palette-neutral-100: #ffffff;
+  /* neutralVariant 家族 */
+  --md-palette-neutral-variant-0: #000000;
+  --md-palette-neutral-variant-10: #161d17;
+  --md-palette-neutral-variant-20: #2b322b;
+  --md-palette-neutral-variant-30: #414941;
+  --md-palette-neutral-variant-40: #596058;
+  --md-palette-neutral-variant-50: #717971;
+  --md-palette-neutral-variant-60: #8b938a;
+  --md-palette-neutral-variant-70: #a5ada4;
+  --md-palette-neutral-variant-80: #c1c9bf;
+  --md-palette-neutral-variant-90: #dde5da;
+  --md-palette-neutral-variant-95: #ebf3e8;
+  --md-palette-neutral-variant-99: #f7fef4;
+  --md-palette-neutral-variant-100: #ffffff;
+  /* error 家族 */
+  --md-palette-error-0: #000000;
+  --md-palette-error-10: #410002;
+  --md-palette-error-20: #690005;
+  --md-palette-error-30: #93000a;
+  --md-palette-error-40: #ba1a1a;
+  --md-palette-error-50: #de3730;
+  --md-palette-error-60: #ff5449;
+  --md-palette-error-70: #ff897d;
+  --md-palette-error-80: #ffb4ab;
+  --md-palette-error-90: #ffdad6;
+  --md-palette-error-95: #ffedea;
+  --md-palette-error-99: #fffbff;
+  --md-palette-error-100: #ffffff;
+
+  /* ── 圆角 Shape（MD3 标准） ── */
+  --md-radius-xs: 8px;    /* 极小元素：标签/Tag/徽章 */
+  --md-radius-sm: 12px;   /* 小组件：按钮/输入框 */
+  --md-radius-md: 16px;   /* 中组件：卡片/FAB (D-08) */
+  --md-radius-lg: 24px;   /* 大组件：模态框/抽屉/侧边栏 */
+  --md-radius-xl: 28px;   /* 超大组件 */
+  --md-radius-full: 9999px; /* 圆形/胶囊 */
+
+  /* ── 间距 Spacing（8dp 网格） ── */
+  --md-spacing-1: 4px;
+  --md-spacing-2: 8px;
+  --md-spacing-3: 12px;
+  --md-spacing-4: 16px;
+  --md-spacing-5: 24px;
+  --md-spacing-6: 32px;
+  --md-spacing-7: 40px;
+  --md-spacing-8: 56px;
+
+  /* ── Elevation（5 级，shadow 形式；surface tint 由组件自行叠加） ── */
+  --md-elevation-0: none;
+  --md-elevation-1: 0 1px 2px rgba(0,0,0,0.05);
+  --md-elevation-2: 0 1px 3px rgba(0,0,0,0.08);
+  --md-elevation-3: 0 2px 6px rgba(0,0,0,0.10);
+  --md-elevation-4: 0 4px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+  --md-elevation-5: 0 6px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.10);
+
+  /* ── Motion（时长 + 缓动函数） ── */
+  --md-motion-duration-short: 150ms;
+  --md-motion-duration-medium: 250ms;
+  --md-motion-duration-long: 500ms;
+  --md-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── 排版 Typography（中英文字体栈） ── */
+  --md-font-display: 'PingFang SC', 'Noto Serif SC', serif;
+  --md-font-body: 'PingFang SC', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ── 焦点环 Focus Ring（2px 外环 + 2px 内环） ── */
+  --md-focus-ring-outer: 2px solid var(--md-color-on-primary);
+  --md-focus-ring-inner: 2px solid var(--md-color-surface);
+
+  /* ── State-Layer（MD3 交互状态 — Phase 9） ── */
+  --md-state-layer-hover: 0.08;          /* 8% — MD3 hover */
+  --md-state-layer-pressed: 0.10;        /* 10% — MD3 pressed */
+  --md-state-layer-focused: 0.12;        /* 12% — 用户选择（MD3 spec: 10%） */
+  --md-state-layer-disabled: 0.38;       /* 38% — M3OpacityToken.disabledContent */
+  --md-state-layer-primary: var(--md-color-primary);             /* Surface 背景 tint */
+  --md-state-layer-on-surface: var(--md-color-on-surface);       /* Container 背景 tint */
+
+  /* ── 其他全局令牌 ── */
+  --md-nav-height: 64px;
+  --md-color-scrim: rgba(0,0,0,0.32);
+}
+
+/* Dark Mode —— 仅覆盖 mode-dependent 颜色角色
+   radius/spacing/elevation/motion/font/focus-ring/nav-height 为 mode-invariant，不在此重复声明 */
+[data-theme="dark"] {
+  /* ── 语义颜色角色（Dark Mode） ── */
+  --md-color-primary: #81d997;
+  --md-color-on-primary: #003919;
+  --md-color-primary-container: #005227;
+  --md-color-on-primary-container: #9cf6b1;
+  --md-color-secondary: #b7ccb7;
+  --md-color-on-secondary: #233426;
+  --md-color-secondary-container: #394b3b;
+  --md-color-on-secondary-container: #d3e8d3;
+  --md-color-tertiary: #a2ced9;
+  --md-color-on-tertiary: #01363f;
+  --md-color-tertiary-container: #204d56;
+  --md-color-on-tertiary-container: #bdeaf5;
+  --md-color-error: #ffb4ab;
+  --md-color-on-error: #690005;
+  --md-color-error-container: #93000a;
+  --md-color-on-error-container: #ffb4ab;
+  --md-color-background: #191c19;
+  --md-color-on-background: #e2e3de;
+  --md-color-surface: #191c19;
+  --md-color-on-surface: #e2e3de;
+  --md-color-on-surface-variant: #c1c9bf;
+  --md-color-outline: #8b938a;
+  --md-color-outline-variant: #414941;
+  --md-color-scrim: #000000;
+  --md-color-shadow: #000000;
+  --md-color-inverse-surface: #e2e3de;
+  --md-color-inverse-on-surface: #2e312e;
+  --md-color-inverse-primary: #056d37;
+  --md-color-surface-dim: #111411;
+  --md-color-surface-bright: #373a36;
+  --md-color-surface-container-lowest: #0c0f0c;
+  --md-color-surface-container-low: #191c19;
+  --md-color-surface-container: #1d201d;
+  --md-color-surface-container-high: #282b27;
+  --md-color-surface-container-highest: #333532;
+  --md-color-surface-tint: #81d997;
+  --md-color-surface-variant: #414941;
+}

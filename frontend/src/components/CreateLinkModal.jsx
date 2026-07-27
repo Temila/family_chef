@@ -64,10 +64,10 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
               fontFamily: 'monospace',
               fontSize: '0.8rem',
               wordBreak: 'break-all',
-              background: 'var(--bg-elevated)',
+              background: 'var(--md-color-surface-container)',
               padding: 12,
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--text-secondary)',
+              borderRadius: 'var(--md-radius-sm)',
+              color: 'var(--md-color-on-surface-variant)',
               marginBottom: 12,
             }}
           >
@@ -76,7 +76,7 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
           <div
             style={{
               fontSize: '0.75rem',
-              color: 'var(--text-muted)',
+              color: 'var(--md-color-on-surface-variant)',
               marginBottom: 16,
             }}
           >

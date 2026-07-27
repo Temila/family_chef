@@ -64,7 +64,7 @@ export default function ChefSelectModal({ onSelect, onClose }) {
                       {chef.display_name || chef.username}
                     </div>
                     {chef.display_name && chef.username && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                         @{chef.username}
                       </div>
                     )}

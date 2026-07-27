@@ -111,7 +111,7 @@ export default function UserOrdersPage() {
               </div>
 
               {(order.meal_date || order.meal_type) && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 6 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>
                   🍽 {order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || order.meal_type}
                 </div>
               )}
@@ -126,14 +126,14 @@ export default function UserOrdersPage() {
 
               <div className="order-footer">
                 <Badge status={order.status} />
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
                   {expandedOrder === order.id ? '收起 ▲' : '展开详情 ▼'}
                 </span>
               </div>
 
               {expandedOrder === order.id && (
-                <div style={{ marginTop: 12, padding: '12px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <div style={{ marginTop: 12, padding: '12px', background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
                     <div>订单号：{order.order_no}</div>
                     <div>下单时间：{new Date(order.created_at).toLocaleString()}</div>
                     {order.meal_date && <div>用餐时间：{order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || ''}</div>}
@@ -150,7 +150,7 @@ export default function UserOrdersPage() {
                   {order.status === 'pending' && (
                     <button
                       className="btn btn-outline btn-sm btn-block"
-                      style={{ marginTop: 12, borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                      style={{ marginTop: 12, borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       onClick={(e) => { e.stopPropagation(); handleCancelOrder(order.id); }}
                     >
                       取消订单

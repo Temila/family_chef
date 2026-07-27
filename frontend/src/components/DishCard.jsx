@@ -4,6 +4,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
+import Ripple from './Ripple';
 
 export default function DishCard({ dish, simple }) {
   const navigate = useNavigate();
@@ -14,10 +15,11 @@ export default function DishCard({ dish, simple }) {
   };
 
   return (
-    <div
-      className="dish-card"
-      onClick={() => navigate(`/dishes/${dish.id}`)}
-    >
+    <Ripple style={{ width: '100%' }}>
+      <div
+        className="dish-card"
+        onClick={() => navigate(`/dishes/${dish.id}`)}
+      >
       <div className="dish-card-image">
         {dish.image_url ? (
           <>
@@ -61,6 +63,7 @@ export default function DishCard({ dish, simple }) {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </Ripple>
   );
 }

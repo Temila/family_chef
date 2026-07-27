@@ -334,7 +334,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       ) : wishes.length === 0 ? (
         <>
           <EmptyState icon={empty.icon} text={empty.text} />
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <div style={{ textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.875rem' }}>
             {empty.sub}
           </div>
         </>

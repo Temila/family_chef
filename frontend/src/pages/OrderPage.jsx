@@ -273,11 +273,11 @@ export default function OrderPage() {
       {published.slice(0, 3).map(c => (
         <div key={c.id} style={{
           width: size, height: size, borderRadius: '50%',
-          background: 'var(--accent)',
-          color: '#fff',
+          background: 'var(--md-color-primary)',
+          color: 'var(--md-color-on-primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: size < 20 ? '0.55rem' : '0.65rem', fontWeight: 600,
-          border: '2px solid var(--bg-card)',
+          border: '2px solid var(--md-color-surface-container-lowest)',
           marginLeft: -6,
         }} title={c.display_name || c.username}>
           {(c.display_name || c.username).charAt(0).toUpperCase()}
@@ -286,11 +286,11 @@ export default function OrderPage() {
       {published.length > 3 && (
         <div style={{
           width: size, height: size, borderRadius: '50%',
-          background: 'var(--bg-elevated)',
-          color: 'var(--text-secondary)',
+          background: 'var(--md-color-surface-container)',
+          color: 'var(--md-color-on-surface-variant)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '0.55rem', fontWeight: 600,
-          border: '2px solid var(--bg-card)',
+          border: '2px solid var(--md-color-surface-container-lowest)',
           marginLeft: -6,
         }}>
           +{published.length - 3}
@@ -329,7 +329,7 @@ export default function OrderPage() {
         </button>
         <select
           className="filter-chip"
-          style={{ appearance: 'none', paddingRight: 20, background: `var(--bg-elevated) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
+          style={{ appearance: 'none', paddingRight: 20, background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
@@ -337,13 +337,13 @@ export default function OrderPage() {
           <option value="created">最新添加</option>
           <option value="popular">热门优先</option>
         </select>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '28px' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: '28px' }}>
           共 {total} 道
         </span>
       </div>
 
       {showFilters && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           <div className="filter-section">
             <div className="filter-section-label">{getTypeMeta('region').label}</div>
             <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
@@ -493,13 +493,13 @@ export default function OrderPage() {
             })}
           </div>
           {loadingMore && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>
               <div className="loading-spinner" style={{ display: 'inline-block', marginRight: 8, width: 16, height: 16, borderWidth: 2 }}></div>
               加载更多...
             </div>
           )}
           {!hasMore && dishes.length > 20 && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.8rem' }}>
               没有更多菜品了
             </div>
           )}
@@ -511,7 +511,7 @@ export default function OrderPage() {
           <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
             <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
             <span style={{ fontWeight: 600 }}>已点 {cartCount} 道菜</span>
-            <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
             </span>
           </div>
@@ -531,7 +531,7 @@ export default function OrderPage() {
             <div key={item.cart_key} className="cart-detail-item">
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '0.85rem' }}>{item.dish_name}</div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 1 }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 1 }}>
                   👨‍🍳 {item.chef_name}
                 </div>
               </div>
@@ -543,7 +543,7 @@ export default function OrderPage() {
               <button
                 className="btn-icon btn-sm"
                 onClick={() => removeFromCart(item.cart_key)}
-                style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                style={{ color: 'var(--md-color-error)', borderColor: 'var(--md-color-error)' }}
               >
                 ×
               </button>
@@ -560,7 +560,7 @@ export default function OrderPage() {
               <button className="modal-close" onClick={() => setShowChefPicker(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>
                 「{chefPickerDish.name}」有多位厨师可做，请选择：
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -569,20 +569,20 @@ export default function OrderPage() {
                     key={chef.id}
                     className="card"
                     style={{
-                      padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--border)',
+                      padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--md-color-outline-variant)',
                       display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-                      background: 'var(--bg-elevated)', borderRadius: 'var(--radius-lg)',
+                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-md)',
                     }}
                     onClick={() => {
                       addDishToCart(chefPickerDish, chef);
                       setShowChefPicker(false);
                     }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--md-color-primary)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--md-color-outline-variant)'}
                   >
                     <div style={{
                       width: 36, height: 36, borderRadius: '50%',
-                      background: 'var(--accent)', color: '#fff',
+                      background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
                     }}>
@@ -644,15 +644,15 @@ export default function OrderPage() {
                   {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
                 </select>
               </div>
-              <div style={{ marginTop: 16, padding: 12, background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+              <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
                   确认订单 ({cartCount} 道菜)
                 </div>
                 {cart.map(item => (
                   <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
                     <span>
                       {item.dish_name}
-                      <span style={{ color: 'var(--text-muted)', marginLeft: 4 }}>· {item.chef_name}</span>
+                      <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 4 }}>· {item.chef_name}</span>
                     </span>
                     <span>×{item.quantity}</span>
                   </div>

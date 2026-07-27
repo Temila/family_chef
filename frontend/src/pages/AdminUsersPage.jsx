@@ -203,7 +203,7 @@ export default function AdminUsersPage() {
                               <button
                                 className="btn btn-outline btn-sm"
                                 onClick={() => handleDelete(u)}
-                                style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                                style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                               >
                                 删除
                               </button>
@@ -228,7 +228,7 @@ export default function AdminUsersPage() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{u.display_name || u.username}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>@{u.username}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>@{u.username}</div>
                     </div>
                     <span className={`role-badge role-${u.role}`}>{roleMap[u.role] || u.role}</span>
                     <span className={`badge ${u.is_active ? 'badge-success' : 'badge-danger'}`}>
@@ -246,7 +246,7 @@ export default function AdminUsersPage() {
                           <button
                             className="btn btn-outline btn-sm"
                             onClick={() => handleDelete(u)}
-                            style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                            style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
                           </button>
