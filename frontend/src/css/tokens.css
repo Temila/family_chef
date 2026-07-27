@@ -181,6 +181,14 @@
   --md-focus-ring-outer: 2px solid var(--md-color-on-primary);
   --md-focus-ring-inner: 2px solid var(--md-color-surface);
 
+  /* ── State-Layer（MD3 交互状态 — Phase 9） ── */
+  --md-state-layer-hover: 0.08;          /* 8% — MD3 hover */
+  --md-state-layer-pressed: 0.10;        /* 10% — MD3 pressed */
+  --md-state-layer-focused: 0.12;        /* 12% — 用户选择（MD3 spec: 10%） */
+  --md-state-layer-disabled: 0.38;       /* 38% — M3OpacityToken.disabledContent */
+  --md-state-layer-primary: var(--md-color-primary);             /* Surface 背景 tint */
+  --md-state-layer-on-surface: var(--md-color-on-surface);       /* Container 背景 tint */
+
   /* ── 其他全局令牌 ── */
   --md-nav-height: 64px;
   --md-color-scrim: rgba(0,0,0,0.32);
