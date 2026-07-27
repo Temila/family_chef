@@ -27,7 +27,7 @@ import GuestOrderPage from './pages/GuestOrderPage';
 import UserWishesPage from './pages/UserWishesPage';
 import ChefWishesPage from './pages/ChefWishesPage';
 import AdminWishesPage from './pages/AdminWishesPage';
-import './css/styles.css';
+// styles.css 现统一由 src/index.css @import 加载（Phase 9 合并 CSS 入口，避免重复打包）
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
 
