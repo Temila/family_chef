@@ -153,6 +153,50 @@ class ApiClient {
     return this.get('/orders/stats');
   }
 
+  // ─── Wishes ─────────────────────────────────────
+  async getWishes(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set('page', params.page);
+    if (params.page_size) qs.set('page_size', params.page_size);
+    // CRITICAL: backend param name is `status_filter` (not `status`)
+    // per backend/app/routers/wishes.py:63-82
+    if (params.status) qs.set('status_filter', params.status);
+    if (params.claimed_by_chef_id !== undefined && params.claimed_by_chef_id !== null) {
+      qs.set('claimed_by_chef_id', params.claimed_by_chef_id);
+    }
+    if (params.mine) qs.set('mine', 'true');
+    const query = qs.toString();
+    return this.get(`/wishes${query ? '?' + query : ''}`);
+  }
+
+  async getWish(id) {
+    return this.get(`/wishes/${id}`);
+  }
+
+  async createWish(data) {
+    return this.post('/wishes', data);
+  }
+
+  async updateWish(id, data) {
+    return this.put(`/wishes/${id}`, data);
+  }
+
+  async cancelWish(id) {
+    return this.del(`/wishes/${id}`);
+  }
+
+  async claimWish(id) {
+    return this.post(`/wishes/${id}/claim`);
+  }
+
+  async advanceWish(id, related_dish_id) {
+    return this.post(`/wishes/${id}/advance`, { related_dish_id });
+  }
+
+  async rejectWish(id, reject_reason) {
+    return this.post(`/wishes/${id}/reject`, { reject_reason });
+  }
+
   // ─── Categories ─────────────────────────────────────
   async getCategories(type = null, tree = false) {
     const qs = new URLSearchParams();

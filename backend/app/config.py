@@ -35,6 +35,7 @@ class Settings:
         self.APP_VERSION: str = app.get("version", "0.1.0")
         self.DEBUG: bool = app.get("debug", True)
         self.SECRET_KEY: str = app.get("secret_key", "dev-secret-key-change-in-production")
+        self.APP_URL: str = app.get("url", "https://family-chef.app")
 
         db = data.get("database", {})
         self.DATABASE_URL: str = db.get("url", "sqlite+aiosqlite:///./data/family_chef.db")

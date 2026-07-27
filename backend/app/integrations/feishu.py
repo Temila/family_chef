@@ -199,6 +199,99 @@ class FeishuClient:
             card_content,
         )
 
+    async def send_wish_notification(
+        self,
+        receive_id: str,
+        data: dict,
+    ) -> bool:
+        """发送愿望通知卡片（D-F01 独立方法 — 不复用订单通知）。
+
+        支持三种通知类型：
+        - new: 新愿望通知给厨师（D-F02）
+        - edit: 提交者编辑了已认领愿望（D-F03）
+        - cancel: 提交者撤销了已认领愿望（D-F03）
+
+        安全设计（Pitfall 9 / Pattern 5）：
+        - 所有用户可控字段（dish_name / submitter_name / note / reference_url /
+          change_description / old_note / new_note）均使用 plain_text 渲染，
+          避免 lark_md 注入链接/@提及/格式化。
+        - 仅服务端构造的详情深链接使用 lark_md。
+        - 备注超过 1000 字符时截断（A4 卡片容量上限防护）。
+        """
+        notification_type = data.get("notification_type", "new")
+        wish_id = data["wish_id"]
+        dish_name = str(data.get("dish_name") or "")
+        detail_url = f"{settings.APP_URL.rstrip('/')}/wishes/{wish_id}"
+
+        elements: list[dict] = []
+
+        if notification_type == "new":
+            header_content = "新愿望通知"
+            # 基础字段（D-F02）
+            fields = [
+                ("愿望菜品", dish_name),
+                ("提交者", str(data.get("submitter_name") or "未知用户")),
+            ]
+            # 可选字段：参考链接（仅当 truthy 时渲染）
+            reference_url = data.get("reference_url")
+            if reference_url:
+                fields.append(("参考链接", str(reference_url)))
+            # 可选字段：备注（仅当 truthy 时渲染）
+            note = data.get("note")
+            if note:
+                fields.append(("备注", _truncate_note(str(note))))
+        else:
+            # edit / cancel（D-F03 愿望变更通知）
+            header_content = "愿望变更通知"
+            fields = [
+                ("菜品", dish_name),
+                ("通知类型", notification_type),
+                ("变更说明", str(data.get("change_description") or "")),
+            ]
+            # 原备注：仅当 truthy 时渲染
+            old_note = data.get("old_note")
+            if old_note:
+                fields.append(("原备注", _truncate_note(str(old_note))))
+            # 新备注：仅当 note_changed 为真时渲染（Pitfall 9 已清空标记）
+            if data.get("note_changed"):
+                new_note = data.get("new_note")
+                fields.append(("新备注", _truncate_note(str(new_note)) if new_note else "（已清空）"))
+
+        # 构建元素列表 — 所有用户值用 plain_text（Pattern 5）
+        for label, value in fields:
+            elements.append({
+                "tag": "div",
+                "text": {
+                    "tag": "plain_text",
+                    "content": f"{label}：{value}",
+                },
+            })
+
+        # 深链接 — 唯一使用 lark_md 的元素（服务端构造的 HTTP(S) 链接）
+        elements.append({
+            "tag": "div",
+            "text": {
+                "tag": "lark_md",
+                "content": f"[查看详情]({detail_url})",
+            },
+        })
+
+        card_content = {
+            "config": {
+                "wide_screen_mode": True,
+            },
+            "header": {
+                "title": {
+                    "tag": "plain_text",
+                    "content": header_content,
+                },
+                "template": "blue",
+            },
+            "elements": elements,
+        }
+
+        return await self.send_message(receive_id, "interactive", card_content)
+
     async def bind_user(
         self,
         user_id: int,
@@ -208,6 +301,16 @@ class FeishuClient:
         # TODO: 实现用户表更新逻辑
         print(f"✅ 用户 {user_id} 绑定飞书账号 {feishu_open_id}")
         return True
+
+
+def _truncate_note(text: str, limit: int = 1000) -> str:
+    """截断备注文本至指定长度上限（Pitfall 9 A4 卡片容量防护）。
+
+    超过 limit 的文本截断为前 limit 个字符并追加省略号。
+    """
+    if len(text) <= limit:
+        return text
+    return text[:limit] + "…"
 
 
 # 全局飞书客户端实例

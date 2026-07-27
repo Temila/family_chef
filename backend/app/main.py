@@ -229,6 +229,9 @@ async def startup():
     """应用启动事件"""
     _print_startup_info()
 
+    # NOTE(07-04): No automatic `alembic upgrade head` runs at startup.
+    # New migrations must be applied manually via `cd backend && uv run alembic upgrade head`.
+    # See .planning/phases/07-wish-list-frontend/07-04-PLAN.md for context.
     await init_db()
 
     from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients
@@ -274,6 +277,7 @@ from app.routers import (
     tools,
     upload,
     users,
+    wishes,
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["认证"])
@@ -290,6 +294,7 @@ app.include_router(admin.router, prefix="/api/admin", tags=["系统管理"])
 app.include_router(feishu.router, prefix="/api/feishu", tags=["飞书集成"])
 app.include_router(tools.router, prefix="/api/tools", tags=["工具"])
 app.include_router(upload.router, prefix="/api/upload", tags=["文件上传"])
+app.include_router(wishes.router, prefix="/api/wishes", tags=["愿望单"])
 
 frontend_dist_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend/dist"
