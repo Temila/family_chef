@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
-import Ripple from './Ripple';
+import Ripple from './primitives/Ripple';
 
 export default function Header({ title, showBack = false, actions }) {
   const navigate = useNavigate();

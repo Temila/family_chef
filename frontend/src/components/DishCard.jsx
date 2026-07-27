@@ -4,7 +4,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
-import Ripple from './Ripple';
+import Ripple from './primitives/Ripple';
 
 export default function DishCard({ dish, simple }) {
   const navigate = useNavigate();

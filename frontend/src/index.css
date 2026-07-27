@@ -1,6 +1,5 @@
 @import './css/tokens.css';
 @import './css/styles.css';
-@import 'material-symbols/outlined.css';
 
 :root {
   font-family: var(--md-font-body);

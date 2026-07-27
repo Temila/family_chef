@@ -1,0 +1,17 @@
+/* ═══ Ripple 容器基础（Phase 10 — D-12） ═════════════════ */
+/* .md-ripple-layer 由 primitives/Ripple.jsx 渲染为 span 容器。
+   容器布局由 base.css 锚定为 absolute inset:0 z-index:1。
+   本文件仅保留容器可读性 fallback 与 reduced-motion 备用 keyframes。 */
+.md-ripple-layer {
+  display: inline-flex;
+}
+
+@keyframes md-ripple-expand {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes md-ripple-fade {
+  from { opacity: 0.12; }
+  to { opacity: 0; }
+}

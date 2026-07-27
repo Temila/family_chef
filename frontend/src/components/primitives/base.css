@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Primitive Base（Phase 10 — 共享 state-layer / ripple 锚点 / focus ring / 触控目标）
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Layer model: isolation + 显式 0/1/2 stacking ──
+   根元素 background/border 在 stacking context base；state layer z0；ripple z1；content z2。
+   替代 Phase 9 负 z-index 模式（避免 overlay 中落到背景之后）。 */
+.md-interactive {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.md-interactive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--md-component-state-color, var(--md-state-layer-primary));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+
+/* 所有非 ripple 子元素自动抬到 z2，确保 label/icon 不被 state-layer 遮挡 */
+.md-interactive > :not(.md-ripple-layer) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ripple 容器锚点 —— 由 Ripple.jsx 渲染 .md-ripple-layer span */
+.md-ripple-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── State 应用（MD3 hover 8% / pressed 10% / focused 12% / disabled 0%）── */
+.md-interactive:hover::before { opacity: var(--md-state-layer-hover); }
+.md-interactive:active::before,
+.md-interactive[data-pressed='true']::before { opacity: var(--md-state-layer-pressed); }
+.md-interactive:focus-visible::before { opacity: var(--md-state-layer-focused); }
+.md-interactive:disabled::before,
+.md-interactive[aria-disabled='true']::before { opacity: 0; }
+
+/* ── 触控目标全局规则（仅 MD3 primitive root 与 input wrapper）──
+   所有交互命中区域至少 48×48dp（MD3 + Phase 9 UX-03）。
+   Button sm/md visual 小于 48dp 时，根 hit box 仍为 48dp（内部 visual 由组件 CSS 控制）。*/
+.md-button,
+.md-icon-button,
+.md-fab,
+.md-input-wrapper {
+  min-inline-size: 48px;
+  min-block-size: 48px;
+}
+
+/* ── Reduced motion：对动敏用户禁用动画 ── */
+@media (prefers-reduced-motion: reduce) {
+  .md-interactive::before { transition: none; }
+  .md-ripple-layer { display: none; }
+}

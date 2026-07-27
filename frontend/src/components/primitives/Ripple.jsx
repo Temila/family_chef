@@ -1,5 +1,8 @@
 /**
- * Ripple Component - MD3 涟漪反馈组件（Phase 9 — MOTION-01）
+ * Ripple Component - MD3 涟漪反馈组件（Phase 10 — D-12 / MOTION-01）
+ *
+ * Phase 10 — 公开 API 保留供 Phase 10 之外 composite (WishCard/Header/Sidebar/DishCard)
+ * 继续手动消费；primitive 内部已内置（Button/IconButton/FAB）。
  *
  * 通过 onPointerDown 获取落点坐标 → 创建 CSS 动画 span → 动画结束自动移除。
  * 坐标精确控制满足 MD3 要求（pointer 位置起算、半径覆盖元素最大边）。
@@ -9,7 +12,7 @@
  */
 
 import { useRef, useCallback } from 'react';
-import '../css/ripple.css';
+import './ripple.css';
 
 export default function Ripple({ children, disabled = false, className = '', style }) {
   const containerRef = useRef(null);
@@ -71,7 +74,7 @@ export default function Ripple({ children, disabled = false, className = '', sty
   return (
     <span
       ref={containerRef}
-      className={`ripple-container ${className}`}
+      className={`md-ripple-layer ${className}`}
       style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', ...style }}
       onPointerDown={handlePointerDown}
     >

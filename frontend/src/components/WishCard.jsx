@@ -7,7 +7,7 @@
 import { Link } from 'react-router-dom';
 import Badge from './Badge';
 import { formatDate } from '../utils';
-import Ripple from './Ripple';
+import Ripple from './primitives/Ripple';
 
 // 危险操作按钮（撤销/拒绝）的红色描边样式 — 与 ConfirmModal danger 模式一致
 const DANGER_BTN_STYLE = { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' };

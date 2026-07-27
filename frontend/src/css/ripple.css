@@ -1,8 +1,0 @@
-/* ═══ Ripple 容器基础样式（Phase 9 — MOTION-01） ═════════════════ */
-/* Ripple.jsx 的 .ripple-container 类基础规则。
-   组件内联 style 已设置 position/overflow/display，此处作为 CSS 类回退与可覆盖入口。 */
-.ripple-container {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-}
