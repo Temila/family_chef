@@ -8,6 +8,7 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from './primitives/Button';
+import IconButton from './primitives/IconButton';
 import { formatDate } from '../utils';
 
 export default function InvitationsModal({
@@ -97,14 +98,11 @@ export default function InvitationsModal({
                 >
                   {inv.status === 'active' && (
                     <>
-                      <button
-                        className="btn-icon"
+                      <IconButton
+                        icon="content-copy"
+                        ariaLabel="复制链接"
                         onClick={() => onCopyLink(inv.token)}
-                        title="复制链接"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        📋
-                      </button>
+                      />
                       <Button
                         variant="outlined"
                         size="sm"

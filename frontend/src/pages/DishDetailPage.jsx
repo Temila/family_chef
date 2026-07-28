@@ -9,6 +9,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
+import IconButton from '../components/primitives/IconButton';
 
 export default function DishDetailPage() {
   const { id } = useParams();
@@ -126,13 +127,12 @@ export default function DishDetailPage() {
         title={dish.name}
         showBack
         actions={
-          <button
-            className="btn-icon"
+          <IconButton
+            icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
+            ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
             onClick={handleFavorite}
-            title={dish.is_favorite ? '取消收藏' : '收藏'}
-          >
-            {dish.is_favorite ? '❤️' : '🤍'}
-          </button>
+            selected={dish.is_favorite}
+          />
         }
       />
 

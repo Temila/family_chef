@@ -1,0 +1,83 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 FAB Styles (Phase 10 — COMPO-05)
+   3 forms: default (56dp) / extended (56dp + label) / small (40dp visual in 48dp hit)
+   --md-radius-md (16px) 锁死（D-08）；禁止 radius-full 与 transform: scale。
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import './base.css';
+
+/* ── Root .md-fab
+   primary-container 填充 + on-primary-container 内容色；
+   rest box-shadow: elevation-3，pressed 降至 elevation-1（UI-SPEC §8.2）。 */
+.md-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border: none;
+  border-radius: var(--md-radius-md); /* D-08 锁定 16px，禁止 radius-full */
+  background: var(--md-color-primary-container);
+  color: var(--md-color-on-primary-container);
+  cursor: pointer;
+  box-shadow: var(--md-elevation-3);
+  font-family: var(--md-font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  white-space: nowrap;
+  transition: box-shadow var(--md-motion-duration-medium) var(--md-motion-easing-standard);
+  position: relative;
+  --md-component-state-color: var(--md-state-layer-on-surface);
+}
+
+/* default FAB：56dp 圆角方块，icon 居中 */
+.md-fab--default {
+  width: 56px;
+  height: 56px;
+  padding: 16px;
+}
+
+/* small FAB：40dp 视觉 in 48dp hit box（base.css 已保证 48dp hit） */
+.md-fab--small {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  min-inline-size: 48px;
+  min-block-size: 48px;
+}
+
+/* extended FAB：56dp 高，pill 形态，label + icon 间距 12dp */
+.md-fab--extended {
+  height: 56px;
+  min-inline-size: 80px;
+  padding: 16px 20px;
+}
+
+.md-fab__label {
+  font-weight: 500;
+}
+
+/* hover：保持 elevation-3，仅 state-layer 反馈（由 base.css ::before 接管） */
+.md-fab:hover:not(:disabled) {
+  box-shadow: var(--md-elevation-3);
+}
+
+/* pressed：阴影降级到 elevation-1（UI-SPEC §8.2 锁定；不使用 translateY 或 scale） */
+.md-fab:active:not(:disabled) {
+  box-shadow: var(--md-elevation-1);
+}
+
+/* focus ring：FAB 用 outer（容器色背景控件） */
+.md-fab:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* disabled：base.css 全局 :disabled 已设 opacity 0.38；此处补 box-shadow none */
+.md-fab:disabled,
+.md-fab[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}

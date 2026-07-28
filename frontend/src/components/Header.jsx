@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
-import Ripple from './primitives/Ripple';
+import IconButton from './primitives/IconButton';
 
 export default function Header({ title, showBack = false, actions }) {
   const navigate = useNavigate();
@@ -15,15 +15,12 @@ export default function Header({ title, showBack = false, actions }) {
     <header className="header">
       <div className="header-left">
         {showBack && (
-          <Ripple>
-            <button
-              className="header-back"
-              onClick={() => navigate(-1)}
-              title="返回"
-            >
-              ←
-            </button>
-          </Ripple>
+          <IconButton
+            icon="arrow-back"
+            ariaLabel="返回"
+            onClick={() => navigate(-1)}
+            className="header-back"
+          />
         )}
       </div>
 

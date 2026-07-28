@@ -5,6 +5,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import GuestDishCard from '../components/GuestDishCard';
 import Button from '../components/primitives/Button';
+import IconButton from '../components/primitives/IconButton';
 
 async function guestFetch(url, options = {}) {
   const headers = { 'Content-Type': 'application/json' };
@@ -398,13 +399,12 @@ export default function GuestOrderPage() {
                     if (dish) addToCart(dish);
                   }}>+</button>
                 </div>
-                <button
-                  className="btn-icon btn-sm"
+                <IconButton
+                  icon="close"
+                  ariaLabel="移除"
                   onClick={() => setCart(prev => prev.filter(c => c.dish_id !== item.dish_id))}
-                  style={{ color: 'var(--md-color-error)', borderColor: 'var(--md-color-error)' }}
-                >
-                  ×
-                </button>
+                  style={{ color: 'var(--md-color-error)' }}
+                />
               </div>
             ))}
           </div>

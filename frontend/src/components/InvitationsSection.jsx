@@ -16,6 +16,7 @@ import ChefSelectModal from './ChefSelectModal';
 import CreateLinkModal from './CreateLinkModal';
 import ConfirmModal from './ConfirmModal';
 import Button from './primitives/Button';
+import IconButton from './primitives/IconButton';
 
 export default function InvitationsSection() {
   const { user } = useAuth();
@@ -195,14 +196,11 @@ export default function InvitationsSection() {
             >
               {inv.status === 'active' && (
                 <>
-                  <button
-                    className="btn-icon"
+                  <IconButton
+                    icon="content-copy"
+                    ariaLabel="复制链接"
                     onClick={() => handleCopyLink(inv.token)}
-                    title="复制链接"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    📋
-                  </button>
+                  />
                   <Button
                     variant="outlined"
                     size="sm"

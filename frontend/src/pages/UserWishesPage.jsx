@@ -17,6 +17,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import WishCard from '../components/WishCard';
 import WishFormModal from '../components/WishFormModal';
 import Button from '../components/primitives/Button';
+import FAB from '../components/primitives/FAB';
 
 const PAGE_SIZE = 20;
 const FOCUS_REFRESH_DEDUPE_MS = 2000;
@@ -321,15 +322,15 @@ export default function UserWishesPage() {
         </section>
       )}
 
-      {/* FAB — 仅用户页有，渲染在 Header 外部以避开 header-right 的堆叠上下文 */}
-      <button
-        type="button"
-        className="fab"
+      {/* FAB — 仅用户页有，渲染在 Header 外部以避开 header-right 的堆叠上下文。
+          .fab className 仅承担 placement（position: fixed / bottom / right / z-index），
+          视觉由 .md-fab 提供（D-08：16px 圆角、primary-container 填充、elevation-3）。 */}
+      <FAB
+        icon="add"
+        ariaLabel="新建愿望"
         onClick={openCreate}
-        aria-label="新建愿望"
-      >
-        +
-      </button>
+        className="fab"
+      />
 
       {/* 单 overlay 不变量：同时只渲染一个弹窗 */}
       {showCreate && (

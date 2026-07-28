@@ -196,10 +196,9 @@ input, textarea, select { font-family: var(--md-font-body); }
 .qty-stepper button:hover { color: var(--md-color-on-surface); }
 .qty-stepper .qty-value { width: 32px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--md-color-on-surface); border-left: 1px solid var(--md-color-outline-variant); border-right: 1px solid var(--md-color-outline-variant); line-height: 30px; }
 
-/* FAB —— D-08 覆盖：56dp FAB 采用 MD3 标准 16px (--md-radius-md)，不使用全圆 */
-.fab { position: fixed; bottom: calc(var(--md-nav-height) + 16px); right: 24px; width: 56px; height: 56px; border-radius: var(--md-radius-md); background: var(--md-color-primary); color: var(--md-color-on-primary); border: none; box-shadow: var(--md-elevation-1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; z-index: 150; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-/* D-02: FAB 主色背景 — 仅 Ripple 反馈，无 state-layer；保留 scale(1.05) 标准反馈 */
-.fab:hover { transform: scale(1.05); box-shadow: var(--md-elevation-3); }
+/* FAB —— Phase 10：视觉属性已由 .md-fab primitive 接管（D-08：16px 圆角、primary-container 填充、elevation-3）。
+   .fab className 现仅承担 placement（position / bottom / right / z-index），由调用方 className="fab" 透传。 */
+.fab { position: fixed; bottom: calc(var(--md-nav-height) + 16px); right: 24px; z-index: 150; }
 
 /* Login Page */
 .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--md-color-surface-container-low); padding: 16px; }
@@ -553,7 +552,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* 填充背景交互元素 (Primary 背景) —— 使用内环 (--md-focus-ring-inner: Surface)，确保环在主色背景上可见 */
 .filter-chip.active:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
-.fab:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
+/* .fab:focus-visible 已删除 — FAB 视觉由 .md-fab primitive 接管（focus-visible outer ring） */
 
 /* === Phase 9 扩展焦点环消费者（MOTION-04） === */
 .header-back:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
@@ -594,7 +593,7 @@ button, a, input, select, textarea,
 .list-item, .tab-item,
 .filter-chip, .pc-sidebar-item, .header-back,
 .theme-toggle, .modal-close, .qty-stepper button,
-.fab, .menu-item, .chef-select-item, .wish-picker-item,
+.menu-item, .chef-select-item, .wish-picker-item,
 .guest-add-btn, .dish-fav-btn, .preference-tag button,
 .quick-action, .wish-card {
   min-width: 48px;

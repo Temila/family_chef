@@ -9,6 +9,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import IconButton from '../components/primitives/IconButton';
 
 export default function OrderPage() {
   const navigate = useNavigate();
@@ -467,13 +468,13 @@ export default function OrderPage() {
                       </div>
                       <div className="dish-card-footer">
                         <div className="dish-card-actions">
-                          <button
-                            className="btn-icon btn-sm dish-fav-btn"
+                          <IconButton
+                            icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
+                            ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
                             onClick={(e) => handleToggleFavorite(dish, e)}
-                            title={dish.is_favorite ? '取消收藏' : '收藏'}
-                          >
-                            {dish.is_favorite ? '❤️' : '🤍'}
-                          </button>
+                            className="dish-fav-btn"
+                            selected={dish.is_favorite}
+                          />
                         </div>
                         {!isAdmin && (
                           <Button
@@ -544,13 +545,12 @@ export default function OrderPage() {
                 <span className="qty-value">{item.quantity}</span>
                 <button onClick={() => updateQuantity(item.cart_key, 1)}>+</button>
               </div>
-              <button
-                className="btn-icon btn-sm"
+              <IconButton
+                icon="close"
+                ariaLabel="移除"
                 onClick={() => removeFromCart(item.cart_key)}
-                style={{ color: 'var(--md-color-error)', borderColor: 'var(--md-color-error)' }}
-              >
-                ×
-              </button>
+                style={{ color: 'var(--md-color-error)' }}
+              />
             </div>
           ))}
         </div>

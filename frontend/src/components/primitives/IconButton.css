@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 IconButton Styles (Phase 10 — COMPO-02)
+   density=default (40dp 视觉 in 48dp hit) | density=fab (48dp 视觉 = 48dp hit)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import './base.css';
+
+/* ── Root .md-icon-button
+   透明背景、on-surface-variant 图标色；hover/focus 走 state-layer tint primary。
+   48dp hit box 由 base.css 保证；视觉尺寸由 --density modifier 控制。 */
+.md-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: var(--md-radius-full);
+  background: transparent;
+  color: var(--md-color-on-surface-variant);
+  cursor: pointer;
+  transition: color var(--md-motion-duration-short) var(--md-motion-easing-standard),
+              background var(--md-motion-duration-short) var(--md-motion-easing-standard);
+  --md-component-state-color: var(--md-state-layer-primary);
+}
+
+/* density=default：SVG 40dp 居中于 48dp hit box（4dp 上下左右 padding 等价） */
+.md-icon-button--default {
+  /* SVG 由 Icon 渲染并通过 currentColor + fontSize=20 居中；这里仅约束 hit box 视觉对齐 */
+}
+
+/* density=fab：SVG 48dp = hit box（无 padding，整面可点） */
+.md-icon-button--fab {
+  /* 与 default 同尺寸 hit；visual diff 由 consumer 内部 SVG size 决定 */
+}
+
+/* selected 状态：secondary-container fill + on-secondary-container 内容色 */
+.md-icon-button--selected {
+  background: var(--md-color-secondary-container);
+  color: var(--md-color-on-secondary-container);
+  --md-component-state-color: var(--md-state-layer-on-surface);
+}
+
+/* hover：tint primary */
+.md-icon-button:hover:not(:disabled) {
+  color: var(--md-color-primary);
+}
+
+/* focus ring：IconButton 用 outer（surface 控件） */
+.md-icon-button:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* disabled：base.css 全局已设 opacity 0.38；此处补 cursor 与 box-shadow reset */
+.md-icon-button:disabled,
+.md-icon-button[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
