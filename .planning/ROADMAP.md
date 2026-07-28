@@ -201,10 +201,10 @@ Plans:
 **Plans**: 3 plans
 Plans:
 **Wave 1**
-- [ ] 11-01-PLAN.md — Modal/Dialog 组件（Basic/Full-screen）+ elevation-3 阴影 + scrim + ESC 关闭 + ConfirmModal/Wish 系列 Modal 迁移（COMPO-08）
+- [ ] 11-01-PLAN.md — Modal/Dialog 组件（Basic/Full-screen）+ elevation-3 + scrim + focus trap + ESC + 22 站点迁移 + styles.css modal-* 删除（COMPO-08）
 **Wave 2** *(blocked on Wave 1；11-02 与 11-03 可并行 — 文件集不重叠)*
-- [ ] 11-02-PLAN.md — Navigation Rail（PC 侧栏）+ Navigation Bar（底部栏）+ FAB-in-rail 槽位 + 现有 Sidebar/BottomBar 集成（COMPO-09）
-- [ ] 11-03-PLAN.md — Snackbar/Toast 组件（inverse-surface + action button + 排队）+ List Item（1/2/3-line + leading/trailing）+ Divider（surface-tint inset）（COMPO-10、COMPO-11、COMPO-12）
+- [ ] 11-02-PLAN.md — Sidebar 240px→80dp + BottomBar MD3 active pill + Sidecar Header 重写 + App.jsx 注入 + styles.css sidebar/bottombar/header 删除（COMPO-09）
+- [ ] 11-03-PLAN.md — SnackbarContext 重写（queue + rich tone）+ ListItem（1/2/3-line slot-based）+ Divider + 3 ListItem 调用点迁移 + styles.css toast/list-item 删除（COMPO-10、COMPO-11、COMPO-12）
 
 **UI hint**: yes
 
