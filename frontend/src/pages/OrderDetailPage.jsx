@@ -6,6 +6,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
+import Card from '../components/primitives/Card';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
 import { marked } from 'marked';
@@ -60,8 +61,7 @@ export default function OrderDetailPage() {
         } />
 
       <section className="section">
-        <div className="card" style={{ marginBottom: 12 }}>
-          <div className="card-body">
+        <Card variant="elevated" style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <h3 style={{ margin: 0 }}>
                 订单 #{order.id}
@@ -80,12 +80,10 @@ export default function OrderDetailPage() {
               )}
               {order.notes && <div>备注：{order.notes}</div>}
             </div>
-          </div>
-        </div>
+        </Card>
 
         {order.customer && (
-          <div className="card" style={{ marginBottom: 12 }}>
-            <div className="card-body">
+          <Card variant="elevated" style={{ marginBottom: 12 }}>
               <h4 style={{ margin: '0 0 8px' }}>下单人</h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div className="avatar avatar-md">
@@ -115,12 +113,10 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+          </Card>
         )}
 
-        <div className="card" style={{ marginBottom: 12 }}>
-          <div className="card-body">
+        <Card variant="elevated" style={{ marginBottom: 12 }}>
             <h4 style={{ margin: '0 0 8px' }}>菜品</h4>
             {order.items && order.items.map(item => (
               <div key={item.id} style={{ borderBottom: '1px solid var(--md-color-outline-variant)', paddingBottom: 8, marginBottom: 8 }}>
@@ -149,8 +145,7 @@ export default function OrderDetailPage() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
+        </Card>
 
         {isChef && (
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>

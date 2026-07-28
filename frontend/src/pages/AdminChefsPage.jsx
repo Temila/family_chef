@@ -6,6 +6,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Card from '../components/primitives/Card';
 import Button from '../components/primitives/Button';
 
 export default function AdminChefsPage() {
@@ -132,9 +133,8 @@ export default function AdminChefsPage() {
 
           <div className="mobile-card-list">
             {chefs.map(chef => (
-              <div key={chef.id} className="card" style={{ marginBottom: 10 }}>
-                <div className="card-body" style={{ padding: 12 }}>
-                  <div className="flex items-center gap-3 mb-4">
+              <Card key={chef.id} variant="elevated" style={{ marginBottom: 10 }}>
+                <div className="flex items-center gap-3 mb-4">
                     <div className="avatar">
                       {(chef.display_name || chef.username).charAt(0).toUpperCase()}
                     </div>
@@ -157,8 +157,7 @@ export default function AdminChefsPage() {
                   >
                     {chef.feishu_open_id ? '管理飞书绑定' : '绑定飞书账号'}
                   </Button>
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>

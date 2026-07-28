@@ -6,6 +6,7 @@ import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
+import Card from '../components/primitives/Card';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
@@ -438,36 +439,36 @@ export default function OrderPage() {
                 <div
                   key={dish.id}
                   ref={isLast ? lastDishRef : null}
-                  className="dish-card-wrapper"
+                  style={{ minWidth: 0 }}
                 >
-                  <div className="dish-card" onClick={() => navigate(`/dishes/${dish.id}`)}>
-                    <div className="dish-card-image">
-                      {dish.image_url ? (
-                        <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
-                      ) : (
-                        <div className="placeholder-img">🍽️</div>
-                      )}
-                      <div className="dish-card-badges">
-                        {dish.is_popular && <span className="badge badge-gold">推荐</span>}
-                      </div>
-                      {warning && (
-                        <div className={`dietary-tag ${warning.className}`}>
-                          {warning.label}
+                  <Card
+                    variant="elevated"
+                    onClick={() => navigate(`/dishes/${dish.id}`)}
+                    image={
+                      <>
+                        {dish.image_url ? (
+                          <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
+                        )}
+                        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {dish.is_popular && <span className="badge badge-gold">推荐</span>}
                         </div>
-                      )}
-                      {published.length > 0 && (
-                        <div style={{ position: 'absolute', bottom: 8, right: 8 }}>
-                          {renderChefAvatars(published)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="dish-card-body">
-                      <div className="dish-card-name">{dish.name}</div>
-                      <div className="dish-card-meta">
-                        {dish.categories && dish.categories.map(c => c.name).join(' · ')}
-                      </div>
-                      <div className="dish-card-footer">
-                        <div className="dish-card-actions">
+                        {warning && (
+                          <div className={`dietary-tag ${warning.className}`}>
+                            {warning.label}
+                          </div>
+                        )}
+                        {published.length > 0 && (
+                          <div style={{ position: 'absolute', bottom: 8, right: 8 }}>
+                            {renderChefAvatars(published)}
+                          </div>
+                        )}
+                      </>
+                    }
+                    footer={
+                      <>
+                        <div style={{ display: 'flex', gap: 4 }}>
                           <IconButton
                             icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
                             ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
@@ -488,9 +489,14 @@ export default function OrderPage() {
                             点菜
                           </Button>
                         )}
-                      </div>
+                      </>
+                    }
+                  >
+                    <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 4, fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {dish.categories && dish.categories.map(c => c.name).join(' · ')}
                     </div>
-                  </div>
+                  </Card>
                 </div>
               );
             })}
@@ -569,33 +575,28 @@ export default function OrderPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {chefPickerChefs.map(chef => (
-                  <button
+                  <Card
                     key={chef.id}
-                    className="card"
-                    style={{
-                      padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--md-color-outline-variant)',
-                      display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-md)',
-                    }}
+                    variant="filled"
                     onClick={() => {
                       addDishToCart(chefPickerDish, chef);
                       setShowChefPicker(false);
                     }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--md-color-primary)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--md-color-outline-variant)'}
                   >
-                    <div style={{
-                      width: 36, height: 36, borderRadius: '50%',
-                      background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
-                    }}>
-                      {(chef.display_name || chef.username).charAt(0).toUpperCase()}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: '50%',
+                        background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
+                      }}>
+                        {(chef.display_name || chef.username).charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{chef.display_name || chef.username}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{chef.display_name || chef.username}</div>
-                    </div>
-                  </button>
+                  </Card>
                 ))}
               </div>
             </div>

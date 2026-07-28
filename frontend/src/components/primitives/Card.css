@@ -1,0 +1,93 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Card Primitive (Phase 10 — COMPO-03)
+   3 variants + 4 slots + elevation-1→2 过渡 (Phase 9 short 150ms)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import './base.css';
+
+/* ── 根容器 ── */
+.md-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--md-radius-md); /* 16px — UI-SPEC §4.3 / Phase 8 D-08 */
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+
+/* ── Variants (UI-SPEC §9.2) ── */
+/* Elevated: surface-container-low + elevation-1 rest → elevation-2 hover (Phase 9 D-07 锁定 short 150ms) */
+.md-card--elevated {
+  background: var(--md-color-surface-container-low);
+  box-shadow: var(--md-elevation-1);
+}
+.md-card--elevated:hover {
+  box-shadow: var(--md-elevation-2);
+}
+
+/* Filled: surface-container-highest + level-0 (无 hover elevation) */
+.md-card--filled {
+  background: var(--md-color-surface-container-highest);
+  box-shadow: var(--md-elevation-0);
+}
+
+/* Outlined: surface + 1px outline-variant + level-0 (border 不变) */
+.md-card--outlined {
+  background: var(--md-color-surface);
+  border: 1px solid var(--md-color-outline-variant);
+  box-shadow: var(--md-elevation-0);
+}
+
+/* ── Clickable 状态 (UI-SPEC §9.1: 仅 onClick 时启用) ── */
+.md-card--clickable {
+  cursor: pointer;
+}
+.md-card--clickable:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* ── Slot 几何 (UI-SPEC §9.3) ── */
+/* image: 4/3 比例，无内部 padding；top corner clipping 由 .md-card overflow:hidden 接管 */
+.md-card__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  position: relative;
+  background: var(--md-color-surface-container);
+}
+.md-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* header: 16dp x-padding, 16dp top, 8dp bottom; title 16sp/500/24 */
+.md-card__header {
+  padding: 16px 16px 8px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--md-color-on-surface);
+}
+
+/* body: 16dp padding; 缺少 header 时 16dp top; 16sp/400/24; flex:1 填充剩余高度 */
+.md-card__body {
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--md-color-on-surface);
+  flex: 1;
+}
+
+/* footer: 16dp padding, padding-top 0 (body 已提供 16dp); actions gap 8dp, right-aligned */
+.md-card__footer {
+  padding: 16px;
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}

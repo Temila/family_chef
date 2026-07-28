@@ -85,28 +85,43 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* D-10: Disabled 统一规则 —— opacity 0.38, 保留键盘可聚焦性（不设 pointer-events: none） */
 :disabled, [disabled], [aria-disabled="true"] { opacity: 0.38; cursor: not-allowed; box-shadow: none; }
 
-/* Cards */
-.card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; position: relative; z-index: 0; transition: box-shadow var(--md-motion-duration-short) var(--md-motion-easing-standard), border-color var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.card::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.card:hover::before { opacity: var(--md-state-layer-hover); }
-/* D-07: 卡片悬浮仅 elevation-1→2，无 border-color / translateY */
-.card:hover { box-shadow: var(--md-elevation-2); }
-.card-body { padding: 16px; }
+/* === 10-02-MIGRATION:START === */
+/* 旧 .card / .dish-card / .wish-card / .card-body 视觉已由 .md-card primitive 接管 (COMPO-03, D-13)。
+   .badge-* 与 .filter-chip 由 10-03 plan 处理 (10-03-MIGRATION 块)。 */
 
-/* Dish Card */
-.dish-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); overflow: hidden; transition: box-shadow var(--md-motion-duration-short) var(--md-motion-easing-standard), border-color var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; cursor: pointer; display: flex; flex-direction: column; z-index: 0; }
-.dish-card::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.dish-card:hover::before { opacity: var(--md-state-layer-hover); }
-/* D-07: dish-card 悬浮仅 elevation-1→2，移除 border-color + translateY */
-.dish-card:hover { box-shadow: var(--md-elevation-2); }
-.dish-card-image { width: 100%; aspect-ratio: 4/3; background: var(--md-color-surface-container); position: relative; overflow: hidden; flex-shrink: 0; }
-.dish-card-image img { width: 100%; height: 100%; object-fit: cover; }
-.dish-card-image .placeholder-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--md-color-surface-container); }
-.dish-card-badges { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px; }
-.dish-card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-.dish-card-name { font-family: var(--md-font-display); font-size: 0.95rem; font-weight: 600; color: var(--md-color-on-surface); margin-bottom: 4px; }
-.dish-card-meta { font-size: 0.75rem; color: var(--md-color-on-surface-variant); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dish-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+/* Cards — 已迁移至 <Card variant="elevated"> primitive */
+/* .card, .card::before, .card:hover, .card-body 已删除 */
+
+/* Dish Card — DishCard/GuestDishCard/UserFavoritesPage/OrderPage 已迁移至 <Card> primitive */
+/* .dish-card, .dish-card::before, .dish-card:hover, .dish-card-image, .dish-card-image img,
+   .dish-card-image .placeholder-img, .dish-card-badges, .dish-card-body, .dish-card-name,
+   .dish-card-meta, .dish-card-footer 已删除 */
+
+/* dish-card-wrapper — OrderPage grid wrapper 已用 inline style={{ minWidth: 0 }} 替代 */
+/* .dish-card-wrapper 已删除 */
+
+/* dish-card-actions / dish-fav-btn — 已 inline 化 */
+/* .dish-card-actions, .dish-fav-btn 已删除 */
+
+/* guest-page .dish-card 视觉覆盖 — GuestDishCard 重构后无 .dish-card 引用 */
+/* .guest-page .dish-card:hover, .guest-page .dish-card, .guest-page .dish-card::before 已删除 */
+
+/* Wish Cards — WishCard 已迁移至 <Card variant="elevated"> primitive (D-13) */
+/* .wish-card, .wish-card::before, .wish-card:hover::before, .wish-card-top, .wish-card-name,
+   .wish-card-badge-slot, .wish-card-meta, .wish-card-meta-item, .wish-card-secondary,
+   .wish-card-secondary a, .wish-card-reject-reason, .wish-card-readonly,
+   .wish-card-readonly .wish-card-actions, .wish-card-unread-dot, .wish-card-highlight 已删除 */
+/* 保留: .wish-card-actions (WishCard footer slot 容器), .sr-only */
+
+/* form-group / form-label / form-error — 已由 .md-input-wrapper primitive 接管 (COMPO-04) */
+/* .form-group, .form-label, .form-error, .form-error.show 已删除 */
+/* 保留: .form-input / .form-input:focus (兼容 <select className="form-input"> — Phase 11 Select primitive 上线时处理, SC-10) */
+
+/* focus-visible 旧 class 规则 — .md-card primitive 自带 focus-visible */
+/* .dish-card:focus-visible, .card:focus-visible, .wish-card:focus-visible 已删除 */
+
+/* prefers-reduced-motion 中的 .card, .dish-card, .wish-card 引用已删除 */
+/* === 10-02-MIGRATION:END ===
 
 /* Badges */
 .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: var(--md-radius-full); font-size: 0.7rem; font-weight: 500; white-space: nowrap; }
@@ -182,7 +197,6 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* Utility */
 .pt-0 { padding-top: 0 !important; } .flex { display: flex; } .flex-1 { flex: 1 1 0%; } .items-center { align-items: center; } .gap-3 { gap: 12px; } .text-center { text-align: center; } .mt-4 { margin-top: 16px; } .mb-4 { margin-bottom: 16px; }
 .dish-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 0 16px 16px; }
-.dish-card-wrapper { min-width: 0; }
 @media (min-width: 480px) { .dish-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 640px) { .dish-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1280px) { .dish-grid { grid-template-columns: repeat(4, 1fr); } }
@@ -205,9 +219,11 @@ input, textarea, select { font-family: var(--md-font-body); }
 .login-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-lg); padding: 32px 24px; width: 100%; max-width: 400px; box-shadow: var(--md-elevation-3); }
 .login-logo { font-family: var(--md-font-display); font-size: 2rem; font-weight: 700; color: var(--md-color-primary); text-align: center; margin-bottom: 8px; }
 .login-subtitle { text-align: center; color: var(--md-color-on-surface-variant); font-size: 0.9rem; margin-bottom: 24px; }
+/* 10-02-MIGRATION: .form-group / .form-label / .form-error 保留至 Task 2 末尾删除 (12 form family 迁移后) */
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--md-color-on-surface-variant); margin-bottom: 6px; }
 .form-input { width: 100%; padding: 12px 16px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm); color: var(--md-color-on-surface); font-size: 0.9rem; outline: none; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
+/* SC-10: .form-input 保留 — 兼容 <select className="form-input"> (Phase 11 Select primitive 上线时统一处理) */
 .form-input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
 .form-error { color: var(--md-color-error); font-size: 0.8rem; margin-top: 4px; display: none; }
 .form-error.show { display: block; }
@@ -377,8 +393,8 @@ input, textarea, select { font-family: var(--md-font-body); }
   .pc-layout .filter-chips { padding: 0 32px 12px; }
   .pc-layout .search-bar { margin-left: 32px; margin-right: 32px; }
   .pc-layout .dish-grid { padding-bottom: 80px; align-items: stretch; }
-  .pc-layout .dish-card-wrapper { display: flex; }
-  .pc-layout .dish-card { height: 100%; width: 100%; }
+  .pc-layout .dish-grid > div { display: flex; }
+  .pc-layout .dish-grid > div > .md-card { height: 100%; width: 100%; }
 }
 
 .pc-data-table {
@@ -427,9 +443,8 @@ input, textarea, select { font-family: var(--md-font-body); }
 .filter-section { margin-bottom: 8px; }
 .filter-section-label { font-size: 0.75rem; font-weight: 600; color: var(--md-color-on-surface-variant); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* ═══ Dish Card Actions ═══════════════════ */
-.dish-card-actions { display: flex; gap: 4px; }
-.dish-fav-btn { border: none !important; background: transparent !important; font-size: 1rem; padding: 0; }
+/* ═══ Dish Card Actions — 10-02-MIGRATION: 已 inline 化 (IconButton primitive 接管) ═══ */
+/* .dish-card-actions, .dish-fav-btn 已删除 */
 
 /* ═══ Cart Detail Panel ═══════════════════ */
 .cart-detail-panel { position: fixed; bottom: calc(52px + var(--md-nav-height)); left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md) var(--md-radius-md) 0 0; box-shadow: var(--md-elevation-3); z-index: 149; max-height: 300px; overflow-y: auto; }
@@ -443,23 +458,11 @@ input, textarea, select { font-family: var(--md-font-body); }
 .chef-select-item:hover { border-color: var(--md-color-outline); }
 .chef-select-item.active { border-color: var(--md-color-primary); background: var(--md-color-primary-container); }
 
-/* ═══ Wish Cards ═════════════════ */
-.wish-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); padding: 16px; margin-bottom: var(--md-spacing-4); position: relative; display: flex; flex-direction: column; gap: 8px; overflow: hidden; z-index: 0; transition: box-shadow var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.wish-card::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.wish-card:hover::before { opacity: var(--md-state-layer-hover); }
-.wish-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-.wish-card-name { font-family: var(--md-font-display); font-size: 1.25rem; font-weight: 600; color: var(--md-color-on-surface); line-height: 1.3; flex: 1; min-width: 0; word-break: break-word; }
-.wish-card-badge-slot { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.wish-card-meta { font-size: 0.75rem; color: var(--md-color-on-surface-variant); line-height: 1.4; display: flex; flex-wrap: wrap; gap: 8px 16px; }
-.wish-card-meta-item { display: inline-flex; align-items: center; gap: 4px; }
-.wish-card-secondary { font-size: 0.875rem; color: var(--md-color-on-surface-variant); line-height: 1.5; word-break: break-word; display: flex; flex-direction: column; gap: 8px; }
-.wish-card-secondary a { color: var(--md-color-primary); }
-.wish-card-reject-reason { color: var(--md-color-error); background: var(--md-color-error-container); border-radius: var(--md-radius-xs); padding: 8px 16px; font-size: 0.875rem; }
+/* ═══ Wish Cards — 10-02-MIGRATION: WishCard 已迁移至 <Card> primitive (D-13) ═══ */
+/* .wish-card 及所有子选择器已删除 (top/name/badge-slot/meta/secondary/reject-reason/readonly/unread-dot/highlight) */
+/* 保留: .wish-card-actions (WishCard footer slot 容器) + .sr-only */
 .wish-card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--md-color-outline-variant); }
 .wish-card-actions .btn { min-height: 44px; padding: 8px 16px; font-size: 0.875rem; }
-.wish-card-readonly { opacity: 0.7; cursor: default; }
-.wish-card-readonly .wish-card-actions { display: none; }
-.wish-card-unread-dot { position: absolute; top: 16px; right: 96px; width: 8px; height: 8px; border-radius: 50%; background: var(--md-color-error); }
 .sr-only { position: absolute; clip: rect(0, 0, 0, 0); width: 1px; height: 1px; overflow: hidden; }
 
 /* ═══ Wish Picker (AdvanceModal) ═════════════════ */
@@ -472,8 +475,8 @@ input, textarea, select { font-family: var(--md-font-body); }
 .wish-picker-item-img { width: 56px; height: 56px; border-radius: var(--md-radius-sm); background: var(--md-color-surface-container); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; }
 .wish-picker-item-img img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ═══ Wish Highlight (deep-link) ═════════════════ */
-.wish-card-highlight { outline: 3px solid var(--md-color-primary); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-color-primary-container); }
+/* ═══ Wish Highlight (deep-link) — 10-02-MIGRATION: WishCard inline style 接管 ═══ */
+/* .wish-card-highlight 已删除 */
 
 /* ═══ Preference Page ═══════════════════ */
 .preference-section { margin-bottom: 24px; padding: 16px; background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-md); }
@@ -518,9 +521,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .guest-cart-bar ~ .cart-detail-panel { bottom: 52px; }
 @media (min-width: 1024px) { .guest-cart-bar ~ .cart-detail-panel { left: 50%; max-width: 420px; transform: translateX(-50%); } }
 
-.guest-page .dish-card:hover { transform: none; box-shadow: none; }
-.guest-page .dish-card { cursor: default; }
-.guest-page .dish-card::before { display: none; }
+/* 10-02-MIGRATION: guest-page .dish-card 覆盖已删除 (GuestDishCard 重构后无 .dish-card 引用) */
 
 .guest-add-btn { border-radius: var(--md-radius-full); font-size: 1.1rem; display: flex; align-items: center; justify-content: center; padding: 0; }
 
@@ -546,8 +547,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* 表面背景交互元素 —— 使用外环 (--md-focus-ring-outer: On-Primary) */
 .filter-chip:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .list-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: -2px; }
-.dish-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
-.card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+/* 10-02-MIGRATION: .dish-card / .card / .wish-card focus-visible 已删除 (.md-card 自带) */
 .order-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 
 /* 填充背景交互元素 (Primary 背景) —— 使用内环 (--md-focus-ring-inner: Surface)，确保环在主色背景上可见 */
@@ -566,14 +566,14 @@ input, textarea, select { font-family: var(--md-font-body); }
 .wish-picker-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .guest-add-btn:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .preference-tag button:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
-.wish-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+/* 10-02-MIGRATION: .wish-card:focus-visible 已删除 (.md-card 自带) */
 
 /* === prefers-reduced-motion：对动敏用户禁用动画（Phase 9） === */
 @media (prefers-reduced-motion: reduce) {
   .state-hover::before,
   .state-focused::before,
   .state-pressed::before { transition: none; }
-  .card, .dish-card, .wish-card { transition: none; }
+  /* 10-02-MIGRATION: .card, .dish-card, .wish-card 引用已删除 */
   *,
   *::before,
   *::after {
@@ -594,8 +594,8 @@ button, a, input, select, textarea,
 .filter-chip, .pc-sidebar-item, .header-back,
 .theme-toggle, .modal-close, .qty-stepper button,
 .menu-item, .chef-select-item, .wish-picker-item,
-.guest-add-btn, .dish-fav-btn, .preference-tag button,
-.quick-action, .wish-card {
+.guest-add-btn, .preference-tag button,
+.quick-action {
   min-width: 48px;
   min-height: 48px;
 }
@@ -633,15 +633,7 @@ button, a, input, select, textarea,
   padding: 8px;
 }
 
-/* 5. dish-fav-btn: 原 28x28 → 48x48 hit area, padding:10px + flex 居中 */
-.dish-fav-btn {
-  min-width: 48px;
-  min-height: 48px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* 5. dish-fav-btn — 10-02-MIGRATION: 已删除 (IconButton primitive 接管) */
 
 /* 6. guest-add-btn: 原 32x32 → 48x48 hit area, padding:8px */
 .guest-add-btn {

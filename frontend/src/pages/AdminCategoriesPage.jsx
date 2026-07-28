@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Card from '../components/primitives/Card';
 import Button from '../components/primitives/Button';
 
 export default function AdminCategoriesPage() {
@@ -174,9 +175,8 @@ export default function AdminCategoriesPage() {
             {categories.map(item => {
               const parent = item.parent_id ? allCategories.find(c => c.id === item.parent_id) : null;
               return (
-                <div key={item.id} className="card" style={{ marginBottom: 10 }}>
-                  <div className="card-body" style={{ padding: 12 }}>
-                    <div className="flex items-center gap-3 mb-4">
+                <Card key={item.id} variant="elevated" style={{ marginBottom: 10 }}>
+                  <div className="flex items-center gap-3 mb-4">
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
@@ -196,8 +196,7 @@ export default function AdminCategoriesPage() {
                         删除
                       </Button>
                     </div>
-                  </div>
-                </div>
+                </Card>
               );
             })}
           </div>

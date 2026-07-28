@@ -9,6 +9,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import Card from '../components/primitives/Card';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -393,9 +394,8 @@ export default function AdminIngredientsPage() {
 
           <div className="mobile-card-list">
             {ingredients.map(item => (
-              <div key={item.id} className="card" style={{ marginBottom: 10 }}>
-                <div className="card-body" style={{ padding: 12 }}>
-                  <div className="flex items-center gap-3 mb-4">
+              <Card key={item.id} variant="elevated" style={{ marginBottom: 10 }}>
+                <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -470,8 +470,7 @@ export default function AdminIngredientsPage() {
                       </Button>
                     )}
                   </div>
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>

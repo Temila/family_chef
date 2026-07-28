@@ -2,12 +2,17 @@
  * WishCard Component - 愿望卡片（跨角色共享展示组件）
  * 纯展示组件：所有 API 调用由父页面处理，通过回调触发动作。
  * 依据 UI-SPEC §6.1 锁定的卡片解剖与 D-07 行动按钮矩阵。
+ *
+ * Phase 10 D-13 重构：薄 slot-based 包装，业务数据通过 props 传入 Card primitive。
+ * 旧自包含 .wish-card className 彻底消失；Card primitive 接管所有视觉/状态/动效。
+ *
+ * 10-02-MIGRATION:START — Card primitive slot 抽象（Badge 由 10-03 替换为 primitives/Badge）
  */
 
 import { Link } from 'react-router-dom';
 import Badge from './Badge';
 import { formatDate } from '../utils';
-import Ripple from './primitives/Ripple';
+import Card from './primitives/Card';
 import Button from './primitives/Button';
 
 // 危险操作按钮（撤销/拒绝）的红色描边样式 — 与 ConfirmModal danger 模式一致
@@ -117,21 +122,6 @@ export default function WishCard({
   // 仅当提交者本人且 has_unread 为真时，卡片本体可点击以清除红点（NOTIF-04）
   const canTap = currentUser?.id === wish.user_id && wish.has_unread === true;
 
-  const rootClass = [
-    'wish-card',
-    !hasActions ? 'wish-card-readonly' : '',
-    highlight ? 'wish-card-highlight' : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onTap?.(wish);
-    }
-  };
-
   // reference_url 安全渲染：http/https → 新标签链接（noopener noreferrer），其余为纯文本
   const renderReferenceUrl = () => {
     if (!wish.reference_url) return null;
@@ -152,23 +142,70 @@ export default function WishCard({
     (wish.related_dish_id && relatedDishName) ||
     (wish.status === '已拒绝' && wish.reject_reason);
 
+  // Card 高亮 + readonly 样式（替换旧 .wish-card-highlight / .wish-card-readonly className）
+  const cardStyle = {
+    marginBottom: 'var(--md-spacing-4)',
+    ...(highlight ? {
+      outline: '3px solid var(--md-color-primary)',
+      outlineOffset: 2,
+      boxShadow: '0 0 0 4px var(--md-color-primary-container)',
+    } : {}),
+    ...(!hasActions ? { opacity: 0.7 } : {}),
+  };
+
+  // 未读红点（替换旧 .wish-card-unread-dot）
+  const unreadDotStyle = {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    width: 8,
+    height: 8,
+    borderRadius: '50%',
+    background: 'var(--md-color-error)',
+    zIndex: 3,
+  };
+
+  // 次要信息区样式（替换旧 .wish-card-secondary）
+  const secondaryStyle = {
+    fontSize: '0.875rem',
+    color: 'var(--md-color-on-surface-variant)',
+    lineHeight: 1.5,
+    wordBreak: 'break-word',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  };
+
+  // 拒绝原因样式（替换旧 .wish-card-reject-reason）
+  const rejectReasonStyle = {
+    color: 'var(--md-color-error)',
+    background: 'var(--md-color-error-container)',
+    borderRadius: 'var(--md-radius-xs)',
+    padding: '8px 16px',
+    fontSize: '0.875rem',
+  };
+
   return (
-    <Ripple disabled={!canTap} style={{ width: '100%' }}>
-      <div
-        className={rootClass}
-        data-wish-id={wish.id}
-        onClick={canTap ? () => onTap?.(wish) : undefined}
-        onKeyDown={canTap ? handleKeyDown : undefined}
-        role={canTap ? 'button' : undefined}
-        tabIndex={canTap ? 0 : undefined}
-      >
+    <Card
+      variant="elevated"
+      style={cardStyle}
+      onClick={canTap ? () => onTap?.(wish) : undefined}
+      data-wish-id={wish.id}
+      footer={hasActions ? (
+        <div className="wish-card-actions" onClick={(e) => e.stopPropagation()}>
+          {actions}
+        </div>
+      ) : undefined}
+    >
       {/* 顶行：菜名（大号）+ 未读红点 + 状态徽章 */}
-      <div className="wish-card-top">
-        <div className="wish-card-name">{wish.dish_name}</div>
-        <div className="wish-card-badge-slot">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, position: 'relative' }}>
+        <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
+          {wish.dish_name}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           {wish.has_unread === true && (
             <>
-              <span className="wish-card-unread-dot" aria-hidden="true" />
+              <span style={unreadDotStyle} aria-hidden="true" />
               <span className="sr-only">未读</span>
             </>
           )}
@@ -177,39 +214,33 @@ export default function WishCard({
       </div>
 
       {/* 元信息行：提交时间 + 身份 */}
-      <div className="wish-card-meta">
-        <span className="wish-card-meta-item">提交于 {formatDate(wish.created_at)}</span>
+      <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: '8px 16px', marginTop: 4 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>提交于 {formatDate(wish.created_at)}</span>
         {isChefLikeView && wish.submitter_name && (
-          <span className="wish-card-meta-item">提交人：{wish.submitter_name}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>提交人：{wish.submitter_name}</span>
         )}
         {isUserView &&
           wish.claimed_by_chef_name &&
           (wish.status === '准备中' || wish.status === '已上架' || wish.status === '已拒绝') && (
-            <span className="wish-card-meta-item">认领厨师：{wish.claimed_by_chef_name}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>认领厨师：{wish.claimed_by_chef_name}</span>
           )}
       </div>
 
       {/* 次要信息：仅当字段存在时渲染，无占位文本 */}
       {hasSecondary && (
-        <div className="wish-card-secondary">
+        <div style={secondaryStyle}>
           {renderReferenceUrl()}
           {wish.note && <div>{wish.note}</div>}
           {wish.related_dish_id && relatedDishName && (
             <Link to={'/dishes/' + wish.related_dish_id}>关联菜品：{relatedDishName}</Link>
           )}
           {wish.status === '已拒绝' && wish.reject_reason && (
-            <div className="wish-card-reject-reason">拒绝原因：{wish.reject_reason}</div>
+            <div style={rejectReasonStyle}>拒绝原因：{wish.reject_reason}</div>
           )}
         </div>
       )}
-
-      {/* 行动按钮行（阻止冒泡以避免触发卡片点击） */}
-      {hasActions && (
-        <div className="wish-card-actions" onClick={(e) => e.stopPropagation()}>
-          {actions}
-        </div>
-      )}
-      </div>
-    </Ripple>
+    </Card>
   );
 }
+
+/* 10-02-MIGRATION:END */

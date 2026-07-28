@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
+import Card from '../components/primitives/Card';
 import Button from '../components/primitives/Button';
 
 export default function AdminUsersPage() {
@@ -222,9 +223,8 @@ export default function AdminUsersPage() {
 
           <div className="mobile-card-list">
             {filtered.map(u => (
-              <div key={u.id} className="card" style={{ marginBottom: 12 }}>
-                <div className="card-body" style={{ padding: 12 }}>
-                  <div className="flex items-center gap-3 mb-4">
+              <Card key={u.id} variant="elevated" style={{ marginBottom: 12 }}>
+                <div className="flex items-center gap-3 mb-4">
                     <div className="avatar">
                       {(u.display_name || u.username).charAt(0).toUpperCase()}
                     </div>
@@ -257,8 +257,7 @@ export default function AdminUsersPage() {
                       </>
                     )}
                   </div>
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>

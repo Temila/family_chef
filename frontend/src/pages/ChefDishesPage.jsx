@@ -6,6 +6,7 @@ import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
+import Card from '../components/primitives/Card';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
@@ -633,9 +634,8 @@ export default function ChefDishesPage() {
 
           <div className="mobile-card-list">
             {dishes.map(dish => (
-              <div key={dish.id} className="card" style={{ marginBottom: 12 }}>
-                <div className="card-body" style={{ padding: 12 }}>
-                  <div className="flex items-center gap-3 mb-4">
+              <Card key={dish.id} variant="elevated" style={{ marginBottom: 12 }}>
+                <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>
                         {dish.name}
@@ -688,8 +688,7 @@ export default function ChefDishesPage() {
                     )}
                     <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(dish)}>编辑</Button>
                   </div>
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>

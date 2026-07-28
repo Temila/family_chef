@@ -7,6 +7,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import Card from '../components/primitives/Card';
 
 export default function UserFavoritesPage() {
   const navigate = useNavigate();
@@ -53,30 +54,26 @@ export default function UserFavoritesPage() {
         <section className="section pt-0">
           <div className="dish-grid">
             {dishes.map(dish => (
-              <div
+              <Card
                 key={dish.id}
-                className="dish-card"
+                variant="elevated"
+                image={dish.image_url ? (
+                  <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
+                )}
                 onClick={() => navigate(`/dishes/${dish.id}`)}
               >
-                <div className="dish-card-image">
-                  {dish.image_url ? (
-                    <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
-                  ) : (
-                    <div className="placeholder-img">🍽️</div>
-                  )}
-                </div>
-                <div className="dish-card-body">
-                  <div className="dish-card-name">{dish.name}</div>
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    style={{ marginTop: 6, width: '100%' }}
-                    onClick={(e) => { e.stopPropagation(); handleRemoveFavorite(dish); }}
-                  >
-                    取消收藏
-                  </Button>
-                </div>
-              </div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
+                <Button
+                  variant="outlined"
+                  size="sm"
+                  style={{ marginTop: 6, width: '100%' }}
+                  onClick={(e) => { e.stopPropagation(); handleRemoveFavorite(dish); }}
+                >
+                  取消收藏
+                </Button>
+              </Card>
             ))}
           </div>
         </section>

@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
+import Card from '../components/primitives/Card';
 import { formatDate } from '../utils';
 
 export default function AdminLogsPage() {
@@ -109,9 +110,8 @@ export default function AdminLogsPage() {
 
           <div className="mobile-card-list">
             {logs.map(log => (
-              <div key={log.id} className="card" style={{ marginBottom: 10 }}>
-                <div className="card-body" style={{ padding: 12 }}>
-                  <div className="flex items-center gap-3 mb-4">
+              <Card key={log.id} variant="elevated" style={{ marginBottom: 10 }}>
+                <div className="flex items-center gap-3 mb-4">
                     <span className="badge badge-info">
                       {actionLabels[log.action] || log.action}
                     </span>
@@ -127,8 +127,7 @@ export default function AdminLogsPage() {
                       {log.detail}
                     </div>
                   )}
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
 
