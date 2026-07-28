@@ -11,6 +11,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
+import Chip from '../components/primitives/Chip';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -275,22 +276,18 @@ export default function AdminIngredientsPage() {
       {showAdvFilter && (
         <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            <button
-              className={`filter-chip ${!advCategory ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+            <Chip variant="filter" selected={!advCategory}
               onClick={() => setAdvCategory('')}
             >
               全部
-            </button>
+            </Chip>
             {ingredientCategories.map(c => (
-              <button
+              <Chip variant="filter" selected={advCategory === c.name}
                 key={c.id}
-                className={`filter-chip ${advCategory === c.name ? 'active' : ''}`}
-                style={{ fontSize: '0.75rem', padding: '2px 10px' }}
                 onClick={() => setAdvCategory(c.name)}
               >
                 {c.name}
-              </button>
+              </Chip>
             ))}
           </div>
         </div>

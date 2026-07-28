@@ -9,6 +9,7 @@ import EmptyState from '../components/EmptyState';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
+import Chip from '../components/primitives/Chip';
 
 export default function AdminCategoriesPage() {
   const { showToast } = useToast();
@@ -112,15 +113,15 @@ export default function AdminCategoriesPage() {
         actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
       />
 
-      <div className="filter-chips">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
         {types.map(t => (
-          <button
+          <Chip variant="filter" selected={activeType === t.key}
             key={t.key}
-            className={`filter-chip ${activeType === t.key ? 'active' : ''}`}
+            
             onClick={() => setActiveType(t.key)}
           >
             {t.icon} {t.label}
-          </button>
+          </Chip>
         ))}
       </div>
 

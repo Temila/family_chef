@@ -8,6 +8,7 @@ import Badge from '../components/primitives/Badge';
 import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
 import { formatDate } from '../utils';
+import Chip from '../components/primitives/Chip';
 
 export default function AdminLogsPage() {
   const { showToast } = useToast();
@@ -49,21 +50,21 @@ export default function AdminLogsPage() {
     <div className="page-container">
         <Header title="系统日志" />
 
-      <div className="filter-chips">
-        <button
-          className={`filter-chip ${filterAction === '' ? 'active' : ''}`}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+        <Chip variant="filter" selected={filterAction === ''}
+          
           onClick={() => { setFilterAction(''); setPage(1); }}
         >
           全部 ({total})
-        </button>
+        </Chip>
         {Object.entries(actionLabels).map(([key, label]) => (
-          <button
+          <Chip variant="filter" selected={filterAction === key}
             key={key}
-            className={`filter-chip ${filterAction === key ? 'active' : ''}`}
+            
             onClick={() => { setFilterAction(key); setPage(1); }}
           >
             {label}
-          </button>
+          </Chip>
         ))}
       </div>
 

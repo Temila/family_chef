@@ -13,6 +13,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
 import IconButton from '../components/primitives/IconButton';
+import Chip from '../components/primitives/Chip';
 
 export default function OrderPage() {
   const navigate = useNavigate();
@@ -318,23 +319,23 @@ export default function OrderPage() {
         />
       </div>
 
-      <div className="filter-chips" style={{ paddingBottom: 4 }}>
-        <button
-          className="filter-chip"
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 4px' }}>
+        <Chip variant="filter"
+          
           onClick={() => setShowFilters(!showFilters)}
           style={{ fontSize: '0.75rem' }}
         >
           {showFilters ? '收起筛选 ▲' : '展开筛选 ▼'}
-        </button>
-        <button
-          className={`filter-chip ${favoritesOnly ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={favoritesOnly}
+          
           onClick={() => setFavoritesOnly(!favoritesOnly)}
         >
           ❤️ 收藏
-        </button>
+        </Chip>
         <select
-          className="filter-chip"
-          style={{ appearance: 'none', paddingRight: 20, background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
+          className="form-input"
+          style={{ width: 'auto', appearance: 'none', paddingRight: 20, background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
@@ -351,21 +352,21 @@ export default function OrderPage() {
         <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           <div className="filter-section">
             <div className="filter-section-label">{getTypeMeta('region').label}</div>
-            <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-              <button
-                className={`filter-chip ${!selectedRegion ? 'active' : ''}`}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+              <Chip variant="filter" selected={!selectedRegion}
+                
                 onClick={() => { setSelectedRegion(null); setSelectedCuisine(null); }}
               >
                 全部
-              </button>
+              </Chip>
               {regions.map(r => (
-                <button
+                <Chip variant="filter" selected={selectedRegion === r.id}
                   key={r.id}
-                  className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
+                  
                   onClick={() => { setSelectedRegion(r.id); setSelectedCuisine(null); }}
                 >
                   {r.name}
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
@@ -373,21 +374,21 @@ export default function OrderPage() {
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{getTypeMeta('cuisine').label}</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                <button
-                  className={`filter-chip ${!selectedCuisine ? 'active' : ''}`}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+                <Chip variant="filter" selected={!selectedCuisine}
+                  
                   onClick={() => setSelectedCuisine(null)}
                 >
                   全部
-                </button>
+                </Chip>
                 {filteredCuisines.map(c => (
-                  <button
+                  <Chip variant="filter" selected={selectedCuisine === c.id}
                     key={c.id}
-                    className={`filter-chip ${selectedCuisine === c.id ? 'active' : ''}`}
+                    
                     onClick={() => setSelectedCuisine(c.id)}
                   >
                     {c.name}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             </div>
@@ -401,11 +402,11 @@ export default function OrderPage() {
             return (
               <div className="filter-section" key={t.key}>
                 <div className="filter-section-label">{meta.label}</div>
-                <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
                   {items.map(item => (
-                    <button
+                    <Chip variant="filter" selected={selectedArr.includes(item.id)}
                       key={item.id}
-                      className={`filter-chip ${selectedArr.includes(item.id) ? 'active' : ''}`}
+                      
                       onClick={() => {
                         setSelectedFilters(prev => {
                           const arr = prev[t.key] || [];
@@ -417,7 +418,7 @@ export default function OrderPage() {
                       }}
                     >
                       {item.name}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>
@@ -628,16 +629,13 @@ export default function OrderPage() {
                       return { value: fmt(d), label: i === 0 ? '今天' : i === 1 ? '明天' : i === 2 ? '后天' : `${d.getMonth()+1}/${d.getDate()}`, sub: i === 0 ? '' : weekday(d) };
                     });
                     return dates.map(d => (
-                      <button
+                      <Chip variant="filter" selected={mealDate === d.value}
                         key={d.value}
-                        type="button"
-                        className={`filter-chip ${mealDate === d.value ? 'active' : ''}`}
-                        style={{ flex: 1, minWidth: 0, padding: '6px 4px', textAlign: 'center', flexDirection: 'column', lineHeight: 1.3 }}
                         onClick={() => { setMealDate(d.value); if (mealType === 'now') setMealType(''); }}
                       >
                         <span>{d.label}</span>
                         {d.sub && <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{d.sub}</span>}
-                      </button>
+                      </Chip>
                     ));
                   })()}
                 </div>

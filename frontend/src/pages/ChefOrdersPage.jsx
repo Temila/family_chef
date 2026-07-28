@@ -14,6 +14,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
+import Chip from '../components/primitives/Chip';
 
 export default function ChefOrdersPage() {
   const navigate = useNavigate();
@@ -76,37 +77,37 @@ export default function ChefOrdersPage() {
       <Header title="订单管理" />
 
       {/* Filter Tabs */}
-      <div className="filter-chips">
-        <button
-          className={`filter-chip ${filterStatus === 'all' ? 'active' : ''}`}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+        <Chip variant="filter" selected={filterStatus === 'all'}
+          
           onClick={() => setFilterStatus('all')}
         >
           全部 ({orders.length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'pending' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'pending'}
+          
           onClick={() => setFilterStatus('pending')}
         >
           待处理 ({orders.filter(o => o.status === 'pending').length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'cooking' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'cooking'}
+          
           onClick={() => setFilterStatus('cooking')}
         >
           烹饪中 ({orders.filter(o => o.status === 'cooking').length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'completed' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'completed'}
+          
           onClick={() => setFilterStatus('completed')}
         >
           已完成 ({orders.filter(o => o.status === 'completed').length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'guest' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'guest'}
+          
           onClick={() => setFilterStatus('guest')}
         >
           访客订单 ({orders.filter(o => o.is_guest).length})
-        </button>
+        </Chip>
       </div>
 
       {loading ? (

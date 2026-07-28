@@ -9,6 +9,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
+import Chip from '../components/primitives/Chip';
 
 const MEAL_TYPE_MAP = {
   breakfast: '早餐',
@@ -66,31 +67,31 @@ export default function UserOrdersPage() {
     <div className="page-container">
       <Header title="我的订单" showBack />
 
-      <div className="filter-chips">
-        <button
-          className={`filter-chip ${filterStatus === 'all' ? 'active' : ''}`}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+        <Chip variant="filter" selected={filterStatus === 'all'}
+          
           onClick={() => setFilterStatus('all')}
         >
           全部 ({orders.length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'pending' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'pending'}
+          
           onClick={() => setFilterStatus('pending')}
         >
           待处理 ({orders.filter(o => o.status === 'pending').length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'cooking' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'cooking'}
+          
           onClick={() => setFilterStatus('cooking')}
         >
           烹饪中 ({orders.filter(o => o.status === 'cooking').length})
-        </button>
-        <button
-          className={`filter-chip ${filterStatus === 'completed' ? 'active' : ''}`}
+        </Chip>
+        <Chip variant="filter" selected={filterStatus === 'completed'}
+          
           onClick={() => setFilterStatus('completed')}
         >
           已完成 ({orders.filter(o => o.status === 'completed').length})
-        </button>
+        </Chip>
       </div>
 
       {loading ? (

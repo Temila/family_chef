@@ -12,6 +12,7 @@ import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import Chip from '../components/primitives/Chip';
 
 export default function ChefDishesPage() {
   const { user } = useAuth();
@@ -435,15 +436,12 @@ export default function ChefDishesPage() {
         <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>{label}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {items.map(c => (
-            <button
+            <Chip variant="filter" selected={selectedIds.includes(c.id)}
               key={c.id}
-              type="button"
-              className={`filter-chip ${selectedIds.includes(c.id) ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
               onClick={() => onToggle(c.id)}
             >
               {c.name}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>
@@ -488,14 +486,12 @@ export default function ChefDishesPage() {
             { key: 'published', label: '已上架' },
             { key: 'unpublished', label: '未上架' },
           ].map(f => (
-            <button
+            <Chip variant="filter" selected={publishFilter === f.key}
               key={f.key}
-              className={`filter-chip ${publishFilter === f.key ? 'active' : ''}`}
-              style={{ fontSize: '0.75rem', padding: '2px 10px' }}
               onClick={() => setPublishFilter(f.key)}
             >
               {f.label}
-            </button>
+            </Chip>
           ))}
         </div>
         <Button
@@ -533,14 +529,12 @@ export default function ChefDishesPage() {
                 { key: 'normal', label: '非半成品' },
                 { key: 'semifinished', label: '半成品' },
               ].map(opt => (
-                <button
+                <Chip variant="filter" selected={sfFilter === opt.key}
                   key={opt.key}
-                  className={`filter-chip ${sfFilter === opt.key ? 'active' : ''}`}
-                  style={{ fontSize: '0.75rem', padding: '4px 10px' }}
                   onClick={() => setSfFilter(opt.key)}
                 >
                   {opt.label}
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
@@ -792,22 +786,18 @@ export default function ChefDishesPage() {
                       />
                       {/* === 10-02-MIGRATION:END === */}
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-                        <button
-                          className={`filter-chip ${!ingCategoryFilter ? 'active' : ''}`}
-                          style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                        <Chip variant="filter" selected={!ingCategoryFilter}
                           onClick={() => setIngCategoryFilter('')}
                         >
                           全部
-                        </button>
+                        </Chip>
                         {ingredientCategories.map(c => (
-                          <button
+                          <Chip variant="filter" selected={ingCategoryFilter === c.name}
                             key={c.id}
-                            className={`filter-chip ${ingCategoryFilter === c.name ? 'active' : ''}`}
-                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
                             onClick={() => setIngCategoryFilter(c.name)}
                           >
                             {c.name}
-                          </button>
+                          </Chip>
                         ))}
                       </div>
                     </div>
@@ -1004,25 +994,15 @@ export default function ChefDishesPage() {
                   {activeParsedIngredients.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
                       {activeParsedIngredients.map((p) => (
-                        <span
+                        <Chip
                           key={p.name}
-                          className="filter-chip"
-                          style={{ opacity: p.matched_ingredient_id ? 1 : 0.6, paddingRight: 4 }}
+                          variant="input"
+                          onRemove={() => removeParsedIngredient(p.name)}
+                          style={{ opacity: p.matched_ingredient_id ? 1 : 0.6 }}
                         >
                           {p.matched_ingredient_id ? '✅' : '🆕'} {p.name}
-                          {p.matched_ingredient_name && p.matched_ingredient_name !== p.name && (
-                            <span style={{ fontSize: '0.7rem', marginLeft: 4 }}>→ {p.matched_ingredient_name}</span>
-                          )}
-                          <button
-                            onClick={() => removeParsedIngredient(p.name)}
-                            style={{
-                              background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: '0.9rem', color: 'var(--md-color-error)', marginLeft: 4, padding: 0, lineHeight: 1,
-                            }}
-                          >
-                            ×
-                          </button>
-                        </span>
+                          {p.matched_ingredient_name && p.matched_ingredient_name !== p.name && ` → ${p.matched_ingredient_name}`}
+                        </Chip>
                       ))}
                     </div>
                   ) : (

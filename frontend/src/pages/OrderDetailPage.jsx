@@ -10,6 +10,7 @@ import Card from '../components/primitives/Card';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
 import { marked } from 'marked';
+import Chip from '../components/primitives/Chip';
 
 const mealTypeMap = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', now: '现在就想吃' };
 
@@ -98,17 +99,9 @@ export default function OrderDetailPage() {
                   <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: 6 }}>口味偏好</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                     {order.customer.preferences.map((p, i) => (
-                      <span
-                        key={i}
-                        className={`filter-chip ${p.type === 'allergy' ? 'active' : ''}`}
-                        style={{
-                          fontSize: '0.7rem', padding: '2px 8px',
-                          background: p.type === 'allergy' ? 'var(--md-color-error)' : p.type === 'dislike' ? 'var(--md-color-tertiary-container)' : undefined,
-                          color: p.type === 'allergy' ? 'var(--md-color-on-error)' : undefined,
-                        }}
-                      >
+                      <Chip key={i} variant="assist" leadingIcon={p.type === 'allergy' ? 'warning' : undefined}>
                         {p.type === 'allergy' ? '忌口' : '不爱吃'}: {p.ingredient}
-                      </span>
+                      </Chip>
                     ))}
                   </div>
                 </div>

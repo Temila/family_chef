@@ -6,6 +6,7 @@ import EmptyState from '../components/EmptyState';
 import GuestDishCard from '../components/GuestDishCard';
 import Button from '../components/primitives/Button';
 import IconButton from '../components/primitives/IconButton';
+import Chip from '../components/primitives/Chip';
 
 async function guestFetch(url, options = {}) {
   const headers = { 'Content-Type': 'application/json' };
@@ -248,14 +249,14 @@ export default function GuestOrderPage() {
         />
       </div>
 
-      <div className="filter-chips" style={{ paddingBottom: 4 }}>
-        <button
-          className="filter-chip"
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 4px' }}>
+        <Chip variant="filter"
+          
           onClick={() => setShowFilters(!showFilters)}
           style={{ fontSize: '0.75rem' }}
         >
           {showFilters ? '收起筛选 ▲' : '展开筛选 ▼'}
-        </button>
+        </Chip>
         <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: '28px' }}>
           共 {filteredDishes.length} 道
         </span>
@@ -266,21 +267,21 @@ export default function GuestOrderPage() {
           {regions.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{typeLabels.region}</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                <button
-                  className={`filter-chip ${!selectedRegion ? 'active' : ''}`}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+                <Chip variant="filter" selected={!selectedRegion}
+                  
                   onClick={() => { setSelectedRegion(null); setSelectedCuisine(null); }}
                 >
                   全部
-                </button>
+                </Chip>
                 {regions.map(r => (
-                  <button
+                  <Chip variant="filter" selected={selectedRegion === r.id}
                     key={r.id}
-                    className={`filter-chip ${selectedRegion === r.id ? 'active' : ''}`}
+                    
                     onClick={() => { setSelectedRegion(r.id); setSelectedCuisine(null); }}
                   >
                     {r.name}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             </div>
@@ -289,21 +290,21 @@ export default function GuestOrderPage() {
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{typeLabels.cuisine}</div>
-              <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
-                <button
-                  className={`filter-chip ${!selectedCuisine ? 'active' : ''}`}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+                <Chip variant="filter" selected={!selectedCuisine}
+                  
                   onClick={() => setSelectedCuisine(null)}
                 >
                   全部
-                </button>
+                </Chip>
                 {filteredCuisines.map(c => (
-                  <button
+                  <Chip variant="filter" selected={selectedCuisine === c.id}
                     key={c.id}
-                    className={`filter-chip ${selectedCuisine === c.id ? 'active' : ''}`}
+                    
                     onClick={() => setSelectedCuisine(c.id)}
                   >
                     {c.name}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             </div>
@@ -316,11 +317,11 @@ export default function GuestOrderPage() {
             return (
               <div className="filter-section" key={t}>
                 <div className="filter-section-label">{typeLabels[t] || t}</div>
-                <div className="filter-chips" style={{ padding: 0, paddingBottom: 4 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
                   {items.map(item => (
-                    <button
+                    <Chip variant="filter" selected={selectedArr.includes(item.id)}
                       key={item.id}
-                      className={`filter-chip ${selectedArr.includes(item.id) ? 'active' : ''}`}
+                      
                       onClick={() => {
                         setSelectedFilters(prev => {
                           const arr = prev[t] || [];
@@ -332,7 +333,7 @@ export default function GuestOrderPage() {
                       }}
                     >
                       {item.name}
-                    </button>
+                    </Chip>
                   ))}
                 </div>
               </div>

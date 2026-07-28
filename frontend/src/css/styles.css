@@ -86,7 +86,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* === 10-02-MIGRATION:START === */
 /* 旧 .card / .dish-card / .wish-card / .card-body 视觉已由 .md-card primitive 接管 (COMPO-03, D-13)。
-   .badge-* 与 .filter-chip 由 10-03 plan 处理 (10-03-MIGRATION 块)。 */
+   Badge 与 Chip 由 10-03 plan 的 primitive 接管 (10-03-MIGRATION 块)。 */
 
 /* Cards — 已迁移至 <Card variant="elevated"> primitive */
 /* .card, .card::before, .card:hover, .card-body 已删除 */
@@ -123,7 +123,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* === 10-02-MIGRATION:END ===
 
 /* === 10-03-MIGRATION:START === */
-/* Badge 视觉由 primitives/Badge.css 接管；filter-chip 在 Task 2 完成迁移后清除。 */
+/* Badge 与 Chip 视觉分别由 primitives/Badge.css、Chip.css 接管；旧选择器已清除。 */
 /* === 10-03-MIGRATION:END === */
 
 /* Search Bar */
@@ -372,7 +372,6 @@ input, textarea, select { font-family: var(--md-font-body); }
   .page-container { max-width: none; }
   .pc-layout .section { padding: 16px 32px; padding-bottom: 80px; }
   .pc-layout .dashboard-stats { padding: 0 32px 16px; }
-  .pc-layout .filter-chips { padding: 0 32px 12px; }
   .pc-layout .search-bar { margin-left: 32px; margin-right: 32px; }
   .pc-layout .dish-grid { padding-bottom: 80px; align-items: stretch; }
   .pc-layout .dish-grid > div { display: flex; }
@@ -527,13 +526,11 @@ input, textarea, select { font-family: var(--md-font-body); }
 :focus:not(:focus-visible) { outline: none; }
 
 /* 表面背景交互元素 —— 使用外环 (--md-focus-ring-outer: On-Primary) */
-.filter-chip:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .list-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: -2px; }
 /* 10-02-MIGRATION: .dish-card / .card / .wish-card focus-visible 已删除 (.md-card 自带) */
 .order-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 
 /* 填充背景交互元素 (Primary 背景) —— 使用内环 (--md-focus-ring-inner: Surface)，确保环在主色背景上可见 */
-.filter-chip.active:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
 /* .fab:focus-visible 已删除 — FAB 视觉由 .md-fab primitive 接管（focus-visible outer ring） */
 
 /* === Phase 9 扩展焦点环消费者（MOTION-04） === */
@@ -573,7 +570,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 button, a, input, select, textarea,
 [role="button"], [tabindex]:not([tabindex="-1"]),
 .list-item, .tab-item,
-.filter-chip, .pc-sidebar-item, .header-back,
+.pc-sidebar-item, .header-back,
 .theme-toggle, .modal-close, .qty-stepper button,
 .menu-item, .chef-select-item, .wish-picker-item,
 .guest-add-btn, .preference-tag button,

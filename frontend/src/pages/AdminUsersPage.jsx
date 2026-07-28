@@ -10,6 +10,7 @@ import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
+import Chip from '../components/primitives/Chip';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -142,15 +143,15 @@ export default function AdminUsersPage() {
         />
       </div>
 
-      <div className="filter-chips">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
         {['all', 'admin', 'chef', 'user'].map(r => (
-          <button
+          <Chip variant="filter" selected={filterRole === r}
             key={r}
-            className={`filter-chip ${filterRole === r ? 'active' : ''}`}
+            
             onClick={() => setFilterRole(r)}
           >
             {r === 'all' ? '全部' : roleMap[r]} ({r === 'all' ? users.length : users.filter(u => u.role === r).length})
-          </button>
+          </Chip>
         ))}
       </div>
 

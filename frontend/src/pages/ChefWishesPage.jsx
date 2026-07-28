@@ -17,6 +17,7 @@ import WishCard from '../components/WishCard';
 import WishAdvanceModal from '../components/WishAdvanceModal';
 import WishRejectModal from '../components/WishRejectModal';
 import Button from '../components/primitives/Button';
+import Chip from '../components/primitives/Chip';
 
 const PAGE_SIZE = 20;
 const POLL_INTERVAL_MS = 30000;
@@ -306,28 +307,28 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     <div className="page-container">
       <Header title={title} />
 
-      <div className="filter-chips">
-        <button
-          type="button"
-          className={'filter-chip' + (activeTab === 'all' ? ' active' : '')}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+        <Chip variant="filter" selected={activeTab === 'all'}
+          
+          
           onClick={() => selectTab('all')}
         >
           全部
-        </button>
-        <button
-          type="button"
-          className={'filter-chip' + (activeTab === 'pending' ? ' active' : '')}
+        </Chip>
+        <Chip variant="filter" selected={activeTab === 'pending'}
+          
+          
           onClick={() => selectTab('pending')}
         >
           待处理
-        </button>
-        <button
-          type="button"
-          className={'filter-chip' + (activeTab === 'mine' ? ' active' : '')}
+        </Chip>
+        <Chip variant="filter" selected={activeTab === 'mine'}
+          
+          
           onClick={() => selectTab('mine')}
         >
           我的认领
-        </button>
+        </Chip>
       </div>
 
       {loading ? (
