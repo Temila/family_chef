@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T08:12:00.292Z"
+last_updated: "2026-07-28T08:40:45.185Z"
 last_activity: 2026-07-28
 progress:
   total_phases: 8
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 11
-  completed_plans: 10
-  percent: 38
+  completed_plans: 11
+  percent: 50
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 11 — composite-navigation-components
+**Current focus:** Phase 12 — page-level-refactor-8dp-grid-human-uat
 
 ## Branch State
 
@@ -35,10 +35,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 11 (composite-navigation-components) — EXECUTING
-Plan: 2 of 3 complete
-Next: 11-02 (Sidebar/BottomBar/Header) or 11-03 (Snackbar/ListItem/Divider)
-Working branch: `feature/ui-rebuild` (903e3df — 11-01 code complete)
+Phase: 11 (composite-navigation-components) — COMPLETE
+Plan: 3 of 3 complete
+Next: Phase 12 (Page-Level Refactor + 8dp Grid + HUMAN-UAT)
+Working branch: `feature/ui-rebuild` (6791ce8 — 11-03 summary complete)
 Last activity: 2026-07-28
 
 ## Deferred Items
@@ -59,9 +59,9 @@ Items acknowledged and carried forward from v1.1 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-28T08:12:00.281Z
-Stopped at: Completed 11-02-PLAN.md
-Next: `/gsd-execute-phase 11` 继续 11-02 (Sidebar/BottomBar/Header) 或 11-03 (Snackbar/ListItem/Divider)，保持在 `feature/ui-rebuild` 分支
+Last session: 2026-07-28T08:40:45.173Z
+Stopped at: Completed 11-03-PLAN.md
+Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-UAT，保持在 `feature/ui-rebuild` 分支
 
 ## Quick Tasks Completed
 
@@ -94,6 +94,7 @@ Next: `/gsd-execute-phase 11` 继续 11-02 (Sidebar/BottomBar/Header) 或 11-03 
 | Phase 10 P03 | 10min | 2 tasks | 35 files |
 | Phase 11 P01 | 12min | 3 tasks | 18 files |
 | Phase 11 P02 | 25min | 3 tasks | 11 files |
+| Phase 11 P03 | 21min | 3 tasks | 18 files |
 
 ## Decisions
 
@@ -131,3 +132,6 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 10]: Phase 10-02: Domain cards refactored to slot-based thin wrappers (D-13) — DishCard/WishCard/GuestDishCard now compose <Card variant='elevated' image={...} footer={...}>{body}</Card>; visual styles moved to inline style={} in domain code; Card primitive owns all MD3 visual compliance (elevation 1→2 hover, 16dp radius, ripple/state when clickable). 30+ lines of .wish-card-* / .dish-card-* CSS deleted; intent is self-documenting domain code.
 - [Phase 10]: statusBadge() remains unchanged; Badge maps legacy cls values to semantic MD3 tones internally. — Preserves D-15 business/visual separation and backward compatibility.
 - [Phase 10]: Chip filter selected state uses secondary-container without Ripple; .form-input remains for Phase 11 Select. — Matches D-14/UI-SPEC and preserves native select styling until the Select primitive ships.
+- [Phase 11-03]: ToastContext.jsx 路径、useToast 和 showToast(message, type) API 保持不变；App 仅改用 SnackbarProvider。 — 避免改动 169 个现有 showToast 调用方，并保持文件级导入兼容。
+- [Phase 11-03]: Snackbar timer 记录 remaining/startedAt，hover 恢复剩余时长；队列淘汰与 provider unmount 都清理 timeout。 — 满足 D-07 hover pause 与 T-11-08 timer leak 缓解，避免暂停后重新获得完整时长。
+- [Phase 11-03]: ListItem 仅在 clickable 时启用 md-interactive/Ripple，Trailing click 和嵌套键盘事件与整行激活隔离。 — 维持静态列表无伪交互，同时保证 trailing 操作不会误触发行级 onClick。

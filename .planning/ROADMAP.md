@@ -34,7 +34,7 @@
 - [x] Phase 8: MD3 Design Token Foundation (3/3 plans) (completed 2026-07-27)
 - [x] Phase 9: Motion & State Layers (2/2 plans, 1/2 planned) (completed 2026-07-27)
 - [x] Phase 10: Primitive Components (3/3 plans) (completed 2026-07-28)
-- [ ] Phase 11: Composite & Navigation Components (3/3 plans)
+- [x] Phase 11: Composite & Navigation Components (3/3 plans) (completed 2026-07-28)
 - [ ] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (2/2 plans)
 
 ## Phase Details
@@ -204,7 +204,7 @@ Plans:
 - [x] 11-01-PLAN.md — Modal/Dialog 组件（Basic/Full-screen）+ elevation-3 + scrim + focus trap + ESC + 22 站点迁移 + styles.css modal-* 删除（COMPO-08）
 **Wave 2** *(blocked on Wave 1；11-02 与 11-03 可并行 — 文件集不重叠)*
 - [x] 11-02-PLAN.md — Sidebar 240px→80dp + BottomBar MD3 active pill + Sidecar Header 重写 + App.jsx 注入 + styles.css sidebar/bottombar/header 删除（COMPO-09）
-- [ ] 11-03-PLAN.md — SnackbarContext 重写（queue + rich tone）+ ListItem（1/2/3-line slot-based）+ Divider + 3 ListItem 调用点迁移 + styles.css toast/list-item 删除（COMPO-10、COMPO-11、COMPO-12）
+- [x] 11-03-PLAN.md — SnackbarContext 重写（queue + rich tone）+ ListItem（1/2/3-line slot-based）+ Divider + 3 ListItem 调用点迁移 + styles.css toast/list-item 删除（COMPO-10、COMPO-11、COMPO-12）
 
 **UI hint**: yes
 
@@ -248,5 +248,5 @@ v1.0 / v1.1 historical note: v1.0 phases 1–4 (foundation → backend → front
 | 8. MD3 Design Token Foundation | v1.2 | 3/3 | Complete   | 2026-07-27 |
 | 9. Motion & State Layers | v1.2 | 2/2 | Complete   | 2026-07-27 |
 | 10. Primitive Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
-| 11. Composite & Navigation Components | v1.2 | 2/3 | In Progress|  |
+| 11. Composite & Navigation Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 0/2 | Not started | - |
