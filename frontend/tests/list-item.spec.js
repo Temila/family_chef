@@ -35,7 +35,7 @@ test('clickable item 支持键盘激活，Trailing 点击自动停止冒泡', as
   await page.keyboard.press('Enter');
   await expect(page.getByLabel('行点击次数')).toHaveText('1');
 
-  await page.getByRole('button', { name: '尾部操作' }).click();
+  await page.getByRole('button', { name: '尾部操作', exact: true }).click();
   await expect(page.getByLabel('尾部点击次数')).toHaveText('1');
   await expect(page.getByLabel('行点击次数')).toHaveText('1');
 });

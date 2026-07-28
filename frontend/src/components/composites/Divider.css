@@ -1,0 +1,12 @@
+/* MD3 Divider：full-width 与 56dp inset 两种布局。 */
+.md-divider {
+  border: none;
+  border-top: 1px solid var(--md-color-outline-variant);
+  margin: 0;
+  height: 0;
+}
+
+/* 16dp page inset + 40dp leading slot = 56dp headline 起点。 */
+.md-divider--inset {
+  margin-left: 56px;
+}

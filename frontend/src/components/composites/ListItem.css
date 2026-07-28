@@ -1,0 +1,118 @@
+@import '../primitives/base.css';
+
+.md-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 16px;
+  background: var(--md-color-surface);
+  border-bottom: 1px solid var(--md-color-outline-variant);
+  position: relative;
+  color: var(--md-color-on-surface);
+  transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+
+.md-list-item:last-child {
+  border-bottom: none;
+}
+
+.md-list-item--clickable {
+  cursor: pointer;
+}
+
+.md-list-item--clickable:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: -2px;
+}
+
+.md-list-item--disabled {
+  opacity: var(--md-state-layer-disabled, 0.38);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.md-list-item.md-list-item--1-line {
+  min-height: 48px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.md-list-item.md-list-item--2-line {
+  min-height: 64px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.md-list-item.md-list-item--3-line {
+  min-height: 88px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+/* 全局 [role="button"] + [tabindex] 48dp 规则具有双属性 specificity；
+   clickable 变体需显式保持各自的 MD3 行高。 */
+.md-list-item.md-list-item--clickable.md-list-item--2-line {
+  min-height: 64px;
+}
+
+.md-list-item.md-list-item--clickable.md-list-item--3-line {
+  min-height: 88px;
+}
+
+.md-list-item__leading {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--md-color-on-surface-variant);
+}
+
+.md-list-item__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.md-list-item__headline {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--md-color-on-surface);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.md-list-item--2-line .md-list-item__headline,
+.md-list-item--3-line .md-list-item__headline {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.md-list-item__supporting {
+  font-size: 0.8rem;
+  color: var(--md-color-on-surface-variant);
+  line-height: 1.4;
+}
+
+.md-list-item__trailing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-list-item {
+    transition: none;
+  }
+}
