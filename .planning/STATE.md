@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T15:33:20.688Z"
+last_updated: "2026-07-28T15:55:23.836Z"
 last_activity: 2026-07-28
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 15
-  completed_plans: 12
-  percent: 50
+  completed_plans: 14
+  percent: 58
 ---
 
 # Project State
@@ -36,16 +36,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 12 (page-level-refactor-8dp-grid-human-uat) — EXECUTING
-Plan: 2 of 4
-Next: `/gsd-execute-phase 12` execute the 4 plans
-Working branch: `feature/ui-rebuild` (dd3e2b5 — Phase 12 plans committed)
+Plan: 3 of 4
+Next: 12-01B (motion/Icon/Snackbar lane) + 12-02 (audit + HUMAN-UAT)
+Working branch: `feature/ui-rebuild` (acce8ac — Phase 12-01A spacing/shape/enforcement complete)
 Last activity: 2026-07-28
 
 ## Session Continuity
 
-Last session: 2026-07-28T15:33:16.123Z
-Stopped at: Completed 12-00-BUGFIX-PLAN.md
-Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-UAT，保持在 `feature/ui-rebuild` 分支
+Last session: 2026-07-28T15:54:30Z
+Stopped at: Completed 12-01A-PLAN.md (spacing/shape/enforcement lane)
+Next: 12-01B (motion tokenization + emoji→Icon + EmptyState API + Snackbar action) → 12-02 (audit + HUMAN-UAT 6 flows)
 
 ## Deferred Items
 
@@ -102,6 +102,7 @@ Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-
 | Phase 11 P02 | 25min | 3 tasks | 11 files |
 | Phase 11 P03 | 21min | 3 tasks | 18 files |
 | Phase 12 P00-BUGFIX | 40min | 3 tasks | 11 files |
+| Phase 12 P01A | 16min | 3 tasks | 47 files |
 
 ## Decisions
 
@@ -144,3 +145,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 11-03]: ListItem 仅在 clickable 时启用 md-interactive/Ripple，Trailing click 和嵌套键盘事件与整行激活隔离。 — 维持静态列表无伪交互，同时保证 trailing 操作不会误触发行级 onClick。
 - [Phase 12]: D-BUG-01 Ripple fix = Option 3 cloneElement hybrid (self mode on native button, wrap mode for composites); wrap-mode pointer-events inheritance fixed in base.css
 - [Phase 12]: D-BUG-02: deleted Sidecar Header from PcLayout; theme toggle + logout relocated to Sidebar footer (theme first, 48dp in 56px rows)
+- [Phase 12]: D-RADIUS-01: stylelint@^17 + stylelint-config-standard@^40 installed (human-approved blocking checkpoint); border-radius declaration-property-value-allowed-list active; Sidebar/BottomBar active-pill 16px → var(--md-radius-md)
+- [Phase 12]: D-GRID-01/02: complete 8dp spacing sweep — 45 files tokenized to var(--md-spacing-1..8); 80px safe areas → var(--md-nav-height); 44px icon insets → calc(spacing-3 + spacing-5 + spacing-2); 0 raw-px spacing survivors
+- [Phase 12]: D-GRID-03/D-FILE-02: check-m3-tokens.sh path-independent source gate (checks #1-10); lint:css + check:md3 npm scripts; check:md3 9/11 pass (#9 motion + #10 emoji = 12-01B lane)
+- [Phase 12]: stylelint-config-standard extended but 22 formatting rules nullified (Rule 3) — initial rollout is border-radius-only per UI-SPEC Enforcement Layer

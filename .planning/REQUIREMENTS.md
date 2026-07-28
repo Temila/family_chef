@@ -21,7 +21,7 @@
 - [x] **TOKEN-10**: MD3 elevation 5 级（Level 0–5 阴影令牌）— 替换现有 shadow-sm/md/lg/accent
 - [x] **TOKEN-11**: MD3 state layers（hover/pressed/focused/disabled 8%/10%/12%/38% 状态色叠加）— 应用于所有可交互元素
 - [x] **TOKEN-12**: MD3 8dp 网格间距令牌（spacing-1=4px, spacing-2=8px, spacing-3=12px, spacing-4=16px, spacing-5=24px, spacing-6=32px, spacing-7=40px, spacing-8=56px）— 替换散乱 px 值
-- [ ] **TOKEN-13**: 移除所有硬编码直角（4px/6px）— `frontend/src/index.css:102`, `frontend/src/App.css:121` 等位置全部替换为 token
+- [x] **TOKEN-13**: 移除所有硬编码直角（4px/6px）— `frontend/src/index.css:102`, `frontend/src/App.css:121` 等位置全部替换为 token
 - [x] **TOKEN-14**: 双模式（light/dark）保持 — MD3 浅深色配色完整覆盖
 
 ### MOTION — 动效反馈
@@ -49,7 +49,7 @@
 
 ### UX — 间距 / 可访问性
 
-- [ ] **UX-01**: 8dp 网格间距规范化所有页面 padding/margin/gap — 替换散乱 px 值
+- [x] **UX-01**: 8dp 网格间距规范化所有页面 padding/margin/gap — 替换散乱 px 值
 - [x] **UX-02**: 焦点环 MD3 化（详见 MOTION-04）
 - [x] **UX-03**: 触控目标 ≥ 48dp（Material Accessibility guideline）— 所有按钮/IconButton/FAB/list-item 高度不小于 48dp
 - [x] **UX-04**: Dark mode 配色完整性 — 所有新增 token 必须提供 dark mode 对应值
@@ -89,7 +89,7 @@
 | TOKEN-10 | Phase 8 | Complete |
 | TOKEN-11 | Phase 9 | Complete |
 | TOKEN-12 | Phase 8 | Complete |
-| TOKEN-13 | Phase 8 + 12 | Pending |
+| TOKEN-13 | Phase 8 + 12 | Complete |
 | TOKEN-14 | Phase 8 | Complete |
 | MOTION-01 | Phase 9 | Complete |
 | MOTION-02 | Phase 9 | Complete |
@@ -108,7 +108,7 @@
 | COMPO-10 | Phase 11 | Complete |
 | COMPO-11 | Phase 11 | Complete |
 | COMPO-12 | Phase 11 | Complete |
-| UX-01 | Phase 12 | Pending |
+| UX-01 | Phase 12 | Complete |
 | UX-02 | Phase 8 + 12 | Complete |
 | UX-03 | Phase 9 | Complete |
 | UX-04 | Phase 8 | Complete |
