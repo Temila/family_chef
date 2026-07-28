@@ -69,10 +69,10 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
           fontSize: '0.8rem',
           wordBreak: 'break-all',
           background: 'var(--md-color-surface-container)',
-          padding: 12,
+          padding: 'var(--md-spacing-3)',
           borderRadius: 'var(--md-radius-sm)',
           color: 'var(--md-color-on-surface-variant)',
-          marginBottom: 12,
+          marginBottom: 'var(--md-spacing-3)',
         }}
       >
         {linkUrl}

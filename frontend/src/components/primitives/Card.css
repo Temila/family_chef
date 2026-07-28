@@ -65,7 +65,7 @@
 
 /* header: 16dp x-padding, 16dp top, 8dp bottom; title 16sp/500/24 */
 .md-card__header {
-  padding: 16px 16px 8px 16px;
+  padding: var(--md-spacing-4) var(--md-spacing-4) var(--md-spacing-2) var(--md-spacing-4);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
@@ -74,7 +74,7 @@
 
 /* body: 16dp padding; 缺少 header 时 16dp top; 16sp/400/24; flex:1 填充剩余高度 */
 .md-card__body {
-  padding: 16px;
+  padding: var(--md-spacing-4);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -84,10 +84,10 @@
 
 /* footer: 16dp padding, padding-top 0 (body 已提供 16dp); actions gap 8dp, right-aligned */
 .md-card__footer {
-  padding: 16px;
+  padding: var(--md-spacing-4);
   padding-top: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--md-spacing-2);
 }

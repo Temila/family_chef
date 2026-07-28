@@ -11,13 +11,13 @@
   flex-direction: column;
   position: relative;
   min-block-size: 56px; /* MD3 最小 56dp field height (≥48dp hit target) */
-  margin-bottom: 16px;
+  margin-bottom: var(--md-spacing-4);
 }
 
 /* ── Input field (native input/textarea) ── */
 .md-input__field {
   width: 100%;
-  padding: 16px;
+  padding: var(--md-spacing-4);
   font-family: var(--md-font-body);
   font-size: 16px;
   font-weight: 400;
@@ -121,7 +121,7 @@
 }
 /* 有 leading icon 时 field 左 padding 加大 */
 .md-input__leading-icon ~ .md-input__field {
-  padding-left: 44px;
+  padding-left: calc(var(--md-spacing-3) + var(--md-spacing-5) + var(--md-spacing-2)); /* 44px icon-inset: 12+24+8 */
 }
 
 /* ── Supporting / error text ── */
@@ -129,8 +129,8 @@
   font-size: 12px;
   line-height: 16px;
   color: var(--md-color-on-surface-variant);
-  padding: 4px 16px 0;
-  margin-top: 4px;
+  padding: var(--md-spacing-1) var(--md-spacing-4) 0;
+  margin-top: var(--md-spacing-1);
 }
 .md-input__supporting--error {
   color: var(--md-color-error);

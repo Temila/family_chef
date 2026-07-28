@@ -126,7 +126,7 @@ export default function InvitationsSection() {
         }}
       >
         <span>邀请访客</span>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center' }}>
           <Button variant="filled" size="sm" onClick={handleCreateClick}>
             创建邀请
           </Button>

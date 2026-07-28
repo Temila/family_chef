@@ -50,7 +50,7 @@ export default function AdminLogsPage() {
     <div className="page-container">
         <Header title="系统日志" />
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         <Chip variant="filter" selected={filterAction === ''}
           
           onClick={() => { setFilterAction(''); setPage(1); }}
@@ -112,12 +112,12 @@ export default function AdminLogsPage() {
 
           <div className="mobile-card-list">
             {logs.map(log => (
-              <Card key={log.id} variant="elevated" style={{ marginBottom: 10 }}>
+              <Card key={log.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
                 <div className="flex items-center gap-3 mb-4">
                     <Badge tone="info">
                       {actionLabels[log.action] || log.action}
                     </Badge>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
                       {formatDate(log.created_at)}
                     </span>
                   </div>
@@ -125,7 +125,7 @@ export default function AdminLogsPage() {
                     {log.target_type || '-'}{log.target_id ? ` #${log.target_id}` : ''}
                   </div>
                   {log.detail && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)'}}>
                       {log.detail}
                     </div>
                   )}
@@ -134,7 +134,7 @@ export default function AdminLogsPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="pc-pagination" style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '16px 0' }}>
+            <div className="pc-pagination" style={{ display: 'flex', justifyContent: 'center', gap: 'var(--md-spacing-2)', padding: 'var(--md-spacing-4) 0'}}>
               <Button
                 variant="tonal"
                 size="sm"

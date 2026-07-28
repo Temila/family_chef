@@ -114,7 +114,7 @@ export default function AdminCategoriesPage() {
         actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
       />
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         {types.map(t => (
           <Chip variant="filter" selected={activeType === t.key}
             key={t.key}
@@ -178,7 +178,7 @@ export default function AdminCategoriesPage() {
             {categories.map(item => {
               const parent = item.parent_id ? allCategories.find(c => c.id === item.parent_id) : null;
               return (
-                <Card key={item.id} variant="elevated" style={{ marginBottom: 10 }}>
+                <Card key={item.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
                   <div className="flex items-center gap-3 mb-4">
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
@@ -224,8 +224,8 @@ export default function AdminCategoriesPage() {
           />
           {activeType === 'cuisine' && parentOptions.length > 0 && (
             /* SC-10: select 保留 .form-input */
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>所属种类</label>
+            <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>所属种类</label>
               <select
                 className="form-input"
                 value={form.parent_id}

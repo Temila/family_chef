@@ -5,7 +5,7 @@
   align-items: center;
   gap: var(--md-spacing-1);
   min-block-size: 24px;
-  padding: 4px 8px;
+  padding: var(--md-spacing-1) var(--md-spacing-2);
   border-radius: var(--md-radius-full);
   font-family: var(--md-font-body);
   font-size: 12px;
@@ -22,13 +22,13 @@
 
 .md-badge--assist {
   min-block-size: 20px;
-  padding: 0 8px;
+  padding: 0 var(--md-spacing-2);
   font-size: 11px;
 }
 
 .md-badge--filter {
   min-block-size: 24px;
-  padding: 4px 12px;
+  padding: var(--md-spacing-1) var(--md-spacing-3);
 }
 
 .md-badge--state {
@@ -70,7 +70,7 @@
   min-inline-size: 24px;
   min-block-size: 24px;
   justify-content: center;
-  padding: 0 4px;
+  padding: 0 var(--md-spacing-1);
   background: var(--md-color-error);
   color: var(--md-color-on-error);
   font-size: 11px;

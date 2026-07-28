@@ -141,7 +141,7 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
         </p>
         {/* NOTIF-06 副作用提示：编辑已被认领的愿望会通知认领厨师 */}
         {isEdit && wish?.claimed_by_chef_name && (
-          <div className="info-pill" style={{ marginBottom: 16, width: 'fit-content' }}>
+          <div className="info-pill" style={{ marginBottom: 'var(--md-spacing-4)', width: 'fit-content' }}>
             信息：编辑此愿望将通知认领厨师「{wish.claimed_by_chef_name}」
           </div>
         )}

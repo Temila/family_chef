@@ -241,7 +241,7 @@ export default function AdminIngredientsPage() {
       <Header
         title="食材管理"
         actions={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button variant="outlined" size="sm" onClick={openParseModal}>📋 从菜谱解析</Button>
             <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
           </div>
@@ -257,13 +257,13 @@ export default function AdminIngredientsPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && loadIngredients()}
         />
-        <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
+        <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', marginRight: 'var(--md-spacing-1)'}}>
           <Button variant="filled" size="sm" className="btn-search" onClick={loadIngredients}>搜索</Button>
           <Button variant="tonal" size="sm" className="btn-search" onClick={() => { handleClear(); }}>清空</Button>
         </div>
       </div>
 
-      <div style={{ padding: '0 16px 4px' }}>
+      <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
         <Button
           variant="tonal"
           size="sm"
@@ -275,8 +275,8 @@ export default function AdminIngredientsPage() {
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
             <Chip variant="filter" selected={!advCategory}
               onClick={() => setAdvCategory('')}
             >
@@ -326,7 +326,7 @@ export default function AdminIngredientsPage() {
                           variant="outlined"
                           size="sm"
                           className="btn-search"
-                          style={{ marginLeft: 6, verticalAlign: 'middle' }}
+                          style={{ marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle' }}
                           onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
                         >
                           ▾
@@ -337,7 +337,7 @@ export default function AdminIngredientsPage() {
                           position: 'absolute', top: '100%', left: 0, zIndex: 50,
                           background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
                           borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
-                          minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
+                          minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
                         }}>
                           {item.linked_dishes.map(d => (
                             <div
@@ -348,7 +348,7 @@ export default function AdminIngredientsPage() {
                                 navigate(`${base}?edit=${d.id}`);
                               }}
                               style={{
-                                      padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
+                                      padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                 fontSize: '0.85rem', color: 'var(--md-color-primary)',
                               }}
                               onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
@@ -393,11 +393,11 @@ export default function AdminIngredientsPage() {
 
           <div className="mobile-card-list">
             {ingredients.map(item => (
-              <Card key={item.id} variant="elevated" style={{ marginBottom: 10 }}>
+              <Card key={item.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
                 <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>
                         <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
                         {(item.linked_dishes || []).length > 0 && (
                           <span style={{ position: 'relative' }}>
@@ -414,7 +414,7 @@ export default function AdminIngredientsPage() {
                                 position: 'absolute', top: '100%', left: 0, zIndex: 50,
                                 background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
                                 borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
-                                minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 4,
+                                minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
                               }}>
                                 {item.linked_dishes.map(d => (
                                   <div
@@ -425,7 +425,7 @@ export default function AdminIngredientsPage() {
                                 navigate(`${base}?edit=${d.id}`);
                               }}
                                     style={{
-                                padding: '6px 10px', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
+                                padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                       fontSize: '0.85rem', color: 'var(--md-color-primary)',
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
@@ -442,7 +442,7 @@ export default function AdminIngredientsPage() {
                     </div>
                   </div>
                   {(item.aliases || []).length > 0 && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-2)'}}>
                       别名：{item.aliases.join('、')}
                     </div>
                   )}
@@ -492,8 +492,8 @@ export default function AdminIngredientsPage() {
             placeholder="如：西红柿"
           />
           {/* SC-10: select 保留 .form-input (Phase 11 Select primitive 上线时处理) */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
+          <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>分类</label>
             <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               <option value="">请选择</option>
               {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -555,11 +555,11 @@ export default function AdminIngredientsPage() {
           ) : (
             <div>
               {parsedIngredients.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
+                <div style={{ textAlign: 'center', padding: 'var(--md-spacing-5) 0', color: 'var(--md-color-on-surface-variant)' }}>
                   未识别到任何食材
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-3)'}}>
                   {parsedIngredients.map((item) => {
                     const decision = parseDecisions[item.name] || { action: 'new', alias_for_id: null, category: '' };
                     const isMatched = !!item.matched_ingredient_id;
@@ -570,10 +570,10 @@ export default function AdminIngredientsPage() {
                         style={{
                           border: '1px solid var(--md-color-outline-variant)',
                           borderRadius: 'var(--md-radius-md)',
-                          padding: 12,
+                          padding: 'var(--md-spacing-3)',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)'}}>
                           {/* === 10-02-MIGRATION:START === renameParsedItem input → Input primitive === */}
                           <Input
                             aria-label="食材名"
@@ -587,7 +587,7 @@ export default function AdminIngredientsPage() {
                               fontSize: '0.75rem',
                               background: 'var(--md-color-primary)',
                               color: 'var(--md-color-on-primary)',
-                              padding: '2px 8px',
+                              padding: '2px var(--md-spacing-2)',
                               borderRadius: 'var(--md-radius-full)',
                               whiteSpace: 'nowrap',
                             }}>
@@ -602,7 +602,7 @@ export default function AdminIngredientsPage() {
                               cursor: 'pointer',
                               fontSize: '1.1rem',
                               color: 'var(--md-color-error)',
-                              padding: '0 4px',
+                              padding: '0 var(--md-spacing-1)',
                               lineHeight: 1,
                             }}
                             title="移除"
@@ -610,7 +610,7 @@ export default function AdminIngredientsPage() {
                             ✕
                           </button>
                         </div>
-                        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 'var(--md-spacing-3)', alignItems: 'center', flexWrap: 'wrap' }}>
                           <select
                             className="form-input"
                             style={{ width: 'auto', minWidth: 120, fontSize: '0.85rem' }}

@@ -44,7 +44,7 @@ export default function ChefSelectModal({ onSelect, onClose }) {
       ) : chefs.length === 0 ? (
         <EmptyState icon="👨‍🍳" text="暂无可用厨师" />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-2)'}}>
           {chefs.map((chef) => (
             <div
               key={chef.id}

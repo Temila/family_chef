@@ -67,7 +67,7 @@ export default function UserOrdersPage() {
     <div className="page-container">
       <Header title="我的订单" showBack />
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         <Chip variant="filter" selected={filterStatus === 'all'}
           
           onClick={() => setFilterStatus('all')}
@@ -113,7 +113,7 @@ export default function UserOrdersPage() {
               </div>
 
               {(order.meal_date || order.meal_type) && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>
                   🍽 {order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || order.meal_type}
                 </div>
               )}
@@ -134,8 +134,8 @@ export default function UserOrdersPage() {
               </div>
 
               {expandedOrder === order.id && (
-                <div style={{ marginTop: 12, padding: '12px', background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
+                <div style={{ marginTop: 'var(--md-spacing-3)', padding: 'var(--md-spacing-3)', background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-2)'}}>
                     <div>订单号：{order.order_no}</div>
                     <div>下单时间：{new Date(order.created_at).toLocaleString()}</div>
                     {order.meal_date && <div>用餐时间：{order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || ''}</div>}
@@ -143,7 +143,7 @@ export default function UserOrdersPage() {
                   </div>
                   <div style={{ fontSize: '0.8rem' }}>
                     {order.items && order.items.map((item, index) => (
-                      <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+                      <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--md-spacing-1) 0'}}>
                         <span>{item.dish_name}</span>
                         <span>x{item.quantity}</span>
                       </div>
@@ -153,7 +153,7 @@ export default function UserOrdersPage() {
                     <Button
                       variant="outlined"
                       size="sm"
-                      style={{ marginTop: 12, width: '100%', borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
+                      style={{ marginTop: 'var(--md-spacing-3)', width: '100%', borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       onClick={(e) => { e.stopPropagation(); handleCancelOrder(order.id); }}
                     >
                       取消订单

@@ -5,7 +5,7 @@
   align-items: center;
   gap: var(--md-spacing-2);
   min-block-size: 32px;
-  padding: 0 12px;
+  padding: 0 var(--md-spacing-3);
   border: 1px solid var(--md-color-outline-variant);
   border-radius: var(--md-radius-full);
   background: transparent;
@@ -72,7 +72,7 @@ button.md-chip--suggestion:focus-visible {
   align-items: center;
   justify-content: center;
   min-inline-size: 48px;
-  padding: 4px;
+  padding: var(--md-spacing-1);
   border: 0;
   border-radius: var(--md-radius-full);
   background: transparent;

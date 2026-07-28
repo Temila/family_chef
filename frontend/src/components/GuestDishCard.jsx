@@ -51,7 +51,7 @@ export default function GuestDishCard({ dish, quantity, onAdd, onRemove }) {
         </div>
       }
     >
-      <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 4, fontFamily: 'var(--md-font-display)' }}>
+      <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)', fontFamily: 'var(--md-font-display)' }}>
         {dish.name}
       </div>
       <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

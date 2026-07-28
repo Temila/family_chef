@@ -64,11 +64,11 @@ export default function UserFavoritesPage() {
                 )}
                 onClick={() => navigate(`/dishes/${dish.id}`)}
               >
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)', fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
                 <Button
                   variant="outlined"
                   size="sm"
-                  style={{ marginTop: 6, width: '100%' }}
+                  style={{ marginTop: 'var(--md-spacing-1)', width: '100%' }}
                   onClick={(e) => { e.stopPropagation(); handleRemoveFavorite(dish); }}
                 >
                   取消收藏

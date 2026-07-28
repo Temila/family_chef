@@ -320,7 +320,7 @@ export default function OrderPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 4px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
         <Chip variant="filter"
           
           onClick={() => setShowFilters(!showFilters)}
@@ -336,7 +336,7 @@ export default function OrderPage() {
         </Chip>
         <select
           className="form-input"
-          style={{ width: 'auto', appearance: 'none', paddingRight: 20, background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
+          style={{ width: 'auto', appearance: 'none', paddingRight: 'var(--md-spacing-5)', background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
@@ -350,10 +350,10 @@ export default function OrderPage() {
       </div>
 
       {showFilters && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           <div className="filter-section">
             <div className="filter-section-label">{getTypeMeta('region').label}</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
               <Chip variant="filter" selected={!selectedRegion}
                 
                 onClick={() => { setSelectedRegion(null); setSelectedCuisine(null); }}
@@ -375,7 +375,7 @@ export default function OrderPage() {
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{getTypeMeta('cuisine').label}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
                 <Chip variant="filter" selected={!selectedCuisine}
                   
                   onClick={() => setSelectedCuisine(null)}
@@ -403,7 +403,7 @@ export default function OrderPage() {
             return (
               <div className="filter-section" key={t.key}>
                 <div className="filter-section-label">{meta.label}</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
                   {items.map(item => (
                     <Chip variant="filter" selected={selectedArr.includes(item.id)}
                       key={item.id}
@@ -455,7 +455,7 @@ export default function OrderPage() {
                         ) : (
                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
                         )}
-                        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-1)'}}>
                           {dish.is_popular && <Badge tone="tertiary">推荐</Badge>}
                         </div>
                         {warning && (
@@ -472,7 +472,7 @@ export default function OrderPage() {
                     }
                     footer={
                       <>
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div style={{ display: 'flex', gap: 'var(--md-spacing-1)'}}>
                           <IconButton
                             icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
                             ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
@@ -496,7 +496,7 @@ export default function OrderPage() {
                       </>
                     }
                   >
-                    <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 4, fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)', fontFamily: 'var(--md-font-display)' }}>{dish.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {dish.categories && dish.categories.map(c => c.name).join(' · ')}
                     </div>
@@ -506,13 +506,13 @@ export default function OrderPage() {
             })}
           </div>
           {loadingMore && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>
-              <div className="loading-spinner" style={{ display: 'inline-block', marginRight: 8, width: 16, height: 16, borderWidth: 2 }}></div>
+            <div style={{ textAlign: 'center', padding: 'var(--md-spacing-4) 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>
+              <div className="loading-spinner" style={{ display: 'inline-block', marginRight: 'var(--md-spacing-2)', width: 16, height: 16, borderWidth: 2 }}></div>
               加载更多...
             </div>
           )}
           {!hasMore && dishes.length > 20 && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.8rem' }}>
+            <div style={{ textAlign: 'center', padding: 'var(--md-spacing-4) 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.8rem' }}>
               没有更多菜品了
             </div>
           )}
@@ -522,9 +522,9 @@ export default function OrderPage() {
       {!isAdmin && (
         <div className="cart-bar">
           <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
-            <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
+            <span style={{ fontSize: '1.1rem', marginRight: 'var(--md-spacing-1)'}}>🛒</span>
             <span style={{ fontWeight: 600 }}>已点 {cartCount} 道菜</span>
-            <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
+            <span style={{ marginLeft: 'var(--md-spacing-2)', fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
             </span>
           </div>
@@ -546,7 +546,7 @@ export default function OrderPage() {
             <div key={item.cart_key} className="cart-detail-item">
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '0.85rem' }}>{item.dish_name}</div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 1 }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)' }}>
                   👨‍🍳 {item.chef_name}
                 </div>
               </div>
@@ -573,10 +573,10 @@ export default function OrderPage() {
           title="选择厨师"
           style={{ maxWidth: 360 }}
         >
-          <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-3)'}}>
             「{chefPickerDish.name}」有多位厨师可做，请选择：
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-2)'}}>
             {chefPickerChefs.map(chef => (
               <Card
                 key={chef.id}
@@ -586,7 +586,7 @@ export default function OrderPage() {
                   setShowChefPicker(false);
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-3)', textAlign: 'left' }}>
                   <div style={{
                     width: 36, height: 36, borderRadius: '50%',
                     background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
@@ -618,9 +618,9 @@ export default function OrderPage() {
           ]}
         >
           {/* SC-10: select 保留 .form-input */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>用餐时间</label>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+          <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>用餐时间</label>
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
               {(() => {
                 const today = new Date();
                 const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -652,15 +652,15 @@ export default function OrderPage() {
               {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
             </select>
           </div>
-          <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
+          <div style={{ marginTop: 'var(--md-spacing-4)', padding: 'var(--md-spacing-3)', background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-2)'}}>
               确认订单 ({cartCount} 道菜)
             </div>
             {cart.map(item => (
-              <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+              <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: 'var(--md-spacing-1) 0'}}>
                 <span>
                   {item.dish_name}
-                  <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 4 }}>· {item.chef_name}</span>
+                  <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 'var(--md-spacing-1)'}}>· {item.chef_name}</span>
                 </span>
                 <span>×{item.quantity}</span>
               </div>

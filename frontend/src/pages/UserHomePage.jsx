@@ -36,15 +36,15 @@ export default function UserHomePage() {
     <div className="page-container">
       <Header title="家味" />
 
-      <div style={{ padding: '0 16px', display: 'grid', gridTemplateColumns: `repeat(${menuEntries.length}, 1fr)`, gap: 10, marginBottom: 16 }}>
+      <div style={{ padding: '0 var(--md-spacing-4)', display: 'grid', gridTemplateColumns: `repeat(${menuEntries.length}, 1fr)`, gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-4)'}}>
         {menuEntries.map((entry, i) => (
           <div
             key={i}
             className="quick-action"
             onClick={entry.onClick}
-            style={{ flexDirection: 'column', textAlign: 'center', padding: 12 }}
+            style={{ flexDirection: 'column', textAlign: 'center', padding: 'var(--md-spacing-3)'}}
           >
-            <div style={{ fontSize: '1.5rem', marginBottom: 4 }}>{entry.icon}</div>
+            <div style={{ fontSize: '1.5rem', marginBottom: 'var(--md-spacing-1)'}}>{entry.icon}</div>
             <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{entry.title}</div>
             <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)' }}>{entry.desc}</div>
           </div>

@@ -42,7 +42,7 @@ const SNACKBAR_STYLES = `
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--md-spacing-2);
     width: min(calc(100% - 32px), 480px);
     pointer-events: none;
   }
@@ -50,7 +50,7 @@ const SNACKBAR_STYLES = `
   .md-snackbar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--md-spacing-3);
     width: 100%;
     min-height: 48px;
     padding: 0;
@@ -109,7 +109,7 @@ const SNACKBAR_STYLES = `
 
   .md-snackbar__message {
     flex: 1;
-    padding: 12px 0;
+    padding: var(--md-spacing-3) 0;
     font-size: 0.875rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -123,7 +123,7 @@ const SNACKBAR_STYLES = `
     height: 48px;
     min-width: 48px;
     min-height: 48px;
-    margin-right: 4px;
+    margin-right: var(--md-spacing-1);
     padding: 0;
     flex-shrink: 0;
     border: none;

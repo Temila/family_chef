@@ -77,7 +77,7 @@ export default function ChefOrdersPage() {
       <Header title="订单管理" />
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         <Chip variant="filter" selected={filterStatus === 'all'}
           
           onClick={() => setFilterStatus('all')}
@@ -121,7 +121,7 @@ export default function ChefOrdersPage() {
               <div className="order-header">
                 <span className="order-no">
                   #{order.id}
-                  {order.is_guest && <Badge tone="warn" style={{ marginLeft: 8 }}>访客订单</Badge>}
+                  {order.is_guest && <Badge tone="warn" style={{ marginLeft: 'var(--md-spacing-2)'}}>访客订单</Badge>}
                 </span>
                 <span className="order-date">{formatDate(order.created_at)}</span>
               </div>

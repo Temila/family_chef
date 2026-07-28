@@ -173,7 +173,7 @@ export default function WishCard({
     wordBreak: 'break-word',
     display: 'flex',
     flexDirection: 'column',
-    gap: 8,
+    gap: 'var(--md-spacing-2)',
   };
 
   // 拒绝原因样式（替换旧 .wish-card-reject-reason）
@@ -181,7 +181,7 @@ export default function WishCard({
     color: 'var(--md-color-error)',
     background: 'var(--md-color-error-container)',
     borderRadius: 'var(--md-radius-xs)',
-    padding: '8px 16px',
+    padding: 'var(--md-spacing-2) var(--md-spacing-4)',
     fontSize: '0.875rem',
   };
 
@@ -198,11 +198,11 @@ export default function WishCard({
       ) : undefined}
     >
       {/* 顶行：菜名（大号）+ 未读红点 + 状态徽章 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, position: 'relative' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--md-spacing-2)', position: 'relative' }}>
         <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
           {wish.dish_name}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', flexShrink: 0 }}>
           {wish.has_unread === true && (
             <>
               <span style={unreadDotStyle} aria-hidden="true" />
@@ -214,15 +214,15 @@ export default function WishCard({
       </div>
 
       {/* 元信息行：提交时间 + 身份 */}
-      <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: '8px 16px', marginTop: 4 }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>提交于 {formatDate(wish.created_at)}</span>
+      <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2) var(--md-spacing-4)', marginTop: 'var(--md-spacing-1)'}}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>提交于 {formatDate(wish.created_at)}</span>
         {isChefLikeView && wish.submitter_name && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>提交人：{wish.submitter_name}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>提交人：{wish.submitter_name}</span>
         )}
         {isUserView &&
           wish.claimed_by_chef_name &&
           (wish.status === '准备中' || wish.status === '已上架' || wish.status === '已拒绝') && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>认领厨师：{wish.claimed_by_chef_name}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>认领厨师：{wish.claimed_by_chef_name}</span>
           )}
       </div>
 

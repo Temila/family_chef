@@ -8,7 +8,7 @@ export default function EmptyState({ icon = '📭', text = '暂无数据', subte
       <div className="empty-state-icon">{icon}</div>
       <div className="empty-state-text">{text}</div>
       {subtext && (
-        <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4, lineHeight: 1.5 }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)', lineHeight: 1.5 }}>
           {subtext}
         </div>
       )}

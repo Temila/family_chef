@@ -103,7 +103,7 @@ export default function ForceChangePasswordPage() {
             variant="filled"
             size="lg"
             loading={submitting}
-            style={{ marginTop: 8, width: '100%' }}
+            style={{ marginTop: 'var(--md-spacing-2)', width: '100%' }}
           >
             确认修改
           </Button>

@@ -8,5 +8,5 @@
 
 /* 16dp page inset + 40dp leading slot = 56dp headline 起点。 */
 .md-divider--inset {
-  margin-left: 56px;
+  margin-left: var(--md-spacing-8);
 }

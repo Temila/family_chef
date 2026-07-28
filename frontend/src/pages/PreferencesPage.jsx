@@ -154,7 +154,7 @@ export default function PreferencesPage() {
       <Header title="口味偏好" showBack />
 
       <div className="section">
-        <div className="search-bar" style={{ padding: 0, marginBottom: 16 }}>
+        <div className="search-bar" style={{ padding: 0, marginBottom: 'var(--md-spacing-4)'}}>
           <span className="search-icon" style={{ left: 16 }}>🔍</span>
           <input
             type="text"
@@ -169,7 +169,7 @@ export default function PreferencesPage() {
             {searchResults.map(ingredient => (
               <div key={ingredient.id} className="preference-search-item">
                 <span style={{ flex: 1, fontSize: '0.9rem' }}>{ingredient.name}</span>
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 'var(--md-spacing-1)'}}>
                   <Button
                     variant="text"
                     size="sm"
@@ -203,7 +203,7 @@ export default function PreferencesPage() {
             </div>
           </div>
           {preferences.dislikes.length === 0 ? (
-            <div style={{ padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
+            <div style={{ padding: 'var(--md-spacing-4) 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
               暂无设置，搜索食材添加
             </div>
           ) : (
@@ -229,7 +229,7 @@ export default function PreferencesPage() {
             </div>
           </div>
           {preferences.allergies.length === 0 ? (
-            <div style={{ padding: '16px 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
+            <div style={{ padding: 'var(--md-spacing-4) 0', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem', textAlign: 'center' }}>
               暂无设置，搜索食材添加
             </div>
           ) : (

@@ -144,7 +144,7 @@ export default function AdminUsersPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         {['all', 'admin', 'chef', 'user'].map(r => (
           <Chip variant="filter" selected={filterRole === r}
             key={r}
@@ -227,7 +227,7 @@ export default function AdminUsersPage() {
 
           <div className="mobile-card-list">
             {filtered.map(u => (
-              <Card key={u.id} variant="elevated" style={{ marginBottom: 12 }}>
+              <Card key={u.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
                 <div className="flex items-center gap-3 mb-4">
                     <div className="avatar">
                       {(u.display_name || u.username).charAt(0).toUpperCase()}
@@ -299,8 +299,8 @@ export default function AdminUsersPage() {
             minLength="6"
           />
           {/* SC-10: select 保留 .form-input */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>角色</label>
+          <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>角色</label>
             <select className="form-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
               <option value="user">用户</option>
               <option value="chef">厨师</option>
@@ -308,8 +308,8 @@ export default function AdminUsersPage() {
             </select>
           </div>
           {editingUser && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
+            <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>状态</label>
               <select className="form-input" value={form.is_active ? 'true' : 'false'} onChange={(e) => setForm({ ...form, is_active: e.target.value === 'true' })}>
                 <option value="true">启用</option>
                 <option value="false">停用</option>

@@ -27,7 +27,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 0 16px;
+  padding: var(--md-spacing-5) 0 var(--md-spacing-4);
   color: var(--md-color-primary);
   flex-shrink: 0;
 }
@@ -35,7 +35,7 @@
 /* Nav: vertical flex, items take full width */
 .md-sidebar__nav {
   flex: 1;
-  padding: 8px 0;
+  padding: var(--md-spacing-2) 0;
   display: flex;
   flex-direction: column;
   gap: 0;

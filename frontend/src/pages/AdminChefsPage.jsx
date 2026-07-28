@@ -135,7 +135,7 @@ export default function AdminChefsPage() {
 
           <div className="mobile-card-list">
             {chefs.map(chef => (
-              <Card key={chef.id} variant="elevated" style={{ marginBottom: 10 }}>
+              <Card key={chef.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
                 <div className="flex items-center gap-3 mb-4">
                     <div className="avatar">
                       {(chef.display_name || chef.username).charAt(0).toUpperCase()}
@@ -148,7 +148,7 @@ export default function AdminChefsPage() {
                     </div>
                     <Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} />
                   </div>
-                  <div style={{ fontSize: '0.8rem', marginBottom: 12, color: chef.feishu_open_id ? 'var(--md-color-primary)' : 'var(--md-color-on-surface-variant)' }}>
+                  <div style={{ fontSize: '0.8rem', marginBottom: 'var(--md-spacing-3)', color: chef.feishu_open_id ? 'var(--md-color-primary)' : 'var(--md-color-on-surface-variant)' }}>
                     飞书: {chef.feishu_open_id ? `已绑定 (${chef.feishu_open_id.substring(0, 10)}...)` : '未绑定'}
                   </div>
                   <Button
@@ -181,9 +181,9 @@ export default function AdminChefsPage() {
 
           {testResult && (
             <div style={{
-              padding: 10,
+              padding: 'var(--md-spacing-2)',
               borderRadius: 'var(--md-radius-sm)',
-              marginBottom: 12,
+              marginBottom: 'var(--md-spacing-3)',
               fontSize: '0.85rem',
               background: testResult.success ? 'var(--md-color-primary-container)' : 'var(--md-color-error-container)',
               color: testResult.success ? 'var(--md-color-primary)' : 'var(--md-color-error)',
@@ -192,7 +192,7 @@ export default function AdminChefsPage() {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button
               variant="tonal"
               size="sm"
@@ -204,7 +204,7 @@ export default function AdminChefsPage() {
             </Button>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
+          <div style={{ display: 'flex', gap: 'var(--md-spacing-3)', justifyContent: 'flex-end', marginTop: 'var(--md-spacing-4)'}}>
             <Button variant="tonal" onClick={() => setShowBindModal(false)}>取消</Button>
             <Button variant="filled" onClick={handleBind}>保存绑定</Button>
           </div>

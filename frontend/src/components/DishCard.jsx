@@ -40,7 +40,7 @@ export default function DishCard({ dish, simple }) {
         </div>
       )}
       {dish.is_featured && (
-        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-1)'}}>
           <Badge tone="tertiary">推荐</Badge>
         </div>
       )}
@@ -53,7 +53,7 @@ export default function DishCard({ dish, simple }) {
       image={image}
       onClick={() => navigate(`/dishes/${dish.id}`)}
       footer={!simple && (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <Badge tone="info">{dish.category_name || '默认'}</Badge>
           {dish.is_available ? (
             <Badge tone="success">可点</Badge>
@@ -63,7 +63,7 @@ export default function DishCard({ dish, simple }) {
         </div>
       )}
     >
-      <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 4, fontFamily: 'var(--md-font-display)' }}>
+      <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)', fontFamily: 'var(--md-font-display)' }}>
         {dish.name}
       </div>
       {!simple && (

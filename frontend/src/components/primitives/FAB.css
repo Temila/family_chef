@@ -13,8 +13,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--md-spacing-3);
+  padding: var(--md-spacing-4);
   border: none;
   border-radius: var(--md-radius-md); /* D-08 锁定 16px，禁止 radius-full */
   background: var(--md-color-primary-container);
@@ -35,14 +35,14 @@
 .md-fab--default {
   width: 56px;
   height: 56px;
-  padding: 16px;
+  padding: var(--md-spacing-4);
 }
 
 /* small FAB：40dp 视觉 in 48dp hit box（base.css 已保证 48dp hit） */
 .md-fab--small {
   width: 40px;
   height: 40px;
-  padding: 8px;
+  padding: var(--md-spacing-2);
   min-inline-size: 48px;
   min-block-size: 48px;
 }
@@ -51,7 +51,7 @@
 .md-fab--extended {
   height: 56px;
   min-inline-size: 80px;
-  padding: 16px 20px;
+  padding: var(--md-spacing-4) var(--md-spacing-5);
 }
 
 .md-fab__label {

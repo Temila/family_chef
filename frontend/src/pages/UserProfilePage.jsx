@@ -173,7 +173,7 @@ export default function UserProfilePage() {
         </div>
       </div>
 
-      <div className="menu-list" style={{ marginTop: 16 }}>
+      <div className="menu-list" style={{ marginTop: 'var(--md-spacing-4)'}}>
         {menuItems.map((item, index) => (
           <div
             key={index}
@@ -207,8 +207,8 @@ export default function UserProfilePage() {
             onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
             placeholder="输入昵称"
           />
-          <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: '16px 0', paddingTop: 16 }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>修改密码</div>
+          <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: 'var(--md-spacing-4) 0', paddingTop: 'var(--md-spacing-4)'}}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-3)'}}>修改密码</div>
             <PasswordInput
               label="旧密码"
               value={editForm.old_password}

@@ -72,7 +72,7 @@ export default function LoginPage() {
             type="submit"
             variant="filled"
             size="lg"
-            style={{ marginTop: '8px', width: '100%' }}
+            style={{ marginTop: 'var(--md-spacing-2)', width: '100%' }}
           >
             登 录
           </Button>

@@ -116,7 +116,7 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
         <p id="wish-advance-description" className="sr-only">
           请选择一个本人已发布的菜品来推进愿望。
         </p>
-        <div className="search-bar" style={{ marginBottom: 16 }}>
+        <div className="search-bar" style={{ marginBottom: 'var(--md-spacing-4)'}}>
           <span className="search-icon">🔍</span>
           <input
             ref={initialFocusRef}
@@ -136,7 +136,7 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
             ) : (
               <>
                 <EmptyState icon="🍽️" text="你还没有发布任何菜品，无法推进愿望" />
-                <div style={{ textAlign: 'center', marginTop: 8 }}>
+                <div style={{ textAlign: 'center', marginTop: 'var(--md-spacing-2)'}}>
                   <Link to="/chef/dishes">前往菜品管理 →</Link>
                 </div>
               </>

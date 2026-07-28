@@ -62,10 +62,10 @@ export default function AdminStatsPage() {
         <div className="dashboard-stats" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
           {statCards.map((s, i) => (
             <div key={i} className="stat-card" style={{ borderLeft: `3px solid ${s.color}` }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: 4 }}>{s.icon}</div>
+              <div style={{ fontSize: '1.5rem', marginBottom: 'var(--md-spacing-1)'}}>{s.icon}</div>
               <div className="stat-value">{s.value}</div>
               <div className="stat-label">{s.label}</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 2 }}>{s.sub}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)' }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -76,7 +76,7 @@ export default function AdminStatsPage() {
         <div className="flex gap-3" style={{ flexWrap: 'wrap' }}>
           {dishStats.map((d, i) => (
             <div key={i} className="stat-card" style={{ flex: 1, minWidth: 120 }}>
-              <Badge tone={d.tone} style={{ marginBottom: 8 }}>{d.label}</Badge>
+              <Badge tone={d.tone} style={{ marginBottom: 'var(--md-spacing-2)'}}>{d.label}</Badge>
               <div className="stat-value">{d.value}</div>
             </div>
           ))}

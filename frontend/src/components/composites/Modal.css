@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--md-spacing-4);
 }
 
 /* ── Full-screen variant：铺满视口，无 padding，无居中 ── */
@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: var(--md-spacing-4) var(--md-spacing-5);
   border-bottom: 1px solid var(--md-color-outline-variant);
   flex-shrink: 0;
 }
@@ -75,7 +75,7 @@
   height: 40px;
   min-width: 48px;
   min-height: 48px;
-  padding: 4px;
+  padding: var(--md-spacing-1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +84,7 @@
 
 /* ── Body：20dp padding，flex:1 允许滚动 ── */
 .md-modal__body {
-  padding: 20px;
+  padding: var(--md-spacing-5);
   flex: 1;
   overflow-y: auto;
 }
@@ -92,9 +92,9 @@
 /* ── Footer：12dp gap，右对齐 actions，flex-shrink 防压扁 ── */
 .md-modal__footer {
   display: flex;
-  gap: 12px;
+  gap: var(--md-spacing-3);
   justify-content: flex-end;
-  padding: 16px 20px;
+  padding: var(--md-spacing-4) var(--md-spacing-5);
   border-top: 1px solid var(--md-color-outline-variant);
   flex-shrink: 0;
 }
@@ -102,7 +102,7 @@
 /* actions 容器：8dp gap，垂直居中 */
 .md-modal__actions {
   display: flex;
-  gap: 8px;
+  gap: var(--md-spacing-2);
   align-items: center;
 }
 

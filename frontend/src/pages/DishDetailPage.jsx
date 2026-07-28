@@ -149,12 +149,12 @@ export default function DishDetailPage() {
           </h2>
           {dish.is_popular && <Badge status="published" text="推荐" type="gold" />}
           {dish.is_semifinished && (
-            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)', fontWeight: 600 }}>半成品</span>
+            <span style={{ fontSize: '0.75rem', padding: '2px var(--md-spacing-2)', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)', fontWeight: 600 }}>半成品</span>
           )}
         </div>
 
         {dish.description && (
-          <p style={{ color: 'var(--md-color-on-surface-variant)', lineHeight: 1.6, marginBottom: 16, fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--md-color-on-surface-variant)', lineHeight: 1.6, marginBottom: 'var(--md-spacing-4)', fontSize: '0.9rem' }}>
             {dish.description}
           </p>
         )}
@@ -170,14 +170,14 @@ export default function DishDetailPage() {
           </div>
         )}
 
-        <div className="info-pills" style={{ marginBottom: 16 }}>
+        <div className="info-pills" style={{ marginBottom: 'var(--md-spacing-4)'}}>
           {dishCategoryGroups.map(g => (
             <span className="info-pill" key={g.type}>{g.meta.icon} {g.items.map(c => c.name).join('、')}</span>
           ))}
         </div>
 
         {dish.ingredients && dish.ingredients.length > 0 && (
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 'var(--md-spacing-5)'}}>
             <h3 className="section-title">🥗 食材列表</h3>
             {Object.entries(
               dish.ingredients.reduce((acc, ing) => {
@@ -186,12 +186,12 @@ export default function DishDetailPage() {
                 return acc;
               }, {})
             ).map(([cat, items]) => (
-              <div key={cat} style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <div key={cat} style={{ marginBottom: 'var(--md-spacing-4)'}}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
                   <span style={{ fontSize: '1rem' }}>{ING_CATEGORY_ICONS[cat] || '📦'}</span>
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)' }}>{cat}</span>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)'}}>
                   {items.map(ing => (
                     <span key={ing.id} className="ingredient-tag">
                       {ing.name}
@@ -204,9 +204,9 @@ export default function DishDetailPage() {
         )}
 
         {dish.semifinished_ingredients && dish.semifinished_ingredients.length > 0 && (
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 'var(--md-spacing-5)'}}>
             <h3 className="section-title">🍳 半成品食材</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)'}}>
               {dish.semifinished_ingredients.map(sf => (
                 <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>
                   {sf.name}

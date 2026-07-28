@@ -16,7 +16,7 @@
   height: var(--md-nav-height);
   background: var(--md-color-surface-container);
   border-top: 1px solid var(--md-color-outline-variant);
-  padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: var(--md-spacing-3) 0 calc(var(--md-spacing-3) + env(safe-area-inset-bottom, 0px));
   z-index: 200;
   display: flex;
   justify-content: space-around;
@@ -35,8 +35,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 0;
+  gap: var(--md-spacing-1);
+  padding: var(--md-spacing-2) 0;
   border: none;
   background: transparent;
   color: var(--md-color-on-surface-variant);

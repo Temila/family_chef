@@ -227,7 +227,7 @@ export default function GuestOrderPage() {
             ))}
           </div>
           {chefName && (
-            <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 16 }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-4)'}}>
               👨‍🍳 {chefName}
             </div>
           )}
@@ -249,7 +249,7 @@ export default function GuestOrderPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 4px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
         <Chip variant="filter"
           
           onClick={() => setShowFilters(!showFilters)}
@@ -263,11 +263,11 @@ export default function GuestOrderPage() {
       </div>
 
       {showFilters && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           {regions.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{typeLabels.region}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
                 <Chip variant="filter" selected={!selectedRegion}
                   
                   onClick={() => { setSelectedRegion(null); setSelectedCuisine(null); }}
@@ -290,7 +290,7 @@ export default function GuestOrderPage() {
           {filteredCuisines.length > 0 && (
             <div className="filter-section">
               <div className="filter-section-label">{typeLabels.cuisine}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
                 <Chip variant="filter" selected={!selectedCuisine}
                   
                   onClick={() => setSelectedCuisine(null)}
@@ -317,7 +317,7 @@ export default function GuestOrderPage() {
             return (
               <div className="filter-section" key={t}>
                 <div className="filter-section-label">{typeLabels[t] || t}</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 4px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
                   {items.map(item => (
                     <Chip variant="filter" selected={selectedArr.includes(item.id)}
                       key={item.id}
@@ -360,9 +360,9 @@ export default function GuestOrderPage() {
 
       <div className="cart-bar guest-cart-bar">
         <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
-          <span style={{ fontSize: '1.1rem', marginRight: 6 }}>🛒</span>
+          <span style={{ fontSize: '1.1rem', marginRight: 'var(--md-spacing-1)'}}>🛒</span>
           <span style={{ fontWeight: 600 }}>已选 {cartCount} 道菜</span>
-          <span style={{ marginLeft: 8, fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
+          <span style={{ marginLeft: 'var(--md-spacing-2)', fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
             {cartExpanded ? '收起 ▲' : '展开 ▼'}
           </span>
         </div>

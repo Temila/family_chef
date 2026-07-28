@@ -16,10 +16,10 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--md-color-outline-variant);
-  padding: 0 24px;
+  padding: 0 var(--md-spacing-5);
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--md-spacing-5);
 }
 
 @media (min-width: 1024px) {
@@ -32,14 +32,14 @@
 .md-header__left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--md-spacing-3);
   flex-shrink: 0;
   min-width: 0;
 }
 .md-header__logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--md-spacing-2);
   color: var(--md-color-primary);
 }
 .md-header__brand {
@@ -74,7 +74,7 @@
 .md-header__right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--md-spacing-2);
   flex-shrink: 0;
   position: relative;
 }
@@ -111,13 +111,13 @@
   border: 1px solid var(--md-color-outline-variant);
   border-radius: var(--md-radius-md);
   box-shadow: var(--md-elevation-3);
-  padding: 8px 0;
+  padding: var(--md-spacing-2) 0;
   z-index: 200;
 }
 .md-header__menu-info {
-  padding: 8px 16px 12px;
+  padding: var(--md-spacing-2) var(--md-spacing-4) var(--md-spacing-3);
   border-bottom: 1px solid var(--md-color-outline-variant);
-  margin-bottom: 8px;
+  margin-bottom: var(--md-spacing-2);
 }
 .md-header__menu-name {
   font-size: 0.9rem;
@@ -127,14 +127,14 @@
 .md-header__menu-role {
   font-size: 0.75rem;
   color: var(--md-color-on-surface-variant);
-  margin-top: 2px;
+  margin-top: var(--md-spacing-1);
 }
 .md-header__menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--md-spacing-3);
   width: 100%;
-  padding: 10px 16px;
+  padding: var(--md-spacing-2) var(--md-spacing-4);
   border: none;
   background: transparent;
   color: var(--md-color-on-surface);

@@ -427,9 +427,9 @@ export default function AdminDishesPage() {
   const renderCategorySection = (label, items, selectedIds, onToggle) => {
     if (items.length === 0) return null;
     return (
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>{label}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      <div style={{ marginBottom: 'var(--md-spacing-3)'}}>
+        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>{label}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
           {items.map(c => (
             <Chip variant="filter" selected={selectedIds.includes(c.id)}
               key={c.id}
@@ -448,7 +448,7 @@ export default function AdminDishesPage() {
       <Header
         title="菜品管理"
         actions={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button variant="tonal" size="sm" onClick={openExtractModal}>
               📝 解析文本
             </Button>
@@ -468,13 +468,13 @@ export default function AdminDishesPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && loadDishes()}
         />
-        <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
+        <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', marginRight: 'var(--md-spacing-1)'}}>
           <Button variant="filled" size="sm" className="btn-search" onClick={loadDishes}>搜索</Button>
           <Button variant="tonal" size="sm" className="btn-search" onClick={() => { setSearchQuery(''); setAdvCategoryIds([]); }}>清空</Button>
         </div>
       </div>
 
-      <div style={{ padding: '0 16px 4px' }}>
+      <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
         <Button
           variant="tonal"
           size="sm"
@@ -486,7 +486,7 @@ export default function AdminDishesPage() {
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 16px 12px', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
           {renderCategorySection(getTypeMeta('region').label, regions, advCategoryIds, (id) => {
             setAdvCategoryIds(prev => {
               if (prev.includes(id)) {
@@ -502,9 +502,9 @@ export default function AdminDishesPage() {
               setAdvCategoryIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
             })}</div>;
           })}
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>半成品</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div style={{ marginBottom: 'var(--md-spacing-3)'}}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>半成品</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
               {[
                 { key: 'all', label: '全部' },
                 { key: 'normal', label: '非半成品' },
@@ -552,7 +552,7 @@ export default function AdminDishesPage() {
                           <div>
                             <div className="pc-user-name">
                               {dish.name}
-                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
+                              {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 'var(--md-spacing-1)', padding: '1px var(--md-spacing-1)', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                             </div>
                             <div className="pc-user-sub">{dish.description ? dish.description.substring(0, 30) + '...' : ''}</div>
                         </div>
@@ -611,12 +611,12 @@ export default function AdminDishesPage() {
 
           <div className="mobile-card-list">
             {dishes.map(dish => (
-              <Card key={dish.id} variant="elevated" style={{ marginBottom: 12 }}>
+              <Card key={dish.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
                 <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 'var(--md-spacing-1)'}}>
                         {dish.name}
-                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 6, padding: '1px 6px', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
+                        {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 'var(--md-spacing-1)', padding: '1px var(--md-spacing-1)', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
                         {(dish.categories || []).map(c => c.name).join(' · ')}
@@ -625,7 +625,7 @@ export default function AdminDishesPage() {
                     <Badge status={dish.status} />
                   </div>
                   {dish.chefs && dish.chefs.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>厨师：</span>
                       <div style={{ display: 'flex' }}>
                         {dish.chefs.filter(c => c.publish_status === "published").slice(0, 5).map((c, ci) => (
@@ -708,9 +708,9 @@ export default function AdminDishesPage() {
                 placeholder="食材用量、制作步骤等"
               />
 
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>封面图</label>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>封面图</label>
+                <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center' }}>
                   {form.image_url && (
                     <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                   )}
@@ -718,8 +718,8 @@ export default function AdminDishesPage() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
+              <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>分类</label>
               {renderCategorySection(getTypeMeta('region').label, regions, form.category_ids, toggleCategory)}
               {dishCategoryTypes.filter(t => t.key !== 'region').map(t => {
                 const items = t.key === 'cuisine' ? filteredCuisines : (dishCatsByType[t.key] || []);
@@ -727,10 +727,10 @@ export default function AdminDishesPage() {
               })}
               </div>
 
-              <div style={{ marginBottom: 16, position: 'relative' }} ref={ingDropdownRef}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>食材（已选 {form.ingredient_ids.length}）</label>
+              <div style={{ marginBottom: 'var(--md-spacing-4)', position: 'relative' }} ref={ingDropdownRef}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>食材（已选 {form.ingredient_ids.length}）</label>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
                   {form.ingredient_ids.map(id => {
                     const ing = allIngredients.find(i => i.id === id);
                     return ing ? (
@@ -760,7 +760,7 @@ export default function AdminDishesPage() {
                     borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                     maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                   }}>
-                    <div style={{ padding: '8px 8px 0' }}>
+                    <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
                       <Input
                         placeholder="搜索食材..."
                         value={ingSearch}
@@ -768,7 +768,7 @@ export default function AdminDishesPage() {
                         autoFocus
                         className=""
                       />
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
+                      <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
                         <Chip variant="filter" selected={!ingCategoryFilter}
                           onClick={() => setIngCategoryFilter('')}
                         >
@@ -786,7 +786,7 @@ export default function AdminDishesPage() {
                     </div>
                     <div style={{ overflowY: 'auto', flex: 1 }}>
                       {filteredIngForDropdown.length === 0 ? (
-                        <div style={{ padding: 12, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
+                        <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
                       ) : (
                         filteredIngForDropdown.slice(0, 50).map(ing => (
                           <div
@@ -796,7 +796,7 @@ export default function AdminDishesPage() {
                             style={{ cursor: 'pointer' }}
                           >
                             <span>{ing.name}</span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
                               {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
                             </span>
                           </div>
@@ -808,10 +808,10 @@ export default function AdminDishesPage() {
               </div>
 
               {semifinishedDishes.length > 0 && (
-                <div style={{ marginBottom: 16, position: 'relative' }} ref={sfDropdownRef}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>半成品食材（已选 {form.semifinished_dish_ids.length}）</label>
+                <div style={{ marginBottom: 'var(--md-spacing-4)', position: 'relative' }} ref={sfDropdownRef}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>半成品食材（已选 {form.semifinished_dish_ids.length}）</label>
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
                     {form.semifinished_dish_ids.map(id => {
                       const sf = semifinishedDishes.find(d => d.id === id);
                       return sf ? (
@@ -841,7 +841,7 @@ export default function AdminDishesPage() {
                       borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
                       maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                     }}>
-                      <div style={{ padding: '8px 8px 0' }}>
+                      <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
                         <Input
                           placeholder="搜索半成品..."
                           value={sfSearch}
@@ -855,7 +855,7 @@ export default function AdminDishesPage() {
                           .filter(d => !form.semifinished_dish_ids.includes(d.id))
                           .filter(d => !sfSearch || d.name.includes(sfSearch))
                           .length === 0 ? (
-                          <div style={{ padding: 12, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
+                          <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
                         ) : (
                           semifinishedDishes
                             .filter(d => !form.semifinished_dish_ids.includes(d.id))
@@ -868,7 +868,7 @@ export default function AdminDishesPage() {
                                 onClick={() => { toggleSemifinishedDish(d.id); }}
                                 style={{ cursor: 'pointer' }}
                               >
-                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 6 }}>🍳</span>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}>🍳</span>
                                 <span>{d.name}</span>
                               </div>
                             ))
@@ -880,8 +880,8 @@ export default function AdminDishesPage() {
               )}
 
               {/* SC-10: select 保留 .form-input */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
+              <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>状态</label>
                 <select
                   className="form-input"
                   value={form.status}
@@ -890,13 +890,13 @@ export default function AdminDishesPage() {
                   <option value="enabled">启用</option>
                   <option value="disabled">禁用</option>
                 </select>
-                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)'}}>
                   {isAdmin ? '管理员创建的菜品默认为启用状态，需由厨师上架' : '选择菜品状态'}
                 </div>
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
+              <div style={{ marginBottom: 'var(--md-spacing-4)'}}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', cursor: 'pointer', userSelect: 'none' }}>
                   <input
                     type="checkbox"
                     checked={form.is_semifinished}
@@ -905,7 +905,7 @@ export default function AdminDishesPage() {
                   />
                   <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)' }}>标记为半成品</span>
                 </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)'}}>
                   半成品菜品不会出现在用户点菜菜单中，但可作为特殊食材被其他菜品选择
                 </div>
               </div>
@@ -927,8 +927,8 @@ export default function AdminDishesPage() {
                 onChange={(e) => setExtractText(e.target.value)}
                 placeholder="将菜谱文章、食材列表等文本粘贴到这里，系统会自动识别其中的食材..."
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-3)'}}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
                   <input
                     type="checkbox"
                     checked={smartMode}
@@ -959,12 +959,12 @@ export default function AdminDishesPage() {
               </Button>
 
               {parseResult && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>
+                <div style={{ marginTop: 'var(--md-spacing-4)'}}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>
                     解析结果（{activeParsedIngredients.length} 个食材）
                   </div>
                   {activeParsedIngredients.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-3)'}}>
                       {activeParsedIngredients.map((p) => (
                         <Chip
                           key={p.name}
@@ -982,7 +982,7 @@ export default function AdminDishesPage() {
                   )}
 
                   {hasNewIngredients && (
-                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', marginTop: 'var(--md-spacing-2)'}}>
                       <Button variant="outlined" size="sm" onClick={handleGoToAddIngredient}>
                         ➕ 去添加新食材
                       </Button>
@@ -990,7 +990,7 @@ export default function AdminDishesPage() {
                   )}
 
                   {hasAnyIngredients && (
-                    <div style={{ marginTop: 8 }}>
+                    <div style={{ marginTop: 'var(--md-spacing-2)'}}>
                       <Button variant="filled" size="sm" onClick={handleNextStepFromExtract}>
                         下一步 → 创建菜品
                       </Button>
@@ -1015,20 +1015,20 @@ export default function AdminDishesPage() {
           ]}
         >
           {batchItems.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
+                <div style={{ textAlign: 'center', padding: 'var(--md-spacing-5) 0', color: 'var(--md-color-on-surface-variant)' }}>
                   没有需要添加的新食材
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-3)'}}>
                   {batchItems.map((item) => {
                     const decision = batchDecisions[item.name] || { action: 'new', alias_for_id: null, category: '' };
                     const displayName = decision.editedName || item.name;
                     return (
                       <div
                         key={item.name}
-                        style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--md-radius-md)', padding: 12 }}
+                        style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--md-radius-md)', padding: 'var(--md-spacing-3)'}}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)'}}>
                           {/* === 10-02-MIGRATION:START === renameBatchItem input → Input primitive === */}
                           <Input
                             aria-label="食材名"
@@ -1041,14 +1041,14 @@ export default function AdminDishesPage() {
                             onClick={() => removeBatchItem(item.name)}
                             style={{
                               background: 'none', border: 'none', cursor: 'pointer',
-                              fontSize: '1.1rem', color: 'var(--md-color-error)', padding: '0 4px', lineHeight: 1,
+                              fontSize: '1.1rem', color: 'var(--md-color-error)', padding: '0 var(--md-spacing-1)', lineHeight: 1,
                             }}
                             title="移除"
                           >
                             ✕
                           </button>
                         </div>
-                        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 'var(--md-spacing-3)', alignItems: 'center', flexWrap: 'wrap' }}>
                           <select
                             className="form-input"
                             style={{ width: 'auto', minWidth: 120, fontSize: '0.85rem' }}
@@ -1105,7 +1105,7 @@ export default function AdminDishesPage() {
                                     maxHeight: 180, overflowY: 'auto',
                                   }}>
                                     {filtered.length === 0 ? (
-                                      <div style={{ padding: 10, textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配</div>
+                                      <div style={{ padding: 'var(--md-spacing-2)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配</div>
                                     ) : filtered.slice(0, 20).map(ing => (
                                       <div
                                         key={ing.id}
@@ -1119,7 +1119,7 @@ export default function AdminDishesPage() {
                                       >
                                         <span>{ing.name}</span>
                                         {ing.aliases && ing.aliases.length > 0 && (
-                                          <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 6 }}>(别名: {ing.aliases.join('、')})</span>
+                                          <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'var(--md-spacing-1)'}}>(别名: {ing.aliases.join('、')})</span>
                                         )}
                                       </div>
                                     ))}

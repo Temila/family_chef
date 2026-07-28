@@ -307,7 +307,7 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
     <div className="page-container">
       <Header title={title} />
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 12px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>
         <Chip variant="filter" selected={activeTab === 'all'}
           
           

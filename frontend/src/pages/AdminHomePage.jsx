@@ -140,7 +140,7 @@ export default function AdminHomePage() {
         <div className="section-title">
           <span>⚡</span> 快捷操作
         </div>
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div style={{ display: 'grid', gap: 'var(--md-spacing-3)'}}>
           {quickActions.map((action, index) => (
             <div
               key={index}
