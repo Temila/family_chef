@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';

@@ -5,7 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Card from '../components/primitives/Card';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
@@ -66,9 +66,9 @@ export default function OrderDetailPage() {
               <h3 style={{ margin: 0 }}>
                 订单 #{order.id}
                 {order.is_guest && (
-                  <span className="badge badge-warn" style={{ marginLeft: 8, verticalAlign: 'middle' }}>
+                  <Badge tone="warn" style={{ marginLeft: 8, verticalAlign: 'middle' }}>
                     访客订单
-                  </span>
+                  </Badge>
                 )}
               </h3>
               <Badge status={order.status} />

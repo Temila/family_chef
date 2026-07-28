@@ -2,12 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
 import Ripple from './primitives/Ripple';
-
-function Badge({ count }) {
-  if (!count) return null;
-  const display = count > 99 ? '99+' : count;
-  return <span className="badge-count">{display}</span>;
-}
+import Badge from './primitives/Badge';
 
 export default function Sidebar() {
   const navigate = useNavigate();

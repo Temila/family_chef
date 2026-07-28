@@ -1,12 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePendingOrderCount } from '../hooks/usePendingOrderCount';
-
-function Badge({ count }) {
-  if (!count) return null;
-  const display = count > 99 ? '99+' : count;
-  return <span className="badge-count">{display}</span>;
-}
+import Badge from './primitives/Badge';
 
 export default function BottomBar() {
   const navigate = useNavigate();

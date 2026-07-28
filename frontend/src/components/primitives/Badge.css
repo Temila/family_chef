@@ -1,0 +1,79 @@
+@import './base.css';
+
+.md-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--md-spacing-1);
+  min-block-size: 24px;
+  padding: 4px 8px;
+  border-radius: var(--md-radius-full);
+  font-family: var(--md-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.md-badge__icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.md-badge--assist {
+  min-block-size: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.md-badge--filter {
+  min-block-size: 24px;
+  padding: 4px 12px;
+}
+
+.md-badge--state {
+  min-block-size: 24px;
+}
+
+.md-badge--primary,
+.md-badge--success {
+  background: var(--md-color-primary-container);
+  color: var(--md-color-on-primary-container);
+}
+
+.md-badge--secondary,
+.md-badge--info {
+  background: var(--md-color-secondary-container);
+  color: var(--md-color-on-secondary-container);
+}
+
+.md-badge--tertiary,
+.md-badge--warn {
+  background: var(--md-color-tertiary-container);
+  color: var(--md-color-on-tertiary-container);
+}
+
+.md-badge--error {
+  background: var(--md-color-error-container);
+  color: var(--md-color-on-error-container);
+}
+
+.md-badge--muted {
+  background: var(--md-color-surface-container-high);
+  color: var(--md-color-on-surface-variant);
+}
+
+.md-badge--count {
+  position: absolute;
+  inset-block-start: -8px;
+  inset-inline-end: -12px;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  justify-content: center;
+  padding: 0 4px;
+  background: var(--md-color-error);
+  color: var(--md-color-on-error);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}

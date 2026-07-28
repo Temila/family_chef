@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from './primitives/Button';

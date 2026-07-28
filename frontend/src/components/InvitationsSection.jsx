@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import { formatDate } from '../utils';

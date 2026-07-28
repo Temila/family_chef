@@ -10,7 +10,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import Badge from './Badge';
+import Badge from './primitives/Badge';
 import { formatDate } from '../utils';
 import Card from './primitives/Card';
 import Button from './primitives/Button';

@@ -3,7 +3,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Card from '../components/primitives/Card';

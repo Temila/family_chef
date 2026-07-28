@@ -4,6 +4,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
+import Badge from '../components/primitives/Badge';
 import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
 import { formatDate } from '../utils';
@@ -92,9 +93,9 @@ export default function AdminLogsPage() {
                       {formatDate(log.created_at)}
                     </td>
                     <td>
-                      <span className="badge badge-info">
+                      <Badge tone="info">
                         {actionLabels[log.action] || log.action}
-                      </span>
+                      </Badge>
                     </td>
                     <td style={{ fontSize: '0.85rem' }}>
                       {log.target_type || '-'}{log.target_id ? ` #${log.target_id}` : ''}
@@ -112,9 +113,9 @@ export default function AdminLogsPage() {
             {logs.map(log => (
               <Card key={log.id} variant="elevated" style={{ marginBottom: 10 }}>
                 <div className="flex items-center gap-3 mb-4">
-                    <span className="badge badge-info">
+                    <Badge tone="info">
                       {actionLabels[log.action] || log.action}
-                    </span>
+                    </Badge>
                     <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto' }}>
                       {formatDate(log.created_at)}
                     </span>

@@ -11,6 +11,7 @@ import Input from '../components/primitives/Input';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import Badge from '../components/primitives/Badge';
 import IconButton from '../components/primitives/IconButton';
 
 export default function OrderPage() {
@@ -453,7 +454,7 @@ export default function OrderPage() {
                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
                         )}
                         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                          {dish.is_popular && <span className="badge badge-gold">推荐</span>}
+                          {dish.is_popular && <Badge tone="tertiary">推荐</Badge>}
                         </div>
                         {warning && (
                           <div className={`dietary-tag ${warning.className}`}>

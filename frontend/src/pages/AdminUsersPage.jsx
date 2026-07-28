@@ -9,6 +9,7 @@ import PasswordInput from '../components/PasswordInput';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
+import Badge from '../components/primitives/Badge';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -190,9 +191,9 @@ export default function AdminUsersPage() {
                       <span className={`role-badge role-${u.role}`}>{roleMap[u.role] || u.role}</span>
                     </td>
                     <td>
-                      <span className={`badge ${u.is_active ? 'badge-success' : 'badge-danger'}`}>
+                      <Badge tone={u.is_active ? 'success' : 'error'}>
                         {u.is_active ? '启用' : '停用'}
-                      </span>
+                      </Badge>
                     </td>
                     <td>
                       <div className="pc-action-btns">
@@ -234,9 +235,9 @@ export default function AdminUsersPage() {
                       <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>@{u.username}</div>
                     </div>
                     <span className={`role-badge role-${u.role}`}>{roleMap[u.role] || u.role}</span>
-                    <span className={`badge ${u.is_active ? 'badge-success' : 'badge-danger'}`}>
+                    <Badge tone={u.is_active ? 'success' : 'error'}>
                       {u.is_active ? '启用' : '停用'}
-                    </span>
+                    </Badge>
                   </div>
                   <div className="flex gap-3">
                     <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(u)}>编辑</Button>

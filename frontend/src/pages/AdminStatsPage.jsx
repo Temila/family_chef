@@ -4,6 +4,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
+import Badge from '../components/primitives/Badge';
 
 export default function AdminStatsPage() {
   const { showToast } = useToast();
@@ -48,8 +49,8 @@ export default function AdminStatsPage() {
   ];
 
   const dishStats = [
-    { label: '已上架', value: stats.dishes?.published || 0, cls: 'badge-success' },
-    { label: '草稿', value: stats.dishes?.draft || 0, cls: 'badge-info' },
+    { label: '已上架', value: stats.dishes?.published || 0, tone: 'success' },
+    { label: '草稿', value: stats.dishes?.draft || 0, tone: 'info' },
   ];
 
   return (
@@ -75,7 +76,7 @@ export default function AdminStatsPage() {
         <div className="flex gap-3" style={{ flexWrap: 'wrap' }}>
           {dishStats.map((d, i) => (
             <div key={i} className="stat-card" style={{ flex: 1, minWidth: 120 }}>
-              <div className={`badge ${d.cls}`} style={{ marginBottom: 8 }}>{d.label}</div>
+              <Badge tone={d.tone} style={{ marginBottom: 8 }}>{d.label}</Badge>
               <div className="stat-value">{d.value}</div>
             </div>
           ))}

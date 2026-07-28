@@ -6,7 +6,7 @@ import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
 import IconButton from '../components/primitives/IconButton';

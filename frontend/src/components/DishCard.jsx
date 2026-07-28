@@ -9,6 +9,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
+import Badge from './primitives/Badge';
 import Card from './primitives/Card';
 
 export default function DishCard({ dish, simple }) {
@@ -40,7 +41,7 @@ export default function DishCard({ dish, simple }) {
       )}
       {dish.is_featured && (
         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <span className="badge badge-gold">推荐</span>
+          <Badge tone="tertiary">推荐</Badge>
         </div>
       )}
     </>
@@ -53,11 +54,11 @@ export default function DishCard({ dish, simple }) {
       onClick={() => navigate(`/dishes/${dish.id}`)}
       footer={!simple && (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <span className="badge badge-info">{dish.category_name || '默认'}</span>
+          <Badge tone="info">{dish.category_name || '默认'}</Badge>
           {dish.is_available ? (
-            <span className="badge badge-success">可点</span>
+            <Badge tone="success">可点</Badge>
           ) : (
-            <span className="badge badge-danger">已售罄</span>
+            <Badge tone="error">已售罄</Badge>
           )}
         </div>
       )}

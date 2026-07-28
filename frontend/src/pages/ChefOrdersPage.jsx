@@ -9,7 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
-import Badge from '../components/Badge';
+import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
@@ -120,7 +120,7 @@ export default function ChefOrdersPage() {
               <div className="order-header">
                 <span className="order-no">
                   #{order.id}
-                  {order.is_guest && <span className="badge badge-warn" style={{ marginLeft: 8 }}>访客订单</span>}
+                  {order.is_guest && <Badge tone="warn" style={{ marginLeft: 8 }}>访客订单</Badge>}
                 </span>
                 <span className="order-date">{formatDate(order.created_at)}</span>
               </div>
