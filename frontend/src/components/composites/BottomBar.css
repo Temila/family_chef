@@ -57,7 +57,7 @@
   transform: translateX(-50%);
   width: 64px;
   height: 32px;
-  border-radius: 16px;
+  border-radius: var(--md-radius-md); /* 16px — MD3 nav bar active pill (D-RADIUS-01) */
   background: var(--md-color-secondary-container);
   z-index: 0;
   transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);

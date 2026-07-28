@@ -1,0 +1,49 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "keyframes-name-pattern": null,
+    "import-notation": null,
+    "custom-property-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "comment-whitespace-inside": null,
+    "rule-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "declaration-block-single-line-max-declarations": null,
+    "declaration-block-no-duplicate-custom-properties": null,
+    "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
+    "alpha-value-notation": null,
+    "color-function-alias-notation": null,
+    "color-function-notation": null,
+    "color-hex-length": null,
+    "media-feature-range-notation": null,
+    "property-no-deprecated": null,
+    "property-no-vendor-prefix": null,
+    "shorthand-property-no-redundant-values": null,
+    "value-keyword-case": null,
+    "declaration-property-value-allowed-list": {
+      "border-radius": [
+        "/^var\\(--md-radius-/",
+        "/^0$/",
+        "/^50%$/",
+        "/^9999px$/",
+        "/^inherit$/",
+        "/^unset$/"
+      ],
+      "/^border-(top|bottom)-(left|right)-radius$/": [
+        "/^var\\(--md-radius-/",
+        "/^0$/",
+        "/^50%$/",
+        "/^9999px$/",
+        "/^inherit$/",
+        "/^unset$/"
+      ]
+    }
+  },
+  "ignoreFiles": [
+    "node_modules/**/*",
+    "dist/**/*"
+  ]
+}
