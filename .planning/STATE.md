@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T02:08:58.104Z"
+last_updated: "2026-07-28T02:23:32.572Z"
 last_activity: 2026-07-28
 progress:
   total_phases: 8
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 8
-  completed_plans: 7
-  percent: 25
+  completed_plans: 8
+  percent: 38
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 10 — primitive-components
+**Current focus:** Phase 11 — composite-navigation-components
 
 ## Branch State
 
@@ -35,10 +35,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 10 (primitive-components) — EXECUTING
-Plan: 3 of 3 (10-01 complete; 10-02 next)
-Next: 10-02-PLAN.md — Card + Input primitives (Wave 2)
-Working branch: `feature/ui-rebuild` (a3b6c40 — 10-01 done)
+Phase: 10 (primitive-components) — COMPLETE
+Plan: 3 of 3 complete
+Next: Phase 11 planning/execution — Composite & Navigation Components
+Working branch: `feature/ui-rebuild` (0605173 — 10-03 code complete)
 Last activity: 2026-07-28
 
 ## Deferred Items
@@ -59,9 +59,9 @@ Items acknowledged and carried forward from v1.1 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-28T02:05:41.838Z
-Stopped at: Completed 10-02-PLAN.md
-Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-components)，在 `feature/ui-rebuild` 分支上进行
+Last session: 2026-07-28T02:23:32.563Z
+Stopped at: Completed 10-03-PLAN.md
+Next: `/gsd-discuss-phase 11` 或 `/gsd-execute-phase 11` 继续 Composite & Navigation Components，保持在 `feature/ui-rebuild` 分支
 
 ## Quick Tasks Completed
 
@@ -91,6 +91,7 @@ Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-comp
 | Phase 09 P02 | 25min | 3 tasks | 4 files |
 | Phase 10 P01 | 90min | 3 tasks | 41 files |
 | Phase 10 P02 | 97 | 2 tasks | 16 files |
+| Phase 10 P03 | 10min | 2 tasks | 35 files |
 
 ## Decisions
 
@@ -126,3 +127,5 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 10]: Phase 10-02: .form-input retained per SC-10 deviation — Plan BLOCKER 1 WARNING 1: select not in scope for Input primitive (Phase 10); deferred to Phase 11 Select primitive. Non-select form-input classNames all migrated to Input primitive (0 residual). Plan's <objective> deviation note explicitly documents this.
 - [Phase 10]: Phase 10-02: .field-trigger utility class added — Plan SC-10 deviation requires 0 non-select form-input classNames. <div className='form-input'> button-triggers (4 in AdminDishesPage + ChefDishesPage) needed visual preservation. Added .field-trigger class near .form-input with role='button'+tabIndex+keyboard activation; sentinel-isolated for 10-03 concurrent safety.
 - [Phase 10]: Phase 10-02: Domain cards refactored to slot-based thin wrappers (D-13) — DishCard/WishCard/GuestDishCard now compose <Card variant='elevated' image={...} footer={...}>{body}</Card>; visual styles moved to inline style={} in domain code; Card primitive owns all MD3 visual compliance (elevation 1→2 hover, 16dp radius, ripple/state when clickable). 30+ lines of .wish-card-* / .dish-card-* CSS deleted; intent is self-documenting domain code.
+- [Phase 10]: statusBadge() remains unchanged; Badge maps legacy cls values to semantic MD3 tones internally. — Preserves D-15 business/visual separation and backward compatibility.
+- [Phase 10]: Chip filter selected state uses secondary-container without Ripple; .form-input remains for Phase 11 Select. — Matches D-14/UI-SPEC and preserves native select styling until the Select primitive ships.

@@ -33,7 +33,7 @@
 
 - [x] Phase 8: MD3 Design Token Foundation (3/3 plans) (completed 2026-07-27)
 - [x] Phase 9: Motion & State Layers (2/2 plans, 1/2 planned) (completed 2026-07-27)
-- [ ] Phase 10: Primitive Components (3/3 plans)
+- [x] Phase 10: Primitive Components (3/3 plans) (completed 2026-07-28)
 - [ ] Phase 11: Composite & Navigation Components (3/3 plans)
 - [ ] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (2/2 plans)
 
@@ -183,7 +183,7 @@ Plans:
 - [x] 10-01-PLAN.md — Button 组件（4 variants × 3 sizes）+ IconButton 组件（40dp/48dp）+ FAB 组件（FAB/Extended FAB/Small FAB）+ Ripple 接入（COMPO-01、COMPO-02、COMPO-05）
 **Wave 2** *(blocked on Wave 1；10-02 与 10-03 可并行 — 文件集不重叠)*
 - [x] 10-02-PLAN.md — Card 组件（Elevated/Filled/Outlined）+ elevation 过渡 + Input 组件（Outlined/Filled + 错误态 + 焦点环）（COMPO-03、COMPO-04）
-- [ ] 10-03-PLAN.md — Badge 组件（assist/filter/state）+ Chip 组件（assist/filter/input/suggestion）+ 现有 `.badge-count` 计数器场景适配（COMPO-06、COMPO-07）
+- [x] 10-03-PLAN.md — Badge 组件（assist/filter/state）+ Chip 组件（assist/filter/input/suggestion）+ 现有 `.badge-count` 计数器场景适配（COMPO-06、COMPO-07）
 
 **UI hint**: yes
 
@@ -247,6 +247,6 @@ v1.0 / v1.1 historical note: v1.0 phases 1–4 (foundation → backend → front
 | 7. Wish List Frontend | v1.1 | 5/5 | Complete   | 2026-07-23 |
 | 8. MD3 Design Token Foundation | v1.2 | 3/3 | Complete   | 2026-07-27 |
 | 9. Motion & State Layers | v1.2 | 2/2 | Complete   | 2026-07-27 |
-| 10. Primitive Components | v1.2 | 2/3 | In Progress|  |
+| 10. Primitive Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
 | 11. Composite & Navigation Components | v1.2 | 0/3 | Not started | - |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 0/2 | Not started | - |

@@ -39,8 +39,8 @@
 - [x] **COMPO-03**: 卡片 3 变体（Elevated/Filled/Outlined）— 替换现有 `.card/.dish-card/.wish-card`
 - [x] **COMPO-04**: 输入框 2 变体（Outlined/Filled） + 错误态辅助文本 — 替换现有 `.form-input`
 - [x] **COMPO-05**: FAB / Extended FAB / Small FAB — 替换现有 `.fab`
-- [ ] **COMPO-06**: Badge（assist/filter/state）— 替换现有 `.badge/.badge-count`
-- [ ] **COMPO-07**: Chip（assist/filter/input/suggestion）— 替换现有 `.filter-chip`
+- [x] **COMPO-06**: Badge（assist/filter/state）— 替换现有 `.badge/.badge-count`
+- [x] **COMPO-07**: Chip（assist/filter/input/suggestion）— 替换现有 `.filter-chip`
 - [ ] **COMPO-08**: Modal / Dialog（Basic / Full-screen） — 替换现有 Modal 系列
 - [ ] **COMPO-09**: Navigation Rail（SideBar） + Navigation Bar（BottomBar） MD3 化
 - [ ] **COMPO-10**: Snackbar / Toast — 替换现有 Toast 系统
@@ -101,8 +101,8 @@
 | COMPO-03 | Phase 10 | Complete |
 | COMPO-04 | Phase 10 | Complete |
 | COMPO-05 | Phase 10 | Complete |
-| COMPO-06 | Phase 10 | Pending |
-| COMPO-07 | Phase 10 | Pending |
+| COMPO-06 | Phase 10 | Complete |
+| COMPO-07 | Phase 10 | Complete |
 | COMPO-08 | Phase 11 | Pending |
 | COMPO-09 | Phase 11 | Pending |
 | COMPO-10 | Phase 11 | Pending |
