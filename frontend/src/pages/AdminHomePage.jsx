@@ -9,6 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
+import ListItem from '../components/composites/ListItem';
 import Loading from '../components/Loading';
 import { formatDate } from '../utils';
 
@@ -165,16 +166,16 @@ export default function AdminHomePage() {
           </div>
           <div>
             {recentActivity.map((activity, index) => (
-              <div key={index} className="list-item" style={{ cursor: 'default' }}>
-                <div style={{ flex: 1 }}>
-                  <div className="list-item-name">
+              <ListItem key={index} variant="2-line" className="md-list-item--static">
+                <ListItem.Content>
+                  <ListItem.Headline>
                     {activity.action} - {activity.target_type}
-                  </div>
-                  <div className="list-item-meta">
+                  </ListItem.Headline>
+                  <ListItem.Supporting>
                     {formatDate(activity.created_at)}
-                  </div>
-                </div>
-              </div>
+                  </ListItem.Supporting>
+                </ListItem.Content>
+              </ListItem>
             ))}
           </div>
         </section>

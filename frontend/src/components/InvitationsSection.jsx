@@ -17,6 +17,7 @@ import CreateLinkModal from './CreateLinkModal';
 import ConfirmModal from './ConfirmModal';
 import Button from './primitives/Button';
 import IconButton from './primitives/IconButton';
+import ListItem from './composites/ListItem';
 
 export default function InvitationsSection() {
   const { user } = useAuth();
@@ -156,44 +157,23 @@ export default function InvitationsSection() {
         />
       ) : (
         invitations.slice(0, 5).map((inv) => (
-          <div key={inv.id} className="list-item" style={{ cursor: 'default' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                flex: 1,
-                minWidth: 0,
-              }}
-            >
+          <ListItem key={inv.id} variant="3-line">
+            <ListItem.Leading>
               <Badge
                 text={inv.status === 'active' ? '活跃' : undefined}
                 status={inv.status === 'active' ? undefined : inv.status}
                 type={inv.status === 'active' ? 'success' : undefined}
               />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--md-color-on-surface-variant)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+            </ListItem.Leading>
+            <ListItem.Content>
+              <ListItem.Headline>
                 {formatDate(inv.created_at)}
-              </div>
-              {user?.role !== 'chef' && inv.chef_name && (
-                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
-                  {inv.chef_name}
-                </div>
-              )}
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                flexShrink: 0,
-              }}
-            >
+              </ListItem.Headline>
+              <ListItem.Supporting>
+                {user?.role !== 'chef' && inv.chef_name ? inv.chef_name : ''}
+              </ListItem.Supporting>
+            </ListItem.Content>
+            <ListItem.Trailing>
               {inv.status === 'active' && (
                 <>
                   <IconButton
@@ -214,8 +194,8 @@ export default function InvitationsSection() {
                   </Button>
                 </>
               )}
-            </div>
-          </div>
+            </ListItem.Trailing>
+          </ListItem>
         ))
       )}
 

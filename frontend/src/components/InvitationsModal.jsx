@@ -9,6 +9,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from './primitives/Button';
 import IconButton from './primitives/IconButton';
+import ListItem from './composites/ListItem';
 import Modal from './composites/Modal';
 import { formatDate } from '../utils';
 
@@ -33,52 +34,23 @@ export default function InvitationsModal({
         <EmptyState icon="📭" text="还没有邀请记录" />
       ) : (
         invitations.map((inv) => (
-          <div
-            key={inv.id}
-            className="list-item"
-            style={{ cursor: 'default' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                flex: 1,
-                minWidth: 0,
-              }}
-            >
+          <ListItem key={inv.id} variant="3-line">
+            <ListItem.Leading>
               <Badge
                 text={inv.status === 'active' ? '活跃' : undefined}
                 status={inv.status === 'active' ? undefined : inv.status}
                 type={inv.status === 'active' ? 'success' : undefined}
               />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--md-color-on-surface-variant)',
-                }}
-              >
+            </ListItem.Leading>
+            <ListItem.Content>
+              <ListItem.Headline>
                 {formatDate(inv.created_at)}
-              </div>
-              {user?.role !== 'chef' && inv.chef_name && (
-                <div
-                  style={{
-                    fontSize: '0.75rem',
-                    color: 'var(--md-color-on-surface-variant)',
-                  }}
-                >
-                  {inv.chef_name}
-                </div>
-              )}
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                flexShrink: 0,
-              }}
-            >
+              </ListItem.Headline>
+              <ListItem.Supporting>
+                {user?.role !== 'chef' && inv.chef_name ? inv.chef_name : ''}
+              </ListItem.Supporting>
+            </ListItem.Content>
+            <ListItem.Trailing>
               {inv.status === 'active' && (
                 <>
                   <IconButton
@@ -102,8 +74,8 @@ export default function InvitationsModal({
                   </Button>
                 </>
               )}
-            </div>
-          </div>
+            </ListItem.Trailing>
+          </ListItem>
         ))
       )}
     </Modal>

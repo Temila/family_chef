@@ -14,7 +14,7 @@
   transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);
 }
 
-.md-list-item:last-child {
+.md-ripple-layer:last-child > .md-list-item {
   border-bottom: none;
 }
 
