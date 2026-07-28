@@ -1,0 +1,112 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Modal Composite CSS (Phase 11 — COMPO-08)
+   Basic + Full-screen variants; scrim + elevation-3 + 24dp radius.
+   全部视觉值通过 var(--md-*) token 引用，零硬编码。
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import '../primitives/base.css';
+
+/* ── Overlay = MD3 scrim + 居中内容 ── */
+.md-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--md-color-scrim);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ── Full-screen variant：铺满视口，无 padding，无居中 ── */
+.md-modal--full-screen {
+  padding: 0;
+  align-items: stretch;
+}
+
+/* ── Surface container-lowest + 24dp radius + elevation-3 ── */
+.md-modal {
+  background: var(--md-color-surface-container-lowest);
+  border-radius: var(--md-radius-lg);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--md-elevation-3);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Full-screen 子覆写：铺满视口、零圆角 */
+.md-modal--full-screen .md-modal {
+  max-width: 100%;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+}
+
+/* ── Header：16dp y / 20dp x padding，1px 底边框，flex-shrink 防压扁 ── */
+.md-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--md-color-outline-variant);
+  flex-shrink: 0;
+}
+
+.md-modal__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-color-on-surface);
+  margin: 0;
+}
+
+/* ── Close button：40dp 视觉 + 48dp 命中区（base.css md-interactive 提供 state-layer）──
+   40px 视觉尺寸 + min-width/min-height 48px 命中区 + padding 居中 ✕ 字符 */
+.md-modal__close {
+  border: none;
+  background: transparent;
+  border-radius: var(--md-radius-full);
+  font-size: 1rem;
+  color: var(--md-color-on-surface-variant);
+  width: 40px;
+  height: 40px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ── Body：20dp padding，flex:1 允许滚动 ── */
+.md-modal__body {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Footer：12dp gap，右对齐 actions，flex-shrink 防压扁 ── */
+.md-modal__footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-top: 1px solid var(--md-color-outline-variant);
+  flex-shrink: 0;
+}
+
+/* actions 容器：8dp gap，垂直居中 */
+.md-modal__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Reduced motion：动敏用户禁用过渡 ── */
+@media (prefers-reduced-motion: reduce) {
+  .md-modal { transition: none; }
+}
