@@ -36,8 +36,8 @@
 
 - [x] **COMPO-01**: 按钮 4 变体（Filled/Tonal/Outlined/Text）+ 3 尺寸（Small/Medium/Large）— 替换现有 `.btn-primary/.btn-secondary/.btn-outline` 三档
 - [x] **COMPO-02**: IconButton 组件（40dp 默认 / 48dp FAB-density）— 替换现有 `.btn-icon`
-- [ ] **COMPO-03**: 卡片 3 变体（Elevated/Filled/Outlined）— 替换现有 `.card/.dish-card/.wish-card`
-- [ ] **COMPO-04**: 输入框 2 变体（Outlined/Filled） + 错误态辅助文本 — 替换现有 `.form-input`
+- [x] **COMPO-03**: 卡片 3 变体（Elevated/Filled/Outlined）— 替换现有 `.card/.dish-card/.wish-card`
+- [x] **COMPO-04**: 输入框 2 变体（Outlined/Filled） + 错误态辅助文本 — 替换现有 `.form-input`
 - [x] **COMPO-05**: FAB / Extended FAB / Small FAB — 替换现有 `.fab`
 - [ ] **COMPO-06**: Badge（assist/filter/state）— 替换现有 `.badge/.badge-count`
 - [ ] **COMPO-07**: Chip（assist/filter/input/suggestion）— 替换现有 `.filter-chip`
@@ -98,8 +98,8 @@
 | MOTION-05 | Phase 8 | Pending |
 | COMPO-01 | Phase 10 | Complete |
 | COMPO-02 | Phase 10 | Complete |
-| COMPO-03 | Phase 10 | Pending |
-| COMPO-04 | Phase 10 | Pending |
+| COMPO-03 | Phase 10 | Complete |
+| COMPO-04 | Phase 10 | Complete |
 | COMPO-05 | Phase 10 | Complete |
 | COMPO-06 | Phase 10 | Pending |
 | COMPO-07 | Phase 10 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T01:26:04.834Z"
+last_updated: "2026-07-28T02:08:58.104Z"
 last_activity: 2026-07-28
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 25
 ---
 
 # Project State
@@ -36,10 +36,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 10 (primitive-components) — EXECUTING
-Plan: 2 of 3 (10-01 complete; 10-02 next)
+Plan: 3 of 3 (10-01 complete; 10-02 next)
 Next: 10-02-PLAN.md — Card + Input primitives (Wave 2)
 Working branch: `feature/ui-rebuild` (a3b6c40 — 10-01 done)
-Last activity: 2026-07-28 — 10-01 SUMMARY written
+Last activity: 2026-07-28
 
 ## Deferred Items
 
@@ -59,8 +59,8 @@ Items acknowledged and carried forward from v1.1 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-28T01:26:04.825Z
-Stopped at: Completed 10-01-PLAN.md (Button+IconButton+FAB primitives + Icon SVG tree-shaking + Ripple migration + 41 consumer migrations + legacy CSS purge)
+Last session: 2026-07-28T02:05:41.838Z
+Stopped at: Completed 10-02-PLAN.md
 Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-components)，在 `feature/ui-rebuild` 分支上进行
 
 ## Quick Tasks Completed
@@ -90,6 +90,7 @@ Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-comp
 | Phase 09 P01 | 6min | 3 tasks | 10 files |
 | Phase 09 P02 | 25min | 3 tasks | 4 files |
 | Phase 10 P01 | 90min | 3 tasks | 41 files |
+| Phase 10 P02 | 97 | 2 tasks | 16 files |
 
 ## Decisions
 
@@ -122,3 +123,6 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase ?]: Phase 10-01: @material-symbols-svg/react@^1.0.38 (plan spec) does not exist on npm — installed 0.13.0 and remapped Icon imports (Place→LocationOn, FavoriteBorder→Favorite outline / Favorite→FavoriteFill filled) — Plan referenced RESEARCH.md spec for v1.0.38; actual latest on npm is 0.13.0 with different export names. Build was broken until imports matched real exports.
 - [Phase ?]: Phase 10-01: Internal Ripple pattern (D-12) — Button/IconButton/FAB wrap Ripple internally; external Ripple.jsx public API unchanged for Phase 10-out-of-scope composites (WishCard/DishCard/Sidebar) — Avoids breaking existing Ripple consumers while letting new primitives own their ripple lifecycle.
 - [Phase ?]: Phase 10-01: .fab className reduced to placement-only (position/bottom/right/z-index); all visual properties moved to .md-fab primitive — UI-SPEC §14 mandates FAB primitive not own position:fixed; placement by page consumer via className.
+- [Phase 10]: Phase 10-02: .form-input retained per SC-10 deviation — Plan BLOCKER 1 WARNING 1: select not in scope for Input primitive (Phase 10); deferred to Phase 11 Select primitive. Non-select form-input classNames all migrated to Input primitive (0 residual). Plan's <objective> deviation note explicitly documents this.
+- [Phase 10]: Phase 10-02: .field-trigger utility class added — Plan SC-10 deviation requires 0 non-select form-input classNames. <div className='form-input'> button-triggers (4 in AdminDishesPage + ChefDishesPage) needed visual preservation. Added .field-trigger class near .form-input with role='button'+tabIndex+keyboard activation; sentinel-isolated for 10-03 concurrent safety.
+- [Phase 10]: Phase 10-02: Domain cards refactored to slot-based thin wrappers (D-13) — DishCard/WishCard/GuestDishCard now compose <Card variant='elevated' image={...} footer={...}>{body}</Card>; visual styles moved to inline style={} in domain code; Card primitive owns all MD3 visual compliance (elevation 1→2 hover, 16dp radius, ripple/state when clickable). 30+ lines of .wish-card-* / .dish-card-* CSS deleted; intent is self-documenting domain code.
