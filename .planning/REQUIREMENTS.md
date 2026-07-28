@@ -41,7 +41,7 @@
 - [x] **COMPO-05**: FAB / Extended FAB / Small FAB — 替换现有 `.fab`
 - [x] **COMPO-06**: Badge（assist/filter/state）— 替换现有 `.badge/.badge-count`
 - [x] **COMPO-07**: Chip（assist/filter/input/suggestion）— 替换现有 `.filter-chip`
-- [ ] **COMPO-08**: Modal / Dialog（Basic / Full-screen） — 替换现有 Modal 系列
+- [x] **COMPO-08**: Modal / Dialog（Basic / Full-screen） — 替换现有 Modal 系列
 - [ ] **COMPO-09**: Navigation Rail（SideBar） + Navigation Bar（BottomBar） MD3 化
 - [ ] **COMPO-10**: Snackbar / Toast — 替换现有 Toast 系统
 - [ ] **COMPO-11**: List Item（1-line/2-line/3-line + leading/trailing icon + divider） — 替换现有列表项
@@ -103,7 +103,7 @@
 | COMPO-05 | Phase 10 | Complete |
 | COMPO-06 | Phase 10 | Complete |
 | COMPO-07 | Phase 10 | Complete |
-| COMPO-08 | Phase 11 | Pending |
+| COMPO-08 | Phase 11 | Complete |
 | COMPO-09 | Phase 11 | Pending |
 | COMPO-10 | Phase 11 | Pending |
 | COMPO-11 | Phase 11 | Pending |
