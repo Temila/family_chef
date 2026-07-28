@@ -46,34 +46,11 @@ input, textarea, select { font-family: var(--md-font-body); }
 .state-focused:focus-visible::before    { opacity: var(--md-state-layer-focused); }    /* 12% */
 
 /* Container 背景变体（Primary-Container / Surface-Container 背景 → on-surface tint）— D-05 */
-.pc-sidebar-item.active::before,
 .wish-picker-item.active::before {
   background-color: var(--md-state-layer-on-surface);
 }
 
-/* Header */
-.header { position: sticky; top: 0; z-index: 100; background: var(--md-color-surface-container-low); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--md-color-outline-variant); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
-.header-title { font-family: var(--md-font-display); font-size: 1.125rem; font-weight: 600; color: var(--md-color-on-surface); }
-.header-back { display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--md-color-on-surface); font-size: 1.25rem; border-radius: var(--md-radius-full); transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
-.header-back::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.header-back:hover::before { opacity: var(--md-state-layer-hover); }
-.header-back:active::before { opacity: var(--md-state-layer-pressed); }
-.header-back:focus-visible::before { opacity: var(--md-state-layer-focused); }
-.header-actions { display: flex; gap: 8px; align-items: center; }
-
-/* Bottom Tab Bar */
-.bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: var(--md-color-surface); border-top: 1px solid var(--md-color-outline-variant); padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 200; display: flex; justify-content: space-around; align-items: center; height: var(--md-nav-height); }
-@media (min-width: 640px) { .bottom-bar { max-width: 768px; } }
-@media (min-width: 1024px) { .bottom-bar { max-width: 1200px; } }
-.tab-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 16px; cursor: pointer; border-radius: var(--md-radius-sm); transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); border: none; background: none; color: var(--md-color-on-surface-variant); position: relative; overflow: hidden; z-index: 0; }
-.tab-item .tab-icon { font-size: 1.3rem; position: relative; }
-.tab-item .tab-label { font-size: 0.65rem; font-weight: 500; }
-.tab-item::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.tab-item:hover::before { opacity: var(--md-state-layer-hover); }
-.tab-item:active::before { opacity: var(--md-state-layer-pressed); }
-.tab-item:hover { color: var(--md-color-on-surface-variant); }
-.tab-item.active { color: var(--md-color-primary); }
-.tab-item.active .tab-label { font-weight: 600; }
+/* 11-02-MIGRATION: Header / BottomBar / .tab-* 已迁移至 composites/Header.css / BottomBar.css */
 
 /* Buttons — MD3 primitives 接管（.md-button / .md-icon-button / .md-fab，见 components/primitives/）。
    旧 .btn / .btn-primary / .btn-secondary / .btn-outline / .btn-sm / .btn-lg / .btn-block
@@ -315,34 +292,10 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* ═══ PC Layout ═══════════════════════════════════════════════ */
 
+/* 11-02-MIGRATION: .pc-sidebar 已迁移至 composites/Sidebar.css (.md-sidebar 80dp) */
+/* 11-02-MIGRATION: .pc-main .bottom-bar display:none 块冗余（.md-bottom-bar 由 CSS @media 控制） */
+
 .pc-layout { display: flex; min-height: 100vh; }
-.pc-sidebar {
-  display: none; width: 240px; background: var(--md-color-surface-container-lowest); border-right: 1px solid var(--md-color-outline-variant);
-  flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto;
-}
-.pc-sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid var(--md-color-outline-variant); }
-.pc-sidebar-logo { font-family: var(--md-font-display); font-size: 1.4rem; font-weight: 700; color: var(--md-color-primary); }
-.pc-sidebar-subtitle { font-size: 0.75rem; color: var(--md-color-on-surface-variant); margin-top: 2px; }
-.pc-sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
-.pc-sidebar-item {
-  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: none;
-  background: none; color: var(--md-color-on-surface-variant); font-size: 0.9rem; border-radius: var(--md-radius-sm);
-  cursor: pointer; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); width: 100%; text-align: left;
-  position: relative; overflow: hidden; z-index: 0;
-}
-.pc-sidebar-item::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.pc-sidebar-item:hover::before { opacity: var(--md-state-layer-hover); }
-.pc-sidebar-item:active::before { opacity: var(--md-state-layer-pressed); }
-.pc-sidebar-item:hover { color: var(--md-color-on-surface); }
-.pc-sidebar-item.active { background: var(--md-color-primary-container); color: var(--md-color-primary); font-weight: 600; }
-.pc-sidebar-icon { font-size: 1.2rem; width: 28px; text-align: center; position: relative; }
-.pc-sidebar-footer { padding: 12px 8px; border-top: 1px solid var(--md-color-outline-variant); }
-.pc-sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 14px; margin-bottom: 8px; }
-.pc-sidebar-user-info { flex: 1; }
-.pc-sidebar-user-name { font-size: 0.85rem; font-weight: 600; color: var(--md-color-on-surface); }
-.pc-sidebar-user-role { font-size: 0.7rem; color: var(--md-color-on-surface-variant); }
-.pc-sidebar-footer-actions { display: flex; align-items: center; gap: 4px; }
-.pc-sidebar-footer-actions .theme-toggle { font-size: 0.9rem; }
 
 .pc-main { flex: 1; min-width: 0; }
 
@@ -361,10 +314,8 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 @media (min-width: 1024px) {
   #root { width: 100%; max-width: none; margin: 0; border-inline: none; }
-  .pc-sidebar { display: flex; }
-  .pc-main { margin-left: 0; padding-left: 240px; width: 100vw; min-height: 100vh; }
+  .pc-main { margin-left: 0; padding-left: 80px; width: 100vw; min-height: 100vh; }
   .pc-main .page-container { width: 100%; max-width: none; box-shadow: none; }
-  .pc-main .bottom-bar { display: none; }
   .pc-hide { display: none !important; }
   .pc-data-table-wrap { display: block; overflow-x: auto; }
   .mobile-card-list { display: none !important; }
@@ -392,12 +343,9 @@ input, textarea, select { font-family: var(--md-font-body); }
 .pc-data-table tbody tr::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .pc-data-table tbody tr:hover::before { opacity: var(--md-state-layer-hover); }
 
-/* ═══ Mobile override: hide sidebar, show bottom bar ═══════════════════ */
-@media (max-width: 1023px) {
-  .pc-layout { display: block; }
-  .pc-sidebar { display: none !important; }
-  .pc-main { padding-left: 0; width: 100%; }
-}
+/* ═══ Mobile override: hide sidebar (now .md-sidebar), show bottom bar ═══════════════════ */
+/* 11-02-MIGRATION: .pc-sidebar 已迁移至 composites/Sidebar.css，display:none 由该 CSS @media (max-width: 1023px) 接管
+   .pc-layout 在 mobile 端不再需要 display:block 覆写（flex 在 mobile 上本身就不影响布局） */
 
 /* ═══ Modal — 11-01-MIGRATION: 已迁移至 <Modal> composite (composites/Modal.css) ═══ */
 
@@ -524,9 +472,9 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* .fab:focus-visible 已删除 — FAB 视觉由 .md-fab primitive 接管（focus-visible outer ring） */
 
 /* === Phase 9 扩展焦点环消费者（MOTION-04） === */
-.header-back:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
-.tab-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
-.pc-sidebar-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
+/* 11-02-MIGRATION: .header-back / .tab-item / .pc-sidebar-item focus-visible 已删除
+   - .md-sidebar__item / .md-tab 已通过 .md-interactive 基类的 :focus-visible::before 取得焦点环
+   - .md-header__avatar / .md-header__menu-item 已在 composites/Header.css 显式 focus-visible */
 .theme-toggle:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .qty-stepper button:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .menu-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
@@ -558,8 +506,7 @@ input, textarea, select { font-family: var(--md-font-body); }
  * ════════════════════════════════════════════════════════════════════ */
 button, a, input, select, textarea,
 [role="button"], [tabindex]:not([tabindex="-1"]),
-.list-item, .tab-item,
-.pc-sidebar-item, .header-back,
+.list-item,
 .theme-toggle, .qty-stepper button,
 .menu-item, .chef-select-item, .wish-picker-item,
 .guest-add-btn, .preference-tag button,
@@ -567,6 +514,12 @@ button, a, input, select, textarea,
   min-width: 48px;
   min-height: 48px;
 }
+
+/* 11-02-MIGRATION: .tab-item / .pc-sidebar-item / .header-back 已从 48dp 全局列表移除
+   - .md-tab: 80dp 高度（--md-nav-height），由 .md-bottom-bar 容器保证
+   - .md-sidebar__item: 80px 高度，由 .md-sidebar 主样式块直接定义
+   - .md-header__avatar: 40×40dp 视觉 + Cascade by .md-header__avatar:focus-visible 焦点环
+   - .md-header__menu-item: 10px×16px padding + 12px gap 由内容决定，已 ≥48dp 高度 */
 
 /* ════════════════════════════════════════════════════════════════════
  * 已知极小组件 padding 补偿（视觉尺寸保持原状，触控区扩展至 48dp）
@@ -588,11 +541,7 @@ button, a, input, select, textarea,
   min-height: 48px;
 }
 
-/* 3. header-back: 原 36x36 → 48x48 hit area */
-.header-back {
-  min-width: 48px;
-  min-height: 48px;
-}
+/* 3. header-back — 11-02-MIGRATION: 已删除 (Header 改用 <IconButton> primitive, 48dp hit 由 primitive 保证) */
 
 /* 4. modal-close — 11-01-MIGRATION: 已删除 (<Modal> composite md-modal__close 自带 48dp hit box) */
 
