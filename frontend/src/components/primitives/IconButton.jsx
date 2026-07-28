@@ -41,7 +41,7 @@ const IconButton = forwardRef(function IconButton({
   ].filter(Boolean).join(' ');
 
   return (
-    <Ripple disabled={disabled}>
+    <Ripple mode="self" disabled={disabled}>
       <button
         ref={ref}
         type={type}

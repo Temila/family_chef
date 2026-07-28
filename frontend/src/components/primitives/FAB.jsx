@@ -52,7 +52,7 @@ const FAB = forwardRef(function FAB({
   const iconSize = visualSize === 'small' ? 16 : 24;
 
   return (
-    <Ripple disabled={disabled}>
+    <Ripple mode="self" disabled={disabled}>
       <button
         ref={ref}
         type={type}

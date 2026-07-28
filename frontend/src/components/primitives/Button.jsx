@@ -40,7 +40,7 @@ const Button = forwardRef(function Button({
   const iconSize = size === 'sm' ? 16 : (size === 'lg' ? 20 : 18);
 
   return (
-    <Ripple disabled={disabled || loading}>
+    <Ripple mode="self" disabled={disabled || loading}>
       <button
         ref={ref}
         type={type}
