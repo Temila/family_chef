@@ -15,6 +15,7 @@ import InvitationsModal from './InvitationsModal';
 import ChefSelectModal from './ChefSelectModal';
 import CreateLinkModal from './CreateLinkModal';
 import ConfirmModal from './ConfirmModal';
+import Button from './primitives/Button';
 
 export default function InvitationsSection() {
   const { user } = useAuth();
@@ -124,9 +125,9 @@ export default function InvitationsSection() {
       >
         <span>邀请访客</span>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button className="btn btn-primary btn-sm" onClick={handleCreateClick}>
+          <Button variant="filled" size="sm" onClick={handleCreateClick}>
             创建邀请
-          </button>
+          </Button>
           {invitations.length > 0 && (
             <button
               onClick={() => setShowFullList(true)}
@@ -202,8 +203,9 @@ export default function InvitationsSection() {
                   >
                     📋
                   </button>
-                  <button
-                    className="btn btn-outline btn-sm"
+                  <Button
+                    variant="outlined"
+                    size="sm"
                     style={{
                       borderColor: 'var(--md-color-error)',
                       color: 'var(--md-color-error)',
@@ -211,7 +213,7 @@ export default function InvitationsSection() {
                     onClick={() => setRevokeTarget(inv)}
                   >
                     撤销
-                  </button>
+                  </Button>
                 </>
               )}
             </div>

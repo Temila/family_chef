@@ -2,6 +2,8 @@
  * GuestDishCard Component - 访客菜品卡片
  */
 
+import Button from './primitives/Button';
+
 export default function GuestDishCard({ dish, quantity, onAdd, onRemove }) {
   return (
     <div className="dish-card">
@@ -24,12 +26,15 @@ export default function GuestDishCard({ dish, quantity, onAdd, onRemove }) {
         <div className="dish-card-footer">
           <span />
           {quantity === 0 ? (
-            <button
-              className="btn btn-primary btn-sm guest-add-btn"
+            <Button
+              variant="filled"
+              size="sm"
+              className="guest-add-btn"
+              aria-label="加入点菜"
               onClick={() => onAdd(dish)}
             >
               +
-            </button>
+            </Button>
           ) : (
             <div className="qty-stepper">
               <button onClick={() => onRemove(dish.id)}>−</button>

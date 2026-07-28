@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from './primitives/Button';
 import { formatDate } from '../utils';
 
 export default function InvitationsModal({
@@ -104,8 +105,9 @@ export default function InvitationsModal({
                       >
                         📋
                       </button>
-                      <button
-                        className="btn btn-outline btn-sm"
+                      <Button
+                        variant="outlined"
+                        size="sm"
                         style={{
                           borderColor: 'var(--md-color-error)',
                           color: 'var(--md-color-error)',
@@ -116,7 +118,7 @@ export default function InvitationsModal({
                         }}
                       >
                         撤销
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>

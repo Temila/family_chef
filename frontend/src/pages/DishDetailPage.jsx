@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
+import Button from '../components/primitives/Button';
 
 export default function DishDetailPage() {
   const { id } = useParams();
@@ -223,12 +224,12 @@ export default function DishDetailPage() {
             <span className="qty-value">{quantity}</span>
             <button onClick={() => setQuantity(quantity + 1)}>+</button>
           </div>
-          <button
-            className="btn btn-primary"
+          <Button
+            variant="filled"
             onClick={handleAddToCart}
           >
             加入已点菜品 · {quantity}份
-          </button>
+          </Button>
         </div>
       )}
 

@@ -12,6 +12,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
 
 export default function ChefOrdersPage() {
@@ -139,40 +140,48 @@ export default function ChefOrdersPage() {
               {/* Action Buttons */}
               {order.status === 'pending' && (
                 <div className="flex gap-3 mt-4" onClick={e => e.stopPropagation()}>
-                  <button
-                    className="btn btn-outline btn-sm flex-1"
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => handleUpdateStatus(order.id, 'cancelled')}
                   >
                     拒绝
-                  </button>
-                  <button
-                    className="btn btn-primary btn-sm flex-1"
+                  </Button>
+                  <Button
+                    variant="filled"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => handleUpdateStatus(order.id, 'cooking')}
                   >
                     开始烹饪
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {order.status === 'cooking' && (
                 <div className="flex gap-3 mt-4" onClick={e => e.stopPropagation()}>
-                  <button
-                    className="btn btn-primary btn-sm btn-block"
+                  <Button
+                    variant="filled"
+                    size="sm"
+                    style={{ width: '100%' }}
                     onClick={() => handleUpdateStatus(order.id, 'completed')}
                   >
                     完成订单
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {order.status === 'completed' && (
                 <div className="flex gap-3 mt-4">
-                  <button
-                    className="btn btn-secondary btn-sm btn-block"
+                  <Button
+                    variant="tonal"
+                    size="sm"
                     disabled
+                    style={{ width: '100%' }}
                   >
                     已完成
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

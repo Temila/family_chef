@@ -11,6 +11,7 @@ import { useToast } from '../contexts/ToastContext';
 import { trapFocusWithin } from '../utils';
 import Loading from './Loading';
 import EmptyState from './EmptyState';
+import Button from './primitives/Button';
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -195,12 +196,12 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>
+            <Button variant="tonal" onClick={onClose} disabled={submitting}>
               暂不推进
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={selectedDishId == null || submitting}>
+            </Button>
+            <Button type="submit" variant="filled" disabled={selectedDishId == null || submitting}>
               确认推进
-            </button>
+            </Button>
           </div>
         </form>
       </div>

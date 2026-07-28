@@ -9,6 +9,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function AdminDishesPage() {
   const { user, isAdmin, isChef } = useAuth();
@@ -447,12 +448,12 @@ export default function AdminDishesPage() {
         title="菜品管理"
         actions={
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn btn-secondary btn-sm" onClick={openExtractModal}>
+            <Button variant="tonal" size="sm" onClick={openExtractModal}>
               📝 解析文本
-            </button>
-            <button className="btn btn-primary btn-sm" onClick={() => openCreate()}>
+            </Button>
+            <Button variant="filled" size="sm" onClick={() => openCreate()}>
               + 添加
-            </button>
+            </Button>
           </div>
         }
       />
@@ -467,19 +468,20 @@ export default function AdminDishesPage() {
           onKeyDown={(e) => e.key === 'Enter' && loadDishes()}
         />
         <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
-          <button className="btn btn-primary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={loadDishes}>搜索</button>
-          <button className="btn btn-secondary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => { setSearchQuery(''); setAdvCategoryIds([]); }}>清空</button>
+          <Button variant="filled" size="sm" className="btn-search" onClick={loadDishes}>搜索</Button>
+          <Button variant="tonal" size="sm" className="btn-search" onClick={() => { setSearchQuery(''); setAdvCategoryIds([]); }}>清空</Button>
         </div>
       </div>
 
       <div style={{ padding: '0 16px 4px' }}>
-        <button
-          className="btn btn-secondary btn-sm"
-          style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+        <Button
+          variant="tonal"
+          size="sm"
+          className="btn-search"
           onClick={() => setShowAdvFilter(!showAdvFilter)}
         >
           {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
-        </button>
+        </Button>
       </div>
 
       {showAdvFilter && (
@@ -593,13 +595,13 @@ export default function AdminDishesPage() {
                     <td><Badge status={dish.status} /></td>
                     <td>
                       <div className="pc-action-btns">
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleToggleEnabled(dish)}>
+                        <Button variant="tonal" size="sm" onClick={() => handleToggleEnabled(dish)}>
                           {dish.status === 'enabled' ? '禁用' : '启用'}
-                        </button>
-                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(dish)}>编辑</button>
-                        <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
+                        </Button>
+                        <Button variant="outlined" size="sm" onClick={() => openEdit(dish)}>编辑</Button>
+                        <Button variant="outlined" size="sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
                           删除
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -658,13 +660,13 @@ export default function AdminDishesPage() {
                     </div>
                   )}
                   <div className="flex gap-3">
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleToggleEnabled(dish)}>
+                    <Button variant="tonal" size="sm" onClick={() => handleToggleEnabled(dish)}>
                       {dish.status === 'enabled' ? '禁用' : '启用'}
-                    </button>
-                    <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(dish)}>编辑</button>
-                    <button className="btn btn-outline btn-sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
+                    </Button>
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(dish)}>编辑</Button>
+                    <Button variant="outlined" size="sm" onClick={() => handleDelete(dish.id)} style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>
                       删除
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -896,8 +898,8 @@ export default function AdminDishesPage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowDishModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSave}>保存</button>
+              <Button variant="tonal" onClick={() => setShowDishModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSave}>保存</Button>
             </div>
           </div>
         </div>
@@ -943,13 +945,14 @@ export default function AdminDishesPage() {
                   !
                 </span>
               </div>
-              <button
-                className="btn btn-primary btn-block"
+              <Button
+                variant="filled"
+                loading={extracting}
+                style={{ width: '100%' }}
                 onClick={handleExtract}
-                disabled={extracting}
               >
-                {extracting ? '解析中...' : '开始解析'}
-              </button>
+                开始解析
+              </Button>
 
               {parseResult && (
                 <div style={{ marginTop: 16 }}>
@@ -986,24 +989,24 @@ export default function AdminDishesPage() {
 
                   {hasNewIngredients && (
                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                      <button className="btn btn-outline btn-sm" onClick={handleGoToAddIngredient}>
+                      <Button variant="outlined" size="sm" onClick={handleGoToAddIngredient}>
                         ➕ 去添加新食材
-                      </button>
+                      </Button>
                     </div>
                   )}
 
                   {hasAnyIngredients && (
                     <div style={{ marginTop: 8 }}>
-                      <button className="btn btn-primary btn-sm" onClick={handleNextStepFromExtract}>
+                      <Button variant="filled" size="sm" onClick={handleNextStepFromExtract}>
                         下一步 → 创建菜品
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowExtractModal(false)}>关闭</button>
+              <Button variant="tonal" onClick={() => setShowExtractModal(false)}>关闭</Button>
             </div>
           </div>
         </div>
@@ -1135,10 +1138,10 @@ export default function AdminDishesPage() {
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowAddIngModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleBatchImport} disabled={batchImporting}>
-                {batchImporting ? '导入中...' : '确认导入'}
-              </button>
+              <Button variant="tonal" onClick={() => setShowAddIngModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleBatchImport} loading={batchImporting}>
+                确认导入
+              </Button>
             </div>
           </div>
         </div>

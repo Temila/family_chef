@@ -4,6 +4,7 @@
  */
 
 import { useToast } from '../contexts/ToastContext';
+import Button from './primitives/Button';
 
 export default function CreateLinkModal({ linkUrl, onClose }) {
   const { showToast } = useToast();
@@ -83,26 +84,26 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
             2小时内有效
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              className="btn btn-primary"
+            <Button
+              variant="filled"
               style={{ flex: 1 }}
               onClick={handleCopy}
             >
               📋 复制链接
-            </button>
-            <button
-              className="btn btn-outline"
+            </Button>
+            <Button
+              variant="outlined"
               style={{ flex: 1 }}
               onClick={handleShare}
             >
               🚀 分享
-            </button>
+            </Button>
           </div>
         </div>
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>
+          <Button variant="tonal" onClick={onClose}>
             完成
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function AdminCategoriesPage() {
   const { showToast } = useToast();
@@ -106,7 +107,7 @@ export default function AdminCategoriesPage() {
     <div className="page-container">
       <Header
         title="分类管理"
-        actions={<button className="btn btn-primary btn-sm" onClick={openCreate}>+ 添加</button>}
+        actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
       />
 
       <div className="filter-chips">
@@ -151,14 +152,15 @@ export default function AdminCategoriesPage() {
                       <td>{item.is_active ? '✅' : '❌'}</td>
                       <td>
                         <div className="pc-action-btns">
-                          <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>编辑</button>
-                          <button
-                            className="btn btn-outline btn-sm"
+                          <Button variant="outlined" size="sm" onClick={() => openEdit(item)}>编辑</Button>
+                          <Button
+                            variant="outlined"
+                            size="sm"
                             onClick={() => handleDelete(item.id)}
                             style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -184,14 +186,15 @@ export default function AdminCategoriesPage() {
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(item)}>编辑</button>
-                      <button
-                        className="btn btn-outline btn-sm"
+                      <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(item)}>编辑</Button>
+                      <Button
+                        variant="outlined"
+                        size="sm"
                         onClick={() => handleDelete(item.id)}
                         style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       >
                         删除
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -244,8 +247,8 @@ export default function AdminCategoriesPage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSave}>保存</button>
+              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSave}>保存</Button>
             </div>
           </div>
         </div>

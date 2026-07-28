@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
+import Button from '../components/primitives/Button';
 import { marked } from 'marked';
 
 const mealTypeMap = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', now: '现在就想吃' };
@@ -55,7 +56,7 @@ export default function OrderDetailPage() {
   return (
     <div className="page-container">
       <Header title={`订单 #${order.id}`} actions={
-          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/chef/orders')}>← 返回</button>
+          <Button variant="tonal" size="sm" onClick={() => navigate('/chef/orders')}>← 返回</Button>
         } />
 
       <section className="section">
@@ -155,15 +156,15 @@ export default function OrderDetailPage() {
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
             {order.status === 'pending' && (
               <>
-                <button className="btn btn-outline flex-1" onClick={() => handleUpdateStatus('cancelled')}>拒绝</button>
-                <button className="btn btn-primary flex-1" onClick={() => handleUpdateStatus('cooking')}>开始烹饪</button>
+                <Button variant="outlined" className="flex-1" onClick={() => handleUpdateStatus('cancelled')}>拒绝</Button>
+                <Button variant="filled" className="flex-1" onClick={() => handleUpdateStatus('cooking')}>开始烹饪</Button>
               </>
             )}
             {order.status === 'accepted' && (
-              <button className="btn btn-primary btn-block" onClick={() => handleUpdateStatus('cooking')}>开始烹饪</button>
+              <Button variant="filled" style={{ width: '100%' }} onClick={() => handleUpdateStatus('cooking')}>开始烹饪</Button>
             )}
             {order.status === 'cooking' && (
-              <button className="btn btn-primary btn-block" onClick={() => handleUpdateStatus('completed')}>完成订单</button>
+              <Button variant="filled" style={{ width: '100%' }} onClick={() => handleUpdateStatus('completed')}>完成订单</Button>
             )}
           </div>
         )}

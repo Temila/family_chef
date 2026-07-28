@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Button Styles (Phase 10 — COMPO-01)
+   4 variants × 3 sizes + loading spinner + focus ring
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import './base.css';
+
+/* ── Root .md-button ──
+   padding/height 走 md-button--{size} 覆盖；
+   base.css .md-interactive 提供 isolation + state-layer ::before。 */
+.md-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--md-radius-sm);
+  font-family: var(--md-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  position: relative;
+  cursor: pointer;
+  color: var(--md-color-on-primary);
+  background: var(--md-color-primary);
+  transition: color var(--md-motion-duration-short) var(--md-motion-easing-standard),
+              background var(--md-motion-duration-short) var(--md-motion-easing-standard),
+              border-color var(--md-motion-duration-short) var(--md-motion-easing-standard),
+              box-shadow var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+
+/* ── Variants ── */
+.md-button--filled {
+  background: var(--md-color-primary);
+  color: var(--md-color-on-primary);
+  box-shadow: var(--md-elevation-1);
+  --md-component-state-color: var(--md-state-layer-primary);
+}
+.md-button--filled:focus-visible {
+  outline: var(--md-focus-ring-inner);
+  outline-offset: 2px;
+}
+
+.md-button--tonal {
+  background: var(--md-color-secondary-container);
+  color: var(--md-color-on-secondary-container);
+  border-color: transparent;
+  --md-component-state-color: var(--md-state-layer-on-surface);
+}
+.md-button--tonal:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+.md-button--outlined {
+  background: transparent;
+  color: var(--md-color-primary);
+  border-color: var(--md-color-outline);
+  --md-component-state-color: var(--md-state-layer-primary);
+}
+.md-button--outlined:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+.md-button--text {
+  background: transparent;
+  color: var(--md-color-primary);
+  border-color: transparent;
+  padding-inline: 12px;
+  --md-component-state-color: var(--md-state-layer-primary);
+}
+.md-button--text:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* ── Sizes (visual height; hit box always 48dp via base.css) ── */
+.md-button--sm {
+  min-block-size: 32px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+.md-button--md {
+  min-block-size: 40px;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.md-button--lg {
+  min-block-size: 48px;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* ── Loading spinner ── */
+.md-button--loading {
+  cursor: wait;
+}
+.md-button__spinner {
+  animation: md-spin 0.8s linear infinite;
+}
+@keyframes md-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Disabled (base.css 全局 :disabled 已设 opacity 0.38；此处补 box-shadow reset) ── */
+.md-button:disabled,
+.md-button[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Reduced motion：spinner 降速（保留进度指示，不隐藏） ── */
+@media (prefers-reduced-motion: reduce) {
+  .md-button__spinner { animation-duration: 6s; }
+}

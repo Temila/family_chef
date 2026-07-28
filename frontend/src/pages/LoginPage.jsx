@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import ThemeToggle from '../components/ThemeToggle';
 import PasswordInput from '../components/PasswordInput';
+import Button from '../components/primitives/Button';
 import { theme } from '../utils';
 
 export default function LoginPage() {
@@ -73,13 +74,14 @@ export default function LoginPage() {
           {loginError && (
             <div className="form-error show">{loginError}</div>
           )}
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary btn-block btn-lg"
-            style={{ marginTop: '8px' }}
+            variant="filled"
+            size="lg"
+            style={{ marginTop: '8px', width: '100%' }}
           >
             登 录
-          </button>
+          </Button>
         </form>
       </div>
     </div>

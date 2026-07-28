@@ -18,7 +18,8 @@ import {
   ArrowForward as ArrowForwardIcon,
   MoreVert as MoreVertIcon,
   MoreHoriz as MoreHorizIcon,
-  Place as PlaceIcon,
+  // 注：包内无 Place 导出（@material-symbols-svg/react@0.13.0），改用语义等价的 LocationOn（Material "place pin" 图标）
+  LocationOn as PlaceIcon,
   // Actions
   Search as SearchIcon,
   Add as AddIcon,
@@ -35,7 +36,10 @@ import {
   Person as PersonIcon,
   SoupKitchen as ChefIcon,
   // Status
-  Favorite as FavoriteIcon,
+  // 注：包内无 FavoriteBorder 导出（@material-symbols-svg/react@0.13.0）。
+  //   favorite -> FavoriteFill（实心红心，表示"已收藏"）
+  //   favorite-border -> Favorite（描边红心，表示"未收藏"）
+  FavoriteFill as FavoriteIcon,
   Star as StarIcon,
   Schedule as ScheduleIcon,
   Notifications as NotificationsIcon,
@@ -51,7 +55,7 @@ import {
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
   ContentCopy as ContentCopyIcon,
-  FavoriteBorder as FavoriteBorderIcon,
+  Favorite as FavoriteBorderIcon,
 } from '@material-symbols-svg/react';
 
 // 静态映射表：调用方 name → 内部 SVG 组件

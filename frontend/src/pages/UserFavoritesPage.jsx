@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function UserFavoritesPage() {
   const navigate = useNavigate();
@@ -66,13 +67,14 @@ export default function UserFavoritesPage() {
                 </div>
                 <div className="dish-card-body">
                   <div className="dish-card-name">{dish.name}</div>
-                  <button
-                    className="btn btn-outline btn-sm btn-block"
-                    style={{ marginTop: 6 }}
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    style={{ marginTop: 6, width: '100%' }}
                     onClick={(e) => { e.stopPropagation(); handleRemoveFavorite(dish); }}
                   >
                     取消收藏
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

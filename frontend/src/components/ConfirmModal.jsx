@@ -7,6 +7,7 @@
 
 import { useEffect, useRef } from 'react';
 import { trapFocusWithin } from '../utils';
+import Button from './primitives/Button';
 
 export default function ConfirmModal({
   title,
@@ -81,13 +82,12 @@ export default function ConfirmModal({
           {message}
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={confirming}>
+          <Button variant="tonal" onClick={onCancel} disabled={confirming}>
             {cancelText}
-          </button>
-          <button
+          </Button>
+          <Button
             ref={confirmRef}
-            type="button"
-            className={danger ? 'btn btn-outline' : 'btn btn-primary'}
+            variant={danger ? 'outlined' : 'filled'}
             style={
               danger
                 ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }
@@ -97,7 +97,7 @@ export default function ConfirmModal({
             disabled={confirming}
           >
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

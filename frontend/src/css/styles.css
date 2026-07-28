@@ -46,7 +46,6 @@ input, textarea, select { font-family: var(--md-font-body); }
 .state-focused:focus-visible::before    { opacity: var(--md-state-layer-focused); }    /* 12% */
 
 /* Container 背景变体（Primary-Container / Surface-Container 背景 → on-surface tint）— D-05 */
-.btn-primary::before,
 .pc-sidebar-item.active::before,
 .filter-chip.active::before,
 .wish-picker-item.active::before {
@@ -77,31 +76,12 @@ input, textarea, select { font-family: var(--md-font-body); }
 .tab-item.active { color: var(--md-color-primary); }
 .tab-item.active .tab-label { font-weight: 600; }
 
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border: none; border-radius: var(--md-radius-full); font-size: 0.875rem; font-weight: 500; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); white-space: nowrap; position: relative; overflow: hidden; z-index: 0; }
-.btn::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.btn:hover::before { opacity: var(--md-state-layer-hover); }
-.btn:active::before { opacity: var(--md-state-layer-pressed); }
-.btn-primary { background: var(--md-color-primary); color: var(--md-color-on-primary); box-shadow: var(--md-elevation-1); }
-/* D-07: btn-primary 不再 translateY / brightness — 仅 Ripple 反馈 */
-.btn-secondary { background: var(--md-color-surface-container); color: var(--md-color-on-surface); border: 1px solid var(--md-color-outline-variant); position: relative; overflow: hidden; z-index: 0; }
-.btn-secondary::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.btn-secondary:hover::before { opacity: var(--md-state-layer-hover); }
-.btn-secondary:active::before { opacity: var(--md-state-layer-pressed); }
-.btn-secondary:hover { border-color: var(--md-color-outline); }
-.btn-outline { background: transparent; color: var(--md-color-primary); border: 1px solid var(--md-color-outline); position: relative; overflow: hidden; z-index: 0; }
-.btn-outline::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.btn-outline:hover::before { opacity: var(--md-state-layer-hover); }
-.btn-outline:active::before { opacity: var(--md-state-layer-pressed); }
-.btn-icon { width: 48px; height: 48px; padding: 0; border-radius: var(--md-radius-full); background: var(--md-color-surface-container); border: 1px solid var(--md-color-outline-variant); color: var(--md-color-on-surface-variant); display: flex; align-items: center; justify-content: center; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); position: relative; overflow: hidden; z-index: 0; }
-.btn-icon::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.btn-icon:hover::before { opacity: var(--md-state-layer-hover); }
-.btn-icon:active::before { opacity: var(--md-state-layer-pressed); }
-.btn-icon:hover { color: var(--md-color-on-surface); border-color: var(--md-color-outline); }
-.btn-icon.active { color: var(--md-color-primary); border-color: var(--md-color-primary); background: var(--md-color-primary-container); }
-.btn-sm { padding: 6px 14px; font-size: 0.8rem; }
-.btn-lg { padding: 14px 28px; font-size: 1rem; }
-.btn-block { width: 100%; }
+/* Buttons — MD3 primitives 接管（.md-button / .md-icon-button / .md-fab，见 components/primitives/）。
+   旧 .btn / .btn-primary / .btn-secondary / .btn-outline / .btn-sm / .btn-lg / .btn-block
+   已在 Phase 10 删除；调用方迁移至 <Button> primitive。
+   .btn-search 保留：项目专用紧凑搜索按钮工具类（CONTEXT D-03），与 primitive <Button className="btn-search"> 配合。 */
+.btn-search { padding: 4px 10px; font-size: 0.75rem; min-block-size: 32px; min-inline-size: 48px; }
+
 /* D-10: Disabled 统一规则 —— opacity 0.38, 保留键盘可聚焦性（不设 pointer-events: none） */
 :disabled, [disabled], [aria-disabled="true"] { opacity: 0.38; cursor: not-allowed; box-shadow: none; }
 
@@ -565,7 +545,6 @@ input, textarea, select { font-family: var(--md-font-body); }
 :focus:not(:focus-visible) { outline: none; }
 
 /* 表面背景交互元素 —— 使用外环 (--md-focus-ring-outer: On-Primary) */
-.btn:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .filter-chip:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 .list-item:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: -2px; }
 .dish-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
@@ -573,7 +552,6 @@ input, textarea, select { font-family: var(--md-font-body); }
 .order-card:focus-visible { outline: var(--md-focus-ring-outer); outline-offset: 2px; }
 
 /* 填充背景交互元素 (Primary 背景) —— 使用内环 (--md-focus-ring-inner: Surface)，确保环在主色背景上可见 */
-.btn-primary:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
 .filter-chip.active:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
 .fab:focus-visible { outline: var(--md-focus-ring-inner); outline-offset: 2px; }
 
@@ -613,7 +591,7 @@ input, textarea, select { font-family: var(--md-font-body); }
  * ════════════════════════════════════════════════════════════════════ */
 button, a, input, select, textarea,
 [role="button"], [tabindex]:not([tabindex="-1"]),
-.btn, .btn-icon, .list-item, .tab-item,
+.list-item, .tab-item,
 .filter-chip, .pc-sidebar-item, .header-back,
 .theme-toggle, .modal-close, .qty-stepper button,
 .fab, .menu-item, .chef-select-item, .wish-picker-item,

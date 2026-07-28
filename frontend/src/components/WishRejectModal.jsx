@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { trapFocusWithin } from '../utils';
+import Button from './primitives/Button';
 
 const MAX_REASON = 500;
 
@@ -110,17 +111,17 @@ export default function WishRejectModal({ onClose, onSuccess }) {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>
+            <Button variant="tonal" onClick={onClose} disabled={submitting}>
               暂不拒绝
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="btn"
+              variant="filled"
               style={{ background: 'var(--md-color-error)', color: 'var(--md-color-on-error)' }}
               disabled={!isValid || submitting}
             >
               确认拒绝
-            </button>
+            </Button>
           </div>
         </form>
       </div>

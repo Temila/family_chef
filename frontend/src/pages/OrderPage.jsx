@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function OrderPage() {
   const navigate = useNavigate();
@@ -475,15 +476,16 @@ export default function OrderPage() {
                           </button>
                         </div>
                         {!isAdmin && (
-                          <button
-                            className="btn btn-primary btn-sm"
+                          <Button
+                            variant="filled"
+                            size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddToCart(dish);
                             }}
                           >
                             点菜
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -515,13 +517,15 @@ export default function OrderPage() {
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
             </span>
           </div>
-          <button
-            className="btn btn-primary btn-sm"
+          <Button
+            variant="filled"
+            size="sm"
+            loading={submitting}
             onClick={handleConfirmOrder}
-            disabled={submitting || cartCount === 0}
+            disabled={cartCount === 0}
           >
-            {submitting ? '提交中...' : '确认点菜'}
-          </button>
+            确认点菜
+          </Button>
         </div>
       )}
 
@@ -660,10 +664,10 @@ export default function OrderPage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSubmitOrder} disabled={submitting}>
-                {submitting ? '提交中...' : '确认提交'}
-              </button>
+              <Button variant="tonal" onClick={() => setShowConfirmModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSubmitOrder} loading={submitting}>
+                确认提交
+              </Button>
             </div>
           </div>
         </div>

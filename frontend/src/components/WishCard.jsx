@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import Badge from './Badge';
 import { formatDate } from '../utils';
 import Ripple from './primitives/Ripple';
+import Button from './primitives/Button';
 
 // 危险操作按钮（撤销/拒绝）的红色描边样式 — 与 ConfirmModal danger 模式一致
 const DANGER_BTN_STYLE = { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' };
@@ -49,21 +50,23 @@ export default function WishCard({
       ) {
         return (
           <>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm flex-1"
+            <Button
+              variant="filled"
+              size="sm"
+              className="flex-1"
               onClick={() => onEdit?.(wish)}
             >
               编辑愿望
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline btn-sm flex-1"
+            </Button>
+            <Button
+              variant="outlined"
+              size="sm"
+              className="flex-1"
               style={DANGER_BTN_STYLE}
               onClick={() => onCancel?.(wish)}
             >
               撤销愿望
-            </button>
+            </Button>
           </>
         );
       }
@@ -73,33 +76,36 @@ export default function WishCard({
     // 厨师生命周期视图
     if (wish.status === '待处理' && !wish.claimed_by_chef_id) {
       return (
-        <button
-          type="button"
-          className="btn btn-primary btn-sm flex-1"
+        <Button
+          variant="filled"
+          size="sm"
+          className="flex-1"
           onClick={() => onClaim?.(wish)}
         >
           认领愿望
-        </button>
+        </Button>
       );
     }
     if (wish.status === '准备中' && isOwnClaim) {
       return (
         <>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm flex-1"
+          <Button
+            variant="filled"
+            size="sm"
+            className="flex-1"
             onClick={() => onAdvance?.(wish)}
           >
             推进愿望
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm flex-1"
+          </Button>
+          <Button
+            variant="outlined"
+            size="sm"
+            className="flex-1"
             style={DANGER_BTN_STYLE}
             onClick={() => onReject?.(wish)}
           >
             拒绝愿望
-          </button>
+          </Button>
         </>
       );
     }

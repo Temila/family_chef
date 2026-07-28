@@ -4,6 +4,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
+import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
 
 export default function AdminLogsPage() {
@@ -133,23 +134,25 @@ export default function AdminLogsPage() {
 
           {totalPages > 1 && (
             <div className="pc-pagination" style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '16px 0' }}>
-              <button
-                className="btn btn-secondary btn-sm"
+              <Button
+                variant="tonal"
+                size="sm"
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
               >
                 上一页
-              </button>
+              </Button>
               <span style={{ lineHeight: '32px', fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)' }}>
                 {page} / {totalPages}
               </span>
-              <button
-                className="btn btn-secondary btn-sm"
+              <Button
+                variant="tonal"
+                size="sm"
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
               >
                 下一页
-              </button>
+              </Button>
             </div>
           )}
         </section>

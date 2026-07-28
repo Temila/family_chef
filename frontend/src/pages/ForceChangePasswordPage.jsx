@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import PasswordInput from '../components/PasswordInput';
+import Button from '../components/primitives/Button';
 
 export default function ForceChangePasswordPage() {
   const navigate = useNavigate();
@@ -102,14 +103,15 @@ export default function ForceChangePasswordPage() {
               autoComplete="new-password"
             />
           </div>
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary btn-block btn-lg"
-            disabled={submitting}
-            style={{ marginTop: 8 }}
+            variant="filled"
+            size="lg"
+            loading={submitting}
+            style={{ marginTop: 8, width: '100%' }}
           >
-            {submitting ? '提交中...' : '确认修改'}
-          </button>
+            确认修改
+          </Button>
         </form>
       </div>
     </div>

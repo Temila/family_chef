@@ -7,6 +7,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
 
 const MEAL_TYPE_MAP = {
@@ -148,13 +149,14 @@ export default function UserOrdersPage() {
                     ))}
                   </div>
                   {order.status === 'pending' && (
-                    <button
-                      className="btn btn-outline btn-sm btn-block"
-                      style={{ marginTop: 12, borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      style={{ marginTop: 12, width: '100%', borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       onClick={(e) => { e.stopPropagation(); handleCancelOrder(order.id); }}
                     >
                       取消订单
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}

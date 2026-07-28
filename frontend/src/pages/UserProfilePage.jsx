@@ -8,6 +8,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
+import Button from '../components/primitives/Button';
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
@@ -234,8 +235,8 @@ export default function UserProfilePage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowEditModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSaveProfile}>保存</button>
+              <Button variant="tonal" onClick={() => setShowEditModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSaveProfile}>保存</Button>
             </div>
           </div>
         </div>

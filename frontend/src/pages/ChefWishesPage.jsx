@@ -16,6 +16,7 @@ import EmptyState from '../components/EmptyState';
 import WishCard from '../components/WishCard';
 import WishAdvanceModal from '../components/WishAdvanceModal';
 import WishRejectModal from '../components/WishRejectModal';
+import Button from '../components/primitives/Button';
 
 const PAGE_SIZE = 20;
 const POLL_INTERVAL_MS = 30000;
@@ -356,14 +357,16 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
           ))}
 
           {wishes.length < total ? (
-            <button
+            <Button
               type="button"
-              className="btn btn-secondary btn-block wish-load-more"
+              variant="tonal"
+              className="wish-load-more"
+              loading={loadingMore}
+              style={{ width: '100%' }}
               onClick={handleLoadMore}
-              disabled={loadingMore}
             >
-              {loadingMore ? '加载中...' : '加载更多愿望'}
-            </button>
+              加载更多愿望
+            </Button>
           ) : (
             <div className="wish-end-of-list">没有更多愿望了</div>
           )}

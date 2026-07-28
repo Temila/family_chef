@@ -6,6 +6,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function AdminChefsPage() {
   const { showToast } = useToast();
@@ -119,9 +120,9 @@ export default function AdminChefsPage() {
                     </td>
                     <td><Badge text={chef.is_active ? '启用' : '停用'} type={chef.is_active ? 'success' : 'danger'} /></td>
                     <td>
-                      <button className="btn btn-outline btn-sm" onClick={() => openBindModal(chef)}>
+                      <Button variant="outlined" size="sm" onClick={() => openBindModal(chef)}>
                         {chef.feishu_open_id ? '管理绑定' : '绑定飞书'}
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -148,12 +149,14 @@ export default function AdminChefsPage() {
                   <div style={{ fontSize: '0.8rem', marginBottom: 12, color: chef.feishu_open_id ? 'var(--md-color-primary)' : 'var(--md-color-on-surface-variant)' }}>
                     飞书: {chef.feishu_open_id ? `已绑定 (${chef.feishu_open_id.substring(0, 10)}...)` : '未绑定'}
                   </div>
-                  <button
-                    className="btn btn-outline btn-sm btn-block"
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    style={{ width: '100%' }}
                     onClick={() => openBindModal(chef)}
                   >
                     {chef.feishu_open_id ? '管理飞书绑定' : '绑定飞书账号'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -196,19 +199,20 @@ export default function AdminChefsPage() {
               )}
 
               <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  className="btn btn-secondary btn-sm"
+                <Button
+                  variant="tonal"
+                  size="sm"
                   onClick={handleTestNotify}
-                  disabled={testing}
+                  loading={testing}
                   style={{ flex: 1 }}
                 >
-                  {testing ? '发送中...' : '发送测试消息'}
-                </button>
+                  发送测试消息
+                </Button>
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowBindModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleBind}>保存绑定</button>
+              <Button variant="tonal" onClick={() => setShowBindModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleBind}>保存绑定</Button>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useToast } from '../contexts/ToastContext';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import GuestDishCard from '../components/GuestDishCard';
+import Button from '../components/primitives/Button';
 
 async function guestFetch(url, options = {}) {
   const headers = { 'Content-Type': 'application/json' };
@@ -363,13 +364,15 @@ export default function GuestOrderPage() {
             {cartExpanded ? '收起 ▲' : '展开 ▼'}
           </span>
         </div>
-        <button
-          className="btn btn-primary btn-sm"
+        <Button
+          variant="filled"
+          size="sm"
+          loading={submitting}
           onClick={handleSubmitOrder}
-          disabled={submitting || cartCount === 0}
+          disabled={cartCount === 0}
         >
-          {submitting ? '提交中...' : '提交订单'}
-        </button>
+          提交订单
+        </Button>
       </div>
 
       {cartExpanded && (

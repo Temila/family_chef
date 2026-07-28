@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function PreferencesPage() {
   const navigate = useNavigate();
@@ -169,20 +170,22 @@ export default function PreferencesPage() {
               <div key={ingredient.id} className="preference-search-item">
                 <span style={{ flex: 1, fontSize: '0.9rem' }}>{ingredient.name}</span>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button
-                    className="btn btn-sm"
-                    style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-tertiary)', border: 'none' }}
+                  <Button
+                    variant="text"
+                    size="sm"
+                    style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-tertiary)' }}
                     onClick={() => handleAddDislike(ingredient)}
                   >
                     不爱吃
-                  </button>
-                  <button
-                    className="btn btn-sm"
-                    style={{ background: 'var(--md-color-error-container)', color: 'var(--md-color-error)', border: 'none' }}
+                  </Button>
+                  <Button
+                    variant="text"
+                    size="sm"
+                    style={{ background: 'var(--md-color-error-container)', color: 'var(--md-color-error)' }}
                     onClick={() => handleAddAllergy(ingredient)}
                   >
                     忌口
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

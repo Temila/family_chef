@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import { trapFocusWithin } from '../utils';
+import Button from './primitives/Button';
 
 const MAX_NAME = 100;
 const MAX_URL = 500;
@@ -229,12 +230,12 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>
+            <Button variant="tonal" onClick={onClose} disabled={submitting}>
               {closeLabel}
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
+            </Button>
+            <Button type="submit" variant="filled" disabled={submitting}>
               {submitLabel}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

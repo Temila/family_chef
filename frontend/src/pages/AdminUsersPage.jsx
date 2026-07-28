@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
+import Button from '../components/primitives/Button';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -125,7 +126,7 @@ export default function AdminUsersPage() {
     <div className="page-container">
       <Header
         title="用户管理"
-        actions={<button className="btn btn-primary btn-sm" onClick={openCreate}>+ 添加</button>}
+        actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
       />
 
       <div className="search-bar">
@@ -193,20 +194,21 @@ export default function AdminUsersPage() {
                     </td>
                     <td>
                       <div className="pc-action-btns">
-                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(u)}>编辑</button>
+                        <Button variant="outlined" size="sm" onClick={() => openEdit(u)}>编辑</Button>
                         {u.id !== currentUser.id && (
                           <>
-                            <button className="btn btn-secondary btn-sm" onClick={() => handleToggleActive(u)}>
+                            <Button variant="tonal" size="sm" onClick={() => handleToggleActive(u)}>
                               {u.is_active ? '停用' : '启用'}
-                            </button>
+                            </Button>
                             {u.username !== 'admin' && (
-                              <button
-                                className="btn btn-outline btn-sm"
+                              <Button
+                                variant="outlined"
+                                size="sm"
                                 onClick={() => handleDelete(u)}
                                 style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                               >
                                 删除
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
@@ -236,20 +238,21 @@ export default function AdminUsersPage() {
                     </span>
                   </div>
                   <div className="flex gap-3">
-                    <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(u)}>编辑</button>
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(u)}>编辑</Button>
                     {u.id !== currentUser.id && (
                       <>
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleToggleActive(u)}>
+                        <Button variant="tonal" size="sm" onClick={() => handleToggleActive(u)}>
                           {u.is_active ? '停用' : '启用'}
-                        </button>
+                        </Button>
                         {u.username !== 'admin' && (
-                          <button
-                            className="btn btn-outline btn-sm"
+                          <Button
+                            variant="outlined"
+                            size="sm"
                             onClick={() => handleDelete(u)}
                             style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
-                          </button>
+                          </Button>
                         )}
                       </>
                     )}
@@ -317,8 +320,8 @@ export default function AdminUsersPage() {
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSave}>保存</button>
+              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSave}>保存</Button>
             </div>
           </div>
         </div>

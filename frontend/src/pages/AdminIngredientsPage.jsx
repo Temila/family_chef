@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/primitives/Button';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -237,8 +238,8 @@ export default function AdminIngredientsPage() {
         title="食材管理"
         actions={
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn btn-outline btn-sm" onClick={openParseModal}>📋 从菜谱解析</button>
-            <button className="btn btn-primary btn-sm" onClick={openCreate}>+ 添加</button>
+            <Button variant="outlined" size="sm" onClick={openParseModal}>📋 从菜谱解析</Button>
+            <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
           </div>
         }
       />
@@ -253,19 +254,20 @@ export default function AdminIngredientsPage() {
           onKeyDown={(e) => e.key === 'Enter' && loadIngredients()}
         />
         <div style={{ display: 'flex', gap: 4, marginRight: 4 }}>
-          <button className="btn btn-primary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={loadIngredients}>搜索</button>
-          <button className="btn btn-secondary btn-sm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => { handleClear(); }}>清空</button>
+          <Button variant="filled" size="sm" className="btn-search" onClick={loadIngredients}>搜索</Button>
+          <Button variant="tonal" size="sm" className="btn-search" onClick={() => { handleClear(); }}>清空</Button>
         </div>
       </div>
 
       <div style={{ padding: '0 16px 4px' }}>
-        <button
-          className="btn btn-secondary btn-sm"
-          style={{ fontSize: '0.75rem', padding: '2px 10px' }}
+        <Button
+          variant="tonal"
+          size="sm"
+          className="btn-search"
           onClick={() => setShowAdvFilter(!showAdvFilter)}
         >
           {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
-        </button>
+        </Button>
       </div>
 
       {showAdvFilter && (
@@ -320,13 +322,15 @@ export default function AdminIngredientsPage() {
                     <td style={{ position: 'relative' }}>
                       <span>{item.dish_count || 0}</span>
                       {(item.linked_dishes || []).length > 0 && (
-                        <button
-                          className="btn btn-outline btn-sm"
-                          style={{ marginLeft: 6, padding: '1px 6px', fontSize: '0.7rem', verticalAlign: 'middle' }}
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          className="btn-search"
+                          style={{ marginLeft: 6, verticalAlign: 'middle' }}
                           onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
                         >
                           ▾
-                        </button>
+                        </Button>
                       )}
                       {openDropdown === item.id && (item.linked_dishes || []).length > 0 && (
                         <div ref={dropdownRef} style={{
@@ -358,24 +362,26 @@ export default function AdminIngredientsPage() {
                     </td>
                     <td>
                       <div className="pc-action-btns">
-                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>编辑</button>
+                        <Button variant="outlined" size="sm" onClick={() => openEdit(item)}>编辑</Button>
                         {(item.dish_count || 0) > 0 ? (
-                          <button
-                            className="btn btn-outline btn-sm"
+                          <Button
+                            variant="outlined"
+                            size="sm"
                             disabled
                             style={{ opacity: 0.4, cursor: 'not-allowed' }}
                             title={`已被 ${item.dish_count} 个菜品关联，无法删除`}
                           >
                             删除
-                          </button>
+                          </Button>
                         ) : (
-                          <button
-                            className="btn btn-outline btn-sm"
+                          <Button
+                            variant="outlined"
+                            size="sm"
                             onClick={() => handleDelete(item.id)}
                             style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                           >
                             删除
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </td>
@@ -396,13 +402,14 @@ export default function AdminIngredientsPage() {
                         <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
                         {(item.linked_dishes || []).length > 0 && (
                           <span style={{ position: 'relative' }}>
-                            <button
-                              className="btn btn-outline btn-sm"
-                              style={{ padding: '0 4px', fontSize: '0.65rem', lineHeight: '18px' }}
+                            <Button
+                              variant="outlined"
+                              size="sm"
+                              className="btn-search"
                               onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
                             >
                               ▾
-                            </button>
+                            </Button>
                             {openDropdown === item.id && (
                               <div style={{
                                 position: 'absolute', top: '100%', left: 0, zIndex: 50,
@@ -441,24 +448,26 @@ export default function AdminIngredientsPage() {
                     </div>
                   )}
                   <div className="flex gap-3">
-                    <button className="btn btn-outline btn-sm flex-1" onClick={() => openEdit(item)}>编辑</button>
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(item)}>编辑</Button>
                     {(item.dish_count || 0) > 0 ? (
-                      <button
-                        className="btn btn-outline btn-sm"
+                      <Button
+                        variant="outlined"
+                        size="sm"
                         disabled
                         style={{ opacity: 0.4, cursor: 'not-allowed' }}
                         title={`已被 ${item.dish_count} 个菜品关联，无法删除`}
                       >
                         删除
-                      </button>
+                      </Button>
                     ) : (
-                      <button
-                        className="btn btn-outline btn-sm"
+                      <Button
+                        variant="outlined"
+                        size="sm"
                         onClick={() => handleDelete(item.id)}
                         style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
                       >
                         删除
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -497,8 +506,8 @@ export default function AdminIngredientsPage() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>取消</button>
-              <button className="btn btn-primary" onClick={handleSave}>保存</button>
+              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
+              <Button variant="filled" onClick={handleSave}>保存</Button>
             </div>
           </div>
         </div>
@@ -633,7 +642,7 @@ export default function AdminIngredientsPage() {
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => {
+              <Button variant="tonal" onClick={() => {
                 if (parseStep === 'review') {
                   setParseStep('input');
                 } else {
@@ -641,15 +650,15 @@ export default function AdminIngredientsPage() {
                 }
               }}>
                 {parseStep === 'review' ? '返回' : '取消'}
-              </button>
+              </Button>
               {parseStep === 'input' ? (
-                <button className="btn btn-primary" onClick={handleParse} disabled={parseLoading}>
-                  {parseLoading ? '解析中...' : '开始解析'}
-                </button>
+                <Button variant="filled" onClick={handleParse} loading={parseLoading}>
+                  开始解析
+                </Button>
               ) : (
-                <button className="btn btn-primary" onClick={handleImport} disabled={importLoading}>
-                  {importLoading ? '导入中...' : '确认导入'}
-                </button>
+                <Button variant="filled" onClick={handleImport} loading={importLoading}>
+                  确认导入
+                </Button>
               )}
             </div>
           </div>
