@@ -1,0 +1,157 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Input Primitive (Phase 10 — COMPO-04)
+   Outlined/Filled variants + CSS-only floating label + error state
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import './base.css';
+
+/* ── 容器 wrapper ── */
+.md-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-block-size: 56px; /* MD3 最小 56dp field height (≥48dp hit target) */
+  margin-bottom: 16px;
+}
+
+/* ── Input field (native input/textarea) ── */
+.md-input__field {
+  width: 100%;
+  padding: 16px;
+  font-family: var(--md-font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--md-color-on-surface);
+  background: transparent;
+  border: none;
+  outline: none;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+/* 隐藏空格 sentinel placeholder (placeholder=' ' 不显示可见文字) */
+.md-input__field::placeholder {
+  color: transparent;
+}
+
+/* ── Floating label (CSS-only via :placeholder-shown) ── */
+/* label 在 field 之后 (DOM)，通过 ~ 兄弟选择器响应 field 状态 */
+.md-input__label {
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--md-color-on-surface-variant);
+  pointer-events: none;
+  transition:
+    transform var(--md-motion-duration-short) var(--md-motion-easing-standard),
+    font-size var(--md-motion-duration-short) var(--md-motion-easing-standard),
+    color var(--md-motion-duration-short) var(--md-motion-easing-standard);
+  transform-origin: left top;
+  z-index: 0;
+  background: transparent;
+}
+
+/* 浮动条件: focus 或 非 placeholder-shown (即 field 有值) */
+.md-input__field:focus ~ .md-input__label,
+.md-input__field:not(:placeholder-shown) ~ .md-input__label {
+  transform: translateY(-10px) scale(0.75);
+  font-size: 12px;
+  color: var(--md-color-primary);
+}
+
+/* ── Outlined variant ── */
+.md-input-wrapper--outlined {
+  border: 1px solid var(--md-color-outline-variant);
+  border-radius: var(--md-radius-sm); /* 12px */
+  transition: border-color var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+.md-input-wrapper--outlined:focus-within {
+  border: 2px solid var(--md-color-primary);
+  /* padding compensation: 1px→2px border 不改变外尺寸 (border-box) */
+}
+.md-input-wrapper--outlined.md-input-wrapper--error {
+  border-color: var(--md-color-error);
+}
+.md-input-wrapper--outlined.md-input-wrapper--error:focus-within {
+  border: 2px solid var(--md-color-error);
+}
+
+/* ── Filled variant ── */
+.md-input-wrapper--filled {
+  background: var(--md-color-surface-container-highest);
+  border-bottom: 1px solid var(--md-color-outline-variant);
+  border-radius: var(--md-radius-sm) var(--md-radius-sm) 0 0;
+}
+.md-input-wrapper--filled:focus-within {
+  border-bottom: 2px solid var(--md-color-primary);
+}
+.md-input-wrapper--filled.md-input-wrapper--error {
+  border-bottom-color: var(--md-color-error);
+}
+.md-input-wrapper--filled.md-input-wrapper--error:focus-within {
+  border-bottom: 2px solid var(--md-color-error);
+}
+
+/* ── Error state label ── */
+.md-input-wrapper--error .md-input__field:focus ~ .md-input__label,
+.md-input-wrapper--error .md-input__field:not(:placeholder-shown) ~ .md-input__label {
+  color: var(--md-color-error);
+}
+
+/* ── Icons ── */
+.md-input__leading-icon,
+.md-input__trailing-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--md-color-on-surface-variant);
+  z-index: 2;
+  pointer-events: none;
+}
+.md-input__leading-icon {
+  left: 12px;
+}
+.md-input__trailing-icon {
+  right: 12px;
+}
+/* 有 leading icon 时 field 左 padding 加大 */
+.md-input__leading-icon ~ .md-input__field {
+  padding-left: 44px;
+}
+
+/* ── Supporting / error text ── */
+.md-input__supporting {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--md-color-on-surface-variant);
+  padding: 4px 16px 0;
+  margin-top: 4px;
+}
+.md-input__supporting--error {
+  color: var(--md-color-error);
+}
+
+/* ── Disabled ── */
+.md-input-wrapper--disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+/* ── Multiline (textarea) 调整 ── */
+.md-input-wrapper--multiline .md-input__field {
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--md-font-body);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .md-input__label {
+    transition: none;
+  }
+}

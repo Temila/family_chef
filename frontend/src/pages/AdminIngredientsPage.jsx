@@ -10,6 +10,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -484,25 +485,34 @@ export default function AdminIngredientsPage() {
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">名称 *</label>
-                <input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="如：西红柿" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">分类</label>
+              <Input
+                label="名称 *"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="如：西红柿"
+              />
+              {/* SC-10: select 保留 .form-input (Phase 11 Select primitive 上线时处理) */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
                 <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                   <option value="">请选择</option>
                   {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
               </div>
-              <div className="form-group">
-                <label className="form-label">描述</label>
-                <textarea className="form-input" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="可选描述" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">别名（逗号分隔）</label>
-                <input className="form-input" value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} placeholder="如：番茄, 柿子" />
-              </div>
+              <Input
+                multiline
+                rows={2}
+                label="描述"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="可选描述"
+              />
+              <Input
+                label="别名（逗号分隔）"
+                value={form.aliases}
+                onChange={(e) => setForm({ ...form, aliases: e.target.value })}
+                placeholder="如：番茄, 柿子"
+              />
             </div>
             <div className="modal-footer">
               <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
@@ -525,16 +535,14 @@ export default function AdminIngredientsPage() {
             </div>
             <div className="modal-body">
               {parseStep === 'input' ? (
-                <div className="form-group">
-                  <label className="form-label">粘贴菜谱文本</label>
-                  <textarea
-                    className="form-input"
-                    rows={8}
-                    value={parseText}
-                    onChange={(e) => setParseText(e.target.value)}
-                    placeholder={'例如：\n番茄 2个、鸡蛋 3个、盐适量\n土豆 1个、青椒 2个、生抽 1勺'}
-                  />
-                </div>
+                <Input
+                  multiline
+                  rows={8}
+                  label="粘贴菜谱文本"
+                  value={parseText}
+                  onChange={(e) => setParseText(e.target.value)}
+                  placeholder={'例如：\n番茄 2个、鸡蛋 3个、盐适量\n土豆 1个、青椒 2个、生抽 1勺'}
+                />
               ) : (
                 <div>
                   {parsedIngredients.length === 0 ? (
@@ -557,12 +565,14 @@ export default function AdminIngredientsPage() {
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                              <input
-                                className="form-input"
-                                style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem', padding: '4px 8px' }}
+                              {/* === 10-02-MIGRATION:START === renameParsedItem input → Input primitive === */}
+                              <Input
+                                aria-label="食材名"
                                 value={displayName}
                                 onChange={(e) => renameParsedItem(item.name, e.target.value)}
+                                style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem' }}
                               />
+                              {/* === 10-02-MIGRATION:END === */}
                               {isMatched && (
                                 <span style={{
                                   fontSize: '0.75rem',

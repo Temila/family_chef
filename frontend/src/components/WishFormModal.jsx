@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import { trapFocusWithin } from '../utils';
 import Button from './primitives/Button';
+import Input from './primitives/Input';
 
 const MAX_NAME = 100;
 const MAX_URL = 500;
@@ -174,60 +175,37 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
             </div>
           )}
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="wish-dish-name">
-              菜名 *
-            </label>
-            <input
-              ref={initialFocusRef}
-              id="wish-dish-name"
-              type="text"
-              className="form-input"
-              value={form.dish_name}
-              onChange={handleChange('dish_name')}
-              placeholder="请输入想吃的菜名"
-              maxLength={MAX_NAME}
-            />
-            <div className={'form-error' + (errors.dish_name ? ' show' : '')}>
-              {errors.dish_name}
-            </div>
-          </div>
+          <Input
+            label="菜名 *"
+            ref={initialFocusRef}
+            type="text"
+            value={form.dish_name}
+            onChange={handleChange('dish_name')}
+            placeholder="请输入想吃的菜名"
+            maxLength={MAX_NAME}
+            error={errors.dish_name || undefined}
+          />
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="wish-reference-url">
-              参考链接（可选）
-            </label>
-            <input
-              id="wish-reference-url"
-              type="url"
-              className="form-input"
-              value={form.reference_url}
-              onChange={handleChange('reference_url')}
-              placeholder="B站 / 抖音 / 小红书链接（可选）"
-              maxLength={MAX_URL}
-            />
-            <div className={'form-error' + (errors.reference_url ? ' show' : '')}>
-              {errors.reference_url}
-            </div>
-          </div>
+          <Input
+            label="参考链接（可选）"
+            type="url"
+            value={form.reference_url}
+            onChange={handleChange('reference_url')}
+            placeholder="B站 / 抖音 / 小红书链接（可选）"
+            maxLength={MAX_URL}
+            error={errors.reference_url || undefined}
+          />
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="wish-note">
-              备注（可选）
-            </label>
-            <textarea
-              id="wish-note"
-              className="form-input"
-              rows={3}
-              value={form.note}
-              onChange={handleChange('note')}
-              placeholder="补充说明（可选）"
-              maxLength={MAX_NOTE}
-            />
-            <div className={'form-error' + (errors.note ? ' show' : '')}>
-              {errors.note}
-            </div>
-          </div>
+          <Input
+            multiline
+            rows={3}
+            label="备注（可选）"
+            value={form.note}
+            onChange={handleChange('note')}
+            placeholder="补充说明（可选）"
+            maxLength={MAX_NOTE}
+            error={errors.note || undefined}
+          />
 
           <div className="modal-footer">
             <Button variant="tonal" onClick={onClose} disabled={submitting}>

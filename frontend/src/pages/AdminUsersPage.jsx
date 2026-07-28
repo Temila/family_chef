@@ -7,6 +7,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 
 export default function AdminUsersPage() {
@@ -271,37 +272,30 @@ export default function AdminUsersPage() {
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">用户名</label>
-                <input
-                  className="form-input"
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  placeholder="请输入用户名"
-                  disabled={!!editingUser}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">显示名称</label>
-                <input
-                  className="form-input"
-                  value={form.display_name}
-                  onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-                  placeholder="请输入显示名称"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">{editingUser ? '重置密码（留空不修改）' : '密码'}</label>
-                <PasswordInput
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder={editingUser ? '留空不修改' : '至少 6 位'}
-                  minLength="6"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">角色</label>
+              <Input
+                label="用户名"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                placeholder="请输入用户名"
+                disabled={!!editingUser}
+                required
+              />
+              <Input
+                label="显示名称"
+                value={form.display_name}
+                onChange={(e) => setForm({ ...form, display_name: e.target.value })}
+                placeholder="请输入显示名称"
+              />
+              <PasswordInput
+                label={editingUser ? '重置密码（留空不修改）' : '密码'}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder={editingUser ? '留空不修改' : '至少 6 位'}
+                minLength="6"
+              />
+              {/* SC-10: select 保留 .form-input */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>角色</label>
                 <select className="form-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                   <option value="user">用户</option>
                   <option value="chef">厨师</option>
@@ -309,8 +303,8 @@ export default function AdminUsersPage() {
                 </select>
               </div>
               {editingUser && (
-                <div className="form-group">
-                  <label className="form-label">状态</label>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
                   <select className="form-input" value={form.is_active ? 'true' : 'false'} onChange={(e) => setForm({ ...form, is_active: e.target.value === 'true' })}>
                     <option value="true">启用</option>
                     <option value="false">停用</option>

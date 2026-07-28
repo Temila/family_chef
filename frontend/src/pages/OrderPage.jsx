@@ -7,6 +7,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
@@ -612,8 +613,9 @@ export default function OrderPage() {
               <button className="modal-close" onClick={() => setShowConfirmModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">用餐时间</label>
+              {/* SC-10: select 保留 .form-input */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>用餐时间</label>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
                   {(() => {
                     const today = new Date();

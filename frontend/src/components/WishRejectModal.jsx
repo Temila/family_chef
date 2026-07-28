@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { trapFocusWithin } from '../utils';
 import Button from './primitives/Button';
+import Input from './primitives/Input';
 
 const MAX_REASON = 500;
 
@@ -93,22 +94,17 @@ export default function WishRejectModal({ onClose, onSuccess }) {
           <p id="wish-reject-description" className="sr-only">
             请填写拒绝愿望的原因。
           </p>
-          <div className="form-group">
-            <label className="form-label" htmlFor="wish-reject-reason">
-              拒绝原因 *
-            </label>
-            <textarea
-              ref={initialFocusRef}
-              id="wish-reject-reason"
-              className="form-input"
-              rows={4}
-              value={reason}
-              onChange={handleChange}
-              placeholder="请说明拒绝原因（必填）"
-              maxLength={MAX_REASON}
-            />
-            <div className={'form-error' + (error ? ' show' : '')}>{error}</div>
-          </div>
+          <Input
+            multiline
+            rows={4}
+            label="拒绝原因 *"
+            ref={initialFocusRef}
+            value={reason}
+            onChange={handleChange}
+            placeholder="请说明拒绝原因（必填）"
+            maxLength={MAX_REASON}
+            error={error || undefined}
+          />
 
           <div className="modal-footer">
             <Button variant="tonal" onClick={onClose} disabled={submitting}>

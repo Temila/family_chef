@@ -72,37 +72,32 @@ export default function ForceChangePasswordPage() {
         <p className="login-subtitle">首次登录，请修改密码</p>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">当前密码</label>
-            <PasswordInput
-              value={form.old_password}
-              onChange={(e) => setForm({ ...form, old_password: e.target.value })}
-              placeholder="请输入当前密码"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">新密码</label>
-            <PasswordInput
-              value={form.new_password}
-              onChange={(e) => setForm({ ...form, new_password: e.target.value })}
-              placeholder="至少 6 位"
-              required
-              minLength="6"
-              autoComplete="new-password"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">确认新密码</label>
-            <PasswordInput
-              value={form.confirm}
-              onChange={(e) => setForm({ ...form, confirm: e.target.value })}
-              placeholder="再次输入新密码"
-              required
-              autoComplete="new-password"
-            />
-          </div>
+          <PasswordInput
+            label="当前密码"
+            value={form.old_password}
+            onChange={(e) => setForm({ ...form, old_password: e.target.value })}
+            placeholder="请输入当前密码"
+            required
+            autoComplete="current-password"
+          />
+          <PasswordInput
+            label="新密码"
+            value={form.new_password}
+            onChange={(e) => setForm({ ...form, new_password: e.target.value })}
+            placeholder="至少 6 位"
+            required
+            minLength="6"
+            autoComplete="new-password"
+          />
+          <PasswordInput
+            label="确认新密码"
+            value={form.confirm}
+            onChange={(e) => setForm({ ...form, confirm: e.target.value })}
+            placeholder="再次输入新密码"
+            required
+            autoComplete="new-password"
+            error={form.new_password !== form.confirm && form.confirm ? '两次输入的密码不一致' : undefined}
+          />
           <Button
             type="submit"
             variant="filled"

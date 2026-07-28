@@ -8,6 +8,7 @@ import BottomBar from '../components/BottomBar';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
+import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 
 export default function UserProfilePage() {
@@ -197,41 +198,32 @@ export default function UserProfilePage() {
               <button className="modal-close" onClick={() => setShowEditModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">昵称</label>
-                <input
-                  className="form-input"
-                  value={editForm.display_name}
-                  onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
-                  placeholder="输入昵称"
-                />
-              </div>
+              <Input
+                label="昵称"
+                value={editForm.display_name}
+                onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+                placeholder="输入昵称"
+              />
               <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: '16px 0', paddingTop: 16 }}>
-                <div className="form-label" style={{ marginBottom: 12 }}>修改密码</div>
-                <div className="form-group">
-                  <label className="form-label">旧密码</label>
-                  <PasswordInput
-                    value={editForm.old_password}
-                    onChange={(e) => setEditForm({ ...editForm, old_password: e.target.value })}
-                    placeholder="输入旧密码"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">新密码（至少6位）</label>
-                  <PasswordInput
-                    value={editForm.new_password}
-                    onChange={(e) => setEditForm({ ...editForm, new_password: e.target.value })}
-                    placeholder="输入新密码"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">确认新密码</label>
-                  <PasswordInput
-                    value={editForm.confirm_password}
-                    onChange={(e) => setEditForm({ ...editForm, confirm_password: e.target.value })}
-                    placeholder="再次输入新密码"
-                  />
-                </div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>修改密码</div>
+                <PasswordInput
+                  label="旧密码"
+                  value={editForm.old_password}
+                  onChange={(e) => setEditForm({ ...editForm, old_password: e.target.value })}
+                  placeholder="输入旧密码"
+                />
+                <PasswordInput
+                  label="新密码（至少6位）"
+                  value={editForm.new_password}
+                  onChange={(e) => setEditForm({ ...editForm, new_password: e.target.value })}
+                  placeholder="输入新密码"
+                />
+                <PasswordInput
+                  label="确认新密码"
+                  value={editForm.confirm_password}
+                  onChange={(e) => setEditForm({ ...editForm, confirm_password: e.target.value })}
+                  placeholder="再次输入新密码"
+                />
               </div>
             </div>
             <div className="modal-footer">

@@ -7,6 +7,7 @@ import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 
 export default function AdminChefsPage() {
@@ -171,18 +172,13 @@ export default function AdminChefsPage() {
               <button className="modal-close" onClick={() => setShowBindModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">飞书 open_id</label>
-                <input
-                  className="form-input"
-                  value={feishuId}
-                  onChange={(e) => setFeishuId(e.target.value)}
-                  placeholder="输入飞书用户的 open_id"
-                />
-                <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
-                  在飞书开放平台获取用户的 open_id，<a href="https://open.feishu.cn/document/faq/trouble-shooting/how-to-obtain-openid" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-color-primary)' }}>查看操作指南</a>
-                </div>
-              </div>
+              <Input
+                label="飞书 open_id"
+                value={feishuId}
+                onChange={(e) => setFeishuId(e.target.value)}
+                placeholder="输入飞书用户的 open_id"
+                supportingText="在飞书开放平台获取用户的 open_id"
+              />
 
               {testResult && (
                 <div style={{

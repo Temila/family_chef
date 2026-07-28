@@ -219,14 +219,14 @@ input, textarea, select { font-family: var(--md-font-body); }
 .login-card { background: var(--md-color-surface-container-lowest); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-lg); padding: 32px 24px; width: 100%; max-width: 400px; box-shadow: var(--md-elevation-3); }
 .login-logo { font-family: var(--md-font-display); font-size: 2rem; font-weight: 700; color: var(--md-color-primary); text-align: center; margin-bottom: 8px; }
 .login-subtitle { text-align: center; color: var(--md-color-on-surface-variant); font-size: 0.9rem; margin-bottom: 24px; }
-/* 10-02-MIGRATION: .form-group / .form-label / .form-error 保留至 Task 2 末尾删除 (12 form family 迁移后) */
-.form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--md-color-on-surface-variant); margin-bottom: 6px; }
-.form-input { width: 100%; padding: 12px 16px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm); color: var(--md-color-on-surface); font-size: 0.9rem; outline: none; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
+/* 10-02-MIGRATION: .form-group / .form-label / .form-error 已删除 (Input primitive 接管) */
 /* SC-10: .form-input 保留 — 兼容 <select className="form-input"> (Phase 11 Select primitive 上线时统一处理) */
+.form-input { width: 100%; padding: 12px 16px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm); color: var(--md-color-on-surface); font-size: 0.9rem; outline: none; transition: all var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .form-input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
-.form-error { color: var(--md-color-error); font-size: 0.8rem; margin-top: 4px; display: none; }
-.form-error.show { display: block; }
+
+/* 10-02: .field-trigger — 点击展开下拉菜单的 input-style 触发器（不是真实 input，只借用视觉） */
+.field-trigger { width: 100%; padding: 12px 16px; background: var(--md-color-surface-container-high); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm); color: var(--md-color-on-surface-variant); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; transition: border-color var(--md-motion-duration-short) var(--md-motion-easing-standard); }
+.field-trigger:hover { border-color: var(--md-color-outline); }
 
 /* Password Input */
 .password-input-wrap { position: relative; }

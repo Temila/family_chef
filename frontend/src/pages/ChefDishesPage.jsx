@@ -7,6 +7,7 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 import Badge from '../components/Badge';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
@@ -702,23 +703,33 @@ export default function ChefDishesPage() {
               <button className="modal-close" onClick={() => setShowDishModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">菜名 *</label>
-                <input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="输入菜品名称" />
-              </div>
+              <Input
+                label="菜名 *"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="输入菜品名称"
+              />
 
-              <div className="form-group">
-                <label className="form-label">描述</label>
-                <textarea className="form-input" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="菜品描述" />
-              </div>
+              <Input
+                multiline
+                rows={2}
+                label="描述"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="菜品描述"
+              />
 
-              <div className="form-group">
-                <label className="form-label">食谱</label>
-                <textarea className="form-input" rows={5} value={form.recipe} onChange={(e) => setForm({ ...form, recipe: e.target.value })} placeholder="食材用量、制作步骤等" />
-              </div>
+              <Input
+                multiline
+                rows={5}
+                label="食谱"
+                value={form.recipe}
+                onChange={(e) => setForm({ ...form, recipe: e.target.value })}
+                placeholder="食材用量、制作步骤等"
+              />
 
-              <div className="form-group">
-                <label className="form-label">封面图</label>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>封面图</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   {form.image_url && (
                     <img src={form.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
@@ -727,8 +738,8 @@ export default function ChefDishesPage() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">分类</label>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
               {renderCategorySection(getTypeMeta('region').label, regions, form.category_ids, toggleCategory)}
               {dishCategoryTypes.filter(t => t.key !== 'region').map(t => {
                 const items = t.key === 'cuisine' ? filteredCuisines : (dishCatsByType[t.key] || []);
@@ -736,8 +747,8 @@ export default function ChefDishesPage() {
               })}
               </div>
 
-              <div className="form-group" style={{ position: 'relative' }} ref={ingDropdownRef}>
-                <label className="form-label">食材（已选 {form.ingredient_ids.length}）</label>
+              <div style={{ marginBottom: 16, position: 'relative' }} ref={ingDropdownRef}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>食材（已选 {form.ingredient_ids.length}）</label>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   {form.ingredient_ids.map(id => {
@@ -750,13 +761,17 @@ export default function ChefDishesPage() {
                   })}
                 </div>
 
+                {/* === 10-02-MIGRATION:START === div form-input trigger → .field-trigger === */}
                 <div
-                  className="form-input"
-                  style={{ cursor: 'pointer', color: 'var(--md-color-on-surface-variant)', minHeight: 38, display: 'flex', alignItems: 'center' }}
+                  className="field-trigger"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setShowIngDropdown(!showIngDropdown)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowIngDropdown(!showIngDropdown); } }}
                 >
                   {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
                 </div>
+                {/* === 10-02-MIGRATION:END === */}
 
                 {showIngDropdown && (
                   <div style={{
@@ -766,14 +781,16 @@ export default function ChefDishesPage() {
                     maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                   }}>
                     <div style={{ padding: '8px 8px 0' }}>
-                      <input
-                        className="form-input"
+                      {/* === 10-02-MIGRATION:START === ingredient search input → Input primitive === */}
+                      <Input
+                        aria-label="搜索食材"
                         placeholder="搜索食材..."
                         value={ingSearch}
                         onChange={(e) => setIngSearch(e.target.value)}
                         autoFocus
                         style={{ marginBottom: 6 }}
                       />
+                      {/* === 10-02-MIGRATION:END === */}
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                         <button
                           className={`filter-chip ${!ingCategoryFilter ? 'active' : ''}`}
@@ -818,8 +835,8 @@ export default function ChefDishesPage() {
               </div>
 
               {semifinishedDishes.length > 0 && (
-                <div className="form-group" style={{ position: 'relative' }} ref={sfDropdownRef}>
-                  <label className="form-label">半成品食材（已选 {form.semifinished_dish_ids.length}）</label>
+                <div style={{ marginBottom: 16, position: 'relative' }} ref={sfDropdownRef}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>半成品食材（已选 {form.semifinished_dish_ids.length}）</label>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                     {form.semifinished_dish_ids.map(id => {
@@ -832,13 +849,17 @@ export default function ChefDishesPage() {
                     })}
                   </div>
 
+                  {/* === 10-02-MIGRATION:START === semifinished trigger div → .field-trigger === */}
                   <div
-                    className="form-input"
-                    style={{ cursor: 'pointer', color: 'var(--md-color-on-surface-variant)', minHeight: 38, display: 'flex', alignItems: 'center' }}
+                    className="field-trigger"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setShowSfDropdown(!showSfDropdown)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowSfDropdown(!showSfDropdown); } }}
                   >
                     {showSfDropdown ? '搜索并选择半成品...' : '点击选择半成品食材...'}
                   </div>
+                  {/* === 10-02-MIGRATION:END === */}
 
                   {showSfDropdown && (
                     <div style={{
@@ -848,14 +869,16 @@ export default function ChefDishesPage() {
                       maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                     }}>
                       <div style={{ padding: '8px 8px 0' }}>
-                        <input
-                          className="form-input"
+                        {/* === 10-02-MIGRATION:START === semifinished search input → Input primitive === */}
+                        <Input
+                          aria-label="搜索半成品"
                           placeholder="搜索半成品..."
                           value={sfSearch}
                           onChange={(e) => setSfSearch(e.target.value)}
                           autoFocus
                           style={{ marginBottom: 6 }}
                         />
+                        {/* === 10-02-MIGRATION:END === */}
                       </div>
                       <div style={{ overflowY: 'auto', flex: 1 }}>
                         {semifinishedDishes
@@ -886,8 +909,8 @@ export default function ChefDishesPage() {
                 </div>
               )}
 
-              <div className="form-group">
-                <label className="form-label">状态</label>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
                 <select
                   className="form-input"
                   value={form.status}
@@ -901,7 +924,7 @@ export default function ChefDishesPage() {
                 </div>
               </div>
 
-              <div className="form-group">
+              <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
                   <input
                     type="checkbox"
@@ -909,7 +932,7 @@ export default function ChefDishesPage() {
                     onChange={(e) => setForm({ ...form, is_semifinished: e.target.checked })}
                     style={{ width: 18, height: 18 }}
                   />
-                  <span className="form-label" style={{ marginBottom: 0 }}>标记为半成品</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)' }}>标记为半成品</span>
                 </label>
                 <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', marginTop: 4 }}>
                   半成品菜品不会出现在用户点菜菜单中，但可作为特殊食材被其他菜品选择
@@ -932,16 +955,16 @@ export default function ChefDishesPage() {
               <button className="modal-close" onClick={() => setShowExtractModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">粘贴菜谱或文本内容</label>
-                <textarea
-                  className="form-input"
-                  rows={6}
-                  value={extractText}
-                  onChange={(e) => setExtractText(e.target.value)}
-                  placeholder="将菜谱文章、食材列表等文本粘贴到这里，系统会自动识别其中的食材..."
-                />
-              </div>
+              {/* === 10-02-MIGRATION:START === extract text textarea → Input multiline primitive === */}
+              <Input
+                multiline
+                rows={6}
+                label="粘贴菜谱或文本内容"
+                value={extractText}
+                onChange={(e) => setExtractText(e.target.value)}
+                placeholder="将菜谱文章、食材列表等文本粘贴到这里，系统会自动识别其中的食材..."
+              />
+              {/* === 10-02-MIGRATION:END === */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
                   <input
@@ -975,7 +998,7 @@ export default function ChefDishesPage() {
 
               {parseResult && (
                 <div style={{ marginTop: 16 }}>
-                  <div className="form-label">
+                  <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>
                     解析结果（{activeParsedIngredients.length} 个食材）
                   </div>
                   {activeParsedIngredients.length > 0 ? (
@@ -1054,12 +1077,14 @@ export default function ChefDishesPage() {
                         style={{ border: '1px solid var(--md-color-outline-variant)', borderRadius: 'var(--md-radius-md)', padding: 12 }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                          <input
-                            className="form-input"
-                            style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem', padding: '4px 8px' }}
+                          {/* === 10-02-MIGRATION:START === renameBatchItem input → Input primitive === */}
+                          <Input
+                            aria-label="食材名"
                             value={displayName}
                             onChange={(e) => renameBatchItem(item.name, e.target.value)}
+                            style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem' }}
                           />
+                          {/* === 10-02-MIGRATION:END === */}
                           <button
                             onClick={() => removeBatchItem(item.name)}
                             style={{
@@ -1096,9 +1121,10 @@ export default function ChefDishesPage() {
 
                           {decision.action === 'alias' && (
                             <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-                              <input
-                                className="form-input"
-                                style={{ fontSize: '0.85rem', width: '100%' }}
+                              {/* === 10-02-MIGRATION:START === alias search input → Input primitive === */}
+                              <Input
+                                aria-label="搜索别名目标食材"
+                                style={{ fontSize: '0.85rem' }}
                                 placeholder="输入食材名称搜索..."
                                 value={aliasSearchTexts[item.name] || (decision.alias_for_id ? batchAllIngredients.find(i => i.id === decision.alias_for_id)?.name || '' : '')}
                                 onChange={(e) => {
@@ -1110,6 +1136,7 @@ export default function ChefDishesPage() {
                                 }}
                                 onFocus={() => setAliasDropdownOpen(prev => ({ ...prev, [item.name]: true }))}
                               />
+                              {/* === 10-02-MIGRATION:END === */}
                               {aliasDropdownOpen[item.name] && (aliasSearchTexts[item.name] !== undefined ? aliasSearchTexts[item.name] : !decision.alias_for_id) && (() => {
                                 const searchVal = aliasSearchTexts[item.name] || '';
                                 const filtered = batchAllIngredients.filter(ing => {

@@ -7,6 +7,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Card from '../components/primitives/Card';
+import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 
 export default function AdminCategoriesPage() {
@@ -211,18 +212,16 @@ export default function AdminCategoriesPage() {
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">名称 *</label>
-                <input
-                  className="form-input"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="输入分类名称"
-                />
-              </div>
+              <Input
+                label="名称 *"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="输入分类名称"
+              />
               {activeType === 'cuisine' && parentOptions.length > 0 && (
-                <div className="form-group">
-                  <label className="form-label">所属种类</label>
+                /* SC-10: select 保留 .form-input */
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>所属种类</label>
                   <select
                     className="form-input"
                     value={form.parent_id}
@@ -235,15 +234,12 @@ export default function AdminCategoriesPage() {
                   </select>
                 </div>
               )}
-              <div className="form-group">
-                <label className="form-label">排序（数字越小越靠前）</label>
-                <input
-                  className="form-input"
-                  type="number"
-                  value={form.sort_order}
-                  onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-                />
-              </div>
+              <Input
+                label="排序（数字越小越靠前）"
+                type="number"
+                value={form.sort_order}
+                onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+              />
             </div>
             <div className="modal-footer">
               <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>

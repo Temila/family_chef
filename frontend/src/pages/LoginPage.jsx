@@ -6,6 +6,7 @@ import api from '../api/client';
 import ThemeToggle from '../components/ThemeToggle';
 import PasswordInput from '../components/PasswordInput';
 import Button from '../components/primitives/Button';
+import Input from '../components/primitives/Input';
 import { theme } from '../utils';
 
 export default function LoginPage() {
@@ -45,35 +46,28 @@ export default function LoginPage() {
         <p className="login-subtitle">Family Chef · 家的味道</p>
 
         <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label className="form-label">用户名</label>
-            <input
-              className="form-input"
-              type="text"
-              value={loginData.username}
-              onChange={(e) =>
-                setLoginData({ ...loginData, username: e.target.value })
-              }
-              placeholder="请输入用户名"
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">密码</label>
-            <PasswordInput
-              value={loginData.password}
-              onChange={(e) =>
-                setLoginData({ ...loginData, password: e.target.value })
-              }
-              placeholder="请输入密码"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          {loginError && (
-            <div className="form-error show">{loginError}</div>
-          )}
+          <Input
+            label="用户名"
+            type="text"
+            value={loginData.username}
+            onChange={(e) =>
+              setLoginData({ ...loginData, username: e.target.value })
+            }
+            placeholder="请输入用户名"
+            required
+            autoComplete="username"
+          />
+          <PasswordInput
+            label="密码"
+            value={loginData.password}
+            onChange={(e) =>
+              setLoginData({ ...loginData, password: e.target.value })
+            }
+            placeholder="请输入密码"
+            required
+            autoComplete="current-password"
+            error={loginError || undefined}
+          />
           <Button
             type="submit"
             variant="filled"
