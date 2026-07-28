@@ -35,7 +35,7 @@
 - [x] Phase 9: Motion & State Layers (2/2 plans, 1/2 planned) (completed 2026-07-27)
 - [x] Phase 10: Primitive Components (3/3 plans) (completed 2026-07-28)
 - [x] Phase 11: Composite & Navigation Components (3/3 plans) (completed 2026-07-28)
-- [ ] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (0/3 plans)
+- [ ] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (0/4 plans)
 
 ## Phase Details
 
@@ -220,13 +220,14 @@ Plans:
   4. 现有 E2E 流（注册登录、菜品 CRUD、订单创建、愿望单生命周期、访客点菜 5 大流）全部通过，业务逻辑零回归（LOGIC-01、LOGIC-03 验证）
   5. HUMAN-UAT 复检：UAT-1..UAT-5（User / Chef / Admin / Guest × 关键流程）在浏览器实测下视觉符合 MD3 规范且功能无事故——作为 v1.2 milestone 收尾的最终关卡
 
-**Plans**: 3 plans
+**Plans**: 4 plans
 Plans:
 **Wave 1**
 - [ ] 12-00-BUGFIX-PLAN.md — Ripple 鼠标点击回归修复 + 删除重复 Sidecar Header + Sidebar footer 主题/退出入口（UX-02、LOGIC-01..03）
-**Wave 2** *(blocked on Wave 1)*
-- [ ] 12-01-PLAN.md — 8dp 网格 + radius/stylelint + emoji→Icon + MOTION-05 + Snackbar action + check:md3 守门（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
-**Wave 3** *(blocked on Wave 2)*
+**Wave 2** *(blocked on Wave 1; 12-01A and 12-01B run in parallel as line-disjoint concern lanes)*
+- [ ] 12-01A-PLAN.md — 8dp 网格 spacing sweep + Login/Sidebar/BottomBar radius sweep + stylelint + check:md3 守门（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
+- [ ] 12-01B-PLAN.md — 5 个 motion token 消费 + 3 个 Icon 扩展 + 106 emoji 清扫 + Snackbar action + EmptyState API（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
+**Wave 3** *(blocked on both 12-01A and 12-01B)*
 - [ ] 12-02-PLAN.md — 旧类双端审计 + Playwright MD3 合规扩展 + HUMAN-UAT 6 流最终验收（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
 
 **UI hint**: yes
@@ -251,4 +252,4 @@ v1.0 / v1.1 historical note: v1.0 phases 1–4 (foundation → backend → front
 | 9. Motion & State Layers | v1.2 | 2/2 | Complete   | 2026-07-27 |
 | 10. Primitive Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
-| 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 0/3 | Not started | - |
+| 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 0/4 | Not started | - |

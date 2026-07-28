@@ -11,6 +11,7 @@ files_modified:
   - frontend/src/components/primitives/FAB.jsx
   - frontend/src/App.jsx
   - frontend/src/components/composites/Sidebar.jsx
+  - frontend/src/components/composites/Sidebar.css
 autonomous: true
 requirements:
   - UX-02
@@ -31,6 +32,9 @@ must_haves:
       provides: "PcLayout without Sidecar Header"
     - path: "frontend/src/components/composites/Sidebar.jsx"
       provides: "Theme and logout footer controls"
+    - path: "frontend/src/components/composites/Sidebar.css"
+      provides: "Compact 48dp footer actions without 2 × 80dp stacking"
+      contains: "var(--md-spacing-8)"
   key_links:
     - from: "frontend/src/components/primitives/Button.jsx"
       to: "frontend/src/components/primitives/Ripple.jsx"
@@ -53,7 +57,7 @@ must_haves:
 <objective>
 Remove the two v1.2 interaction regressions before the broad page sweep: restore native mouse/touch clicks for MD3 button primitives and remove the duplicate PcLayout Header while preserving theme/logout access.
 
-Purpose: Establish a stable, testable interaction shell before token migration and UAT, per D-BUG-01, D-BUG-02, and the locked three-plan sequence D-PLAN-01.
+Purpose: Establish a stable, testable interaction shell before token migration and UAT, per D-BUG-01 and D-BUG-02. D-PLAN-01 scope is preserved by the documented checker-directed four-plan execution split.
 Output: Hybrid Ripple self mode, primitive wiring, a single-header PcLayout, and Sidebar footer theme/logout controls.
 </objective>
 
@@ -119,7 +123,7 @@ Output: Hybrid Ripple self mode, primitive wiring, a single-header PcLayout, and
 
 <task type="auto">
   <name>Task 2: Remove the Sidecar Header and relocate shell controls</name>
-  <files>frontend/src/App.jsx, frontend/src/components/composites/Sidebar.jsx</files>
+  <files>frontend/src/App.jsx, frontend/src/components/composites/Sidebar.jsx, frontend/src/components/composites/Sidebar.css</files>
   <read_first>
     - `.planning/phases/12-page-level-refactor-8dp-grid-human-uat/12-CONTEXT.md` — D-BUG-02 and D-PLAN-01
     - `.planning/phases/12-page-level-refactor-8dp-grid-human-uat/12-RESEARCH.md` — §2 exact App deletion and Sidebar theme-toggle relocation pattern
@@ -131,18 +135,22 @@ Output: Hybrid Ripple self mode, primitive wiring, a single-header PcLayout, and
     - `frontend/src/utils/index.js` — exact `theme.getTheme()`, `theme.toggleTheme()` API
     - `frontend/src/components/ThemeToggle.jsx` — existing theme control behavior
   </read_first>
-  <action>Implement D-BUG-02 exactly: delete `<Header />` from `PcLayout` and remove only the now-unused App.jsx Header import; retain `<Sidebar />`, `<main className="pc-main" key={location.pathname}>`, `<Outlet />`, the Header re-export, and all page-level `<Header title=...>` consumers. In `composites/Sidebar.jsx`, import `theme` from `../../utils`, add a Ripple-wrapped theme button as the first child of `.md-sidebar__footer`, immediately before the existing logout button. Use `type="button"`, `className="md-sidebar__item md-interactive"`, `onClick={() => theme.toggleTheme()}`, a dynamic label/title of `切换浅色` when current theme is dark and `切换深色` otherwise, and `<Icon name={theme.getTheme() === 'dark' ? 'light-mode' : 'dark-mode'} size={24} />`. Keep the existing logout callback `logout(); navigate('/login');` unchanged and second in the footer. Do not create ProfileMenu, SettingsPage, a persisted theme preference feature, or any deferred theme-selector UI. Keep each footer action at the existing MD3 80dp navigation-item hit target; theme first is the chosen discretion because it is the more frequent action. This implements D-BUG-02 while preserving LOGIC-01/03.</action>
+  <action>Implement D-BUG-02 exactly: delete `<Header />` from `PcLayout` and remove only the now-unused App.jsx Header import; retain `<Sidebar />`, `<main className="pc-main" key={location.pathname}>`, `<Outlet />`, the Header re-export, and all page-level `<Header title=...>` consumers. In `composites/Sidebar.jsx`, import `theme` from `../../utils`, add a Ripple-wrapped theme button as the first child of `.md-sidebar__footer`, immediately before the existing logout button. Use `type="button"`, `className="md-sidebar__item md-interactive"`, `onClick={() => theme.toggleTheme()}`, a dynamic label/title of `切换浅色` when current theme is dark and `切换深色` otherwise, and `<Icon name={theme.getTheme() === 'dark' ? 'light-mode' : 'dark-mode'} size={24} />`. Keep the existing logout callback `logout(); navigate('/login');` unchanged and second in the footer. Limit changes to the existing App/Sidebar shell; create no new route or component.
+
+Resolve the Sidebar footer stacking explicitly rather than inheriting two 80dp navigation rows. In `Sidebar.css`, override only `.md-sidebar__footer .md-sidebar__item` to a compact 48dp `block-size`/`min-block-size` while retaining the global 48dp touch target, and make each footer action wrapper a 56px row using `var(--md-spacing-8)` with 4px block padding compensation around the 48dp button. Render the footer as two non-overlapping compact rows, so theme + logout occupy 112px rather than 2 × 80dp = 160px; do not force both controls into one 56px container or allow clipping/overlapping hit areas. Preserve the rail's 80dp width and the 80dp height of normal navigation items. Theme first is the chosen discretion because it is the more frequent action. This is the explicit PATTERNS/RESEARCH §2 risk disposition and implements D-BUG-02 while preserving LOGIC-01/03.</action>
   <acceptance_criteria>
     - `frontend/src/App.jsx` contains no `import Header` and no `<Header />` inside `PcLayout`.
     - `PcLayout` still renders `<Sidebar />`, `<main className="pc-main" key={location.pathname}>`, and `<Outlet />`.
     - `frontend/src/components/composites/Sidebar.jsx` imports `theme` from `../../utils` and contains both `theme.toggleTheme()` and the unchanged `logout(); navigate('/login');` sequence.
     - In Sidebar footer source order, the light/dark theme Icon appears before the logout Icon.
     - Theme control accessible names switch between exact strings `切换浅色` and `切换深色`.
+    - Sidebar footer controls each compute to at least 48px high but not 80px; their 56px rows use `var(--md-spacing-8)` plus padding compensation, remain non-overlapping, and both stay visible at the target desktop viewport.
+    - Normal Sidebar navigation items remain 80dp high and the rail remains 80dp wide.
     - Existing page-level Header component files and page Header calls are not deleted.
     - Production build completes with zero errors.
   </acceptance_criteria>
   <verify>
-    <automated>npm run build &amp;&amp; test "$(rg -c '&lt;Header /&gt;' src/App.jsx || true)" = "0" &amp;&amp; test "$(rg -c "import Header" src/App.jsx || true)" = "0" &amp;&amp; test "$(rg -c 'theme\.toggleTheme\(\)' src/components/composites/Sidebar.jsx)" = "1"</automated>
+    <automated>npm run build &amp;&amp; test "$(rg -c '&lt;Header /&gt;' src/App.jsx || true)" = "0" &amp;&amp; test "$(rg -c "import Header" src/App.jsx || true)" = "0" &amp;&amp; test "$(rg -c 'theme\.toggleTheme\(\)' src/components/composites/Sidebar.jsx)" = "1" &amp;&amp; rg -q 'grid-auto-rows:\s*var\(--md-spacing-8\)' src/components/composites/Sidebar.css &amp;&amp; rg -q 'min-block-size:\s*48px' src/components/composites/Sidebar.css</automated>
   </verify>
   <done>PcLayout no longer creates the duplicate Sidecar Header; page headers remain, and desktop users can switch theme then log out from the Sidebar footer.</done>
 </task>
@@ -162,13 +170,13 @@ Output: Hybrid Ripple self mode, primitive wiring, a single-header PcLayout, and
     - `frontend/src/App.jsx` — single-header shell contract
     - `frontend/src/components/composites/Sidebar.jsx` — theme/logout contract
   </read_first>
-  <action>Create a focused Playwright regression spec for D-BUG-01/D-BUG-02 using the existing fixture-page pattern, without requiring backend credentials. Mount/import the real Button, IconButton, FAB, Ripple, and Sidebar/PcLayout-relevant output rather than duplicating their implementation. For each primitive, use Playwright's real mouse click and keyboard Tab+Enter and assert the handler counter increments once per activation; assert a `.ripple-span` is created under the button on pointer down. Add a wrapper-mode case proving an external Ripple child remains clickable. Add shell assertions proving a representative authenticated layout has exactly one `<header>` and that clicking the Sidebar theme control toggles `document.documentElement.dataset.theme`; keep logout verification isolated from actual authentication by stubbing the existing context/navigation seam in the fixture. Do not replace this with `HTMLElement.click()` because the regression is browser hit-testing.</action>
+  <action>Create a focused Playwright regression spec for D-BUG-01/D-BUG-02 using the existing fixture-page pattern, without requiring backend credentials. Mount/import the real Button, IconButton, FAB, Ripple, and Sidebar/PcLayout-relevant output rather than duplicating their implementation. For each primitive, use Playwright's real mouse click and keyboard Tab+Enter and assert the handler counter increments once per activation; assert a `.ripple-span` is created under the button on pointer down. Add a wrapper-mode case proving an external Ripple child remains clickable. Add shell assertions proving a representative authenticated layout has exactly one `<header>`, that clicking the Sidebar theme control toggles `document.documentElement.dataset.theme`, and that both footer actions are visible, non-overlapping 48dp targets inside 56px tokenized rows while normal navigation items remain 80dp; keep logout verification isolated from actual authentication by stubbing the existing context/navigation seam in the fixture. Do not replace this with `HTMLElement.click()` because the regression is browser hit-testing.</action>
   <acceptance_criteria>
     - `frontend/tests/phase12-bugfix.spec.js` exists and imports/tests real production primitives.
     - The spec contains mouse-click assertions for Button, IconButton, and FAB, keyboard Enter assertions, and a `.ripple-span` assertion.
     - The spec contains an external/default Ripple wrapper click assertion.
     - The spec asserts `document.querySelectorAll('header').length` equals 1.
-    - The spec asserts the Sidebar theme action changes `data-theme` and that logout remains callable.
+    - The spec asserts the Sidebar theme action changes `data-theme`, logout remains callable, both footer buttons are visible/non-overlapping and at least 48px high, and normal nav items remain 80px high.
     - `npm exec playwright test -- phase12-bugfix.spec.js --reporter=line` exits 0.
   </acceptance_criteria>
   <verify>
@@ -209,7 +217,7 @@ Output: Hybrid Ripple self mode, primitive wiring, a single-header PcLayout, and
 - Mouse/touch and keyboard activation work for Button, IconButton, and FAB without duplicate callbacks.
 - Default Ripple wrappers remain compatible with composite consumers.
 - Exactly one page-level Header is rendered per authenticated page.
-- Theme toggle and logout are both accessible from the Sidebar footer, theme first.
+- Theme toggle and logout are both accessible from the Sidebar footer, theme first; each uses a 48dp target inside a tokenized 56px row, eliminating the prior 160dp stack without changing 80dp navigation items.
 - Browser regression tests and production build pass; backend remains untouched.
 </success_criteria>
 
