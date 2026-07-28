@@ -1,40 +1,6 @@
 /**
- * Header Component - 页面头部
+ * Header Re-export (Phase 11)
+ * 实际组件已迁移至 ./composites/Header.jsx；本文件保留作为稳定 import 路径。
+ * 消费方仍通过 `import Header from './components/Header'` 引用。
  */
-
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import ThemeToggle from './ThemeToggle';
-import IconButton from './primitives/IconButton';
-
-export default function Header({ title, showBack = false, actions }) {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  return (
-    <header className="header">
-      <div className="header-left">
-        {showBack && (
-          <IconButton
-            icon="arrow-back"
-            ariaLabel="返回"
-            onClick={() => navigate(-1)}
-            className="header-back"
-          />
-        )}
-      </div>
-
-      <h1 className="header-title">{title}</h1>
-
-      <div className="header-actions">
-        {user && <ThemeToggle />}
-        {actions}
-        {user && (
-          <div className="avatar avatar-sm">
-            {user.display_name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-          </div>
-        )}
-      </div>
-    </header>
-  );
-}
+export { default } from './composites/Header';
