@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T14:46:08.948Z"
-last_activity: 2026-07-28 -- Phase 12 execution started
+last_updated: "2026-07-28T15:33:20.688Z"
+last_activity: 2026-07-28
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 15
-  completed_plans: 11
+  completed_plans: 12
   percent: 50
 ---
 
@@ -36,15 +36,15 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 12 (page-level-refactor-8dp-grid-human-uat) — EXECUTING
-Plan: 1 of 4
+Plan: 2 of 4
 Next: `/gsd-execute-phase 12` execute the 4 plans
 Working branch: `feature/ui-rebuild` (dd3e2b5 — Phase 12 plans committed)
-Last activity: 2026-07-28 -- Phase 12 execution started
+Last activity: 2026-07-28
 
 ## Session Continuity
 
-Last session: 2026-07-28 (plan-phase)
-Stopped at: Phase 12 plans created (RESEARCH + UI-SPEC + PATTERNS + 4 PLANs)
+Last session: 2026-07-28T15:33:16.123Z
+Stopped at: Completed 12-00-BUGFIX-PLAN.md
 Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-UAT，保持在 `feature/ui-rebuild` 分支
 
 ## Deferred Items
@@ -101,6 +101,7 @@ Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-
 | Phase 11 P01 | 12min | 3 tasks | 18 files |
 | Phase 11 P02 | 25min | 3 tasks | 11 files |
 | Phase 11 P03 | 21min | 3 tasks | 18 files |
+| Phase 12 P00-BUGFIX | 40min | 3 tasks | 11 files |
 
 ## Decisions
 
@@ -141,3 +142,5 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 11-03]: ToastContext.jsx 路径、useToast 和 showToast(message, type) API 保持不变；App 仅改用 SnackbarProvider。 — 避免改动 169 个现有 showToast 调用方，并保持文件级导入兼容。
 - [Phase 11-03]: Snackbar timer 记录 remaining/startedAt，hover 恢复剩余时长；队列淘汰与 provider unmount 都清理 timeout。 — 满足 D-07 hover pause 与 T-11-08 timer leak 缓解，避免暂停后重新获得完整时长。
 - [Phase 11-03]: ListItem 仅在 clickable 时启用 md-interactive/Ripple，Trailing click 和嵌套键盘事件与整行激活隔离。 — 维持静态列表无伪交互，同时保证 trailing 操作不会误触发行级 onClick。
+- [Phase 12]: D-BUG-01 Ripple fix = Option 3 cloneElement hybrid (self mode on native button, wrap mode for composites); wrap-mode pointer-events inheritance fixed in base.css
+- [Phase 12]: D-BUG-02: deleted Sidecar Header from PcLayout; theme toggle + logout relocated to Sidebar footer (theme first, 48dp in 56px rows)

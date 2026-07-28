@@ -50,7 +50,7 @@
 ### UX — 间距 / 可访问性
 
 - [ ] **UX-01**: 8dp 网格间距规范化所有页面 padding/margin/gap — 替换散乱 px 值
-- [ ] **UX-02**: 焦点环 MD3 化（详见 MOTION-04）
+- [x] **UX-02**: 焦点环 MD3 化（详见 MOTION-04）
 - [x] **UX-03**: 触控目标 ≥ 48dp（Material Accessibility guideline）— 所有按钮/IconButton/FAB/list-item 高度不小于 48dp
 - [x] **UX-04**: Dark mode 配色完整性 — 所有新增 token 必须提供 dark mode 对应值
 - [x] **UX-05**: 系统字体升级（Roboto Flex / 苹方 / Noto Sans SC 仍可）— 保持中英文混排美观
@@ -109,7 +109,7 @@
 | COMPO-11 | Phase 11 | Complete |
 | COMPO-12 | Phase 11 | Complete |
 | UX-01 | Phase 12 | Pending |
-| UX-02 | Phase 8 + 12 | Pending |
+| UX-02 | Phase 8 + 12 | Complete |
 | UX-03 | Phase 9 | Complete |
 | UX-04 | Phase 8 | Complete |
 | UX-05 | Phase 8 | Complete |
