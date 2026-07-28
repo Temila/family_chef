@@ -190,7 +190,7 @@
   --md-state-layer-on-surface: var(--md-color-on-surface);       /* Container 背景 tint */
 
   /* ── 其他全局令牌 ── */
-  --md-nav-height: 64px;
+  --md-nav-height: 80px;  /* MD3 Navigation Bar spec — 80dp (Phase 11 从 64px 提升) */
   --md-color-scrim: rgba(0,0,0,0.32);
 }
 

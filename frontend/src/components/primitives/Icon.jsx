@@ -56,6 +56,15 @@ import {
   DarkMode as DarkModeIcon,
   ContentCopy as ContentCopyIcon,
   Favorite as FavoriteBorderIcon,
+  // Phase 11 必要扩展（Sidebar / BottomBar 导航图标）
+  Dashboard as DashboardIcon,
+  Eco as EcoIcon,
+  Folder as FolderIcon,
+  Group as GroupIcon,
+  BarChart as BarChartIcon,
+  Description as DescriptionIcon,
+  Lightbulb as LightbulbIcon,
+  Spa as SpaIcon,
 } from '@material-symbols-svg/react';
 
 // 静态映射表：调用方 name → 内部 SVG 组件
@@ -101,6 +110,15 @@ const ICONS = {
   'dark-mode': DarkModeIcon,
   'content-copy': ContentCopyIcon,
   'favorite-border': FavoriteBorderIcon,
+  // Phase 11 必要扩展（Sidebar / BottomBar 导航）
+  dashboard: DashboardIcon,
+  eco: EcoIcon,
+  folder: FolderIcon,
+  group: GroupIcon,
+  'bar-chart': BarChartIcon,
+  description: DescriptionIcon,
+  lightbulb: LightbulbIcon,
+  spa: SpaIcon,
 };
 
 export default function Icon({

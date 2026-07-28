@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Navigation Rail (Sidebar — 80dp)
+   Phase 11 — COMPO-09 / LOGIC-01
+   80dp 窄边栏：icon-only、active indicator pill (56×32 primary-container)
+   仅在 PC (≥1024px) 显示，移动端隐藏。
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import '../primitives/base.css';
+
+/* 80dp navigation rail — fixed left, full height */
+.md-sidebar {
+  display: none;
+  width: 80px;
+  background: var(--md-color-surface-container-lowest);
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  border-right: 1px solid var(--md-color-outline-variant);
+}
+
+/* Logo at top: 32dp icon centered, 24dp y-padding */
+.md-sidebar__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0 16px;
+  color: var(--md-color-primary);
+  flex-shrink: 0;
+}
+
+/* Nav: vertical flex, items take full width */
+.md-sidebar__nav {
+  flex: 1;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* Footer: logout button only */
+.md-sidebar__footer {
+  padding: 8px 0;
+  border-top: 1px solid var(--md-color-outline-variant);
+  flex-shrink: 0;
+}
+
+/* Each item: 80dp tall, icon centered, ripple from Phase 9 primitive */
+.md-sidebar__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  color: var(--md-color-on-surface-variant);
+  transition: color var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+
+/* Active indicator pill: 56×32 centered, primary-container (D-11) */
+.md-sidebar__item--active {
+  color: var(--md-color-on-primary-container);
+}
+.md-sidebar__item--active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--md-color-primary-container);
+  z-index: 0;
+  transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);
+}
+.md-sidebar__item > :not(.md-ripple-layer) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Icon container: 24dp visual + badge overlaid */
+.md-sidebar__item-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Show only on PC (≥1024px) */
+@media (min-width: 1024px) {
+  .md-sidebar {
+    display: flex;
+  }
+}
