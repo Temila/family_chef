@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { SnackbarProvider } from './contexts/ToastContext';
 import { CategoriesProvider } from './contexts/CategoriesContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -105,7 +105,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CategoriesProvider>
-          <ToastProvider>
+          <SnackbarProvider>
             <Routes>
             <Route path="/guest/:token" element={<GuestOrderPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -293,7 +293,7 @@ function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </ToastProvider>
+          </SnackbarProvider>
         </CategoriesProvider>
       </AuthProvider>
     </BrowserRouter>
