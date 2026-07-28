@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-27T06:32:40.077Z"
-last_activity: 2026-07-27
+last_updated: "2026-07-28T01:26:04.834Z"
+last_activity: 2026-07-28
 progress:
   total_phases: 8
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
-  percent: 25
+  total_plans: 8
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 10 — Primitive Components（下一个待执行 phase）
+**Current focus:** Phase 10 — primitive-components
 
 ## Branch State
 
@@ -35,10 +35,11 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 08-09 ✅ COMPLETE — 10-12 待执行
-Next: Phase 10 (primitive-components) — NOT STARTED
-Working branch: `feature/ui-rebuild` (7419be0)
-Last activity: 2026-07-27
+Phase: 10 (primitive-components) — EXECUTING
+Plan: 2 of 3 (10-01 complete; 10-02 next)
+Next: 10-02-PLAN.md — Card + Input primitives (Wave 2)
+Working branch: `feature/ui-rebuild` (a3b6c40 — 10-01 done)
+Last activity: 2026-07-28 — 10-01 SUMMARY written
 
 ## Deferred Items
 
@@ -58,8 +59,8 @@ Items acknowledged and carried forward from v1.1 milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-27T06:32:40.064Z
-Stopped at: Phase 10 context gathered
+Last session: 2026-07-28T01:26:04.825Z
+Stopped at: Completed 10-01-PLAN.md (Button+IconButton+FAB primitives + Icon SVG tree-shaking + Ripple migration + 41 consumer migrations + legacy CSS purge)
 Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-components)，在 `feature/ui-rebuild` 分支上进行
 
 ## Quick Tasks Completed
@@ -88,6 +89,7 @@ Next: `/gsd-execute-phase` 或 `/gsd-plan-phase` 启动 Phase 10 (primitive-comp
 | Phase 08 P02 | 15min | 3 tasks | 10 files |
 | Phase 09 P01 | 6min | 3 tasks | 10 files |
 | Phase 09 P02 | 25min | 3 tasks | 4 files |
+| Phase 10 P01 | 90min | 3 tasks | 41 files |
 
 ## Decisions
 
@@ -117,3 +119,6 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase ?]: Phase 09-02: Partial audit acceptable per plan Task 3 done criterion — only /login auditable without JWT (0 violations), 11 auth pages SKIPPED with re-run instructions in JSON; static grep verification provides programmatic coverage proof — Backend Python deps not installed (uv-managed); deferred to UAT verifier with real JWT
 - [Phase ?]: Phase 09-02: Audit script credential handling via --token=<JWT> CLI arg or FC_TEST_TOKEN env var (T-09-05 mitigated) — no hardcoded creds in source, JWT injected via page.evaluate(localStorage.setItem) — Avoids credentials in source/log; aligns with threat_model T-09-05 mitigation plan
 - [Phase ?]: Phase 09-02: Removed .pc-sidebar-footer-actions .theme-toggle 32x32 override (Rule 2 deviation) — would have shrunk sidebar footer theme-toggle below 48dp after base .theme-toggle lost its 36x36 width/height anchor per plan — Direct consequence of planned width/height removal; necessary for UX-03 compliance on sidebar footer
+- [Phase ?]: Phase 10-01: @material-symbols-svg/react@^1.0.38 (plan spec) does not exist on npm — installed 0.13.0 and remapped Icon imports (Place→LocationOn, FavoriteBorder→Favorite outline / Favorite→FavoriteFill filled) — Plan referenced RESEARCH.md spec for v1.0.38; actual latest on npm is 0.13.0 with different export names. Build was broken until imports matched real exports.
+- [Phase ?]: Phase 10-01: Internal Ripple pattern (D-12) — Button/IconButton/FAB wrap Ripple internally; external Ripple.jsx public API unchanged for Phase 10-out-of-scope composites (WishCard/DishCard/Sidebar) — Avoids breaking existing Ripple consumers while letting new primitives own their ripple lifecycle.
+- [Phase ?]: Phase 10-01: .fab className reduced to placement-only (position/bottom/right/z-index); all visual properties moved to .md-fab primitive — UI-SPEC §14 mandates FAB primitive not own position:fixed; placement by page consumer via className.
