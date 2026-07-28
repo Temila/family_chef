@@ -12,6 +12,7 @@ import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Chip from '../components/primitives/Chip';
+import Modal from '../components/composites/Modal';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -475,200 +476,189 @@ export default function AdminIngredientsPage() {
       )}
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{editingItem ? '编辑食材' : '添加食材'}</h3>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <Input
-                label="名称 *"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="如：西红柿"
-              />
-              {/* SC-10: select 保留 .form-input (Phase 11 Select primitive 上线时处理) */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
-                <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                  <option value="">请选择</option>
-                  {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                </select>
-              </div>
-              <Input
-                multiline
-                rows={2}
-                label="描述"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="可选描述"
-              />
-              <Input
-                label="别名（逗号分隔）"
-                value={form.aliases}
-                onChange={(e) => setForm({ ...form, aliases: e.target.value })}
-                placeholder="如：番茄, 柿子"
-              />
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSave}>保存</Button>
-            </div>
+        <Modal
+          open
+          onClose={() => setShowModal(false)}
+          title={editingItem ? '编辑食材' : '添加食材'}
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowModal(false)}>取消</Button>,
+            <Button key="save" variant="filled" onClick={handleSave}>保存</Button>,
+          ]}
+        >
+          <Input
+            label="名称 *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="如：西红柿"
+          />
+          {/* SC-10: select 保留 .form-input (Phase 11 Select primitive 上线时处理) */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>分类</label>
+            <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+              <option value="">请选择</option>
+              {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
           </div>
-        </div>
+          <Input
+            multiline
+            rows={2}
+            label="描述"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="可选描述"
+          />
+          <Input
+            label="别名（逗号分隔）"
+            value={form.aliases}
+            onChange={(e) => setForm({ ...form, aliases: e.target.value })}
+            placeholder="如：番茄, 柿子"
+          />
+        </Modal>
       )}
 
       {showParseModal && (
-        <div className="modal-overlay" onClick={() => setShowParseModal(false)}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: parseStep === 'review' ? 700 : 480 }}
-          >
-            <div className="modal-header">
-              <h3>{parseStep === 'input' ? '从菜谱解析食材' : '解析结果 — 选择操作'}</h3>
-              <button className="modal-close" onClick={() => setShowParseModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              {parseStep === 'input' ? (
-                <Input
-                  multiline
-                  rows={8}
-                  label="粘贴菜谱文本"
-                  value={parseText}
-                  onChange={(e) => setParseText(e.target.value)}
-                  placeholder={'例如：\n番茄 2个、鸡蛋 3个、盐适量\n土豆 1个、青椒 2个、生抽 1勺'}
-                />
+        <Modal
+          open
+          onClose={() => setShowParseModal(false)}
+          title={parseStep === 'input' ? '从菜谱解析食材' : '解析结果 — 选择操作'}
+          style={{ maxWidth: parseStep === 'review' ? 700 : 480 }}
+          actions={[
+            <Button key="back" variant="tonal" onClick={() => {
+              if (parseStep === 'review') {
+                setParseStep('input');
+              } else {
+                setShowParseModal(false);
+              }
+            }}>
+              {parseStep === 'review' ? '返回' : '取消'}
+            </Button>,
+            parseStep === 'input' ? (
+              <Button key="parse" variant="filled" onClick={handleParse} loading={parseLoading}>
+                开始解析
+              </Button>
+            ) : (
+              <Button key="import" variant="filled" onClick={handleImport} loading={importLoading}>
+                确认导入
+              </Button>
+            ),
+          ]}
+        >
+          {parseStep === 'input' ? (
+            <Input
+              multiline
+              rows={8}
+              label="粘贴菜谱文本"
+              value={parseText}
+              onChange={(e) => setParseText(e.target.value)}
+              placeholder={'例如：\n番茄 2个、鸡蛋 3个、盐适量\n土豆 1个、青椒 2个、生抽 1勺'}
+            />
+          ) : (
+            <div>
+              {parsedIngredients.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
+                  未识别到任何食材
+                </div>
               ) : (
-                <div>
-                  {parsedIngredients.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
-                      未识别到任何食材
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {parsedIngredients.map((item) => {
-                        const decision = parseDecisions[item.name] || { action: 'new', alias_for_id: null, category: '' };
-                        const isMatched = !!item.matched_ingredient_id;
-                        const displayName = decision.editedName || item.name;
-                        return (
-                          <div
-                            key={item.name}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {parsedIngredients.map((item) => {
+                    const decision = parseDecisions[item.name] || { action: 'new', alias_for_id: null, category: '' };
+                    const isMatched = !!item.matched_ingredient_id;
+                    const displayName = decision.editedName || item.name;
+                    return (
+                      <div
+                        key={item.name}
+                        style={{
+                          border: '1px solid var(--md-color-outline-variant)',
+                          borderRadius: 'var(--md-radius-md)',
+                          padding: 12,
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          {/* === 10-02-MIGRATION:START === renameParsedItem input → Input primitive === */}
+                          <Input
+                            aria-label="食材名"
+                            value={displayName}
+                            onChange={(e) => renameParsedItem(item.name, e.target.value)}
+                            style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem' }}
+                          />
+                          {/* === 10-02-MIGRATION:END === */}
+                          {isMatched && (
+                            <span style={{
+                              fontSize: '0.75rem',
+                              background: 'var(--md-color-primary)',
+                              color: 'var(--md-color-on-primary)',
+                              padding: '2px 8px',
+                              borderRadius: 'var(--md-radius-full)',
+                              whiteSpace: 'nowrap',
+                            }}>
+                              已匹配: {item.matched_ingredient_name}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => removeParsedItem(item.name)}
                             style={{
-                              border: '1px solid var(--md-color-outline-variant)',
-                              borderRadius: 'var(--md-radius-md)',
-                              padding: 12,
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '1.1rem',
+                              color: 'var(--md-color-error)',
+                              padding: '0 4px',
+                              lineHeight: 1,
                             }}
+                            title="移除"
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                              {/* === 10-02-MIGRATION:START === renameParsedItem input → Input primitive === */}
-                              <Input
-                                aria-label="食材名"
-                                value={displayName}
-                                onChange={(e) => renameParsedItem(item.name, e.target.value)}
-                                style={{ flex: 1, fontWeight: 600, fontSize: '0.95rem' }}
-                              />
-                              {/* === 10-02-MIGRATION:END === */}
-                              {isMatched && (
-                                <span style={{
-                                  fontSize: '0.75rem',
-                                  background: 'var(--md-color-primary)',
-                                  color: 'var(--md-color-on-primary)',
-                                  padding: '2px 8px',
-                                  borderRadius: 'var(--md-radius-full)',
-                                  whiteSpace: 'nowrap',
-                                }}>
-                                  已匹配: {item.matched_ingredient_name}
-                                </span>
-                              )}
-                              <button
-                                onClick={() => removeParsedItem(item.name)}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  fontSize: '1.1rem',
-                                  color: 'var(--md-color-error)',
-                                  padding: '0 4px',
-                                  lineHeight: 1,
-                                }}
-                                title="移除"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                              <select
-                                className="form-input"
-                                style={{ width: 'auto', minWidth: 120, fontSize: '0.85rem' }}
-                                value={decision.action}
-                                onChange={(e) => updateDecision(item.name, 'action', e.target.value)}
-                              >
-                                {isMatched && <option value="skip">跳过（已存在）</option>}
-                                <option value="new">添加为新食材</option>
-                                <option value="alias">添加为已有食材的别名</option>
-                              </select>
+                            ✕
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <select
+                            className="form-input"
+                            style={{ width: 'auto', minWidth: 120, fontSize: '0.85rem' }}
+                            value={decision.action}
+                            onChange={(e) => updateDecision(item.name, 'action', e.target.value)}
+                          >
+                            {isMatched && <option value="skip">跳过（已存在）</option>}
+                            <option value="new">添加为新食材</option>
+                            <option value="alias">添加为已有食材的别名</option>
+                          </select>
 
-                              {decision.action === 'new' && (
-                                <select
-                                  className="form-input"
-                                  style={{ width: 'auto', minWidth: 100, fontSize: '0.85rem' }}
-                                  value={decision.category}
-                                  onChange={(e) => updateDecision(item.name, 'category', e.target.value)}
-                                >
-                                  <option value="">选择分类(可选)</option>
-                                  {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                </select>
-                              )}
+                          {decision.action === 'new' && (
+                            <select
+                              className="form-input"
+                              style={{ width: 'auto', minWidth: 100, fontSize: '0.85rem' }}
+                              value={decision.category}
+                              onChange={(e) => updateDecision(item.name, 'category', e.target.value)}
+                            >
+                              <option value="">选择分类(可选)</option>
+                              {ingredientCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                            </select>
+                          )}
 
-                              {decision.action === 'alias' && (
-                                <select
-                                  className="form-input"
-                                  style={{ width: 'auto', minWidth: 140, fontSize: '0.85rem' }}
-                                  value={decision.alias_for_id || ''}
-                                  onChange={(e) => updateDecision(item.name, 'alias_for_id', Number(e.target.value))}
-                                >
-                                  <option value="">选择目标食材</option>
-                                  {allIngredients.map(ing => (
-                                    <option key={ing.id} value={ing.id}>
-                                      {ing.name}
-                                      {ing.aliases && ing.aliases.length > 0 ? ` (别名: ${ing.aliases.join('、')})` : ''}
-                                    </option>
-                                  ))}
-                                </select>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          {decision.action === 'alias' && (
+                            <select
+                              className="form-input"
+                              style={{ width: 'auto', minWidth: 140, fontSize: '0.85rem' }}
+                              value={decision.alias_for_id || ''}
+                              onChange={(e) => updateDecision(item.name, 'alias_for_id', Number(e.target.value))}
+                            >
+                              <option value="">选择目标食材</option>
+                              {allIngredients.map(ing => (
+                                <option key={ing.id} value={ing.id}>
+                                  {ing.name}
+                                  {ing.aliases && ing.aliases.length > 0 ? ` (别名: ${ing.aliases.join('、')})` : ''}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => {
-                if (parseStep === 'review') {
-                  setParseStep('input');
-                } else {
-                  setShowParseModal(false);
-                }
-              }}>
-                {parseStep === 'review' ? '返回' : '取消'}
-              </Button>
-              {parseStep === 'input' ? (
-                <Button variant="filled" onClick={handleParse} loading={parseLoading}>
-                  开始解析
-                </Button>
-              ) : (
-                <Button variant="filled" onClick={handleImport} loading={importLoading}>
-                  确认导入
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
+          )}
+        </Modal>
       )}
 
       <BottomBar />

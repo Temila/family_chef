@@ -9,6 +9,7 @@ import EmptyState from '../components/EmptyState';
 import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
+import Modal from '../components/composites/Modal';
 
 export default function AdminChefsPage() {
   const { showToast } = useToast();
@@ -165,52 +166,49 @@ export default function AdminChefsPage() {
       )}
 
       {showBindModal && selectedChef && (
-        <div className="modal-overlay" onClick={() => setShowBindModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>飞书绑定 - {selectedChef.display_name || selectedChef.username}</h3>
-              <button className="modal-close" onClick={() => setShowBindModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <Input
-                label="飞书 open_id"
-                value={feishuId}
-                onChange={(e) => setFeishuId(e.target.value)}
-                placeholder="输入飞书用户的 open_id"
-                supportingText="在飞书开放平台获取用户的 open_id"
-              />
+        <Modal
+          open
+          onClose={() => setShowBindModal(false)}
+          title={`飞书绑定 - ${selectedChef.display_name || selectedChef.username}`}
+        >
+          <Input
+            label="飞书 open_id"
+            value={feishuId}
+            onChange={(e) => setFeishuId(e.target.value)}
+            placeholder="输入飞书用户的 open_id"
+            supportingText="在飞书开放平台获取用户的 open_id"
+          />
 
-              {testResult && (
-                <div style={{
-                  padding: 10,
-                  borderRadius: 'var(--md-radius-sm)',
-                  marginBottom: 12,
-                  fontSize: '0.85rem',
-                  background: testResult.success ? 'var(--md-color-primary-container)' : 'var(--md-color-error-container)',
-                  color: testResult.success ? 'var(--md-color-primary)' : 'var(--md-color-error)',
-                }}>
-                  {testResult.message}
-                </div>
-              )}
+          {testResult && (
+            <div style={{
+              padding: 10,
+              borderRadius: 'var(--md-radius-sm)',
+              marginBottom: 12,
+              fontSize: '0.85rem',
+              background: testResult.success ? 'var(--md-color-primary-container)' : 'var(--md-color-error-container)',
+              color: testResult.success ? 'var(--md-color-primary)' : 'var(--md-color-error)',
+            }}>
+              {testResult.message}
+            </div>
+          )}
 
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Button
-                  variant="tonal"
-                  size="sm"
-                  onClick={handleTestNotify}
-                  loading={testing}
-                  style={{ flex: 1 }}
-                >
-                  发送测试消息
-                </Button>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowBindModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleBind}>保存绑定</Button>
-            </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button
+              variant="tonal"
+              size="sm"
+              onClick={handleTestNotify}
+              loading={testing}
+              style={{ flex: 1 }}
+            >
+              发送测试消息
+            </Button>
           </div>
-        </div>
+
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
+            <Button variant="tonal" onClick={() => setShowBindModal(false)}>取消</Button>
+            <Button variant="filled" onClick={handleBind}>保存绑定</Button>
+          </div>
+        </Modal>
       )}
 
       <BottomBar />

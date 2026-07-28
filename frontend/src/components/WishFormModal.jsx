@@ -1,12 +1,13 @@
 /**
- * WishFormModal Component - 愿望新建/编辑弹窗
+ * WishFormModal Component - 愿望新建/编辑弹窗（Phase 11：thin wrapper over <Modal>）
  * 纯展示 + 表单校验组件：提交通过 onSuccess(payload) 回调委托给父页面，
  * 不直接调用 API（依据 UI-SPEC §6.2 / §7.5 / §8.10）。
+ * focus trap / ESC / 滚动锁定 / 焦点归还 由 <Modal> 内建。
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
-import { trapFocusWithin } from '../utils';
+import Modal from './composites/Modal';
 import Button from './primitives/Button';
 import Input from './primitives/Input';
 
@@ -14,6 +15,7 @@ const MAX_NAME = 100;
 const MAX_URL = 500;
 const MAX_NOTE = 500;
 const HTTP_URL_RE = /^https?:\/\//i;
+const FORM_ID = 'wish-form-modal';
 
 /**
  * 构建提交载荷。
@@ -57,35 +59,12 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const dialogRef = useRef(null);
   const initialFocusRef = useRef(null);
 
-  // 锁定背景滚动、聚焦首个字段，并在关闭后把焦点还给触发元素。
-  useEffect(() => {
-    const previouslyFocused = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    initialFocusRef.current?.focus();
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      if (
-        previouslyFocused &&
-        typeof previouslyFocused.focus === 'function' &&
-        document.contains(previouslyFocused)
-      ) {
-        previouslyFocused.focus();
-      }
-    };
-  }, []);
-
-  // ESC 关闭（提交中除外）
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'Escape' && !submitting) onClose?.();
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [onClose, submitting]);
+  // submitting 期间禁止关闭（ESC / backdrop / ✕ 由 Modal 内建，此处仅守卫 onClose）
+  const guardedClose = () => {
+    if (!submitting) onClose?.();
+  };
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -136,87 +115,69 @@ export default function WishFormModal({ wish = null, mode = 'create', onClose, o
 
   const closeLabel = isEdit ? '放弃修改' : '暂不提交';
   const submitLabel = isEdit ? '保存修改' : '提交愿望';
-  const titleId = 'wish-form-title';
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        ref={dialogRef}
-        className="modal-content"
-        style={{ maxWidth: 480 }}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => trapFocusWithin(e, dialogRef.current)}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby="wish-form-description"
-        tabIndex={-1}
-      >
-        <div className="modal-header">
-          <h3 id={titleId}>{isEdit ? '编辑愿望' : '新建愿望'}</h3>
-          <button
-            type="button"
-            className="modal-close"
-            onClick={onClose}
-            aria-label={isEdit ? '关闭编辑愿望窗口' : '关闭新建愿望窗口'}
-          >
-            ✕
-          </button>
-        </div>
-
-        <form className="modal-body" onSubmit={handleSubmit}>
-          <p id="wish-form-description" className="sr-only">
-            请填写想吃的菜名，可选填写参考链接和备注。
-          </p>
-          {/* NOTIF-06 副作用提示：编辑已被认领的愿望会通知认领厨师 */}
-          {isEdit && wish?.claimed_by_chef_name && (
-            <div className="info-pill" style={{ marginBottom: 16, width: 'fit-content' }}>
-              信息：编辑此愿望将通知认领厨师「{wish.claimed_by_chef_name}」
-            </div>
-          )}
-
-          <Input
-            label="菜名 *"
-            ref={initialFocusRef}
-            type="text"
-            value={form.dish_name}
-            onChange={handleChange('dish_name')}
-            placeholder="请输入想吃的菜名"
-            maxLength={MAX_NAME}
-            error={errors.dish_name || undefined}
-          />
-
-          <Input
-            label="参考链接（可选）"
-            type="url"
-            value={form.reference_url}
-            onChange={handleChange('reference_url')}
-            placeholder="B站 / 抖音 / 小红书链接（可选）"
-            maxLength={MAX_URL}
-            error={errors.reference_url || undefined}
-          />
-
-          <Input
-            multiline
-            rows={3}
-            label="备注（可选）"
-            value={form.note}
-            onChange={handleChange('note')}
-            placeholder="补充说明（可选）"
-            maxLength={MAX_NOTE}
-            error={errors.note || undefined}
-          />
-
-          <div className="modal-footer">
-            <Button variant="tonal" onClick={onClose} disabled={submitting}>
-              {closeLabel}
-            </Button>
-            <Button type="submit" variant="filled" disabled={submitting}>
-              {submitLabel}
-            </Button>
+    <Modal
+      open
+      onClose={guardedClose}
+      title={isEdit ? '编辑愿望' : '新建愿望'}
+      closeIcon={false}
+      labelledBy="wish-form-title"
+      describedBy="wish-form-description"
+      style={{ maxWidth: 480 }}
+      initialFocusRef={initialFocusRef}
+      actions={[
+        <Button key="cancel" variant="tonal" onClick={guardedClose} disabled={submitting}>
+          {closeLabel}
+        </Button>,
+        <Button key="submit" type="submit" form={FORM_ID} variant="filled" disabled={submitting}>
+          {submitLabel}
+        </Button>,
+      ]}
+    >
+      <form id={FORM_ID} onSubmit={handleSubmit}>
+        <p id="wish-form-description" className="sr-only">
+          请填写想吃的菜名，可选填写参考链接和备注。
+        </p>
+        {/* NOTIF-06 副作用提示：编辑已被认领的愿望会通知认领厨师 */}
+        {isEdit && wish?.claimed_by_chef_name && (
+          <div className="info-pill" style={{ marginBottom: 16, width: 'fit-content' }}>
+            信息：编辑此愿望将通知认领厨师「{wish.claimed_by_chef_name}」
           </div>
-        </form>
-      </div>
-    </div>
+        )}
+
+        <Input
+          label="菜名 *"
+          ref={initialFocusRef}
+          type="text"
+          value={form.dish_name}
+          onChange={handleChange('dish_name')}
+          placeholder="请输入想吃的菜名"
+          maxLength={MAX_NAME}
+          error={errors.dish_name || undefined}
+        />
+
+        <Input
+          label="参考链接（可选）"
+          type="url"
+          value={form.reference_url}
+          onChange={handleChange('reference_url')}
+          placeholder="B站 / 抖音 / 小红书链接（可选）"
+          maxLength={MAX_URL}
+          error={errors.reference_url || undefined}
+        />
+
+        <Input
+          multiline
+          rows={3}
+          label="备注（可选）"
+          value={form.note}
+          onChange={handleChange('note')}
+          placeholder="补充说明（可选）"
+          maxLength={MAX_NOTE}
+          error={errors.note || undefined}
+        />
+      </form>
+    </Modal>
   );
 }

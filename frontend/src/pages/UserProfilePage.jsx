@@ -10,6 +10,7 @@ import Loading from '../components/Loading';
 import PasswordInput from '../components/PasswordInput';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
+import Modal from '../components/composites/Modal';
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
@@ -191,47 +192,43 @@ export default function UserProfilePage() {
       </div>
 
       {showEditModal && (
-        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>编辑资料</h3>
-              <button className="modal-close" onClick={() => setShowEditModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <Input
-                label="昵称"
-                value={editForm.display_name}
-                onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
-                placeholder="输入昵称"
-              />
-              <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: '16px 0', paddingTop: 16 }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>修改密码</div>
-                <PasswordInput
-                  label="旧密码"
-                  value={editForm.old_password}
-                  onChange={(e) => setEditForm({ ...editForm, old_password: e.target.value })}
-                  placeholder="输入旧密码"
-                />
-                <PasswordInput
-                  label="新密码（至少6位）"
-                  value={editForm.new_password}
-                  onChange={(e) => setEditForm({ ...editForm, new_password: e.target.value })}
-                  placeholder="输入新密码"
-                />
-                <PasswordInput
-                  label="确认新密码"
-                  value={editForm.confirm_password}
-                  onChange={(e) => setEditForm({ ...editForm, confirm_password: e.target.value })}
-                  placeholder="再次输入新密码"
-                />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowEditModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSaveProfile}>保存</Button>
-            </div>
+        <Modal
+          open
+          onClose={() => setShowEditModal(false)}
+          title="编辑资料"
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowEditModal(false)}>取消</Button>,
+            <Button key="save" variant="filled" onClick={handleSaveProfile}>保存</Button>,
+          ]}
+        >
+          <Input
+            label="昵称"
+            value={editForm.display_name}
+            onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+            placeholder="输入昵称"
+          />
+          <div style={{ borderTop: '1px solid var(--md-color-outline-variant)', margin: '16px 0', paddingTop: 16 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>修改密码</div>
+            <PasswordInput
+              label="旧密码"
+              value={editForm.old_password}
+              onChange={(e) => setEditForm({ ...editForm, old_password: e.target.value })}
+              placeholder="输入旧密码"
+            />
+            <PasswordInput
+              label="新密码（至少6位）"
+              value={editForm.new_password}
+              onChange={(e) => setEditForm({ ...editForm, new_password: e.target.value })}
+              placeholder="输入新密码"
+            />
+            <PasswordInput
+              label="确认新密码"
+              value={editForm.confirm_password}
+              onChange={(e) => setEditForm({ ...editForm, confirm_password: e.target.value })}
+              placeholder="再次输入新密码"
+            />
           </div>
-        </div>
+        </Modal>
       )}
 
       <BottomBar />

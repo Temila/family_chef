@@ -10,6 +10,7 @@ import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
+import Modal from '../components/composites/Modal';
 
 export default function AdminCategoriesPage() {
   const { showToast } = useToast();
@@ -206,48 +207,44 @@ export default function AdminCategoriesPage() {
       )}
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{editingItem ? '编辑分类' : `添加${getTypeMeta(activeType).label}`}</h3>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
+        <Modal
+          open
+          onClose={() => setShowModal(false)}
+          title={editingItem ? '编辑分类' : `添加${getTypeMeta(activeType).label}`}
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowModal(false)}>取消</Button>,
+            <Button key="save" variant="filled" onClick={handleSave}>保存</Button>,
+          ]}
+        >
+          <Input
+            label="名称 *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="输入分类名称"
+          />
+          {activeType === 'cuisine' && parentOptions.length > 0 && (
+            /* SC-10: select 保留 .form-input */
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>所属种类</label>
+              <select
+                className="form-input"
+                value={form.parent_id}
+                onChange={(e) => setForm({ ...form, parent_id: e.target.value })}
+              >
+                <option value="">无</option>
+                {parentOptions.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
-            <div className="modal-body">
-              <Input
-                label="名称 *"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="输入分类名称"
-              />
-              {activeType === 'cuisine' && parentOptions.length > 0 && (
-                /* SC-10: select 保留 .form-input */
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>所属种类</label>
-                  <select
-                    className="form-input"
-                    value={form.parent_id}
-                    onChange={(e) => setForm({ ...form, parent_id: e.target.value })}
-                  >
-                    <option value="">无</option>
-                    {parentOptions.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <Input
-                label="排序（数字越小越靠前）"
-                type="number"
-                value={form.sort_order}
-                onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-              />
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSave}>保存</Button>
-            </div>
-          </div>
-        </div>
+          )}
+          <Input
+            label="排序（数字越小越靠前）"
+            type="number"
+            value={form.sort_order}
+            onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+          />
+        </Modal>
       )}
 
       <BottomBar />

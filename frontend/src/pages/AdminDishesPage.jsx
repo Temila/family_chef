@@ -13,6 +13,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
+import Modal from '../components/composites/Modal';
 
 export default function AdminDishesPage() {
   const { user, isAdmin, isChef } = useAuth();
@@ -672,19 +673,22 @@ export default function AdminDishesPage() {
       )}
 
       {showDishModal && (
-        <div className="modal-overlay" onClick={() => setShowDishModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 600 }}>
-            <div className="modal-header">
-              <h3>{editingDish ? '编辑菜品' : '添加菜品'}</h3>
-              <button className="modal-close" onClick={() => setShowDishModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <Input
-                label="菜名 *"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="输入菜品名称"
-              />
+        <Modal
+          open
+          onClose={() => setShowDishModal(false)}
+          title={editingDish ? '编辑菜品' : '添加菜品'}
+          style={{ maxWidth: 600 }}
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowDishModal(false)}>取消</Button>,
+            <Button key="save" variant="filled" onClick={handleSave}>保存</Button>,
+          ]}
+        >
+          <Input
+            label="菜名 *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="输入菜品名称"
+          />
 
               <Input
                 multiline
@@ -905,23 +909,16 @@ export default function AdminDishesPage() {
                   半成品菜品不会出现在用户点菜菜单中，但可作为特殊食材被其他菜品选择
                 </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowDishModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSave}>保存</Button>
-            </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {showExtractModal && (
-        <div className="modal-overlay" onClick={() => setShowExtractModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
-            <div className="modal-header">
-              <h3>解析菜谱</h3>
-              <button className="modal-close" onClick={() => setShowExtractModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
+        <Modal
+          open
+          onClose={() => setShowExtractModal(false)}
+          title="解析菜谱"
+          style={{ maxWidth: 640 }}
+        >
               <Input
                 multiline
                 rows={6}
@@ -1001,23 +998,23 @@ export default function AdminDishesPage() {
                   )}
                 </div>
               )}
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowExtractModal(false)}>关闭</Button>
-            </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {showAddIngModal && (
-        <div className="modal-overlay" onClick={() => setShowAddIngModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 700 }}>
-            <div className="modal-header">
-              <h3>添加新食材（{(batchItems || []).length} 个）</h3>
-              <button className="modal-close" onClick={() => setShowAddIngModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              {batchItems.length === 0 ? (
+        <Modal
+          open
+          onClose={() => setShowAddIngModal(false)}
+          title={`添加新食材（${(batchItems || []).length} 个）`}
+          style={{ maxWidth: 700 }}
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowAddIngModal(false)}>取消</Button>,
+            <Button key="import" variant="filled" onClick={handleBatchImport} loading={batchImporting}>
+              确认导入
+            </Button>,
+          ]}
+        >
+          {batchItems.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--md-color-on-surface-variant)' }}>
                   没有需要添加的新食材
                 </div>
@@ -1137,15 +1134,7 @@ export default function AdminDishesPage() {
                   })}
                 </div>
               )}
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowAddIngModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleBatchImport} loading={batchImporting}>
-                确认导入
-              </Button>
-            </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       <BottomBar />

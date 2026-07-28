@@ -1,9 +1,11 @@
 /**
- * CreateLinkModal Component - 邀请链接创建成功 Modal
- * 显示链接、复制按钮、分享按钮、2小时提示
+ * CreateLinkModal Component - 邀请链接创建成功 Modal（Phase 11：thin wrapper over <Modal>）
+ * 显示链接、复制按钮、分享按钮、2小时提示。
+ * focus trap / ESC / 滚动锁定 由 <Modal> 内建。
  */
 
 import { useToast } from '../contexts/ToastContext';
+import Modal from './composites/Modal';
 import Button from './primitives/Button';
 
 export default function CreateLinkModal({ linkUrl, onClose }) {
@@ -47,65 +49,42 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <Modal
+      open
+      onClose={onClose}
+      title="邀请链接已创建"
+      style={{ maxWidth: 400 }}
+      actions={[
+        <Button key="copy" variant="filled" onClick={handleCopy}>
+          📋 复制链接
+        </Button>,
+        <Button key="share" variant="outlined" onClick={handleShare}>
+          🚀 分享
+        </Button>,
+      ]}
+    >
       <div
-        className="modal-content"
-        style={{ maxWidth: 400 }}
-        onClick={(e) => e.stopPropagation()}
+        style={{
+          fontFamily: 'monospace',
+          fontSize: '0.8rem',
+          wordBreak: 'break-all',
+          background: 'var(--md-color-surface-container)',
+          padding: 12,
+          borderRadius: 'var(--md-radius-sm)',
+          color: 'var(--md-color-on-surface-variant)',
+          marginBottom: 12,
+        }}
       >
-        <div className="modal-header">
-          <h3>邀请链接已创建</h3>
-          <button className="modal-close" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="modal-body">
-          <div
-            style={{
-              fontFamily: 'monospace',
-              fontSize: '0.8rem',
-              wordBreak: 'break-all',
-              background: 'var(--md-color-surface-container)',
-              padding: 12,
-              borderRadius: 'var(--md-radius-sm)',
-              color: 'var(--md-color-on-surface-variant)',
-              marginBottom: 12,
-            }}
-          >
-            {linkUrl}
-          </div>
-          <div
-            style={{
-              fontSize: '0.75rem',
-              color: 'var(--md-color-on-surface-variant)',
-              marginBottom: 16,
-            }}
-          >
-            2小时内有效
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <Button
-              variant="filled"
-              style={{ flex: 1 }}
-              onClick={handleCopy}
-            >
-              📋 复制链接
-            </Button>
-            <Button
-              variant="outlined"
-              style={{ flex: 1 }}
-              onClick={handleShare}
-            >
-              🚀 分享
-            </Button>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <Button variant="tonal" onClick={onClose}>
-            完成
-          </Button>
-        </div>
+        {linkUrl}
       </div>
-    </div>
+      <div
+        style={{
+          fontSize: '0.75rem',
+          color: 'var(--md-color-on-surface-variant)',
+        }}
+      >
+        2小时内有效
+      </div>
+    </Modal>
   );
 }

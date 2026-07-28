@@ -11,6 +11,7 @@ import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
 import Chip from '../components/primitives/Chip';
+import Modal from '../components/composites/Modal';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -267,59 +268,55 @@ export default function AdminUsersPage() {
       )}
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{editingUser ? '编辑用户' : '添加用户'}</h3>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <Input
-                label="用户名"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                placeholder="请输入用户名"
-                disabled={!!editingUser}
-                required
-              />
-              <Input
-                label="显示名称"
-                value={form.display_name}
-                onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-                placeholder="请输入显示名称"
-              />
-              <PasswordInput
-                label={editingUser ? '重置密码（留空不修改）' : '密码'}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder={editingUser ? '留空不修改' : '至少 6 位'}
-                minLength="6"
-              />
-              {/* SC-10: select 保留 .form-input */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>角色</label>
-                <select className="form-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                  <option value="user">用户</option>
-                  <option value="chef">厨师</option>
-                  <option value="admin">管理员</option>
-                </select>
-              </div>
-              {editingUser && (
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
-                  <select className="form-input" value={form.is_active ? 'true' : 'false'} onChange={(e) => setForm({ ...form, is_active: e.target.value === 'true' })}>
-                    <option value="true">启用</option>
-                    <option value="false">停用</option>
-                  </select>
-                </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSave}>保存</Button>
-            </div>
+        <Modal
+          open
+          onClose={() => setShowModal(false)}
+          title={editingUser ? '编辑用户' : '添加用户'}
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowModal(false)}>取消</Button>,
+            <Button key="save" variant="filled" onClick={handleSave}>保存</Button>,
+          ]}
+        >
+          <Input
+            label="用户名"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            placeholder="请输入用户名"
+            disabled={!!editingUser}
+            required
+          />
+          <Input
+            label="显示名称"
+            value={form.display_name}
+            onChange={(e) => setForm({ ...form, display_name: e.target.value })}
+            placeholder="请输入显示名称"
+          />
+          <PasswordInput
+            label={editingUser ? '重置密码（留空不修改）' : '密码'}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            placeholder={editingUser ? '留空不修改' : '至少 6 位'}
+            minLength="6"
+          />
+          {/* SC-10: select 保留 .form-input */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>角色</label>
+            <select className="form-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+              <option value="user">用户</option>
+              <option value="chef">厨师</option>
+              <option value="admin">管理员</option>
+            </select>
           </div>
-        </div>
+          {editingUser && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>状态</label>
+              <select className="form-input" value={form.is_active ? 'true' : 'false'} onChange={(e) => setForm({ ...form, is_active: e.target.value === 'true' })}>
+                <option value="true">启用</option>
+                <option value="false">停用</option>
+              </select>
+            </div>
+          )}
+        </Modal>
       )}
 
       <BottomBar />

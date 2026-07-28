@@ -14,6 +14,7 @@ import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
 import IconButton from '../components/primitives/IconButton';
 import Chip from '../components/primitives/Chip';
+import Modal from '../components/composites/Modal';
 
 export default function OrderPage() {
   const navigate = useNavigate();
@@ -566,113 +567,106 @@ export default function OrderPage() {
       )}
 
       {showChefPicker && chefPickerDish && (
-        <div className="modal-overlay" onClick={() => setShowChefPicker(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 360 }}>
-            <div className="modal-header">
-              <h3>选择厨师</h3>
-              <button className="modal-close" onClick={() => setShowChefPicker(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>
-                「{chefPickerDish.name}」有多位厨师可做，请选择：
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {chefPickerChefs.map(chef => (
-                  <Card
-                    key={chef.id}
-                    variant="filled"
-                    onClick={() => {
-                      addDishToCart(chefPickerDish, chef);
-                      setShowChefPicker(false);
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
-                      <div style={{
-                        width: 36, height: 36, borderRadius: '50%',
-                        background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
-                      }}>
-                        {(chef.display_name || chef.username).charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{chef.display_name || chef.username}</div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
+        <Modal
+          open
+          onClose={() => setShowChefPicker(false)}
+          title="选择厨师"
+          style={{ maxWidth: 360 }}
+        >
+          <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 12 }}>
+            「{chefPickerDish.name}」有多位厨师可做，请选择：
           </div>
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {chefPickerChefs.map(chef => (
+              <Card
+                key={chef.id}
+                variant="filled"
+                onClick={() => {
+                  addDishToCart(chefPickerDish, chef);
+                  setShowChefPicker(false);
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left' }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'var(--md-color-primary)', color: 'var(--md-color-on-primary)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.9rem', fontWeight: 600, flexShrink: 0,
+                  }}>
+                    {(chef.display_name || chef.username).charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{chef.display_name || chef.username}</div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Modal>
       )}
 
       {showConfirmModal && (
-        <div className="modal-overlay" onClick={() => setShowConfirmModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>确认订单</h3>
-              <button className="modal-close" onClick={() => setShowConfirmModal(false)}>✕</button>
+        <Modal
+          open
+          onClose={() => setShowConfirmModal(false)}
+          title="确认订单"
+          actions={[
+            <Button key="cancel" variant="tonal" onClick={() => setShowConfirmModal(false)}>取消</Button>,
+            <Button key="submit" variant="filled" onClick={handleSubmitOrder} loading={submitting}>
+              确认提交
+            </Button>,
+          ]}
+        >
+          {/* SC-10: select 保留 .form-input */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>用餐时间</label>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+              {(() => {
+                const today = new Date();
+                const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const weekday = (d) => ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+                const dates = Array.from({ length: 7 }, (_, i) => {
+                  const d = new Date(today);
+                  d.setDate(d.getDate() + i);
+                  return { value: fmt(d), label: i === 0 ? '今天' : i === 1 ? '明天' : i === 2 ? '后天' : `${d.getMonth()+1}/${d.getDate()}`, sub: i === 0 ? '' : weekday(d) };
+                });
+                return dates.map(d => (
+                  <Chip variant="filter" selected={mealDate === d.value}
+                    key={d.value}
+                    onClick={() => { setMealDate(d.value); if (mealType === 'now') setMealType(''); }}
+                  >
+                    <span>{d.label}</span>
+                    {d.sub && <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{d.sub}</span>}
+                  </Chip>
+                ));
+              })()}
             </div>
-            <div className="modal-body">
-              {/* SC-10: select 保留 .form-input */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)', marginBottom: 6 }}>用餐时间</label>
-                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                  {(() => {
-                    const today = new Date();
-                    const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                    const weekday = (d) => ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
-                    const dates = Array.from({ length: 7 }, (_, i) => {
-                      const d = new Date(today);
-                      d.setDate(d.getDate() + i);
-                      return { value: fmt(d), label: i === 0 ? '今天' : i === 1 ? '明天' : i === 2 ? '后天' : `${d.getMonth()+1}/${d.getDate()}`, sub: i === 0 ? '' : weekday(d) };
-                    });
-                    return dates.map(d => (
-                      <Chip variant="filter" selected={mealDate === d.value}
-                        key={d.value}
-                        onClick={() => { setMealDate(d.value); if (mealType === 'now') setMealType(''); }}
-                      >
-                        <span>{d.label}</span>
-                        {d.sub && <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{d.sub}</span>}
-                      </Chip>
-                    ));
-                  })()}
-                </div>
-                <select
-                  className="form-input"
-                  value={mealType}
-                  onChange={(e) => setMealType(e.target.value)}
-                >
-                  <option value="breakfast">早餐</option>
-                  <option value="lunch">午餐</option>
-                  <option value="dinner">晚餐</option>
-                  {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
-                </select>
-              </div>
-              <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
-                  确认订单 ({cartCount} 道菜)
-                </div>
-                {cart.map(item => (
-                  <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
-                    <span>
-                      {item.dish_name}
-                      <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 4 }}>· {item.chef_name}</span>
-                    </span>
-                    <span>×{item.quantity}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="modal-footer">
-              <Button variant="tonal" onClick={() => setShowConfirmModal(false)}>取消</Button>
-              <Button variant="filled" onClick={handleSubmitOrder} loading={submitting}>
-                确认提交
-              </Button>
-            </div>
+            <select
+              className="form-input"
+              value={mealType}
+              onChange={(e) => setMealType(e.target.value)}
+            >
+              <option value="breakfast">早餐</option>
+              <option value="lunch">午餐</option>
+              <option value="dinner">晚餐</option>
+              {(() => { const t = new Date(); return mealDate === `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; })() && <option value="now">现在就想吃</option>}
+            </select>
           </div>
-        </div>
+          <div style={{ marginTop: 16, padding: 12, background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 8 }}>
+              确认订单 ({cartCount} 道菜)
+            </div>
+            {cart.map(item => (
+              <div key={item.cart_key} style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                <span>
+                  {item.dish_name}
+                  <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 4 }}>· {item.chef_name}</span>
+                </span>
+                <span>×{item.quantity}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
       )}
 
       <BottomBar />
