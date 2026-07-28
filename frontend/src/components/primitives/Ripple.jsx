@@ -122,12 +122,16 @@ export default function Ripple({ children, disabled = false, className = '', sty
       ...style,
     };
 
+    // cloneElement 必须读取 children.ref 以与消费方 forwardRef 组合——此为 ref 合并的必要模式，
+    // react-hooks/refs 规则对此保守告警（不在渲染期间使用 .current，仅合并 ref 引用）。
+    /* eslint-disable react-hooks/refs */
     return cloneElement(children, {
       ref: composeRefs(children.ref, containerRef),
       onPointerDown: composedOnPointerDown,
       className: composedClassName,
       style: composedStyle,
     });
+    /* eslint-enable react-hooks/refs */
   }
 
   // 默认 mode="wrap"：保留 span 容器供 Sidebar/BottomBar/Card/ListItem 等非 button 子元素消费

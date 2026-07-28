@@ -36,6 +36,14 @@
   pointer-events: none;
 }
 
+/* Phase 12 D-BUG-01 (wrap-mode 修复)：pointer-events 是继承属性，.md-ripple-layer 的
+   none 会传递给子元素（按钮/卡片），导致 wrap 模式消费方（Sidebar 导航与 footer、
+   BottomBar、Card）无法接收鼠标/触摸事件。显式恢复直接子元素的 pointer-events，
+   .md-ripple-layer 自身仍不拦截事件（动态插入的 .ripple-span 自带 inline pointer-events:none）。 */
+.md-ripple-layer > * {
+  pointer-events: auto;
+}
+
 /* ── State 应用（MD3 hover 8% / pressed 10% / focused 12% / disabled 0%）── */
 .md-interactive:hover::before { opacity: var(--md-state-layer-hover); }
 .md-interactive:active::before,
