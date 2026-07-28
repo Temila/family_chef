@@ -42,11 +42,21 @@
   align-items: stretch;
 }
 
-/* Footer: logout button only */
+/* Footer: theme + logout，每个操作 56px 行（var(--md-spacing-8)），
+   内部 48dp 命中目标居中（上下各 4px 补偿），避免 2 × 80dp 堆叠（D-BUG-02）。
+   主题在前（更高频操作），退出在后。 */
 .md-sidebar__footer {
-  padding: 8px 0;
+  display: grid;
+  grid-auto-rows: var(--md-spacing-8);
+  align-items: center;
   border-top: 1px solid var(--md-color-outline-variant);
   flex-shrink: 0;
+}
+
+/* footer 操作项：48dp 命中目标（不沿用 80dp 导航行高），两行共 112px 非重叠 */
+.md-sidebar__footer .md-sidebar__item {
+  height: auto;
+  min-block-size: 48px;
 }
 
 /* Each item: 80dp tall, icon centered, ripple from Phase 9 primitive */

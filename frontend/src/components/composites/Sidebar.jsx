@@ -11,8 +11,10 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePendingOrderCount } from '../../hooks/usePendingOrderCount';
+import { theme } from '../../utils';
 import Icon from '../primitives/Icon';
 import Ripple from '../primitives/Ripple';
 import Badge from '../primitives/Badge';
@@ -23,6 +25,12 @@ export default function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const pendingCount = usePendingOrderCount();
+  // 主题状态：切换后立即重渲染以更新 Icon 与 accessible name（D-BUG-02 Sidebar footer）
+  const [currentTheme, setCurrentTheme] = useState(() => theme.getTheme());
+
+  const handleToggleTheme = () => {
+    setCurrentTheme(theme.toggleTheme());
+  };
 
   if (!user) return null;
 
@@ -93,6 +101,19 @@ export default function Sidebar() {
       </nav>
 
       <div className="md-sidebar__footer">
+        <Ripple style={{ width: '100%' }}>
+          <button
+            type="button"
+            className="md-sidebar__item md-interactive"
+            onClick={handleToggleTheme}
+            aria-label={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
+            title={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
+          >
+            <span className="md-sidebar__item-icon">
+              <Icon name={currentTheme === 'dark' ? 'light-mode' : 'dark-mode'} size={24} />
+            </span>
+          </button>
+        </Ripple>
         <Ripple style={{ width: '100%' }}>
           <button
             type="button"

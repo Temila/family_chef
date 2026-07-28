@@ -3,7 +3,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SnackbarProvider } from './contexts/ToastContext';
 import { CategoriesProvider } from './contexts/CategoriesContext';
 import Sidebar from './components/Sidebar';
-import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
 import UserHomePage from './pages/UserHomePage';
 import DishDetailPage from './pages/DishDetailPage';
@@ -77,7 +76,6 @@ function PcLayout() {
   return (
     <div className="pc-layout">
       <Sidebar />
-      <Header />
       <main className="pc-main" key={location.pathname}>
         <Outlet />
       </main>
