@@ -85,23 +85,27 @@ export default function AdminDishesPage() {
     if (!showIngDropdown) return;
     const handler = (e) => {
       if (ingDropdownRef.current && !ingDropdownRef.current.contains(e.target)) {
+        // BUG-04: 如果点击在 Portal'd 菜单内，不关闭（让 onClick 先执行）
+        if (e.target.closest('[data-ing-dropdown]')) return;
         setShowIngDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
   }, [showIngDropdown]);
 
   useEffect(() => {
     if (!showSfDropdown) return;
     const handler = (e) => {
       if (sfDropdownRef.current && !sfDropdownRef.current.contains(e.target)) {
+        // BUG-04: 如果点击在 Portal'd 菜单内，不关闭（让 onClick 先执行）
+        if (e.target.closest('[data-sf-dropdown]')) return;
         setShowSfDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-}, [showSfDropdown]);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [showSfDropdown]);
 
   const loadDishes = async () => {
     try {
@@ -546,7 +550,7 @@ export default function AdminDishesPage() {
             <table className="pc-data-table">
               <thead>
                   <tr>
-<th>菜品</th>
+                    <th>菜品</th>
                     <th>分类</th>
                     <th>厨师</th>
                     <th>状态</th>

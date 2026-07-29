@@ -345,12 +345,9 @@ input, textarea, select { font-family: var(--md-font-body); }
   text-align: left; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
   font-weight: 600; color: var(--md-color-on-surface-variant); font-size: 0.8rem; white-space: nowrap;
 }
-.pc-data-table th::before {
-  content: '';
-  display: inline-block;
-  width: 48px;
-  margin-right: var(--md-spacing-2);
-  vertical-align: middle;
+/* BUG-02: 第一列表头 padding-left 偏移，与含编辑按钮的表体内容对齐 */
+.pc-data-table th:first-child {
+  padding-left: calc(var(--md-spacing-3) + 48px + var(--md-spacing-2));
 }
 .pc-data-table td {
   padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 1px solid var(--md-color-outline-variant); vertical-align: middle; text-align: left;
