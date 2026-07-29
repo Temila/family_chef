@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -13,6 +13,8 @@ import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Sheet from '../components/composites/Sheet';
+import { createPortal } from 'react-dom';
 import Icon from '../components/primitives/Icon';
 
 export default function AdminIngredientsPage() {
@@ -31,6 +33,8 @@ export default function AdminIngredientsPage() {
   const [editingItem, setEditingItem] = useState(null);
   const [form, setForm] = useState({ name: '', category: '', description: '', aliases: '' });
   const [openDropdown, setOpenDropdown] = useState(null);
+  const triggerRefs = useRef({});
+  const [dropdownCoords, setDropdownCoords] = useState(null);
 
   const [showParseModal, setShowParseModal] = useState(false);
   const [parseText, setParseText] = useState('');
@@ -60,10 +64,6 @@ export default function AdminIngredientsPage() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openDropdown]);
-
-  const toggleDropdown = (id) => {
-    setOpenDropdown(prev => prev === id ? null : id);
-  };
 
   const loadIngredients = async () => {
     try {
@@ -271,30 +271,34 @@ export default function AdminIngredientsPage() {
         <Button
           variant="tonal"
           size="sm"
-          onClick={() => setShowAdvFilter(!showAdvFilter)}
+          onClick={() => setShowAdvFilter(true)}
         >
-          {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
+          高级筛选
         </Button>
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
-            <Chip variant="filter" selected={!advCategory}
-              onClick={() => setAdvCategory('')}
-            >
-              全部
-            </Chip>
-            {ingredientCategories.map(c => (
-              <Chip variant="filter" selected={advCategory === c.name}
-                key={c.id}
-                onClick={() => setAdvCategory(c.name)}
-              >
-                {c.name}
-              </Chip>
-            ))}
+        <Sheet
+          open
+          onClose={() => setShowAdvFilter(false)}
+          title="高级筛选 — 食材"
+          footer={
+            <div className="flex gap-3" style={{ width: '100%' }}>
+              <Button variant="tonal" className="flex-1" onClick={() => { setAdvCategory(''); }}>清空</Button>
+              <Button variant="filled" className="flex-1" onClick={() => setShowAdvFilter(false)}>应用</Button>
+            </div>
+          }
+        >
+          <div className="filter-section">
+            <div className="filter-section-label">分类</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)' }}>
+              <Chip variant="filter" selected={!advCategory} onClick={() => setAdvCategory('')}>全部</Chip>
+              {ingredientCategories.map(c => (
+                <Chip variant="filter" selected={advCategory === c.name} key={c.id} onClick={() => setAdvCategory(c.name)}>{c.name}</Chip>
+              ))}
+            </div>
           </div>
-        </div>
+        </Sheet>
       )}
 
       {loading ? (
@@ -327,53 +331,30 @@ export default function AdminIngredientsPage() {
                       {(item.linked_dishes || []).length > 0 && (
                         <button
                           type="button"
+                          ref={(el) => { if (el) triggerRefs.current[item.id] = el; else delete triggerRefs.current[item.id]; }}
                           data-dropdown-id={item.id}
-                          onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                          className="compact-interactive-target"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setDropdownCoords({ top: rect.bottom + 4, left: rect.left });
+                            setOpenDropdown(prev => prev === item.id ? null : item.id);
+                          }}
                           style={{
                             marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle',
-                            width: 24, height: 24, borderRadius: '50%',
-                            border: '1px solid var(--md-color-outline)',
-                            background: 'var(--md-color-surface-container-high)',
-                            color: 'var(--md-color-on-surface-variant)',
-                            cursor: 'pointer', display: 'inline-flex',
+                            background: 'transparent',
+                            color: 'var(--md-color-primary)',
+                            border: 'none',
+                            padding: 'var(--md-spacing-1)',
+                            display: 'inline-flex',
                             alignItems: 'center', justifyContent: 'center',
-                            fontSize: '0.65rem', lineHeight: 1, padding: 0,
+                            fontSize: '0.65rem', lineHeight: 1, cursor: 'pointer',
                           }}
                           aria-label="查看关联菜品"
                           title="查看关联菜品"
                         >
                           ▾
                         </button>
-                      )}
-                      {openDropdown === item.id && (item.linked_dishes || []).length > 0 && (
-                        <div data-dropdown-id={item.id} style={{
-                          position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                          background: 'var(--md-color-surface-container-high)',
-                          border: '1px solid var(--md-color-outline-variant)',
-                          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
-                          minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
-                          opacity: 1,
-                        }}>
-                          {item.linked_dishes.map(d => (
-                            <div
-                              key={d.id}
-                              onClick={() => {
-                                setOpenDropdown(null);
-                                const base = user?.role === 'admin' ? '/admin/dishes' : '/chef/dishes';
-                                navigate(`${base}?edit=${d.id}`);
-                              }}
-                              style={{
-                                padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
-                                fontSize: '0.85rem', color: 'var(--md-color-primary)',
-                                background: 'transparent',
-                              }}
-                              onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
-                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                            >
-                              {d.name}
-                            </div>
-                          ))}
-                        </div>
                       )}
                     </td>
                     <td>
@@ -409,7 +390,7 @@ export default function AdminIngredientsPage() {
 
           <div className="mobile-card-list mobile-card-list--grid">
             {ingredients.map(item => (
-              <Card key={item.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
+              <Card key={item.id} variant="elevated" style={{ display: 'flex', flexDirection: 'column', marginBottom: 'var(--md-spacing-2)' }}>
                 <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{item.name}</div>
@@ -419,52 +400,29 @@ export default function AdminIngredientsPage() {
                           <span data-dropdown-id={item.id} style={{ position: 'relative' }}>
                             <button
                               type="button"
+                              ref={(el) => { if (el) triggerRefs.current[item.id] = el; else delete triggerRefs.current[item.id]; }}
                               data-dropdown-id={item.id}
-                              onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                              className="compact-interactive-target"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setDropdownCoords({ top: rect.bottom + 4, left: rect.left });
+                                setOpenDropdown(prev => prev === item.id ? null : item.id);
+                              }}
                               style={{
-                                width: 24, height: 24, borderRadius: '50%',
-                                border: '1px solid var(--md-color-outline)',
-                                background: 'var(--md-color-surface-container-high)',
-                                color: 'var(--md-color-on-surface-variant)',
-                                cursor: 'pointer', display: 'inline-flex',
+                                background: 'transparent',
+                                color: 'var(--md-color-primary)',
+                                border: 'none',
+                                padding: 'var(--md-spacing-1)',
+                                display: 'inline-flex',
                                 alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.65rem', lineHeight: 1, padding: 0,
+                                fontSize: '0.65rem', lineHeight: 1, cursor: 'pointer',
                               }}
                               aria-label="查看关联菜品"
                               title="查看关联菜品"
                             >
                               ▾
                             </button>
-                            {openDropdown === item.id && (
-                              <div data-dropdown-id={item.id} style={{
-                                position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                                background: 'var(--md-color-surface-container-high)',
-                                border: '1px solid var(--md-color-outline-variant)',
-                                borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
-                                minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
-                                opacity: 1,
-                              }}>
-                                {item.linked_dishes.map(d => (
-                                  <div
-                                    key={d.id}
-                              onClick={() => {
-                                setOpenDropdown(null);
-                                const base = user?.role === 'admin' ? '/admin/dishes' : '/chef/dishes';
-                                navigate(`${base}?edit=${d.id}`);
-                              }}
-                                    style={{
-                                padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
-                                      fontSize: '0.85rem', color: 'var(--md-color-primary)',
-                                      background: 'transparent',
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
-                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                                  >
-                                    {d.name}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </span>
                         )}
                       </div>
@@ -475,7 +433,8 @@ export default function AdminIngredientsPage() {
                       别名：{item.aliases.join('、')}
                     </div>
                   )}
-                  <div className="flex gap-3">
+                  <div style={{ flex: 1 }} />
+                  <div className="flex gap-3" style={{ marginTop: 'auto' }}>
                     <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(item)}>编辑</Button>
                     {(item.dish_count || 0) > 0 ? (
                       <Button
@@ -688,6 +647,37 @@ export default function AdminIngredientsPage() {
             </div>
           )}
         </Modal>
+      )}
+
+      {openDropdown !== null && dropdownCoords && createPortal(
+        <div data-dropdown-id={openDropdown} style={{
+          position: 'fixed', top: dropdownCoords.top, left: dropdownCoords.left, zIndex: 1000,
+          background: 'var(--md-color-surface-container-high)',
+          border: '1px solid var(--md-color-outline-variant)',
+          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
+          minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+        }}>
+          {(ingredients.find(i => i.id === openDropdown)?.linked_dishes || []).map(d => (
+            <div
+              key={d.id}
+              onClick={() => {
+                setOpenDropdown(null);
+                const base = user?.role === 'admin' ? '/admin/dishes' : '/chef/dishes';
+                navigate(`${base}?edit=${d.id}`);
+              }}
+              style={{
+                padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
+                fontSize: '0.85rem', color: 'var(--md-color-primary)',
+                background: 'transparent',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              {d.name}
+            </div>
+          ))}
+        </div>,
+        document.body
       )}
 
       <BottomBar />
