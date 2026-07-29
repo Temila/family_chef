@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  border: 1px solid var(--md-color-outline-variant);
 }
 
 /* Full-screen 子覆写：铺满视口、零圆角 */
@@ -44,6 +45,12 @@
   max-height: 100vh;
   height: 100vh;
   border-radius: 0;
+}
+
+/* D-11 (BUG-07 / UI-03)：铺满视口的变体不需要边缘对比边框 */
+.md-modal--full-screen .md-modal,
+.md-modal--bottom-sheet .md-modal {
+  border: none;
 }
 
 /* ── Header：16dp y / 20dp x padding，1px 底边框，flex-shrink 防压扁 ── */

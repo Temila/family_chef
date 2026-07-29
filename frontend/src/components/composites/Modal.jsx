@@ -7,7 +7,7 @@
  * 内建 MD3 行为：focus trap + ESC 关闭 + 背景滚动锁定 + 焦点归还。
  *
  * 公开 API：
- *   variant        'basic' | 'full-screen'（caller 显式 opt-in）
+ *   variant        'basic' | 'full-screen' | 'bottom-sheet'（caller 显式 opt-in）
  *   open           控制渲染（false → return null）
  *   onClose        backdrop / ESC / close icon 触发的关闭回调
  *   title          标题文本（默认 header slot 渲染）
