@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -14,6 +15,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Sheet from '../components/composites/Sheet';
 import Icon from '../components/primitives/Icon';
 
 export default function AdminDishesPage() {
@@ -49,6 +51,8 @@ export default function AdminDishesPage() {
   const [showSfDropdown, setShowSfDropdown] = useState(false);
   const [sfSearch, setSfSearch] = useState('');
   const sfDropdownRef = useRef(null);
+  const [sfDropdownCoords, setSfDropdownCoords] = useState(null);
+  const [ingDropdownCoords, setIngDropdownCoords] = useState(null);
 
   const [showExtractModal, setShowExtractModal] = useState(false);
   const [extractText, setExtractText] = useState('');
@@ -479,14 +483,24 @@ export default function AdminDishesPage() {
         <Button
           variant="tonal"
           size="sm"
-          onClick={() => setShowAdvFilter(!showAdvFilter)}
+          onClick={() => setShowAdvFilter(true)}
         >
-          {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
+          高级筛选
         </Button>
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <Sheet
+          open
+          onClose={() => setShowAdvFilter(false)}
+          title="高级筛选 — 菜品"
+          footer={
+            <div className="flex gap-3" style={{ width: '100%' }}>
+              <Button variant="tonal" className="flex-1" onClick={() => { setAdvCategoryIds([]); setSfFilter('all'); }}>清空</Button>
+              <Button variant="filled" className="flex-1" onClick={() => setShowAdvFilter(false)}>应用</Button>
+            </div>
+          }
+        >
           {renderCategorySection(getTypeMeta('region').label, regions, advCategoryIds, (id) => {
             setAdvCategoryIds(prev => {
               if (prev.includes(id)) {
@@ -502,9 +516,9 @@ export default function AdminDishesPage() {
               setAdvCategoryIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
             })}</div>;
           })}
-          <div style={{ marginBottom: 'var(--md-spacing-3)'}}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>半成品</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
+          <div className="filter-section">
+            <div className="filter-section-label">半成品</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)' }}>
               {[
                 { key: 'all', label: '全部' },
                 { key: 'normal', label: '非半成品' },
@@ -519,7 +533,7 @@ export default function AdminDishesPage() {
               ))}
             </div>
           </div>
-        </div>
+        </Sheet>
       )}
 
       {loading ? (
@@ -743,68 +757,23 @@ export default function AdminDishesPage() {
 
                 {/* === 10-02-MIGRATION:START === div form-input trigger → .field-trigger (10-03 may also touch this file) === */}
                 <div
-                  className="field-trigger"
+                  className="field-trigger compact-interactive-target"
                   role="button"
                   tabIndex={0}
-                  onClick={() => setShowIngDropdown(!showIngDropdown)}
+                  onClick={() => {
+                    if (showIngDropdown) {
+                      setShowIngDropdown(false);
+                    } else if (ingDropdownRef.current) {
+                      const rect = ingDropdownRef.current.getBoundingClientRect();
+                      setIngDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+                      setShowIngDropdown(true);
+                    }
+                  }}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowIngDropdown(!showIngDropdown); } }}
                 >
                   {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
                 </div>
                 {/* === 10-02-MIGRATION:END === */}
-
-                {showIngDropdown && (
-                  <div style={{
-                    position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                    background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
-                    maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                  }}>
-                    <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
-                      <Input
-                        placeholder="搜索食材..."
-                        value={ingSearch}
-                        onChange={(e) => setIngSearch(e.target.value)}
-                        autoFocus
-                        className=""
-                      />
-                      <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
-                        <Chip variant="filter" selected={!ingCategoryFilter}
-                          onClick={() => setIngCategoryFilter('')}
-                        >
-                          全部
-                        </Chip>
-                        {ingredientCategories.map(c => (
-                          <Chip variant="filter" selected={ingCategoryFilter === c.name}
-                            key={c.id}
-                            onClick={() => setIngCategoryFilter(c.name)}
-                          >
-                            {c.name}
-                          </Chip>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ overflowY: 'auto', flex: 1 }}>
-                      {filteredIngForDropdown.length === 0 ? (
-                        <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
-                      ) : (
-                        filteredIngForDropdown.slice(0, 50).map(ing => (
-                          <div
-                            key={ing.id}
-                            className="preference-search-item"
-                            onClick={() => { toggleIngredient(ing.id); }}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <span>{ing.name}</span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
-                              {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
-                            </span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {semifinishedDishes.length > 0 && (
@@ -824,58 +793,23 @@ export default function AdminDishesPage() {
 
                   {/* === 10-02-MIGRATION:START === semifinished trigger div → .field-trigger === */}
                   <div
-                    className="field-trigger"
+                    className="field-trigger compact-interactive-target"
                     role="button"
                     tabIndex={0}
-                    onClick={() => setShowSfDropdown(!showSfDropdown)}
+                    onClick={() => {
+                      if (showSfDropdown) {
+                        setShowSfDropdown(false);
+                      } else if (sfDropdownRef.current) {
+                        const rect = sfDropdownRef.current.getBoundingClientRect();
+                        setSfDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+                        setShowSfDropdown(true);
+                      }
+                    }}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowSfDropdown(!showSfDropdown); } }}
                   >
                     {showSfDropdown ? '搜索并选择半成品...' : '点击选择半成品食材...'}
                   </div>
                   {/* === 10-02-MIGRATION:END === */}
-
-                  {showSfDropdown && (
-                    <div style={{
-                      position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                      background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                      borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
-                      maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                    }}>
-                      <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
-                        <Input
-                          placeholder="搜索半成品..."
-                          value={sfSearch}
-                          onChange={(e) => setSfSearch(e.target.value)}
-                          autoFocus
-                          className=""
-                        />
-                      </div>
-                      <div style={{ overflowY: 'auto', flex: 1 }}>
-                        {semifinishedDishes
-                          .filter(d => !form.semifinished_dish_ids.includes(d.id))
-                          .filter(d => !sfSearch || d.name.includes(sfSearch))
-                          .length === 0 ? (
-                          <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
-                        ) : (
-                          semifinishedDishes
-                            .filter(d => !form.semifinished_dish_ids.includes(d.id))
-                            .filter(d => !sfSearch || d.name.includes(sfSearch))
-                            .slice(0, 50)
-                            .map(d => (
-                              <div
-                                key={d.id}
-                                className="preference-search-item"
-                                onClick={() => { toggleSemifinishedDish(d.id); }}
-                                style={{ cursor: 'pointer' }}
-                              >
-                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}><Icon name="ramen-dining" size={16} /></span>
-                                <span>{d.name}</span>
-                              </div>
-                            ))
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -1135,6 +1069,104 @@ export default function AdminDishesPage() {
                 </div>
               )}
         </Modal>
+      )}
+
+      {showIngDropdown && ingDropdownCoords && createPortal(
+        <div data-ing-dropdown style={{
+          position: 'fixed', top: ingDropdownCoords.top, left: ingDropdownCoords.left, width: ingDropdownCoords.width, zIndex: 1000,
+          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
+          maxHeight: 280, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+        }}>
+          <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
+            <Input
+              placeholder="搜索食材..."
+              value={ingSearch}
+              onChange={(e) => setIngSearch(e.target.value)}
+              autoFocus
+              className=""
+            />
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
+              <Chip variant="filter" selected={!ingCategoryFilter}
+                onClick={() => setIngCategoryFilter('')}
+              >
+                全部
+              </Chip>
+              {ingredientCategories.map(c => (
+                <Chip variant="filter" selected={ingCategoryFilter === c.name}
+                  key={c.id}
+                  onClick={() => setIngCategoryFilter(c.name)}
+                >
+                  {c.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+          <div style={{ overflowY: 'auto' }}>
+            {filteredIngForDropdown.length === 0 ? (
+              <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
+            ) : (
+              filteredIngForDropdown.slice(0, 50).map(ing => (
+                <div
+                  key={ing.id}
+                  className="preference-search-item"
+                  onClick={() => { toggleIngredient(ing.id); }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span>{ing.name}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
+                    {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showSfDropdown && sfDropdownCoords && createPortal(
+        <div data-sf-dropdown style={{
+          position: 'fixed', top: sfDropdownCoords.top, left: sfDropdownCoords.left, width: sfDropdownCoords.width, zIndex: 1000,
+          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
+          maxHeight: 280, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+        }}>
+          <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
+            <Input
+              placeholder="搜索半成品..."
+              value={sfSearch}
+              onChange={(e) => setSfSearch(e.target.value)}
+              autoFocus
+              className=""
+            />
+          </div>
+          <div style={{ overflowY: 'auto' }}>
+            {semifinishedDishes
+              .filter(d => !form.semifinished_dish_ids.includes(d.id))
+              .filter(d => !sfSearch || d.name.includes(sfSearch))
+              .length === 0 ? (
+              <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
+            ) : (
+              semifinishedDishes
+                .filter(d => !form.semifinished_dish_ids.includes(d.id))
+                .filter(d => !sfSearch || d.name.includes(sfSearch))
+                .slice(0, 50)
+                .map(d => (
+                  <div
+                    key={d.id}
+                    className="preference-search-item"
+                    onClick={() => { toggleSemifinishedDish(d.id); }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}><Icon name="ramen-dining" size={16} /></span>
+                    <span>{d.name}</span>
+                  </div>
+                ))
+            )}
+          </div>
+        </div>,
+        document.body
       )}
 
       <BottomBar />
