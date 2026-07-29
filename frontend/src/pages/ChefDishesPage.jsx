@@ -552,7 +552,7 @@ export default function ChefDishesPage() {
             <table className="pc-data-table">
               <thead>
                   <tr>
-<th>菜品</th>
+                    <th>菜品</th>
                     <th>分类</th>
                     <th>厨师</th>
                     <th>状态</th>
@@ -630,59 +630,68 @@ export default function ChefDishesPage() {
 
           <div className="mobile-card-list mobile-card-list--grid">
             {dishes.map(dish => (
-              <Card key={dish.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
+              <Card
+                key={dish.id}
+                variant="elevated"
+                style={{ marginBottom: 'var(--md-spacing-3)' }}
+                footer={
+                  <div className="flex gap-3" style={{ width: '100%' }}>
+                    {!dish.is_semifinished && (
+                      <Button variant="tonal" size="sm" className="flex-1" onClick={() => handleTogglePublish(dish)}>
+                        {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
+                      </Button>
+                    )}
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(dish)}>编辑</Button>
+                  </div>
+                }
+              >
                 <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, marginBottom: 'var(--md-spacing-1)'}}>
+                      <div style={{ fontWeight: 600, marginBottom: 'var(--md-spacing-1)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                         {dish.name}
                         {dish.is_semifinished && <span style={{ fontSize: '0.7rem', marginLeft: 'var(--md-spacing-1)', padding: '1px var(--md-spacing-1)', borderRadius: 'var(--md-radius-xs)', background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>半成品</span>}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                         {(dish.categories || []).map(c => c.name).join(' · ')}
                       </div>
                     </div>
                     {!dish.is_semifinished && <Badge status={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? 'published' : 'hidden'; })()} />}
                   </div>
-                  {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>厨师：</span>
-                      <div style={{ display: 'flex' }}>
-                        {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
-                          <div key={`${dish.id}-${c.id}-${ci}`} style={{
-                            width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--md-color-primary)',
-                            color: 'var(--md-color-on-primary)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '0.65rem', fontWeight: 600,
-                            border: '2px solid var(--md-color-surface-container-low)',
-                            marginLeft: -4,
-                          }} title={c.display_name || c.username}>
-                            {(c.display_name || c.username).charAt(0).toUpperCase()}
-                          </div>
-                        ))}
-                        {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
-                          <div style={{
-                            width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--md-color-surface-container)',
-                            color: 'var(--md-color-on-surface-variant)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '0.6rem',
-                            border: '2px solid var(--md-color-surface-container-low)',
-                            marginLeft: -4,
-                          }}>
-                            +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
-                          </div>
-                        )}
+                  {/* 厨师信息：有数据时显示，无数据时占位保持卡片对齐 */}
+                  <div style={{ minHeight: '28px', display: 'flex', alignItems: 'center', marginBottom: 'var(--md-spacing-2)' }}>
+                    {dish.chefs && dish.chefs.filter(c => c.publish_status === 'published').length > 0 ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>厨师：</span>
+                        <div style={{ display: 'flex' }}>
+                          {dish.chefs.filter(c => c.publish_status === 'published').slice(0, 5).map((c, ci) => (
+                            <div key={`${dish.id}-${c.id}-${ci}`} style={{
+                              width: 24, height: 24, borderRadius: '50%',
+                              background: 'var(--md-color-primary)',
+                              color: 'var(--md-color-on-primary)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '0.65rem', fontWeight: 600,
+                              border: '2px solid var(--md-color-surface-container-low)',
+                              marginLeft: -4,
+                            }} title={c.display_name || c.username}>
+                              {(c.display_name || c.username).charAt(0).toUpperCase()}
+                            </div>
+                          ))}
+                          {dish.chefs.filter(c => c.publish_status === 'published').length > 5 && (
+                            <div style={{
+                              width: 24, height: 24, borderRadius: '50%',
+                              background: 'var(--md-color-surface-container)',
+                              color: 'var(--md-color-on-surface-variant)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '0.6rem',
+                              border: '2px solid var(--md-color-surface-container-low)',
+                              marginLeft: -4,
+                            }}>
+                              +{dish.chefs.filter(c => c.publish_status === 'published').length - 5}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <div className="flex gap-3">
-                    {!dish.is_semifinished && (
-                      <Button variant="tonal" size="sm" onClick={() => handleTogglePublish(dish)}>
-                        {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
-                      </Button>
-                    )}
-                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(dish)}>编辑</Button>
+                    ) : <span style={{ fontSize: '0.75rem', color: 'transparent' }}>占位</span>}
                   </div>
               </Card>
             ))}

@@ -390,11 +390,29 @@ export default function AdminIngredientsPage() {
 
           <div className="mobile-card-list mobile-card-list--grid">
             {ingredients.map(item => (
-              <Card key={item.id} variant="elevated" style={{ display: 'flex', flexDirection: 'column', marginBottom: 'var(--md-spacing-2)' }}>
+              <Card
+                key={item.id}
+                variant="elevated"
+                style={{ display: 'flex', flexDirection: 'column', marginBottom: 'var(--md-spacing-2)' }}
+                footer={
+                  <div className="flex gap-3" style={{ width: '100%' }}>
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(item)}>编辑</Button>
+                    {(item.dish_count || 0) > 0 ? (
+                      <Button variant="outlined" size="sm" className="flex-1" disabled
+                        style={{ opacity: 0.4, cursor: 'not-allowed' }}
+                        title={`已被 ${item.dish_count} 个菜品关联，无法删除`}>删除</Button>
+                    ) : (
+                      <Button variant="outlined" size="sm" className="flex-1"
+                        onClick={() => handleDelete(item.id)}
+                        style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}>删除</Button>
+                    )}
+                  </div>
+                }
+              >
                 <div className="flex items-center gap-3 mb-4">
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600 }}>{item.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>
+                      <div style={{ fontWeight: 600, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{item.name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                         <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
                         {(item.linked_dishes || []).length > 0 && (
                           <span data-dropdown-id={item.id} style={{ position: 'relative' }}>
@@ -428,34 +446,9 @@ export default function AdminIngredientsPage() {
                       </div>
                     </div>
                   </div>
-                  {(item.aliases || []).length > 0 && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-2)'}}>
-                      别名：{item.aliases.join('、')}
-                    </div>
-                  )}
-                  <div style={{ flex: 1 }} />
-                  <div className="flex gap-3" style={{ marginTop: 'auto' }}>
-                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(item)}>编辑</Button>
-                    {(item.dish_count || 0) > 0 ? (
-                      <Button
-                        variant="outlined"
-                        size="sm"
-                        disabled
-                        style={{ opacity: 0.4, cursor: 'not-allowed' }}
-                        title={`已被 ${item.dish_count} 个菜品关联，无法删除`}
-                      >
-                        删除
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                        style={{ borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' }}
-                      >
-                        删除
-                      </Button>
-                    )}
+                  {/* 别名行：始终渲染占位，保持卡片对齐（规则4） */}
+                  <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', minHeight: '1.2rem', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                    {(item.aliases || []).length > 0 ? `别名：${item.aliases.join('、')}` : ''}
                   </div>
               </Card>
             ))}
