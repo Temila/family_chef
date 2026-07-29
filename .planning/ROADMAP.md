@@ -5,6 +5,7 @@
 - ✅ **v1.0 访客点菜邀请** — Phases 1-4 (shipped 2026-05-29)
 - ✅ **v1.1 菜品愿望单** — Phases 5-7 (shipped 2026-07-24)
 - ✅ **v1.2 MD3 重构** — Phases 8-13 (shipped 2026-07-29)
+- 🚧 **v1.3 Bugfix + UI Refinements** — Phases 14-15 (in progress)
 
 ## Phases
 
@@ -44,9 +45,49 @@
 
 </details>
 
+<details open>
+<summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
+
+- [ ] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面
+- [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
+
+</details>
+
 ## Phase Details
 
 *Detailed phase descriptions for shipped milestones are archived in `.planning/milestones/`. See `v1.2-ROADMAP.md` for full Phase 8-13 details.*
+
+### Phase 14: UI Bugfix & Filter Popup
+**Goal**: 修复 v1.2 已知所有 CSS/UI 缺陷——底部导航栏宽度、表格错位、愿望单卡片、食材管理按钮圆角及对齐、深色模式弹出页对比度；高级筛选改为弹出子页面交互
+**Depends on**: Phase 13 (v1.2 Bugfix Sweep)
+**Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05, BUG-07, UI-02, UI-03
+**Success Criteria** (what must be TRUE):
+  1. 所有分辨率下底部导航栏（md-bottom-bar）填满宽度，左右两端无空隙
+  2. 表格表头（th）与表体内容列对齐，th 有 ::before 占位符
+  3. 移动端愿望单卡片为单列全宽，所有卡片高度统一
+  4. 食材管理下拉菜单按钮圆角缩小到原来的 1/4
+  5. 移动端食材管理页面上，编辑和删除按钮固定到每张卡片的最下方，各行卡片按钮在同一水平线上对齐
+  6. 深色模式下弹出页面周围有主题色边框，与背景有明显对比
+  7. 弹出筛选页面不破坏底部导航栏布局
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 15: Navigation Restructure & Test Data
+**Goal**: 导航体系精简——md-header 仅保留头像+主题切换，其他功能按钮移到下方 div；md-sidebar 取消主题切换和退出登录；厨师移动端首页添加入口；bottom-bar "首页"图标在最左边；创建测试 seed 数据覆盖组合场景
+**Depends on**: Phase 14
+**Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05, BUG-06, DATA-01, UI-01
+**Success Criteria** (what must be TRUE):
+  1. 用户看到 md-header 中仅含用户头像（含下拉菜单）和主题切换按钮，其他功能按钮出现在 header 下方独立的 div 中
+  2. 用户头像下拉菜单只显示"编辑资料"和"退出登录"两个选项
+  3. md-sidebar 中不再显示主题切换和退出登录按钮
+  4. 厨师角色用户在移动端首页能看到"菜品管理"和"食谱管理"入口按钮
+  5. md-bottom-bar 中最左边的图标是"首页"
+  6. Seed 数据包含覆盖 2³=8 种组合的测试菜谱（有/无食谱 × 有/无介绍 × 有/无图片）
+  7. 移动端菜品卡片在不同内容组合下渲染为统一尺寸（同宽同高）
+  8. 因内容差异导致卡片高度不一致时，按钮仍保持在同一水平线上对齐
+  9. 所有高级筛选控件改为弹出子页面交互（类似"添加"按钮的弹窗行为）
+**Plans**: TBD
+**UI hint**: yes
 
 ## Progress
 
@@ -65,3 +106,5 @@
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 0/0 | Not started | - |
+| 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |
