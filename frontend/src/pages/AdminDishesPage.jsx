@@ -547,7 +547,7 @@ export default function AdminDishesPage() {
       ) : (
         <section className="section pt-0 pc-content-area">
           <div className="pc-data-table-wrap">
-            <table className="pc-data-table">
+            <table className="pc-data-table pc-data-table--with-leading">
               <thead>
                   <tr>
                     <th>菜品</th>
