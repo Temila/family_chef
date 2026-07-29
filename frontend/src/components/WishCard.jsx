@@ -128,7 +128,8 @@ export default function WishCard({
     const url = String(wish.reference_url);
     if (HTTP_URL_RE.test(url)) {
       return (
-        <a href={url} target="_blank" rel="noopener noreferrer">
+        <a href={url} target="_blank" rel="noopener noreferrer"
+           style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}>
           {url}
         </a>
       );
@@ -207,7 +208,8 @@ export default function WishCard({
             flexWrap: 'wrap',
             paddingTop: 'var(--md-spacing-2)',
             borderTop: '1px dashed var(--md-color-outline-variant)',
-            marginTop: 'auto'
+            marginTop: 'auto',
+            justifyContent: 'flex-end'
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -217,7 +219,7 @@ export default function WishCard({
     >
       {/* 顶行：菜名（大号）+ 未读红点 + 状态徽章 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--md-spacing-2)', position: 'relative' }}>
-        <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
+        <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
           {wish.dish_name}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', flexShrink: 0 }}>
@@ -244,19 +246,21 @@ export default function WishCard({
           )}
       </div>
 
-      {/* 次要信息：仅当字段存在时渲染，无占位文本 */}
-      {hasSecondary && (
-        <div style={secondaryStyle}>
-          {renderReferenceUrl()}
-          {wish.note && <div>{wish.note}</div>}
-          {wish.related_dish_id && relatedDishName && (
-            <Link to={'/dishes/' + wish.related_dish_id}>关联菜品：{relatedDishName}</Link>
-          )}
-          {wish.status === '已拒绝' && wish.reject_reason && (
-            <div style={rejectReasonStyle}>拒绝原因：{wish.reject_reason}</div>
-          )}
-        </div>
-      )}
+      {/* 次要信息：有数据时显示内容，无数据时保持占位高度（规则4 缺失字段占位） */}
+      <div style={{ ...secondaryStyle, minHeight: (hasSecondary ? 'auto' : '2rem') }}>
+        {hasSecondary ? (
+          <>
+            {renderReferenceUrl()}
+            {wish.note && <div style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', wordBreak: 'break-word' }}>{wish.note}</div>}
+            {wish.related_dish_id && relatedDishName && (
+              <Link to={'/dishes/' + wish.related_dish_id}>关联菜品：{relatedDishName}</Link>
+            )}
+            {wish.status === '已拒绝' && wish.reject_reason && (
+              <div style={rejectReasonStyle}>拒绝原因：{wish.reject_reason}</div>
+            )}
+          </>
+        ) : null}
+      </div>
     </Card>
   );
 }
