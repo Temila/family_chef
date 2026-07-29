@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T14:08:40.040Z"
+last_updated: "2026-07-29T15:30:00.000Z"
 last_activity: 2026-07-29
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
-  percent: 71
+  completed_plans: 7
+  percent: 100
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 14 — ui-bugfix-filter-popup
+**Current focus:** Phase 15 — navigation-restructure-test-data (Phase 14 complete 2026-07-29; user manually fixed remaining bugs)
 
 ## Branch State
 
@@ -35,16 +35,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 14 (ui-bugfix-filter-popup) — EXECUTING
-Plan: 7 of 7 (14-05 complete; 14-06/07 remain)
-Status: Ready to execute
+Phase: 14 (ui-bugfix-filter-popup) — COMPLETE
+Plan: 7 of 7 (all plans 14-01..14-07 have PLAN.md + SUMMARY.md)
+Status: Complete — remaining bugs fixed by user via other methods (per quick task 260729-wl7)
 Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-29T14:08:19.418Z
-Stopped at: Completed 14-05-PLAN.md (BUG-02 表头对齐覆盖全 7 页 — 基线 + with-leading 修饰类)
-Next: 14-06 (Portal dropdown 键盘激活 + scroll/resize 关闭) + 14-07 (ChefDishesPage Portal + ingredient 触发圆角)
+Last session: 2026-07-29T15:30:00.000Z
+Stopped at: Phase 14 marked complete via quick task 260729-wl7; all 7 plans (14-01..14-07) have SUMMARY.md
+Next: Phase 15 (Navigation Restructure & Test Data) — not started
 
 ## Deferred Items
 
@@ -65,9 +65,6 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | quick_task | 260727-i2g-sync-dev-with-main-split-wishlist-commit | Acknowledged at v1.2 close | 2026-07-29 |
 | quick_task | 260727-ig2-v1-2-feature-ui-rebuild | Acknowledged at v1.2 close | 2026-07-29 |
 | uat_gap | Phase 12 0-pending UAT | Acknowledged at v1.2 close | 2026-07-29 |
-| defect | md-bottom-bar 宽度空袭（部分分辨率左右空隙） | Deferred to next milestone | 2026-07-29 |
-| defect | 表格表头与内容错位（th 缺 ::before 占位） | Deferred to next milestone | 2026-07-29 |
-| defect | 移动端愿望单卡片单列全宽统一高度 | Deferred to next milestone | 2026-07-29 |
 
 ## Quick Tasks Completed
 
@@ -75,6 +72,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 |---|-------------|------|-----------|
 | 260727-i2g | sync dev/main, split wishlist→v1.1 + UI-rebuild→v1.2, release | 2026-07-27 | [260727-i2g-sync-dev-with-main-split-wishlist-commit](./quick/260727-i2g-sync-dev-with-main-split-wishlist-commit/) |
 | 260727-ig2 | 撤销 v1.2 发布，重建 feature/ui-rebuild 分支 | 2026-07-27 | [260727-ig2-v1-2-feature-ui-rebuild](./quick/260727-ig2-v1-2-feature-ui-rebuild/) |
+| 260729-wl7 | 把 phase 14 标记为已完成（用户已用其他办法修复了 bug）| 2026-07-29 | [260729-wl7-phase-14-bug](./quick/260729-wl7-phase-14-bug/) |
 
 ## Performance Metrics
 
@@ -181,4 +179,5 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Start Phase 15 (Navigation Restructure & Test Data) with /gsd-plan-phase 15
+- Or close v1.3 milestone with /gsd-complete-milestone after Phase 15 ships

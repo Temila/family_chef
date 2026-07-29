@@ -49,7 +49,7 @@
 <details open>
 <summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
 
-- [-] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 4 plans in 2 waves (completed 2026-07-29) + 3 gap-closure plans in 2 waves (14-05/06/07 — VERIFICATION Gap 1/2 + REVIEW CR-01/WR-05/WR-01/06)
+- [x] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 4 plans in 2 waves (completed 2026-07-29) + 3 gap-closure plans in 2 waves (14-05/06/07 — VERIFICATION Gap 1/2 + REVIEW CR-01/WR-05/WR-01/06) — COMPLETE 2026-07-29
 - [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
 
 </details>
@@ -135,5 +135,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | Complete   | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | ✓ Complete | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |
