@@ -92,7 +92,7 @@ export default function AdminChefsPage() {
       {loading ? (
         <Loading />
       ) : chefs.length === 0 ? (
-        <EmptyState icon="👨‍🍳" text="暂无厨师账号，请先在用户管理中添加厨师角色" />
+        <EmptyState icon="chef" text="暂无厨师账号，请先在用户管理中添加厨师角色" />
       ) : (
         <section className="section pt-0 pc-content-area">
           <div className="pc-data-table-wrap">

@@ -14,6 +14,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Icon from '../components/primitives/Icon';
 
 export default function AdminDishesPage() {
   const { user, isAdmin, isChef } = useAuth();
@@ -450,7 +451,7 @@ export default function AdminDishesPage() {
         actions={
           <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button variant="tonal" size="sm" onClick={openExtractModal}>
-              📝 解析文本
+              <Icon name="edit" size={18} /> 解析文本
             </Button>
             <Button variant="filled" size="sm" onClick={() => openCreate()}>
               + 添加
@@ -460,7 +461,7 @@ export default function AdminDishesPage() {
       />
 
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon"><Icon name="search" size={20} /></span>
         <input
           type="text"
           placeholder="搜索菜品名称..."
@@ -525,7 +526,7 @@ export default function AdminDishesPage() {
       {loading ? (
         <Loading />
       ) : dishes.length === 0 ? (
-        <EmptyState icon="🍽️" text="没有找到菜品" />
+        <EmptyState icon="set-meal" text="没有找到菜品" />
       ) : (
         <section className="section pt-0 pc-content-area">
           <div className="pc-data-table-wrap">
@@ -547,7 +548,7 @@ export default function AdminDishesPage() {
                           {dish.image_url ? (
                             <img src={dish.image_url} alt="" style={{ width: 36, height: 36, borderRadius: 'var(--md-radius-xs)', objectFit: 'cover' }} />
                           ) : (
-                            <div className="avatar avatar-sm">🍽</div>
+                            <div className="avatar avatar-sm"><Icon name="set-meal" size={20} /></div>
                           )}
                           <div>
                             <div className="pc-user-name">
@@ -868,7 +869,7 @@ export default function AdminDishesPage() {
                                 onClick={() => { toggleSemifinishedDish(d.id); }}
                                 style={{ cursor: 'pointer' }}
                               >
-                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}>🍳</span>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}><Icon name="ramen-dining" size={16} /></span>
                                 <span>{d.name}</span>
                               </div>
                             ))
@@ -972,7 +973,7 @@ export default function AdminDishesPage() {
                           onRemove={() => removeParsedIngredient(p.name)}
                           style={{ opacity: p.matched_ingredient_id ? 1 : 0.6 }}
                         >
-                          {p.matched_ingredient_id ? '✅' : '🆕'} {p.name}
+                          <Icon name={p.matched_ingredient_id ? 'check' : 'new-label'} size={16} /> {p.name}
                           {p.matched_ingredient_name && p.matched_ingredient_name !== p.name && ` → ${p.matched_ingredient_name}`}
                         </Chip>
                       ))}
@@ -984,7 +985,7 @@ export default function AdminDishesPage() {
                   {hasNewIngredients && (
                     <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', marginTop: 'var(--md-spacing-2)'}}>
                       <Button variant="outlined" size="sm" onClick={handleGoToAddIngredient}>
-                        ➕ 去添加新食材
+                        <Icon name="add" size={18} /> 去添加新食材
                       </Button>
                     </div>
                   )}

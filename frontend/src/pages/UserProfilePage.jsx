@@ -11,6 +11,7 @@ import PasswordInput from '../components/PasswordInput';
 import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 import Modal from '../components/composites/Modal';
+import Icon from '../components/primitives/Icon';
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
@@ -89,31 +90,31 @@ export default function UserProfilePage() {
 
   const menuItems = [
     {
-      icon: '🍽️',
+      icon: 'set-meal',
       title: '开始点菜',
       desc: '浏览菜品并点菜',
       onClick: () => navigate('/order'),
     },
     {
-      icon: '👅',
+      icon: 'restaurant',
       title: '口味偏好',
       desc: '管理不爱吃/忌口食材',
       onClick: () => navigate('/preferences'),
     },
     {
-      icon: '❤️',
+      icon: 'favorite',
       title: '我的收藏',
       desc: `${stats.favoriteDishes} 道菜品`,
       onClick: () => navigate('/my-favorites'),
     },
     {
-      icon: '📝',
+      icon: 'edit',
       title: '我的订单',
       desc: `${stats.totalOrders} 个订单`,
       onClick: () => navigate('/my-orders'),
     },
     {
-      icon: '⚙️',
+      icon: 'settings',
       title: '编辑资料',
       desc: '修改昵称/密码',
       onClick: () => {
@@ -122,7 +123,7 @@ export default function UserProfilePage() {
       },
     },
     {
-      icon: '🚪',
+      icon: 'logout',
       title: '退出登录',
       desc: '安全退出',
       onClick: handleLogout,
@@ -181,7 +182,7 @@ export default function UserProfilePage() {
             onClick={item.onClick}
             style={item.danger ? { color: 'var(--md-color-error)' } : {}}
           >
-            <div className="menu-icon">{item.icon}</div>
+            <div className="menu-icon"><Icon name={item.icon} size={24} /></div>
             <div className="menu-text">
               <div className="menu-title">{item.title}</div>
               <div className="menu-desc">{item.desc}</div>

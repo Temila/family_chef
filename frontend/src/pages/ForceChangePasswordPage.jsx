@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import PasswordInput from '../components/PasswordInput';
 import Button from '../components/primitives/Button';
+import Icon from '../components/primitives/Icon';
 
 export default function ForceChangePasswordPage() {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function ForceChangePasswordPage() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-logo">🔒</div>
+        <div className="login-logo"><Icon name="lock" size={48} /></div>
         <p className="login-subtitle">首次登录，请修改密码</p>
 
         <form onSubmit={handleSubmit}>

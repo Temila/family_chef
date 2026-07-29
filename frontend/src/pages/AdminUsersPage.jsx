@@ -12,6 +12,7 @@ import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Icon from '../components/primitives/Icon';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
@@ -135,7 +136,7 @@ export default function AdminUsersPage() {
       />
 
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon"><Icon name="search" size={20} /></span>
         <input
           type="text"
           placeholder="搜索用户名..."
@@ -160,7 +161,7 @@ export default function AdminUsersPage() {
         <Loading />
       ) : filtered.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">👥</div>
+          <div className="empty-state-icon"><Icon name="group" size={48} /></div>
           <div className="empty-state-text">没有找到用户</div>
         </div>
       ) : (

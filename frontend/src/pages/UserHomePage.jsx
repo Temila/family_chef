@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import InvitationsSection from '../components/InvitationsSection';
+import Icon from '../components/primitives/Icon';
 
 export default function UserHomePage() {
   const navigate = useNavigate();
@@ -10,13 +11,13 @@ export default function UserHomePage() {
 
   const menuEntries = [
     {
-      icon: '🍽️',
+      icon: 'set-meal',
       title: '开始点菜',
       desc: '浏览全部菜品',
       onClick: () => navigate('/order'),
     },
     {
-      icon: '👅',
+      icon: 'restaurant',
       title: '口味偏好',
       desc: '管理你的饮食偏好',
       onClick: () => navigate('/preferences'),
@@ -25,7 +26,7 @@ export default function UserHomePage() {
 
   if (user?.role === 'chef' || user?.role === 'admin') {
     menuEntries.push({
-      icon: '👨‍🍳',
+      icon: 'chef',
       title: '订单管理',
       desc: '查看和处理订单',
       onClick: () => navigate('/chef/orders'),
@@ -44,7 +45,7 @@ export default function UserHomePage() {
             onClick={entry.onClick}
             style={{ flexDirection: 'column', textAlign: 'center', padding: 'var(--md-spacing-3)'}}
           >
-            <div style={{ fontSize: '1.5rem', marginBottom: 'var(--md-spacing-1)'}}>{entry.icon}</div>
+            <div style={{ marginBottom: 'var(--md-spacing-1)'}}><Icon name={entry.icon} size={32} /></div>
             <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{entry.title}</div>
             <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)' }}>{entry.desc}</div>
           </div>

@@ -33,9 +33,9 @@ function buildWishParams(tab, page = 1) {
 }
 
 const EMPTY_STATES = {
-  all: { icon: '📭', text: '当前还没有可管理的愿望', sub: '用户提交新愿望后会显示在这里' },
-  pending: { icon: '✅', text: '当前没有待处理愿望', sub: '所有愿望都已被认领或处理' },
-  mine: { icon: '📋', text: '你还没有认领任何愿望', sub: '前往「待处理」认领一个愿望' },
+  all: { icon: 'mail', text: '当前还没有可管理的愿望', sub: '用户提交新愿望后会显示在这里' },
+  pending: { icon: 'check', text: '当前没有待处理愿望', sub: '所有愿望都已被认领或处理' },
+  mine: { icon: 'inventory-2', text: '你还没有认领任何愿望', sub: '前往「待处理」认领一个愿望' },
 };
 
 export default function ChefWishesPage({ viewAsAdmin = false }) {

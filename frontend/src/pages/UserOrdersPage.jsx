@@ -10,6 +10,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import { formatDate } from '../utils';
 import Chip from '../components/primitives/Chip';
+import Icon from '../components/primitives/Icon';
 
 const MEAL_TYPE_MAP = {
   breakfast: '早餐',
@@ -97,7 +98,7 @@ export default function UserOrdersPage() {
       {loading ? (
         <Loading />
       ) : filteredOrders.length === 0 ? (
-        <EmptyState icon="📋" text="没有找到订单" />
+        <EmptyState icon="inventory-2" text="没有找到订单" />
       ) : (
         <section className="section pt-0">
           {filteredOrders.map(order => (
@@ -114,7 +115,7 @@ export default function UserOrdersPage() {
 
               {(order.meal_date || order.meal_type) && (
                 <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-1)'}}>
-                  🍽 {order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || order.meal_type}
+                  <Icon name="set-meal" size={16} /> {order.meal_date} {MEAL_TYPE_MAP[order.meal_type] || order.meal_type}
                 </div>
               )}
 

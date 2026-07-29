@@ -8,6 +8,7 @@ import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
+import Icon from '../components/primitives/Icon';
 
 export default function PreferencesPage() {
   const navigate = useNavigate();
@@ -155,7 +156,7 @@ export default function PreferencesPage() {
 
       <div className="section">
         <div className="search-bar" style={{ padding: 0, marginBottom: 'var(--md-spacing-4)'}}>
-          <span className="search-icon" style={{ left: 16 }}>🔍</span>
+          <span className="search-icon" style={{ left: 16 }}><Icon name="search" size={20} /></span>
           <input
             type="text"
             placeholder="搜索食材添加至口味偏好..."
@@ -194,7 +195,7 @@ export default function PreferencesPage() {
 
         <div className="preference-section">
           <div className="preference-section-header">
-            <span className="preference-section-icon" style={{ background: 'var(--md-color-tertiary-container)' }}>💛</span>
+            <span className="preference-section-icon" style={{ background: 'var(--md-color-tertiary-container)' }}><Icon name="favorite" size={20} /></span>
             <div>
               <div style={{ fontWeight: 600 }}>不爱吃的食材</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
@@ -220,7 +221,7 @@ export default function PreferencesPage() {
 
         <div className="preference-section">
           <div className="preference-section-header">
-            <span className="preference-section-icon" style={{ background: 'var(--md-color-error-container)' }}>🔴</span>
+            <span className="preference-section-icon" style={{ background: 'var(--md-color-error-container)' }}><Icon name="circle" size={20} /></span>
             <div>
               <div style={{ fontWeight: 600 }}>严格忌口的食材</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>

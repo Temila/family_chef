@@ -9,6 +9,7 @@ import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
 import { formatDate } from '../utils';
 import Chip from '../components/primitives/Chip';
+import Icon from '../components/primitives/Icon';
 
 export default function AdminLogsPage() {
   const { showToast } = useToast();
@@ -72,7 +73,7 @@ export default function AdminLogsPage() {
         <Loading />
       ) : logs.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">📝</div>
+          <div className="empty-state-icon"><Icon name="description" size={48} /></div>
           <div className="empty-state-text">暂无日志记录</div>
         </div>
       ) : (

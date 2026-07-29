@@ -10,6 +10,7 @@ import Badge from '../components/primitives/Badge';
 import Loading from '../components/Loading';
 import Button from '../components/primitives/Button';
 import IconButton from '../components/primitives/IconButton';
+import Icon from '../components/primitives/Icon';
 
 export default function DishDetailPage() {
   const { id } = useParams();
@@ -18,14 +19,15 @@ export default function DishDetailPage() {
   const { showToast } = useToast();
   const { getTypeMeta, categoryTypes } = useCategories();
 
+  // Phase 12 D-EMOJI-01: 食材分类 emoji → Icon 名称（经 <Icon name> 渲染）
   const ING_CATEGORY_ICONS = {
-    '肉类': '🥩',
-    '蔬菜': '🥬',
-    '海鲜': '🦐',
-    '水果': '🍎',
-    '调味品': '🧂',
-    '辅料': '🧄',
-    '其他': '📦',
+    '肉类': 'set-meal',
+    '蔬菜': 'eco',
+    '海鲜': 'set-meal',
+    '水果': 'eco',
+    '调味品': 'spa',
+    '辅料': 'spa',
+    '其他': 'inventory-2',
   };
 
   const [dish, setDish] = useState(null);
@@ -163,7 +165,7 @@ export default function DishDetailPage() {
           <div
             className={`dietary-warning-card ${dish.dietary_warning.type === 'allergy' ? 'allergy' : 'dislike'}`}
           >
-            <span>⚠️</span>
+            <span><Icon name="warning" size={20} /></span>
             <span>
               {dish.dietary_warning.type === 'allergy' ? '严格忌口' : '不爱吃'}: {dish.dietary_warning.ingredient}
             </span>
@@ -178,7 +180,7 @@ export default function DishDetailPage() {
 
         {dish.ingredients && dish.ingredients.length > 0 && (
           <div style={{ marginTop: 'var(--md-spacing-5)'}}>
-            <h3 className="section-title">🥗 食材列表</h3>
+            <h3 className="section-title"><Icon name="set-meal" size={20} /> 食材列表</h3>
             {Object.entries(
               dish.ingredients.reduce((acc, ing) => {
                 const cat = ing.category || '其他';
@@ -188,7 +190,7 @@ export default function DishDetailPage() {
             ).map(([cat, items]) => (
               <div key={cat} style={{ marginBottom: 'var(--md-spacing-4)'}}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)', marginBottom: 'var(--md-spacing-2)'}}>
-                  <span style={{ fontSize: '1rem' }}>{ING_CATEGORY_ICONS[cat] || '📦'}</span>
+                  <span style={{ fontSize: '1rem' }}><Icon name={ING_CATEGORY_ICONS[cat] || 'inventory-2'} size={20} /></span>
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--md-color-on-surface-variant)' }}>{cat}</span>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)'}}>
@@ -205,7 +207,7 @@ export default function DishDetailPage() {
 
         {dish.semifinished_ingredients && dish.semifinished_ingredients.length > 0 && (
           <div style={{ marginTop: 'var(--md-spacing-5)'}}>
-            <h3 className="section-title">🍳 半成品食材</h3>
+            <h3 className="section-title"><Icon name="ramen-dining" size={20} /> 半成品食材</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)'}}>
               {dish.semifinished_ingredients.map(sf => (
                 <span key={sf.id} className="ingredient-tag" style={{ background: 'var(--md-color-tertiary-container)', color: 'var(--md-color-on-tertiary-container)' }}>

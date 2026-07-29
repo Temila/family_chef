@@ -6,6 +6,7 @@ import EmptyState from '../components/EmptyState';
 import GuestDishCard from '../components/GuestDishCard';
 import Button from '../components/primitives/Button';
 import IconButton from '../components/primitives/IconButton';
+import Icon from '../components/primitives/Icon';
 import Chip from '../components/primitives/Chip';
 
 async function guestFetch(url, options = {}) {
@@ -177,7 +178,7 @@ export default function GuestOrderPage() {
     return (
       <div className="guest-page">
         <div className="guest-error">
-          <div className="guest-error-icon">😔</div>
+          <div className="guest-error-icon"><Icon name="mood-bad" size={48} /></div>
           <div className="guest-error-title">{errorMsg}</div>
           <div className="guest-error-desc">请联系邀请人获取新的链接</div>
         </div>
@@ -189,7 +190,7 @@ export default function GuestOrderPage() {
     return (
       <div className="guest-page">
         <div className="guest-confirm">
-          <div className="guest-confirm-icon">📋</div>
+          <div className="guest-confirm-icon"><Icon name="inventory-2" size={48} /></div>
           <div className="guest-confirm-title">已提交的订单</div>
           {orderSummary && orderSummary.order_no && (
             <div className="guest-confirm-order-no">订单号: {orderSummary.order_no}</div>
@@ -214,7 +215,7 @@ export default function GuestOrderPage() {
     return (
       <div className="guest-page">
         <div className="guest-confirm">
-          <div className="guest-confirm-icon">✅</div>
+          <div className="guest-confirm-icon"><Icon name="check" size={48} /></div>
           <div className="guest-confirm-title">点单成功</div>
           <div className="guest-confirm-subtitle">已通知厨师，请耐心等待</div>
           <div className="guest-confirm-order-no">订单号: {orderNo}</div>
@@ -228,7 +229,7 @@ export default function GuestOrderPage() {
           </div>
           {chefName && (
             <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', marginBottom: 'var(--md-spacing-4)'}}>
-              👨‍🍳 {chefName}
+              <Icon name="chef" size={20} /> {chefName}
             </div>
           )}
           <div className="guest-confirm-footer">关闭本页即可</div>
@@ -240,7 +241,7 @@ export default function GuestOrderPage() {
   return (
     <div className="guest-page">
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon"><Icon name="search" size={20} /></span>
         <input
           type="text"
           placeholder="搜索菜品..."
@@ -343,7 +344,7 @@ export default function GuestOrderPage() {
       )}
 
       {filteredDishes.length === 0 ? (
-        <EmptyState icon="🍽️" text="没有找到菜品" subtext="请尝试其他筛选条件" />
+        <EmptyState icon="set-meal" text="没有找到菜品" subtext="请尝试其他筛选条件" />
       ) : (
         <div className="dish-grid" style={{ paddingBottom: cartCount > 0 ? 140 : 80 }}>
           {filteredDishes.map(dish => (
@@ -360,7 +361,7 @@ export default function GuestOrderPage() {
 
       <div className="cart-bar guest-cart-bar">
         <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
-          <span style={{ fontSize: '1.1rem', marginRight: 'var(--md-spacing-1)'}}>🛒</span>
+          <span style={{ marginRight: 'var(--md-spacing-1)'}}><Icon name="shopping-cart" size={22} /></span>
           <span style={{ fontWeight: 600 }}>已选 {cartCount} 道菜</span>
           <span style={{ marginLeft: 'var(--md-spacing-2)', fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
             {cartExpanded ? '收起 ▲' : '展开 ▼'}

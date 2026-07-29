@@ -11,6 +11,7 @@ import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import ListItem from '../components/composites/ListItem';
 import Loading from '../components/Loading';
+import Icon from '../components/primitives/Icon';
 import { formatDate } from '../utils';
 
 export default function AdminHomePage() {
@@ -59,43 +60,43 @@ export default function AdminHomePage() {
 
   const quickActions = [
     {
-      icon: '🍽️',
+      icon: 'set-meal',
       title: '菜品管理',
       desc: '添加、编辑、删除菜品',
       onClick: () => navigate('/admin/dishes')
     },
     {
-      icon: '🥬',
+      icon: 'eco',
       title: '食材管理',
       desc: '管理食材、分类、别名',
       onClick: () => navigate('/ingredients')
     },
     {
-      icon: '📂',
+      icon: 'folder',
       title: '分类管理',
       desc: '种类、菜系、口味、季节',
       onClick: () => navigate('/admin/categories')
     },
     {
-      icon: '👨‍🍳',
+      icon: 'chef',
       title: '厨师管理',
       desc: '厨师列表、飞书绑定',
       onClick: () => navigate('/admin/chefs')
     },
     {
-      icon: '👥',
+      icon: 'group',
       title: '用户管理',
       desc: '管理用户、厨师账号',
       onClick: () => navigate('/admin/users')
     },
     {
-      icon: '📊',
+      icon: 'bar-chart',
       title: '数据统计',
       desc: '查看运营数据报表',
       onClick: () => navigate('/admin/stats')
     },
     {
-      icon: '📝',
+      icon: 'edit',
       title: '系统日志',
       desc: '查看系统操作记录',
       onClick: () => navigate('/admin/logs')
@@ -138,7 +139,7 @@ export default function AdminHomePage() {
       {/* Quick Actions */}
       <section className="section">
         <div className="section-title">
-          <span>⚡</span> 快捷操作
+          <span><Icon name="bolt" size={20} /></span> 快捷操作
         </div>
         <div style={{ display: 'grid', gap: 'var(--md-spacing-3)'}}>
           {quickActions.map((action, index) => (
@@ -147,7 +148,7 @@ export default function AdminHomePage() {
               className="quick-action"
               onClick={action.onClick}
             >
-              <div className="quick-action-icon">{action.icon}</div>
+              <div className="quick-action-icon"><Icon name={action.icon} size={24} /></div>
               <div style={{ flex: 1 }}>
                 <div className="quick-action-text">{action.title}</div>
                 <div className="quick-action-desc">{action.desc}</div>
@@ -162,7 +163,7 @@ export default function AdminHomePage() {
       {recentActivity.length > 0 && (
         <section className="section">
           <div className="section-title">
-            <span>📋</span> 最近活动
+            <span><Icon name="inventory-2" size={20} /></span> 最近活动
           </div>
           <div>
             {recentActivity.map((activity, index) => (

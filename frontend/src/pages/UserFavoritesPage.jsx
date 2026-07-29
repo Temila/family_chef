@@ -8,6 +8,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Card from '../components/primitives/Card';
+import Icon from '../components/primitives/Icon';
 
 export default function UserFavoritesPage() {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export default function UserFavoritesPage() {
       {loading ? (
         <Loading />
       ) : dishes.length === 0 ? (
-        <EmptyState icon="❤️" text="还没有收藏任何菜品" />
+        <EmptyState icon="favorite" text="还没有收藏任何菜品" />
       ) : (
         <section className="section pt-0">
           <div className="dish-grid">
@@ -60,7 +61,7 @@ export default function UserFavoritesPage() {
                 image={dish.image_url ? (
                   <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--md-color-surface-container)' }}><Icon name="set-meal" size={48} /></div>
                 )}
                 onClick={() => navigate(`/dishes/${dish.id}`)}
               >

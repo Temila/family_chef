@@ -113,7 +113,7 @@ export default function ChefOrdersPage() {
       {loading ? (
         <Loading />
       ) : filteredOrders.length === 0 ? (
-        <EmptyState icon="📋" text="没有找到订单" />
+        <EmptyState icon="inventory-2" text="没有找到订单" />
       ) : (
         <section className="section pt-0">
           {filteredOrders.map(order => (

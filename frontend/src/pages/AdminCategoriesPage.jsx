@@ -11,6 +11,7 @@ import Input from '../components/primitives/Input';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Icon from '../components/primitives/Icon';
 
 export default function AdminCategoriesPage() {
   const { showToast } = useToast();
@@ -129,7 +130,7 @@ export default function AdminCategoriesPage() {
       {loading ? (
         <Loading />
       ) : categories.length === 0 ? (
-        <EmptyState icon="📂" text="暂无分类数据" />
+        <EmptyState icon="folder" text="暂无分类数据" />
       ) : (
         <section className="section pt-0 pc-content-area">
           <div className="pc-data-table-wrap">
@@ -153,7 +154,7 @@ export default function AdminCategoriesPage() {
                       <td>{getTypeMeta(item.type).label}</td>
                       {activeType === 'cuisine' && <td>{parent ? parent.name : '-'}</td>}
                       <td>{item.sort_order}</td>
-                      <td>{item.is_active ? '✅' : '❌'}</td>
+                      <td><Icon name={item.is_active ? 'check' : 'close'} size={18} /></td>
                       <td>
                         <div className="pc-action-btns">
                           <Button variant="outlined" size="sm" onClick={() => openEdit(item)}>编辑</Button>

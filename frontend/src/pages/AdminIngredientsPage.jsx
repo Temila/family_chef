@@ -13,6 +13,7 @@ import Card from '../components/primitives/Card';
 import Input from '../components/primitives/Input';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Icon from '../components/primitives/Icon';
 
 export default function AdminIngredientsPage() {
   const { showToast } = useToast();
@@ -242,14 +243,14 @@ export default function AdminIngredientsPage() {
         title="食材管理"
         actions={
           <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
-            <Button variant="outlined" size="sm" onClick={openParseModal}>📋 从菜谱解析</Button>
+            <Button variant="outlined" size="sm" onClick={openParseModal}><Icon name="inventory-2" size={18} /> 从菜谱解析</Button>
             <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
           </div>
         }
       />
 
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon"><Icon name="search" size={20} /></span>
         <input
           type="text"
           placeholder="搜索食材..."
@@ -297,7 +298,7 @@ export default function AdminIngredientsPage() {
       {loading ? (
         <Loading />
       ) : ingredients.length === 0 ? (
-        <EmptyState icon="🥬" text="暂无食材，点击添加" />
+        <EmptyState icon="eco" text="暂无食材，点击添加" />
       ) : (
         <section className="section pt-0 pc-content-area">
           <div className="pc-data-table-wrap">

@@ -7,6 +7,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import PasswordInput from '../components/PasswordInput';
 import Button from '../components/primitives/Button';
 import Input from '../components/primitives/Input';
+import Icon from '../components/primitives/Icon';
 import { theme } from '../utils';
 
 export default function LoginPage() {
@@ -42,7 +43,7 @@ export default function LoginPage() {
       </div>
 
       <div className="login-card">
-        <div className="login-logo">🍲 家味</div>
+        <div className="login-logo"><Icon name="ramen-dining" size={48} /> 家味</div>
         <p className="login-subtitle">Family Chef · 家的味道</p>
 
         <form onSubmit={handleLogin}>

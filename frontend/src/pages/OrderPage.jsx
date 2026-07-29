@@ -13,6 +13,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Badge from '../components/primitives/Badge';
 import IconButton from '../components/primitives/IconButton';
+import Icon from '../components/primitives/Icon';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
 
@@ -322,7 +323,7 @@ export default function OrderPage() {
       <Header title={isAdmin ? '点菜预览' : '点菜'} />
 
       <div className="search-bar">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon"><Icon name="search" size={20} /></span>
         <input
           type="text"
           placeholder="搜索菜名或食材..."
@@ -343,7 +344,7 @@ export default function OrderPage() {
           
           onClick={() => setFavoritesOnly(!favoritesOnly)}
         >
-          ❤️ 收藏
+          <Icon name="favorite" size={18} /> 收藏
         </Chip>
         <select
           className="form-input"
@@ -442,7 +443,7 @@ export default function OrderPage() {
       {loading ? (
         <Loading />
       ) : dishes.length === 0 ? (
-        <EmptyState icon="🍽️" text="没有找到菜品" />
+        <EmptyState icon="set-meal" text="没有找到菜品" />
       ) : (
         <section className="section pt-0" style={{ paddingBottom: cartCount > 0 ? 140 : 80 }}>
           <div className="dish-grid">
@@ -464,7 +465,7 @@ export default function OrderPage() {
                         {dish.image_url ? (
                           <img src={dish.image_url} alt={dish.name} onError={(e) => { e.target.style.display = 'none'; }} />
                         ) : (
-                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>🍽️</div>
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--md-color-surface-container)' }}><Icon name="set-meal" size={48} /></div>
                         )}
                         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-1)'}}>
                           {dish.is_popular && <Badge tone="tertiary">推荐</Badge>}
@@ -533,7 +534,7 @@ export default function OrderPage() {
       {!isAdmin && (
         <div className="cart-bar">
           <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setCartExpanded(!cartExpanded)}>
-            <span style={{ fontSize: '1.1rem', marginRight: 'var(--md-spacing-1)'}}>🛒</span>
+            <span style={{ marginRight: 'var(--md-spacing-1)'}}><Icon name="shopping-cart" size={22} /></span>
             <span style={{ fontWeight: 600 }}>已点 {cartCount} 道菜</span>
             <span style={{ marginLeft: 'var(--md-spacing-2)', fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)' }}>
               {cartExpanded ? '收起 ▲' : '展开 ▼'}
@@ -558,7 +559,7 @@ export default function OrderPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '0.85rem' }}>{item.dish_name}</div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginTop: 'var(--md-spacing-1)' }}>
-                  👨‍🍳 {item.chef_name}
+                  <Icon name="chef" size={16} /> {item.chef_name}
                 </div>
               </div>
               <div className="qty-stepper">
