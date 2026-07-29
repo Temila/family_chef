@@ -48,7 +48,7 @@
 <details open>
 <summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
 
-- [ ] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面
+- [ ] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 3 plans in 2 waves
 - [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
 
 </details>
@@ -69,8 +69,13 @@
   5. 移动端食材管理页面上，编辑和删除按钮固定到每张卡片的最下方，各行卡片按钮在同一水平线上对齐
   6. 深色模式下弹出页面周围有主题色边框，与背景有明显对比
   7. 弹出筛选页面不破坏底部导航栏布局
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 14-01-PLAN.md — Sheet composite + D-11 dark-mode border (Wave 1)
+- [ ] 14-02-PLAN.md — Bugfix sweep: BottomBar, table th, card uniformity, D-08 CSS reset (Wave 1)
+- [ ] 14-03-PLAN.md — Advanced-filter Sheet migration + Portal dropdown z-index fix on admin pages (Wave 2)
 
 ### Phase 15: Navigation Restructure & Test Data
 **Goal**: 导航体系精简——md-header 仅保留头像+主题切换，其他功能按钮移到下方 div；md-sidebar 取消主题切换和退出登录；厨师移动端首页添加入口；bottom-bar "首页"图标在最左边；创建测试 seed 数据覆盖组合场景
@@ -106,5 +111,5 @@
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 0/0 | Not started | - |
+| 14. UI Bugfix & Filter Popup | v1.3 | 0/3 | Not started | - |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |
