@@ -68,6 +68,7 @@
 .md-input-wrapper--outlined {
   border: 1px solid var(--md-color-outline-variant);
   border-radius: var(--md-radius-sm); /* 12px */
+  overflow: hidden;
   transition: border-color var(--md-motion-duration-short) var(--md-motion-easing-standard);
 }
 .md-input-wrapper--outlined:focus-within {
@@ -86,6 +87,7 @@
   background: var(--md-color-surface-container-highest);
   border-bottom: 1px solid var(--md-color-outline-variant);
   border-radius: var(--md-radius-sm) var(--md-radius-sm) 0 0;
+  overflow: hidden;
 }
 .md-input-wrapper--filled:focus-within {
   border-bottom: 2px solid var(--md-color-primary);
