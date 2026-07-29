@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T08:25:12.544Z"
-last_activity: 2026-07-29 -- Phase 14 execution started
+last_updated: "2026-07-29T08:31:21.793Z"
+last_activity: 2026-07-29
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -36,14 +36,14 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 14 (ui-bugfix-filter-popup) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 14
-Last activity: 2026-07-29 -- Phase 14 execution started
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-29T07:41:36.349Z
-Stopped at: Phase 14 context gathered
+Last session: 2026-07-29T08:31:21.783Z
+Stopped at: Completed 14-01-PLAN.md (Sheet composite + D-11 border)
 Next: 12-02 (旧类残留审计 + Playwright compliance 脚本 + HUMAN-UAT 6 流)
 
 ## Deferred Items
@@ -104,6 +104,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 12 P00-BUGFIX | 40min | 3 tasks | 11 files |
 | Phase 12 P01A | 16min | 3 tasks | 47 files |
 | Phase 12 P01B | 19min | 3 tasks | 38 files |
+| Phase 14 P01 | 1min | 2 tasks | 4 files |
 
 ## Decisions
 
@@ -154,6 +155,8 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 12]: D-EMOJI-01: Icon registry +12 (new-label/ramen-dining/circle verified + 9 already-package-resident); 128 emoji clusters → <Icon> across 36 files; EmptyState string|ReactNode (default 'mail')
 - [Phase 12]: D-SNACK-01: showToast(message, string|{type?,duration?,action?}) overload — additive, 213 legacy callers untouched; 48dp action Button before close; triggerAction one-shot+error-contained+sibling-isolated; 3 wired examples (wish-undo/order-detail/invitation-copy)
 - [Phase 12]: check:md3 now 11/11 PASS (#9 motion + #10 emoji lanes closed by 01B)
+- [Phase 14]: [Phase 14-01] Sheet = Path A thin wrapper: renders <Modal variant="bottom-sheet" {...props}/>, dropping variant from public API so callers cannot override responsive behavior — PATTERNS.md Path A recommendation — single source of MD3 modal behavior, ~45 lines, zero state duplication
+- [Phase 14]: [Phase 14-01] D-11 dark-mode border: .md-modal base gets border:1px solid var(--md-color-outline-variant); excluded for full-screen + bottom-sheet; Sheet.css desktop override re-applies border-bottom for centered-modal edge contrast — CONTEXT D-11 — outline-variant token near-invisible in light mode (#c1c9bf), visible in dark mode (#414941)
 
 ## Operator Next Steps
 
