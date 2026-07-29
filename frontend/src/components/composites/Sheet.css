@@ -1,0 +1,49 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MD3 Sheet Composite CSS (Phase 14 — responsive bottom-sheet/centered)
+   移动端（<1024px）底部 sheet：从底部滑入，仅顶部圆角，铺满宽度。
+   桌面端（≥1024px）居中 modal：与 basic modal 视觉一致。
+   全部视觉值通过 var(--md-*) token 引用，零硬编码。
+   覆写 Modal.css 基础规则；Modal.css 已 @import base.css，此处不重复。
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 移动端（默认）：底部 sheet，铺满宽度，从底部滑入 ── */
+.md-modal--bottom-sheet {
+  padding: 0;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.md-modal--bottom-sheet .md-modal {
+  max-width: 100%;
+  width: 100%;
+  max-height: 90vh;
+  height: auto;
+  border-radius: var(--md-radius-lg) var(--md-radius-lg) 0 0;
+  border-bottom: none;
+  animation: md-sheet-in var(--md-motion-duration-medium) var(--md-motion-easing-emphasized);
+}
+
+/* ── 桌面端（≥1024px）：居中 modal，与 basic modal 视觉一致 ── */
+@media (min-width: 1024px) {
+  .md-modal--bottom-sheet {
+    padding: var(--md-spacing-4);
+    align-items: center;
+  }
+  .md-modal--bottom-sheet .md-modal {
+    max-width: 480px;
+    border-radius: var(--md-radius-lg);
+    border-bottom: 1px solid var(--md-color-outline-variant);
+    animation: none;
+  }
+}
+
+/* ── 底部 sheet 滑入动效 ── */
+@keyframes md-sheet-in {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── 动敏用户：禁用滑入动效 ── */
+@media (prefers-reduced-motion: reduce) {
+  .md-modal--bottom-sheet .md-modal { animation: none; }
+}
