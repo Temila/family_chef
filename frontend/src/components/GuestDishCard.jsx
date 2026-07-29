@@ -10,6 +10,7 @@
 
 import Card from './primitives/Card';
 import Button from './primitives/Button';
+import Icon from './primitives/Icon';
 
 export default function GuestDishCard({ dish, quantity, onAdd, onRemove }) {
   const image = dish.image_url ? (
@@ -19,8 +20,8 @@ export default function GuestDishCard({ dish, quantity, onAdd, onRemove }) {
       onError={(e) => { e.target.style.display = 'none'; }}
     />
   ) : (
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>
-      🍽️
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--md-color-surface-container)' }}>
+      <Icon name="set-meal" size={48} />
     </div>
   );
 

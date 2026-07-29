@@ -31,7 +31,8 @@ export const theme = {
   },
 
   getThemeIcon() {
-    return this.getTheme() === 'dark' ? '☀️' : '🌙';
+    // Phase 12 D-EMOJI-01: 返回 Icon 名称字符串供 <Icon name> 渲染（原返回 emoji）
+    return this.getTheme() === 'dark' ? 'light-mode' : 'dark-mode';
   }
 };
 
@@ -78,7 +79,8 @@ export const statusBadge = (status) => {
 };
 
 // ─── Empty State ─────────────────────────────────────
-export const emptyState = (icon = '📭', text = '暂无数据') => {
+// Phase 12 D-EMOJI-01: 默认从 inbox emoji 改为 Icon 名称 'mail'（EmptyState 经 <Icon> 渲染）
+export const emptyState = (icon = 'mail', text = '暂无数据') => {
   return { icon, text };
 };
 

@@ -42,7 +42,7 @@ export default function ChefSelectModal({ onSelect, onClose }) {
       {loading ? (
         <Loading />
       ) : chefs.length === 0 ? (
-        <EmptyState icon="👨‍🍳" text="暂无可用厨师" />
+        <EmptyState icon="chef" text="暂无可用厨师" />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-2)'}}>
           {chefs.map((chef) => (

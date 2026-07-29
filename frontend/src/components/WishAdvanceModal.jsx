@@ -14,6 +14,7 @@ import Modal from './composites/Modal';
 import Loading from './Loading';
 import EmptyState from './EmptyState';
 import Button from './primitives/Button';
+import Icon from './primitives/Icon';
 
 const SEARCH_DEBOUNCE_MS = 200;
 const FORM_ID = 'wish-advance-form';
@@ -117,7 +118,7 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
           请选择一个本人已发布的菜品来推进愿望。
         </p>
         <div className="search-bar" style={{ marginBottom: 'var(--md-spacing-4)'}}>
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><Icon name="search" size={20} /></span>
           <input
             ref={initialFocusRef}
             type="text"
@@ -132,10 +133,10 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
             <Loading />
           ) : showEmpty ? (
             query ? (
-              <EmptyState icon="🔍" text="没有找到匹配的菜品" />
+              <EmptyState icon="search" text="没有找到匹配的菜品" />
             ) : (
               <>
-                <EmptyState icon="🍽️" text="你还没有发布任何菜品，无法推进愿望" />
+                <EmptyState icon="set-meal" text="你还没有发布任何菜品，无法推进愿望" />
                 <div style={{ textAlign: 'center', marginTop: 'var(--md-spacing-2)'}}>
                   <Link to="/chef/dishes">前往菜品管理 →</Link>
                 </div>
@@ -162,7 +163,7 @@ export default function WishAdvanceModal({ onClose, onSuccess }) {
                   {dish.image_url ? (
                     <img src={dish.image_url} alt={dish.name || ''} />
                   ) : (
-                    <span aria-hidden="true">🍽️</span>
+                    <span aria-hidden="true"><Icon name="set-meal" size={32} /></span>
                   )}
                 </div>
                 <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--md-color-on-surface)', flex: 1, minWidth: 0 }}>

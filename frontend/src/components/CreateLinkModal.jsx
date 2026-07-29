@@ -7,6 +7,7 @@
 import { useToast } from '../contexts/ToastContext';
 import Modal from './composites/Modal';
 import Button from './primitives/Button';
+import Icon from './primitives/Icon';
 
 export default function CreateLinkModal({ linkUrl, onClose }) {
   const { showToast } = useToast();
@@ -56,10 +57,10 @@ export default function CreateLinkModal({ linkUrl, onClose }) {
       style={{ maxWidth: 400 }}
       actions={[
         <Button key="copy" variant="filled" onClick={handleCopy}>
-          📋 复制链接
+          <Icon name="inventory-2" size={18} /> 复制链接
         </Button>,
         <Button key="share" variant="outlined" onClick={handleShare}>
-          🚀 分享
+          <Icon name="send" size={18} /> 分享
         </Button>,
       ]}
     >

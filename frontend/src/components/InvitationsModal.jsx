@@ -31,7 +31,7 @@ export default function InvitationsModal({
       {loading ? (
         <Loading />
       ) : invitations.length === 0 ? (
-        <EmptyState icon="📭" text="还没有邀请记录" />
+        <EmptyState icon="mail" text="还没有邀请记录" />
       ) : (
         invitations.map((inv) => (
           <ListItem key={inv.id} variant="3-line">

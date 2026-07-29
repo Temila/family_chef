@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
 import Badge from './primitives/Badge';
 import Card from './primitives/Card';
+import Icon from './primitives/Icon';
 
 export default function DishCard({ dish, simple }) {
   const navigate = useNavigate();
@@ -30,13 +31,13 @@ export default function DishCard({ dish, simple }) {
             alt={dish.name}
             onError={handleImageError}
           />
-          <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>
-            🍽️
+          <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', background: 'var(--md-color-surface-container)' }}>
+            <Icon name="set-meal" size={48} />
           </div>
         </>
       ) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', background: 'var(--md-color-surface-container)' }}>
-          🍽️
+        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--md-color-surface-container)' }}>
+          <Icon name="set-meal" size={48} />
         </div>
       )}
       {dish.is_featured && (

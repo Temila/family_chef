@@ -65,6 +65,20 @@ import {
   Description as DescriptionIcon,
   Lightbulb as LightbulbIcon,
   Spa as SpaIcon,
+  // Phase 12 — D-EMOJI-01 emoji→Icon 全量替换扩展
+  // 详见 12-RESEARCH.md §6 icon mapping table + 12-UI-SPEC.md Iconography Contract
+  SetMeal as SetMealIcon,          // 🍽️/🍳/🥗/🥩/🦐 — 菜品/食材分类复用
+  Inventory2 as Inventory2Icon,    // 📋/📦 — 订单/愿望容器
+  Mail as MailIcon,                // 📭 — 空收件箱/空状态默认
+  ShoppingCart as ShoppingCartIcon,// 🛒 — 访客购物车
+  NewLabel as NewLabelIcon,        // 🆕 — 匹配食材标识（verified: dist/icons/new-label.js）
+  RamenDining as RamenDiningIcon,  // 🍲 — 汤锅/家常菜隐喻（verified: dist/icons/ramen-dining.js）
+  Circle as CircleIcon,            // 🔴 — 过敏/错误圆点（verified: dist/icons/circle.js）
+  Lock as LockIcon,                // 🔒 — 锁定/权限
+  MoodBad as MoodBadIcon,          // 😔 — 空/错误状态
+  Bolt as BoltIcon,                // ⚡ — 快捷/闪电
+  TrendingUp as TrendingUpIcon,    // 📈 — 趋势上升
+  Send as SendIcon,                // 🚀 — 发送/分享
 } from '@material-symbols-svg/react';
 
 // 静态映射表：调用方 name → 内部 SVG 组件
@@ -119,6 +133,19 @@ const ICONS = {
   description: DescriptionIcon,
   lightbulb: LightbulbIcon,
   spa: SpaIcon,
+  // Phase 12 — D-EMOJI-01 emoji→Icon 全量替换扩展
+  'set-meal': SetMealIcon,
+  'inventory-2': Inventory2Icon,
+  mail: MailIcon,
+  'shopping-cart': ShoppingCartIcon,
+  'new-label': NewLabelIcon,
+  'ramen-dining': RamenDiningIcon,
+  circle: CircleIcon,
+  lock: LockIcon,
+  'mood-bad': MoodBadIcon,
+  bolt: BoltIcon,
+  'trending-up': TrendingUpIcon,
+  send: SendIcon,
 };
 
 export default function Icon({

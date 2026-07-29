@@ -157,7 +157,7 @@ export default function InvitationsSection() {
         <Loading />
       ) : invitations.length === 0 ? (
         <EmptyState
-          icon="📭"
+          icon="mail"
           text="还没有邀请记录"
           subtext="创建邀请链接，让来做客的朋友提前点好想吃的菜"
         />
