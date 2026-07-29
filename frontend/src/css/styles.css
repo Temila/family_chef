@@ -180,7 +180,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* Password Input */
 .password-input-wrap { position: relative; }
 .password-input-field { padding-right: calc(var(--md-spacing-3) + var(--md-spacing-5) + var(--md-spacing-2)); } /* 44px icon-inset: 12+24+8 */
-.password-toggle-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; padding: var(--md-spacing-1) var(--md-spacing-2); opacity: 0.6; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); overflow: hidden; z-index: 0; }
+.password-toggle-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; padding: var(--md-spacing-1) var(--md-spacing-2); opacity: 0.6; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); overflow: hidden; z-index: 0; color: var(--md-color-on-surface); }
 .password-toggle-btn::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
 .password-toggle-btn:hover::before { opacity: var(--md-state-layer-hover); }
 .password-toggle-btn:hover { opacity: 1; }
