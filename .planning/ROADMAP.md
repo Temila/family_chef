@@ -83,7 +83,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 14-03-PLAN.md — Advanced-filter Sheet migration + Portal dropdown z-index fix on admin pages (Wave 2)
+- [x] 14-03-PLAN.md — Advanced-filter Sheet migration + Portal dropdown z-index fix on admin pages (Wave 2)
 
 ### Phase 15: Navigation Restructure & Test Data
 
@@ -122,5 +122,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 2/3 | In Progress|  |
+| 14. UI Bugfix & Filter Popup | v1.3 | 3/3 | Complete | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |

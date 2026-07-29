@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T08:39:11.539Z"
+last_updated: "2026-07-29T08:59:14Z"
 last_activity: 2026-07-29
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 14 — ui-bugfix-filter-popup
+**Current focus:** Phase 14 — ui-bugfix-filter-popup (COMPLETE — awaiting Phase 15)
 
 ## Branch State
 
@@ -28,23 +28,23 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 |------|------|------|
 | `main` | `14ed5fd` (v1.1) | v1.2 已撤销，回退到 v1.1（含完整 wishlist） |
 | `dev` | `14ed5fd` (v1.1) | 与 main 同步 |
-| `feature/ui-rebuild` | `7419be0` | Phase 8-9 成果（MD3 令牌 + 动效/state-layer），v1.2 后续开发基分支 |
+| `feature/ui-rebuild` | `eaeed75` | Phase 8-14 成果（MD3 令牌 + 动效/state-layer + bugfix sweep + Sheet + Portal dropdowns），v1.2 后续开发基分支 |
 | Tags | v1.0, v1.1 | v1.2 tag/release 已删除 |
 
-⚠️ **Phase 10-12 必须基于 `feature/ui-rebuild` 开发**——main/dev 上没有 MD3 令牌基础。
+⚠️ **Phase 10-14 已基于 `feature/ui-rebuild` 开发**——main/dev 上没有 MD3 令牌基础。
 
 ## Current Position
 
-Phase: 14 (ui-bugfix-filter-popup) — EXECUTING
+Phase: 14 (ui-bugfix-filter-popup) — COMPLETE (3/3 plans)
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for Phase 15
 Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-29T08:39:11.529Z
-Stopped at: Completed 14-02-PLAN.md (BUG-01/02/03 + D-08 precursor)
-Next: 14-03 (高级筛选 Sheet 迁移 + Portal dropdown z-index fix on admin pages — Wave 2, blocked on Wave 1)
+Last session: 2026-07-29T08:59:14Z
+Stopped at: Completed 14-03-PLAN.md (Sheet migration + Portal dropdowns + flex-card buttons — BUG-04/05/UI-02)
+Next: Phase 15 (导航重组 + 测试 seed 数据 — NAV-01/02/03/04/05 + BUG-06 + DATA-01 + UI-01)
 
 ## Deferred Items
 
@@ -106,6 +106,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 12 P01B | 19min | 3 tasks | 38 files |
 | Phase 14 P01 | 1min | 2 tasks | 4 files |
 | Phase 14 P02 | 4min | 3 tasks | 4 files |
+| Phase 14 P03 | 2min | 2 tasks | 2 files |
 
 ## Decisions
 
@@ -162,6 +163,10 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase ?]: BUG-01 verify scoped to .md-bottom-bar block: plan's whole-file <automated> regex false-negatives on .md-tab--active::before (active-pill centering uses left:50%/translateX); corrected check proves BUG-01 removal + active-pill preservation
 - [Phase ?]: BUG-03 layout = existing CSS-Grid align-items:stretch + new per-card display:flex/flex-direction:column + footer margin-top:auto (WishCard + DishCard); container unchanged (Risk 6 confirmed)
 - [Phase ?]: BUG-04 precursor only: D-08 CSS class delivered in styles.css; dropdown trigger className mounting + radius shrink deferred to Plan 03 (BUG-04 requirement stays pending)
+- [Phase ?]: [Phase 14-03] createPortal-to-document.body is the z-index escape pattern for dropdowns — compute rect on trigger click → store top/left/width in coords state → render menu via createPortal(<div data-...>, document.body) with position:fixed + zIndex:1000; eliminates ancestor overflow:hidden clipping (BUG-04 root cause)
+- [Phase ?]: [Phase 14-03] AdminIngredientsPage click-outside uses closest('[data-dropdown-id]') (matches both trigger button AND Portal'd menu); AdminDishesPage preserves ref.contains() per plan — clicks on Portal'd menu trigger close, but menu items fire onClick before React unmounts Portal so add/toggle still works
+- [Phase ?]: [Phase 14-03] AdminIngredientsPage mobile card restructured with Card root display:flex/flexDirection:column + spacer <div flex:1/> + Button row marginTop:'auto' — same WishCard footer pattern, no Card.footer slot migration; BUG-05 satisfied
+- [Phase ?]: [Phase 14-03] Advanced-filter Sheet wraps existing renderCategorySection helper verbatim — region-cuisine parent/child deselection logic preserved unchanged; no state migration to Sheet, advCategoryIds/sfFilter still drive loadDishes/loadIngredients useEffect
 
 ## Operator Next Steps
 
