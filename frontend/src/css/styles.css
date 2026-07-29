@@ -345,9 +345,18 @@ input, textarea, select { font-family: var(--md-font-body); }
   text-align: left; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
   font-weight: 600; color: var(--md-color-on-surface-variant); font-size: 0.8rem; white-space: nowrap;
 }
-/* BUG-02: 第一列表头 padding-left 偏移，与含编辑按钮的表体内容对齐 */
-.pc-data-table th:first-child {
-  padding-left: calc(var(--md-spacing-3) + 48px + var(--md-spacing-2));
+/* BUG-02 (Phase 14-05): 首列基线 padding-left — 对齐到首列 cell 文本，无头像偏移 */
+.pc-data-table th:first-child,
+.pc-data-table td:first-child {
+  padding-left: var(--md-spacing-3);
+}
+
+/* BUG-02 带头像修饰类：4 个页面 (AdminDishesPage / ChefDishesPage / AdminUsersPage / AdminChefsPage)
+   首列含 36px 头像 + 8px gap，th/td 同步偏移 36px + gap 剩余 padding-left
+   = 12px + 36px + 8px = 56px */
+.pc-data-table--with-leading th:first-child,
+.pc-data-table--with-leading td:first-child {
+  padding-left: calc(var(--md-spacing-3) + 36px + var(--md-spacing-2));
 }
 .pc-data-table td {
   padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 1px solid var(--md-color-outline-variant); vertical-align: middle; text-align: left;
