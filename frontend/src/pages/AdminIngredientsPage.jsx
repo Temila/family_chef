@@ -268,7 +268,6 @@ export default function AdminIngredientsPage() {
         <Button
           variant="tonal"
           size="sm"
-          className="btn-search"
           onClick={() => setShowAdvFilter(!showAdvFilter)}
         >
           {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
@@ -326,7 +325,6 @@ export default function AdminIngredientsPage() {
                         <Button
                           variant="outlined"
                           size="sm"
-                          className="btn-search"
                           style={{ marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle' }}
                           onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
                         >
@@ -405,7 +403,6 @@ export default function AdminIngredientsPage() {
                             <Button
                               variant="outlined"
                               size="sm"
-                              className="btn-search"
                               onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
                             >
                               ▾

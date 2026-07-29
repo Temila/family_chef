@@ -479,7 +479,6 @@ export default function AdminDishesPage() {
         <Button
           variant="tonal"
           size="sm"
-          className="btn-search"
           onClick={() => setShowAdvFilter(!showAdvFilter)}
         >
           {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}

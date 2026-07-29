@@ -192,7 +192,17 @@ export default function WishCard({
       onClick={canTap ? () => onTap?.(wish) : undefined}
       data-wish-id={wish.id}
       footer={hasActions ? (
-        <div className="wish-card-actions" onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{
+            display: 'flex',
+            gap: 'var(--md-spacing-2)',
+            flexWrap: 'wrap',
+            marginTop: 'var(--md-spacing-2)',
+            paddingTop: 'var(--md-spacing-2)',
+            borderTop: '1px dashed var(--md-color-outline-variant)',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
           {actions}
         </div>
       ) : undefined}

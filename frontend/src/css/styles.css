@@ -83,11 +83,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 /* .guest-page .dish-card:hover, .guest-page .dish-card, .guest-page .dish-card::before 已删除 */
 
 /* Wish Cards — WishCard 已迁移至 <Card variant="elevated"> primitive (D-13) */
-/* .wish-card, .wish-card::before, .wish-card:hover::before, .wish-card-top, .wish-card-name,
-   .wish-card-badge-slot, .wish-card-meta, .wish-card-meta-item, .wish-card-secondary,
-   .wish-card-secondary a, .wish-card-reject-reason, .wish-card-readonly,
-   .wish-card-readonly .wish-card-actions, .wish-card-unread-dot, .wish-card-highlight 已删除 */
-/* 保留: .wish-card-actions (WishCard footer slot 容器), .sr-only */
+/* .wish-card 及其所有子选择器已删除；操作区由 WishCard footer slot 的 inline token 样式承载。 */
 
 /* form-group / form-label / form-error — 已由 .md-input-wrapper primitive 接管 (COMPO-04) */
 /* .form-group, .form-label, .form-error, .form-error.show 已删除 */
@@ -165,7 +161,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* FAB —— Phase 10：视觉属性已由 .md-fab primitive 接管（D-08：16px 圆角、primary-container 填充、elevation-3）。
    .fab className 现仅承担 placement（position / bottom / right / z-index），由调用方 className="fab" 透传。 */
-.fab { position: fixed; bottom: calc(var(--md-nav-height) + 16px); right: 24px; z-index: 150; }
+.fab { position: fixed; bottom: calc(var(--md-nav-height) + var(--md-spacing-4)); right: var(--md-spacing-5); z-index: 150; }
 
 /* Login Page */
 .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--md-color-surface-container-low); padding: var(--md-spacing-4); }
@@ -369,10 +365,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .chef-select-item.active { border-color: var(--md-color-primary); background: var(--md-color-primary-container); }
 
 /* ═══ Wish Cards — 10-02-MIGRATION: WishCard 已迁移至 <Card> primitive (D-13) ═══ */
-/* .wish-card 及所有子选择器已删除 (top/name/badge-slot/meta/secondary/reject-reason/readonly/unread-dot/highlight) */
-/* 保留: .wish-card-actions (WishCard footer slot 容器) + .sr-only */
-.wish-card-actions { display: flex; gap: var(--md-spacing-2); flex-wrap: wrap; margin-top: var(--md-spacing-2); padding-top: var(--md-spacing-2); border-top: 1px dashed var(--md-color-outline-variant); }
-.wish-card-actions .btn { min-height: 44px; padding: var(--md-spacing-2) var(--md-spacing-4); font-size: 0.875rem; }
+/* .wish-card 及其所有子选择器已删除；操作区由 WishCard footer slot 的 inline token 样式承载。 */
 .sr-only { position: absolute; clip: rect(0, 0, 0, 0); width: 1px; height: 1px; overflow: hidden; }
 
 /* ═══ Wish Picker (AdvanceModal) ═════════════════ */
