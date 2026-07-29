@@ -91,6 +91,9 @@
   z-index: 0;
   transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);
 }
+.md-sidebar__item--active:hover::before {
+  background: color-mix(in srgb, var(--md-color-primary-container), var(--md-color-on-surface) var(--md-state-layer-hover));
+}
 .md-sidebar__item > :not(.md-ripple-layer) {
   position: relative;
   z-index: 2;

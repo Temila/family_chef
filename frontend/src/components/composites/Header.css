@@ -5,9 +5,9 @@
    仅 PC (≥1024px) 显示，移动端隐藏。
    ═══════════════════════════════════════════════════════════════════ */
 
-/* 64dp sticky top bar with blur — hidden on mobile by default */
+/* 64dp sticky top bar with blur — visible on all screen sizes */
 .md-header {
-  display: none;
+  display: flex;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -20,12 +20,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--md-spacing-5);
-}
-
-@media (min-width: 1024px) {
-  .md-header {
-    display: flex;
-  }
 }
 
 /* Left: logo + brand */

@@ -628,7 +628,7 @@ export default function ChefDishesPage() {
             </table>
           </div>
 
-          <div className="mobile-card-list">
+          <div className="mobile-card-list mobile-card-list--grid">
             {dishes.map(dish => (
               <Card key={dish.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
                 <div className="flex items-center gap-3 mb-4">

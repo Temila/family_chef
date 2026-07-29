@@ -34,6 +34,7 @@ export default function BottomBar() {
     tabs = [
       { id: 'admin-home', icon: 'dashboard', label: '后台', path: '/admin' },
       { id: 'admin-dishes', icon: 'restaurant', label: '菜品', path: '/admin/dishes' },
+      { id: 'admin-ingredients', icon: 'eco', label: '食材', path: '/ingredients' },
       { id: 'admin-wishes', icon: 'lightbulb', label: '愿望', path: '/admin/wishes' },
       { id: 'admin-users', icon: 'group', label: '用户', path: '/admin/users' },
       { id: 'logout', icon: 'logout', label: '退出', action: 'logout' },

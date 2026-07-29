@@ -287,7 +287,29 @@ input, textarea, select { font-family: var(--md-font-body); }
 .pc-main { flex: 1; min-width: 0; }
 
 .pc-data-table-wrap { display: none; }
-.mobile-card-list { display: block; }
+.mobile-card-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--md-spacing-3);
+}
+.mobile-card-list .md-card {
+  width: 100%;
+  min-height: 100px;
+  margin-bottom: 0 !important;
+}
+@media (min-width: 480px) {
+  .mobile-card-list--grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 640px) {
+  .mobile-card-list--grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1280px) {
+  .mobile-card-list--grid { grid-template-columns: repeat(4, 1fr); }
+}
+.section.pt-0 > .md-card {
+  width: 100%;
+  min-height: 100px;
+}
 .pc-role-select {
   padding: var(--md-spacing-1) var(--md-spacing-2); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm);
   background: var(--md-color-surface-container-high); color: var(--md-color-on-surface); font-size: 0.8rem;
@@ -320,11 +342,18 @@ input, textarea, select { font-family: var(--md-font-body); }
   width: 100%; border-collapse: collapse; font-size: 0.85rem;
 }
 .pc-data-table th {
-  text-align: center; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
+  text-align: left; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
   font-weight: 600; color: var(--md-color-on-surface-variant); font-size: 0.8rem; white-space: nowrap;
 }
+.pc-data-table th::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  margin-right: var(--md-spacing-2);
+  vertical-align: middle;
+}
 .pc-data-table td {
-  padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 1px solid var(--md-color-outline-variant); vertical-align: middle; text-align: center;
+  padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 1px solid var(--md-color-outline-variant); vertical-align: middle; text-align: left;
 }
 .pc-data-table tr { position: relative; overflow: hidden; z-index: 0; }
 .pc-data-table tbody tr::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }

@@ -144,6 +144,11 @@ export default function WishCard({
 
   // Card 高亮 + readonly 样式（替换旧 .wish-card-highlight / .wish-card-readonly className）
   const cardStyle = {
+    width: '100%',
+    maxWidth: '600px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    minHeight: '120px',
     marginBottom: 'var(--md-spacing-4)',
     ...(highlight ? {
       outline: '3px solid var(--md-color-primary)',

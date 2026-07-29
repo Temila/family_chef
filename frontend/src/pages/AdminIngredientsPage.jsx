@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -21,7 +21,6 @@ export default function AdminIngredientsPage() {
   const navigate = useNavigate();
   const { getByType } = useCategories();
   const ingredientCategories = getByType('ingredient');
-  const dropdownRef = useRef(null);
 
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,15 +46,19 @@ export default function AdminIngredientsPage() {
   }, [advCategory]);
 
   useEffect(() => {
+    if (openDropdown === null) return;
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (!e.target.closest('[data-dropdown-id]')) {
         setOpenDropdown(null);
+      } else {
+        const id = e.target.closest('[data-dropdown-id]').dataset.dropdownId;
+        if (id !== String(openDropdown)) {
+          setOpenDropdown(null);
+        }
       }
     };
-    if (openDropdown !== null) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openDropdown]);
 
   const toggleDropdown = (id) => {
@@ -322,21 +325,34 @@ export default function AdminIngredientsPage() {
                     <td style={{ position: 'relative' }}>
                       <span>{item.dish_count || 0}</span>
                       {(item.linked_dishes || []).length > 0 && (
-                        <Button
-                          variant="outlined"
-                          size="sm"
-                          style={{ marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle' }}
+                        <button
+                          type="button"
+                          data-dropdown-id={item.id}
                           onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                          style={{
+                            marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle',
+                            width: 24, height: 24, borderRadius: '50%',
+                            border: '1px solid var(--md-color-outline)',
+                            background: 'var(--md-color-surface-container-high)',
+                            color: 'var(--md-color-on-surface-variant)',
+                            cursor: 'pointer', display: 'inline-flex',
+                            alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.65rem', lineHeight: 1, padding: 0,
+                          }}
+                          aria-label="查看关联菜品"
+                          title="查看关联菜品"
                         >
                           ▾
-                        </Button>
+                        </button>
                       )}
                       {openDropdown === item.id && (item.linked_dishes || []).length > 0 && (
-                        <div ref={dropdownRef} style={{
+                        <div data-dropdown-id={item.id} style={{
                           position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                          background: 'var(--md-color-surface-container-high)',
+                          border: '1px solid var(--md-color-outline-variant)',
                           borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
                           minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+                          opacity: 1,
                         }}>
                           {item.linked_dishes.map(d => (
                             <div
@@ -347,8 +363,9 @@ export default function AdminIngredientsPage() {
                                 navigate(`${base}?edit=${d.id}`);
                               }}
                               style={{
-                                      padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
+                                padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                 fontSize: '0.85rem', color: 'var(--md-color-primary)',
+                                background: 'transparent',
                               }}
                               onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -390,7 +407,7 @@ export default function AdminIngredientsPage() {
             </table>
           </div>
 
-          <div className="mobile-card-list">
+          <div className="mobile-card-list mobile-card-list--grid">
             {ingredients.map(item => (
               <Card key={item.id} variant="elevated" style={{ marginBottom: 'var(--md-spacing-2)'}}>
                 <div className="flex items-center gap-3 mb-4">
@@ -399,20 +416,33 @@ export default function AdminIngredientsPage() {
                       <div style={{ fontSize: '0.8rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-1)'}}>
                         <span>{item.category || ''} · 关联 {item.dish_count || 0} 个菜品</span>
                         {(item.linked_dishes || []).length > 0 && (
-                          <span style={{ position: 'relative' }}>
-                            <Button
-                              variant="outlined"
-                              size="sm"
+                          <span data-dropdown-id={item.id} style={{ position: 'relative' }}>
+                            <button
+                              type="button"
+                              data-dropdown-id={item.id}
                               onClick={(e) => { e.stopPropagation(); toggleDropdown(item.id); }}
+                              style={{
+                                width: 24, height: 24, borderRadius: '50%',
+                                border: '1px solid var(--md-color-outline)',
+                                background: 'var(--md-color-surface-container-high)',
+                                color: 'var(--md-color-on-surface-variant)',
+                                cursor: 'pointer', display: 'inline-flex',
+                                alignItems: 'center', justifyContent: 'center',
+                                fontSize: '0.65rem', lineHeight: 1, padding: 0,
+                              }}
+                              aria-label="查看关联菜品"
+                              title="查看关联菜品"
                             >
                               ▾
-                            </Button>
+                            </button>
                             {openDropdown === item.id && (
-                              <div style={{
+                              <div data-dropdown-id={item.id} style={{
                                 position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                                background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+                                background: 'var(--md-color-surface-container-high)',
+                                border: '1px solid var(--md-color-outline-variant)',
                                 borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
                                 minWidth: 160, maxHeight: 200, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+                                opacity: 1,
                               }}>
                                 {item.linked_dishes.map(d => (
                                   <div
@@ -425,6 +455,7 @@ export default function AdminIngredientsPage() {
                                     style={{
                                 padding: 'var(--md-spacing-1) var(--md-spacing-2)', cursor: 'pointer', borderRadius: 'var(--md-radius-xs)',
                                       fontSize: '0.85rem', color: 'var(--md-color-primary)',
+                                      background: 'transparent',
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.background = 'var(--md-color-surface-container)'}
                                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
