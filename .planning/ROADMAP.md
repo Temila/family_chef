@@ -49,7 +49,7 @@
 <details open>
 <summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
 
-- [x] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 3 plans in 2 waves (completed 2026-07-29)
+- [-] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 4 plans in 2 waves (completed 2026-07-29) + 3 gap-closure plans in 2 waves (14-05/06/07 — VERIFICATION Gap 1/2 + REVIEW CR-01/WR-05/WR-01/06)
 - [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
 
 </details>
@@ -73,7 +73,7 @@
   6. 深色模式下弹出页面周围有主题色边框，与背景有明显对比
   7. 弹出筛选页面不破坏底部导航栏布局
 
-**Plans**: 4 plans
+**Plans**: 7 plans (4 original + 3 gap-closure)
 **UI hint**: yes
 Plans:
 **Wave 1**
@@ -88,6 +88,15 @@ Plans:
 **Wave 1 (gap closure)**
 
 - [x] 14-04-PLAN.md — UAT gap closure: BUG-02 table alignment + BUG-04 dropdown race + unified card design rules for WishCard/DishCard/MobileIngredientCard (4 design rules: uniform size, right-aligned buttons, text truncation, missing-field placeholders)
+
+**Wave 1 (gap closure round 2 — operator priority)**
+
+- [x] 14-05-PLAN.md — BUG-02 表头对齐覆盖全 7 页：拆分基线 + pc-data-table--with-leading 修饰类（VERIFICATION Gap 1 关闭）
+
+**Wave 2 (gap closure round 2 — parallel)**
+
+- [ ] 14-06-PLAN.md — Portal dropdown 键盘激活 + scroll/resize/orientationchange 关闭（REVIEW CR-01 + WR-01/06 缓解）
+- [ ] 14-07-PLAN.md — ChefDishesPage Portal 迁移 + AdminIngredientsPage 触发按钮 6px 圆角（REVIEW WR-05 + VERIFICATION Gap 2 关闭）
 
 ### Phase 15: Navigation Restructure & Test Data
 
@@ -126,5 +135,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 4/4 | Complete   | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 5/7 | Gap closure in progress | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |
