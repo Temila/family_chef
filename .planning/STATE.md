@@ -1,13 +1,14 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.2
-milestone_name: Material Design 3 重构
-status: executing
-last_updated: "2026-07-29T01:44:19Z"
-last_activity: 2026-07-29
-  progress:
+milestone_name: MD3 重构
+status: Phase 12 complete
+stopped_at: Completed 12-01B-PLAN.md (motion tokenization + emoji→Icon + EmptyState API + Snackbar action)
+last_updated: "2026-07-29T02:48:26.196Z"
+last_activity: 2026-07-29 -- Phase 12 marked complete
+progress:
   total_phases: 8
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 15
   completed_plans: 15
   percent: 63
@@ -35,11 +36,11 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 12 (page-level-refactor-8dp-grid-human-uat) — EXECUTING
+Phase: 12 — COMPLETE
 Plan: 4 of 4 (01A + 01B complete; 12-02 remaining = audit + HUMAN-UAT)
 Next: 12-02 (旧类残留审计 + Playwright 脚本 + HUMAN-UAT 6 流验证)
 Working branch: `feature/ui-rebuild` (7a3a7c8 — Phase 12-01B motion/Icon/Snackbar lane complete)
-Last activity: 2026-07-29
+Last activity: 2026-07-29 -- Phase 12 marked complete
 
 ## Session Continuity
 

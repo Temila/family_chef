@@ -35,7 +35,7 @@
 - [x] Phase 9: Motion & State Layers (2/2 plans, 1/2 planned) (completed 2026-07-27)
 - [x] Phase 10: Primitive Components (3/3 plans) (completed 2026-07-28)
 - [x] Phase 11: Composite & Navigation Components (3/3 plans) (completed 2026-07-28)
-- [ ] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (0/4 plans)
+- [x] Phase 12: Page-Level Refactor + 8dp Grid + HUMAN-UAT (0/4 plans) (completed 2026-07-29)
 
 ## Phase Details
 
@@ -226,9 +226,9 @@ Plans:
 - [x] 12-00-BUGFIX-PLAN.md — Ripple 鼠标点击回归修复 + 删除重复 Sidecar Header + Sidebar footer 主题/退出入口（UX-02、LOGIC-01..03）
 **Wave 2** *(blocked on Wave 1; 12-01A and 12-01B run in parallel as line-disjoint concern lanes)*
 - [x] 12-01A-PLAN.md — 8dp 网格 spacing sweep + Login/Sidebar/BottomBar radius sweep + stylelint + check:md3 守门（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
-- [ ] 12-01B-PLAN.md — 5 个 motion token 消费 + 3 个 Icon 扩展 + 106 emoji 清扫 + Snackbar action + EmptyState API（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
+- [x] 12-01B-PLAN.md — 5 个 motion token 消费 + 3 个 Icon 扩展 + 106 emoji 清扫 + Snackbar action + EmptyState API（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
 **Wave 3** *(blocked on both 12-01A and 12-01B)*
-- [ ] 12-02-PLAN.md — 旧类双端审计 + Playwright MD3 合规扩展 + HUMAN-UAT 6 流最终验收（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
+- [x] 12-02-PLAN.md — 旧类双端审计 + Playwright MD3 合规扩展 + HUMAN-UAT 6 流最终验收（UX-01、UX-02、TOKEN-13、LOGIC-01..03）
 
 **UI hint**: yes
 
@@ -252,4 +252,4 @@ v1.0 / v1.1 historical note: v1.0 phases 1–4 (foundation → backend → front
 | 9. Motion & State Layers | v1.2 | 2/2 | Complete   | 2026-07-27 |
 | 10. Primitive Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete   | 2026-07-28 |
-| 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 2/4 | In Progress|  |
+| 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete   | 2026-07-29 |
