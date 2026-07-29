@@ -348,7 +348,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .pc-data-table th::before {
   content: '';
   display: inline-block;
-  width: 32px;
+  width: 48px;
   margin-right: var(--md-spacing-2);
   vertical-align: middle;
 }
@@ -524,6 +524,26 @@ button, a, input, select, textarea,
 .quick-action {
   min-width: 48px;
   min-height: 48px;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * Phase 14 D-08：紧凑交互目标覆盖（12dp 最小尺寸）
+ * 覆盖上方 48dp 全局触控目标规则，仅作用于显式标注 .compact-interactive-target
+ * 的元素：下拉 ▾ 触发按钮、数量步进、菜单/选择项、愿望挑选、访客加菜、
+ * 偏好标签按钮、快速操作卡。按"后写覆盖"语义生效。
+ * Wave 3 Plan 03 通过 JSX className 显式挂载，绝不全局 blanket 应用。
+ * ════════════════════════════════════════════════════════════════════ */
+.compact-interactive-target,
+.compact-interactive-target.chef-select-item,
+.compact-interactive-target.wish-picker-item,
+.compact-interactive-target.menu-item,
+.compact-interactive-target.guest-add-btn,
+.compact-interactive-target.theme-toggle,
+.compact-interactive-target .qty-stepper button,
+.compact-interactive-target .preference-tag button,
+.compact-interactive-target .quick-action {
+  min-width: 12px;
+  min-height: 12px;
 }
 
 /* 11-02-MIGRATION: .tab-item / .pc-sidebar-item / .header-back 已从 48dp 全局列表移除
