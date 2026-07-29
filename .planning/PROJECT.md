@@ -12,12 +12,22 @@
 
 **Shipped v1.2** — 2026-07-29: Material Design 3 前端重构完整交付。6 phases / 18 plans / 40+ tasks，完整 MD3 设计令牌 + 7 种原始组件 + 5 种复合组件 + 导航体系 + 8dp 网格 + 动效/state-layer。保留所有业务逻辑零回归。
 
-## Current Milestone
+## Current Milestone: v1.3 Bugfix + UI Refinements
 
-Planning next milestone. 3 known UI defects deferred:
-1. md-bottom-bar 宽度空袭（部分分辨率左右空隙）
-2. 表格表头与内容错位（th 缺 ::before 占位）
-3. 移动端愿望单卡片单列全宽统一高度
+**Goal:** 修复 v1.2 遗留的 3 个 UI 缺陷，并对导航栏结构、筛选交互、深色模式对比度进行调整。
+
+**Target features:**
+- 修复 v1.2 已知缺陷（底部导航栏宽度、表格错位、愿望单卡片布局）
+- 食材管理下拉菜单按钮缩小圆角半径
+- md-header 重组：仅保留头像+主题切换，其他按钮移到下方 div
+- 用户头像下拉菜单精简为编辑资料+退出登录
+- md-sidebar 取消主题切换和退出登录
+- 高级筛选改为弹出子页面（类似添加菜品弹窗）
+- 深色模式弹出页面增加主题色边框
+- 移动端食材管理：编辑/删除按钮固定到卡片底部，各行按钮对齐
+- 创建覆盖有/无食谱、介绍、图片的测试菜谱；保证移动端卡片同大、按钮齐平
+- 厨师移动端首页添加菜品管理+食谱管理入口
+- md-bottom-bar 图标确保首页在最左边
 
 ## Requirements
 
@@ -95,7 +105,7 @@ v1.2 在保留 v1.0/v1.1 全部业务能力（访客点菜 + 菜品愿望单）�
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-07-29 after v1.2 milestone*
+*Last updated: 2026-07-29 after v1.3 milestone start*
 
 ## Constraints
 
