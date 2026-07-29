@@ -39,6 +39,7 @@
 - [x] Phase 13: Bugfix Sweep (3 plans) — completed 2026-07-29
 
 **Known gaps deferred to next milestone:**
+
 1. md-bottom-bar 宽度存在问题，部分分辨率下左右两端存在空隙
 2. 所有表格表头与内容错位，表头左侧缺少 ::before 占位
 3. 移动端愿望单卡片：每行仅一个卡片，宽度根据屏幕自适应，高度统一
@@ -58,10 +59,12 @@
 *Detailed phase descriptions for shipped milestones are archived in `.planning/milestones/`. See `v1.2-ROADMAP.md` for full Phase 8-13 details.*
 
 ### Phase 14: UI Bugfix & Filter Popup
+
 **Goal**: 修复 v1.2 已知所有 CSS/UI 缺陷——底部导航栏宽度、表格错位、愿望单卡片、食材管理按钮圆角及对齐、深色模式弹出页对比度；高级筛选改为弹出子页面交互
 **Depends on**: Phase 13 (v1.2 Bugfix Sweep)
 **Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05, BUG-07, UI-02, UI-03
 **Success Criteria** (what must be TRUE):
+
   1. 所有分辨率下底部导航栏（md-bottom-bar）填满宽度，左右两端无空隙
   2. 表格表头（th）与表体内容列对齐，th 有 ::before 占位符
   3. 移动端愿望单卡片为单列全宽，所有卡片高度统一
@@ -69,19 +72,26 @@
   5. 移动端食材管理页面上，编辑和删除按钮固定到每张卡片的最下方，各行卡片按钮在同一水平线上对齐
   6. 深色模式下弹出页面周围有主题色边框，与背景有明显对比
   7. 弹出筛选页面不破坏底部导航栏布局
+
 **Plans**: 3 plans
 **UI hint**: yes
-
 Plans:
+**Wave 1**
+
 - [ ] 14-01-PLAN.md — Sheet composite + D-11 dark-mode border (Wave 1)
 - [ ] 14-02-PLAN.md — Bugfix sweep: BottomBar, table th, card uniformity, D-08 CSS reset (Wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 14-03-PLAN.md — Advanced-filter Sheet migration + Portal dropdown z-index fix on admin pages (Wave 2)
 
 ### Phase 15: Navigation Restructure & Test Data
+
 **Goal**: 导航体系精简——md-header 仅保留头像+主题切换，其他功能按钮移到下方 div；md-sidebar 取消主题切换和退出登录；厨师移动端首页添加入口；bottom-bar "首页"图标在最左边；创建测试 seed 数据覆盖组合场景
 **Depends on**: Phase 14
 **Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05, BUG-06, DATA-01, UI-01
 **Success Criteria** (what must be TRUE):
+
   1. 用户看到 md-header 中仅含用户头像（含下拉菜单）和主题切换按钮，其他功能按钮出现在 header 下方独立的 div 中
   2. 用户头像下拉菜单只显示"编辑资料"和"退出登录"两个选项
   3. md-sidebar 中不再显示主题切换和退出登录按钮
@@ -91,6 +101,7 @@ Plans:
   7. 移动端菜品卡片在不同内容组合下渲染为统一尺寸（同宽同高）
   8. 因内容差异导致卡片高度不一致时，按钮仍保持在同一水平线上对齐
   9. 所有高级筛选控件改为弹出子页面交互（类似"添加"按钮的弹窗行为）
+
 **Plans**: TBD
 **UI hint**: yes
 
