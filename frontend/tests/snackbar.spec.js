@@ -109,12 +109,19 @@ test('action dismiss 只移除该条，兄弟 snackbar 计时不受影响', asyn
 
   // 点击 action 移除"兄弟计时二"
   await all.locator('.md-snackbar__action').click();
+  await page.mouse.move(0, 0); // 清除点击路径上可能的 hover-pause
   await expect(all).toHaveCount(1);
-  // 剩下的应为 success tone（兄弟计时一）
-  await expect(page.locator('.md-snackbar--success')).toBeVisible();
+  const success = page.locator('.md-snackbar--success');
+  await expect(success).toBeVisible();
 
-  // success 默认 4s：若其计时被重置则 4.6s 后仍可见；此处证明它按原计时自动消失
-  await page.waitForTimeout(4600);
+  // 兄弟计时未被清除：hover 暂停仍生效（证明 timer record 完好）
+  await success.hover();
+  await page.waitForTimeout(3000);
+  await expect(success).toBeVisible();
+
+  // 离开后恢复剩余计时并自动消失
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(4500);
   await expect(page.locator('.md-snackbar')).toHaveCount(0);
 });
 

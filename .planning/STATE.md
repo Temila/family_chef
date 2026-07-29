@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Material Design 3 重构
 status: executing
-last_updated: "2026-07-28T15:55:23.836Z"
-last_activity: 2026-07-28
-progress:
+last_updated: "2026-07-29T01:44:19Z"
+last_activity: 2026-07-29
+  progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 15
-  completed_plans: 14
-  percent: 58
+  completed_plans: 15
+  percent: 63
 ---
 
 # Project State
@@ -36,16 +36,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 12 (page-level-refactor-8dp-grid-human-uat) — EXECUTING
-Plan: 3 of 4
-Next: 12-01B (motion/Icon/Snackbar lane) + 12-02 (audit + HUMAN-UAT)
-Working branch: `feature/ui-rebuild` (acce8ac — Phase 12-01A spacing/shape/enforcement complete)
-Last activity: 2026-07-28
+Plan: 4 of 4 (01A + 01B complete; 12-02 remaining = audit + HUMAN-UAT)
+Next: 12-02 (旧类残留审计 + Playwright 脚本 + HUMAN-UAT 6 流验证)
+Working branch: `feature/ui-rebuild` (7a3a7c8 — Phase 12-01B motion/Icon/Snackbar lane complete)
+Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-28T15:54:30Z
-Stopped at: Completed 12-01A-PLAN.md (spacing/shape/enforcement lane)
-Next: 12-01B (motion tokenization + emoji→Icon + EmptyState API + Snackbar action) → 12-02 (audit + HUMAN-UAT 6 flows)
+Last session: 2026-07-29T01:44:19Z
+Stopped at: Completed 12-01B-PLAN.md (motion tokenization + emoji→Icon + EmptyState API + Snackbar action)
+Next: 12-02 (旧类残留审计 + Playwright compliance 脚本 + HUMAN-UAT 6 流)
 
 ## Deferred Items
 
@@ -62,12 +62,6 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | technical-debt | IN-01: WishDeepLinkRedirect 未 encodeURIComponent(id) | Low-risk | 2026-07-24 |
 | technical-debt | IN-04: actingId 跨卡片点击残留 | Very low repro | 2026-07-24 |
 | technical-debt | 前端全量 lint 基线红（≥90 errors） | Pre-existing | 2026-07-24 |
-
-## Session Continuity
-
-Last session: 2026-07-28T08:40:45.173Z
-Stopped at: Completed 11-03-PLAN.md
-Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-UAT，保持在 `feature/ui-rebuild` 分支
 
 ## Quick Tasks Completed
 
@@ -103,6 +97,7 @@ Next: `/gsd-execute-phase 12` 执行页面级重构、8dp 网格整理与 HUMAN-
 | Phase 11 P03 | 21min | 3 tasks | 18 files |
 | Phase 12 P00-BUGFIX | 40min | 3 tasks | 11 files |
 | Phase 12 P01A | 16min | 3 tasks | 47 files |
+| Phase 12 P01B | 19min | 3 tasks | 38 files |
 
 ## Decisions
 
@@ -149,3 +144,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 12]: D-GRID-01/02: complete 8dp spacing sweep — 45 files tokenized to var(--md-spacing-1..8); 80px safe areas → var(--md-nav-height); 44px icon insets → calc(spacing-3 + spacing-5 + spacing-2); 0 raw-px spacing survivors
 - [Phase 12]: D-GRID-03/D-FILE-02: check-m3-tokens.sh path-independent source gate (checks #1-10); lint:css + check:md3 npm scripts; check:md3 9/11 pass (#9 motion + #10 emoji = 12-01B lane)
 - [Phase 12]: stylelint-config-standard extended but 22 formatting rules nullified (Rule 3) — initial rollout is border-radius-only per UI-SPEC Enforcement Layer
+- [Phase 12]: D-MOTION-01: 5 measured motion consumers → var(--md-motion-duration-*); linear spinner easing + stagger/reduced-motion exceptions preserved
+- [Phase 12]: D-EMOJI-01: Icon registry +12 (new-label/ramen-dining/circle verified + 9 already-package-resident); 128 emoji clusters → <Icon> across 36 files; EmptyState string|ReactNode (default 'mail')
+- [Phase 12]: D-SNACK-01: showToast(message, string|{type?,duration?,action?}) overload — additive, 213 legacy callers untouched; 48dp action Button before close; triggerAction one-shot+error-contained+sibling-isolated; 3 wired examples (wish-undo/order-detail/invitation-copy)
+- [Phase 12]: check:md3 now 11/11 PASS (#9 motion + #10 emoji lanes closed by 01B)
