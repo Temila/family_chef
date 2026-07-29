@@ -137,7 +137,9 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* Animations */
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fade-in { animation: fadeInUp 0.5s ease-out both; }
+/* Phase 12 MOTION-05: fadeInUp 消费 motion token（ease-out → MD3 emphasized cubic-bezier） */
+.animate-fade-in { animation: fadeInUp var(--md-motion-duration-long) var(--md-motion-easing-emphasized) both; }
+/* 0.1s–0.4s stagger 为装饰性序列，非 MD3 design token scale —— 保留裸值（文档化例外） */
 .stagger-1 { animation-delay: 0.1s; } .stagger-2 { animation-delay: 0.2s; } .stagger-3 { animation-delay: 0.3s; } .stagger-4 { animation-delay: 0.4s; }
 
 /* Scrollbar */
@@ -253,7 +255,8 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* Loading */
 .loading { display: flex; align-items: center; justify-content: center; padding: var(--md-spacing-7); color: var(--md-color-on-surface-variant); }
-.loading-spinner { width: 24px; height: 24px; border: 3px solid var(--md-color-outline-variant); border-top-color: var(--md-color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: var(--md-spacing-2); }
+/* Phase 12 MOTION-05: spinner 周期消费 motion token；linear 缓动保留（机械旋转，非 MD3 transition） */
+.loading-spinner { width: 24px; height: 24px; border: 3px solid var(--md-color-outline-variant); border-top-color: var(--md-color-primary); border-radius: 50%; animation: spin var(--md-motion-duration-long) linear infinite; margin-right: var(--md-spacing-2); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Toast */

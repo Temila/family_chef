@@ -60,7 +60,8 @@ const SNACKBAR_STYLES = `
     color: var(--md-color-inverse-on-surface);
     box-shadow: var(--md-elevation-3);
     pointer-events: auto;
-    animation: md-snackbar-in 0.3s var(--md-motion-easing-standard);
+    /* Phase 12 MOTION-05: 0.3s → MD3 medium（250ms ≈ MD3 enter spec） */
+    animation: md-snackbar-in var(--md-motion-duration-medium) var(--md-motion-easing-standard);
   }
 
   .md-snackbar__bar {
@@ -146,6 +147,36 @@ const SNACKBAR_STYLES = `
     outline-offset: -4px;
   }
 
+  /* Phase 12 D-SNACK-01: action Button（text variant 语义，inverse-primary 在 inverse-surface 上） */
+  .md-snackbar__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 48px;
+    min-inline-size: 48px;
+    padding: 0 var(--md-spacing-2);
+    margin-right: var(--md-spacing-1);
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--md-radius-full);
+    background: transparent;
+    color: var(--md-color-inverse-primary);
+    font-family: var(--md-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--md-motion-duration-short) var(--md-motion-easing-standard);
+  }
+
+  .md-snackbar__action:hover {
+    background: color-mix(in srgb, var(--md-color-inverse-primary) 12%, transparent);
+  }
+
+  .md-snackbar__action:focus-visible {
+    outline: var(--md-focus-ring-inner);
+    outline-offset: -4px;
+  }
+
   @keyframes md-snackbar-in {
     from {
       opacity: 0;
@@ -220,18 +251,46 @@ export const SnackbarProvider = ({ children }) => {
     });
   }, [dismiss]);
 
-  const showToast = useCallback((message, type = 'success') => {
-    const tone = Object.hasOwn(DURATION_BY_TYPE, type) ? type : 'success';
+  // Phase 12 D-SNACK-01: 向后兼容重载
+  //   showToast(message, 'success'|'warn'|'error'|'info')                  —— 旧版 string tone
+  //   showToast(message, { type?, duration?, action: { label, onClick } }) —— 新版对象式
+  // 未知 tone 经现有 tone 表归一化为 'success'；duration 用 nullish 语义，显式 0 也被采纳。
+  const showToast = useCallback((message, options = 'success') => {
+    const isLegacyString = typeof options === 'string';
+    const tone = isLegacyString
+      ? (Object.hasOwn(DURATION_BY_TYPE, options) ? options : 'success')
+      : (Object.hasOwn(DURATION_BY_TYPE, options.type) ? options.type : 'success');
+    // nullish 合并：仅当对象式且未提供 duration 时回落到 tone 默认值
+    const duration = isLegacyString || options.duration == null
+      ? DURATION_BY_TYPE[tone]
+      : options.duration;
+    const action = isLegacyString ? undefined : options.action;
+
     const item = {
       id: ++nextId,
       message,
       type: tone,
+      action,
       createdAt: Date.now(),
     };
 
     setItems((previous) => [...previous, item].slice(-MAX_VISIBLE));
-    startTimer(item.id, DURATION_BY_TYPE[tone]);
+    startTimer(item.id, duration);
   }, [startTimer]);
+
+  // Phase 12 D-SNACK-01: action 回调包装 —— 恰好触发一次、抛错被吞（不变成未处理 rejection）、
+  // 随后 dismiss 仅该条；兄弟计时器由 dismiss(id) 的精确 Map 删除保持不变。
+  const triggerAction = useCallback((item) => {
+    if (!item.action) return;
+    try {
+      item.action.onClick?.();
+    } catch (err) {
+      // 调用方提供的回调失败不应破坏 Snackbar 队列或冒泡为未处理 rejection
+      // eslint-disable-next-line no-console
+      console.error('[Snackbar] action onClick threw:', err);
+    }
+    dismiss(item.id);
+  }, [dismiss]);
 
   useEffect(() => {
     const visibleIds = new Set(items.map((item) => item.id));
@@ -276,6 +335,15 @@ export const SnackbarProvider = ({ children }) => {
                 <Icon name={ICON_BY_TYPE[item.type]} size={18} weight={600} />
               </span>
               <span className="md-snackbar__message">{item.message}</span>
+              {item.action && (
+                <button
+                  type="button"
+                  className="md-snackbar__action md-interactive"
+                  onClick={() => triggerAction(item)}
+                >
+                  {item.action.label}
+                </button>
+              )}
               <button
                 type="button"
                 className="md-snackbar__close md-interactive"

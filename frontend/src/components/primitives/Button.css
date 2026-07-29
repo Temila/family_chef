@@ -99,7 +99,8 @@
   cursor: wait;
 }
 .md-button__spinner {
-  animation: md-spin 0.8s linear infinite;
+  /* Phase 12 MOTION-05: spinner 周期消费 motion token；linear 缓动保留（机械旋转） */
+  animation: md-spin var(--md-motion-duration-long) linear infinite;
 }
 @keyframes md-spin {
   to { transform: rotate(360deg); }

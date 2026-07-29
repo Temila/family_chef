@@ -229,7 +229,18 @@ export default function OrderPage() {
       saveCart([]);
       setShowConfirmModal(false);
       const count = orders.length;
-      showToast(`订单提交成功！${count > 1 ? `已拆分为 ${count} 个订单` : ''}，已通知厨师`);
+      const message = `订单提交成功！${count > 1 ? `已拆分为 ${count} 个订单` : ''}，已通知厨师`;
+      // D-SNACK-01: 仅在单个订单且响应含 id 时暴露"查看详情"（多订单走列表页）
+      if (count === 1 && orders[0]?.id) {
+        showToast(message, {
+          action: {
+            label: '查看详情',
+            onClick: () => navigate(`/orders/${orders[0].id}`),
+          },
+        });
+      } else {
+        showToast(message);
+      }
       navigate('/profile');
     } catch (err) {
       showToast('提交订单失败', 'error');

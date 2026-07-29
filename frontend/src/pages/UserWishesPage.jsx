@@ -196,9 +196,22 @@ export default function UserWishesPage() {
   const handleCreateSubmit = useCallback(
     async (payload) => {
       try {
-        await api.createWish(payload);
+        const created = await api.createWish(payload);
         setShowCreate(false);
-        showToast('愿望已提交，厨师会尽快认领');
+        // D-SNACK-01: 用返回的 wish id + 现有 cancelWish API 提供"撤销"补救操作
+        showToast('愿望已提交，厨师会尽快认领', {
+          action: {
+            label: '撤销',
+            onClick: async () => {
+              try {
+                await api.cancelWish(created.id);
+                loadWishes({ page: 1, background: true });
+              } catch {
+                // 撤销失败不阻塞——主流程（提交成功）已完成，补救操作静默失败
+              }
+            },
+          },
+        });
         loadWishes({ page: 1, background: true });
       } catch (err) {
         showToast(err.message || '提交失败', 'error');

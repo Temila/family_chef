@@ -62,7 +62,13 @@ export default function InvitationsSection() {
       setNewLink(url);
       setShowChefSelect(false);
       setShowCreateLink(true);
-      showToast('邀请链接已创建');
+      // D-SNACK-01: 复用现有 handleCopyLink(token) 复制助手提供"复制"操作
+      showToast('邀请链接已创建', {
+        action: {
+          label: '复制',
+          onClick: () => handleCopyLink(res.token),
+        },
+      });
       await loadInvitations();
     } catch {
       showToast('创建邀请失败，请稍后重试', 'error');
