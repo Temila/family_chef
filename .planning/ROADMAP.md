@@ -73,7 +73,7 @@
   6. 深色模式下弹出页面周围有主题色边框，与背景有明显对比
   7. 弹出筛选页面不破坏底部导航栏布局
 
-**Plans**: 3 plans
+**Plans**: 4 plans
 **UI hint**: yes
 Plans:
 **Wave 1**
@@ -84,6 +84,10 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 14-03-PLAN.md — Advanced-filter Sheet migration + Portal dropdown z-index fix on admin pages (Wave 2)
+
+**Wave 1 (gap closure)**
+
+- [ ] 14-04-PLAN.md — UAT gap closure: BUG-02 table alignment + BUG-04 dropdown race + unified card design rules for WishCard/DishCard/MobileIngredientCard (4 design rules: uniform size, right-aligned buttons, text truncation, missing-field placeholders)
 
 ### Phase 15: Navigation Restructure & Test Data
 
@@ -122,5 +126,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 3/3 | Complete | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 3/4 | In progress (gap closure) | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |
