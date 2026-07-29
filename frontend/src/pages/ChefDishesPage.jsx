@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -49,6 +50,8 @@ export default function ChefDishesPage() {
   const [showSfDropdown, setShowSfDropdown] = useState(false);
   const [sfSearch, setSfSearch] = useState('');
   const sfDropdownRef = useRef(null);
+  const [ingDropdownCoords, setIngDropdownCoords] = useState(null);
+  const [sfDropdownCoords, setSfDropdownCoords] = useState(null);
 
   const [showExtractModal, setShowExtractModal] = useState(false);
   const [extractText, setExtractText] = useState('');
@@ -82,23 +85,25 @@ export default function ChefDishesPage() {
     if (!showIngDropdown) return;
     const handler = (e) => {
       if (ingDropdownRef.current && !ingDropdownRef.current.contains(e.target)) {
+        if (e.target.closest('[data-ing-dropdown]')) return;
         setShowIngDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
   }, [showIngDropdown]);
 
   useEffect(() => {
     if (!showSfDropdown) return;
     const handler = (e) => {
       if (sfDropdownRef.current && !sfDropdownRef.current.contains(e.target)) {
+        if (e.target.closest('[data-sf-dropdown]')) return;
         setShowSfDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-}, [showSfDropdown]);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [showSfDropdown]);
 
   const loadDishes = async () => {
     try {
@@ -172,6 +177,30 @@ export default function ChefDishesPage() {
     .filter(i => !form.ingredient_ids.includes(i.id))
     .filter(i => !ingCategoryFilter || i.category === ingCategoryFilter)
     .filter(i => !ingSearch || i.name.includes(ingSearch) || (i.aliases || []).some(a => a.includes(ingSearch)));
+
+  const openIngDropdown = () => {
+    if (showIngDropdown) {
+      setShowIngDropdown(false);
+      return;
+    }
+    if (ingDropdownRef.current) {
+      const rect = ingDropdownRef.current.getBoundingClientRect();
+      setIngDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      setShowIngDropdown(true);
+    }
+  };
+
+  const openSfDropdown = () => {
+    if (showSfDropdown) {
+      setShowSfDropdown(false);
+      return;
+    }
+    if (sfDropdownRef.current) {
+      const rect = sfDropdownRef.current.getBoundingClientRect();
+      setSfDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      setShowSfDropdown(true);
+    }
+  };
 
   const openCreate = (prefill = {}) => {
     setEditingDish(null);
@@ -773,68 +802,12 @@ export default function ChefDishesPage() {
                   className="field-trigger"
                   role="button"
                   tabIndex={0}
-                  onClick={() => setShowIngDropdown(!showIngDropdown)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowIngDropdown(!showIngDropdown); } }}
+                  onClick={openIngDropdown}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIngDropdown(); } }}
                 >
                   {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
                 </div>
                 {/* === 10-02-MIGRATION:END === */}
-
-                {showIngDropdown && (
-                  <div style={{
-                    position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                    background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                    borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
-                    maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                  }}>
-                    <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
-                      {/* === 10-02-MIGRATION:START === ingredient search input → Input primitive === */}
-                      <Input
-                        aria-label="搜索食材"
-                        placeholder="搜索食材..."
-                        value={ingSearch}
-                        onChange={(e) => setIngSearch(e.target.value)}
-                        autoFocus
-                        style={{ marginBottom: 'var(--md-spacing-1)'}}
-                      />
-                      {/* === 10-02-MIGRATION:END === */}
-                      <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
-                        <Chip variant="filter" selected={!ingCategoryFilter}
-                          onClick={() => setIngCategoryFilter('')}
-                        >
-                          全部
-                        </Chip>
-                        {ingredientCategories.map(c => (
-                          <Chip variant="filter" selected={ingCategoryFilter === c.name}
-                            key={c.id}
-                            onClick={() => setIngCategoryFilter(c.name)}
-                          >
-                            {c.name}
-                          </Chip>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ overflowY: 'auto', flex: 1 }}>
-                      {filteredIngForDropdown.length === 0 ? (
-                        <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
-                      ) : (
-                        filteredIngForDropdown.slice(0, 50).map(ing => (
-                          <div
-                            key={ing.id}
-                            className="preference-search-item"
-                            onClick={() => { toggleIngredient(ing.id); }}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <span>{ing.name}</span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
-                              {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
-                            </span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {semifinishedDishes.length > 0 && (
@@ -857,58 +830,12 @@ export default function ChefDishesPage() {
                     className="field-trigger"
                     role="button"
                     tabIndex={0}
-                    onClick={() => setShowSfDropdown(!showSfDropdown)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowSfDropdown(!showSfDropdown); } }}
+                    onClick={openSfDropdown}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSfDropdown(); } }}
                   >
                     {showSfDropdown ? '搜索并选择半成品...' : '点击选择半成品食材...'}
                   </div>
                   {/* === 10-02-MIGRATION:END === */}
-
-                  {showSfDropdown && (
-                    <div style={{
-                      position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 100,
-                      background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
-                      borderRadius: 'var(--md-radius-sm)', boxShadow: 'var(--md-elevation-3)',
-                      maxHeight: 280, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                    }}>
-                      <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
-                        {/* === 10-02-MIGRATION:START === semifinished search input → Input primitive === */}
-                        <Input
-                          aria-label="搜索半成品"
-                          placeholder="搜索半成品..."
-                          value={sfSearch}
-                          onChange={(e) => setSfSearch(e.target.value)}
-                          autoFocus
-                          style={{ marginBottom: 'var(--md-spacing-1)'}}
-                        />
-                        {/* === 10-02-MIGRATION:END === */}
-                      </div>
-                      <div style={{ overflowY: 'auto', flex: 1 }}>
-                        {semifinishedDishes
-                          .filter(d => !form.semifinished_dish_ids.includes(d.id))
-                          .filter(d => !sfSearch || d.name.includes(sfSearch))
-                          .length === 0 ? (
-                          <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
-                        ) : (
-                          semifinishedDishes
-                            .filter(d => !form.semifinished_dish_ids.includes(d.id))
-                            .filter(d => !sfSearch || d.name.includes(sfSearch))
-                            .slice(0, 50)
-                            .map(d => (
-                              <div
-                                key={d.id}
-                                className="preference-search-item"
-                                onClick={() => { toggleSemifinishedDish(d.id); }}
-                                style={{ cursor: 'pointer' }}
-                              >
-                                <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}><Icon name="ramen-dining" size={16} /></span>
-                                <span>{d.name}</span>
-                              </div>
-                            ))
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -1169,6 +1096,106 @@ export default function ChefDishesPage() {
                 </div>
               )}
         </Modal>
+      )}
+
+      {showIngDropdown && ingDropdownCoords && createPortal(
+        <div data-ing-dropdown style={{
+          position: 'fixed', top: ingDropdownCoords.top, left: ingDropdownCoords.left, width: ingDropdownCoords.width, zIndex: 1000,
+          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
+          maxHeight: 280, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+        }}>
+          <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
+            <Input
+              aria-label="搜索食材"
+              placeholder="搜索食材..."
+              value={ingSearch}
+              onChange={(e) => setIngSearch(e.target.value)}
+              autoFocus
+              style={{ marginBottom: 'var(--md-spacing-1)'}}
+            />
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
+              <Chip variant="filter" selected={!ingCategoryFilter}
+                onClick={() => setIngCategoryFilter('')}
+              >
+                全部
+              </Chip>
+              {ingredientCategories.map(c => (
+                <Chip variant="filter" selected={ingCategoryFilter === c.name}
+                  key={c.id}
+                  onClick={() => setIngCategoryFilter(c.name)}
+                >
+                  {c.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+          <div style={{ overflowY: 'auto' }}>
+            {filteredIngForDropdown.length === 0 ? (
+              <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配食材</div>
+            ) : (
+              filteredIngForDropdown.slice(0, 50).map(ing => (
+                <div
+                  key={ing.id}
+                  className="preference-search-item"
+                  onClick={() => { toggleIngredient(ing.id); }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span>{ing.name}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--md-color-on-surface-variant)', marginLeft: 'auto'}}>
+                    {ingredientCategories.find(c => c.name === ing.category)?.name || ''}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showSfDropdown && sfDropdownCoords && createPortal(
+        <div data-sf-dropdown style={{
+          position: 'fixed', top: sfDropdownCoords.top, left: sfDropdownCoords.left, width: sfDropdownCoords.width, zIndex: 1000,
+          background: 'var(--md-color-surface-container-lowest)', border: '1px solid var(--md-color-outline-variant)',
+          borderRadius: 'var(--md-radius-md)', boxShadow: 'var(--md-elevation-2)',
+          maxHeight: 280, overflowY: 'auto', padding: 'var(--md-spacing-1)',
+        }}>
+          <div style={{ padding: 'var(--md-spacing-2) var(--md-spacing-2) 0'}}>
+            <Input
+              aria-label="搜索半成品"
+              placeholder="搜索半成品..."
+              value={sfSearch}
+              onChange={(e) => setSfSearch(e.target.value)}
+              autoFocus
+              style={{ marginBottom: 'var(--md-spacing-1)'}}
+            />
+          </div>
+          <div style={{ overflowY: 'auto' }}>
+            {semifinishedDishes
+              .filter(d => !form.semifinished_dish_ids.includes(d.id))
+              .filter(d => !sfSearch || d.name.includes(sfSearch))
+              .length === 0 ? (
+              <div style={{ padding: 'var(--md-spacing-3)', textAlign: 'center', color: 'var(--md-color-on-surface-variant)', fontSize: '0.85rem' }}>无匹配半成品</div>
+            ) : (
+              semifinishedDishes
+                .filter(d => !form.semifinished_dish_ids.includes(d.id))
+                .filter(d => !sfSearch || d.name.includes(sfSearch))
+                .slice(0, 50)
+                .map(d => (
+                  <div
+                    key={d.id}
+                    className="preference-search-item"
+                    onClick={() => { toggleSemifinishedDish(d.id); }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: '0.8rem', color: 'var(--md-color-on-tertiary-container)', marginRight: 'var(--md-spacing-1)'}}><Icon name="ramen-dining" size={16} /></span>
+                    <span>{d.name}</span>
+                  </div>
+                ))
+            )}
+          </div>
+        </div>,
+        document.body
       )}
 
       <BottomBar />
