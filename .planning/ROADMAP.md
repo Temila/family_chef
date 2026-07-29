@@ -95,7 +95,7 @@ Plans:
 
 **Wave 2 (gap closure round 2 — parallel)**
 
-- [ ] 14-06-PLAN.md — Portal dropdown 键盘激活 + scroll/resize/orientationchange 关闭（REVIEW CR-01 + WR-01/06 缓解）
+- [x] 14-06-PLAN.md — Portal dropdown 键盘激活 + scroll/resize/orientationchange 关闭（REVIEW CR-01 + WR-01/06 缓解）
 - [ ] 14-07-PLAN.md — ChefDishesPage Portal 迁移 + AdminIngredientsPage 触发按钮 6px 圆角（REVIEW WR-05 + VERIFICATION Gap 2 关闭）
 
 ### Phase 15: Navigation Restructure & Test Data
@@ -135,5 +135,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 5/7 | Gap closure in progress | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 6/7 | In Progress|  |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |

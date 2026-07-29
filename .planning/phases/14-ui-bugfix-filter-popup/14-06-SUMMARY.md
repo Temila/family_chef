@@ -104,6 +104,13 @@ None - no external service configuration required.
 - 待 verifier 人工视觉验证清单 5 项（Tab+Enter 打开食材/半成品下拉；滚动 Modal body 关闭；旋转设备关闭；鼠标路径无回归）
 - 下一个 plan: 14-07（ChefDishesPage Portal 迁移 + ingredient 触发圆角）
 
+## Self-Check: PASSED
+
+- FOUND: 14-06-SUMMARY.md
+- FOUND: frontend/src/pages/AdminDishesPage.jsx
+- FOUND: 433ad5e (fix commit)
+- FOUND: c97b559 (docs commit)
+
 ---
 *Phase: 14-ui-bugfix-filter-popup*
 *Completed: 2026-07-29*

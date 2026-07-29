@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T13:55:07Z"
-last_activity: 2026-07-29 -- Phase 14 Plan 05 complete (BUG-02 7-page alignment)
+last_updated: "2026-07-29T14:02:55.238Z"
+last_activity: 2026-07-29
 progress:
   total_phases: 2
   completed_phases: 1
@@ -36,13 +36,13 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 14 (ui-bugfix-filter-popup) — EXECUTING
-Plan: 5 of 7 (14-05 complete; 14-06/07 remain)
-Status: Executing Phase 14
-Last activity: 2026-07-29 -- Phase 14 Plan 05 complete (BUG-02 table alignment 7-page coverage)
+Plan: 6 of 7 (14-05 complete; 14-06/07 remain)
+Status: Ready to execute
+Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-29T13:55:07Z
+Last session: 2026-07-29T14:02:41.671Z
 Stopped at: Completed 14-05-PLAN.md (BUG-02 表头对齐覆盖全 7 页 — 基线 + with-leading 修饰类)
 Next: 14-06 (Portal dropdown 键盘激活 + scroll/resize 关闭) + 14-07 (ChefDishesPage Portal + ingredient 触发圆角)
 
@@ -109,6 +109,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 14 P03 | 2min | 2 tasks | 2 files |
 | Phase 14 P04 | 2min | 3 tasks | 5 files (gap-closure: BUG-02/03/04/05) |
 | Phase 14 P05 | 3min | 3 tasks | 5 files (gap-closure round 2: BUG-02 7-page alignment) |
+| Phase 14 P06 | 1min | 3 tasks | 1 files |
 
 ## Decisions
 
@@ -174,6 +175,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 14-04]: Card design rules unified across 5 mobile cards (AdminDishes/ChefDishes dish, AdminIngredients ingredient, WishCard) — Card `footer` slot + right-aligned `flex-1` equal-width buttons + 2-line `-webkit-box` clamp on names + single-line ellipsis on secondary text + `minHeight` placeholders (chefs 28px, aliases 1.2rem, WishCard secondary 2rem) for missing optional fields so grid rows stay aligned
 - [Phase 14-05]: BUG-02 final fix = baseline + --with-leading modifier split — Plan 14-04's universal `th:first-child { 48px }` hack correctly aligned 4 avatar tables but over-shifted 3 non-avatar tables (blank left band); replaced with `.pc-data-table` baseline (12px md-spacing-3) + `.pc-data-table--with-leading` modifier (56px = 12+36 avatar+8 gap) mounted on 4 avatar pages; 3 plain-text pages keep baseline
 - [Phase 14-05]: 36px avatar dimension hardcoded in CSS calc (not tokenized) — only the 4 avatar tables consume this value and avatar size is inline-hardcoded in JSX; tokenizing is out of scope for this bugfix
+- [Phase ?]: [Phase 14-06]: openIngDropdown/openSfDropdown opener 统一 onClick+onKeyDown 路径 — 键盘激活同步捕获 coords (CR-01 WCAG 2.1.1/4.1.2)
 
 ## Operator Next Steps
 
