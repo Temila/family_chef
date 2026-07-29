@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: MD3 重构
-status: Phase 12 complete
-stopped_at: Completed 12-01B-PLAN.md (motion tokenization + emoji→Icon + EmptyState API + Snackbar action)
-last_updated: "2026-07-29T02:48:26.196Z"
-last_activity: 2026-07-29 -- Phase 12 marked complete
+status: Awaiting next milestone
+last_updated: "2026-07-29T06:44:12.236Z"
+last_activity: 2026-07-29 — Milestone v1.2 completed and archived
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 5
   total_plans: 15
   completed_plans: 15
-  percent: 63
+  percent: 56
 ---
 
 # Project State
@@ -36,11 +35,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 12 — COMPLETE
-Plan: 4 of 4 (01A + 01B complete; 12-02 remaining = audit + HUMAN-UAT)
-Next: 12-02 (旧类残留审计 + Playwright 脚本 + HUMAN-UAT 6 流验证)
-Working branch: `feature/ui-rebuild` (7a3a7c8 — Phase 12-01B motion/Icon/Snackbar lane complete)
-Last activity: 2026-07-29 -- Phase 12 marked complete
+Phase: Milestone v1.2 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-07-29 — Milestone v1.2 completed and archived
 
 ## Session Continuity
 
@@ -63,6 +61,13 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | technical-debt | IN-01: WishDeepLinkRedirect 未 encodeURIComponent(id) | Low-risk | 2026-07-24 |
 | technical-debt | IN-04: actingId 跨卡片点击残留 | Very low repro | 2026-07-24 |
 | technical-debt | 前端全量 lint 基线红（≥90 errors） | Pre-existing | 2026-07-24 |
+| debug | wish-deeplink-false-missing-toast | Acknowledged at v1.2 close | 2026-07-29 |
+| quick_task | 260727-i2g-sync-dev-with-main-split-wishlist-commit | Acknowledged at v1.2 close | 2026-07-29 |
+| quick_task | 260727-ig2-v1-2-feature-ui-rebuild | Acknowledged at v1.2 close | 2026-07-29 |
+| uat_gap | Phase 12 0-pending UAT | Acknowledged at v1.2 close | 2026-07-29 |
+| defect | md-bottom-bar 宽度空袭（部分分辨率左右空隙） | Deferred to next milestone | 2026-07-29 |
+| defect | 表格表头与内容错位（th 缺 ::before 占位） | Deferred to next milestone | 2026-07-29 |
+| defect | 移动端愿望单卡片单列全宽统一高度 | Deferred to next milestone | 2026-07-29 |
 
 ## Quick Tasks Completed
 
@@ -149,3 +154,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 12]: D-EMOJI-01: Icon registry +12 (new-label/ramen-dining/circle verified + 9 already-package-resident); 128 emoji clusters → <Icon> across 36 files; EmptyState string|ReactNode (default 'mail')
 - [Phase 12]: D-SNACK-01: showToast(message, string|{type?,duration?,action?}) overload — additive, 213 legacy callers untouched; 48dp action Button before close; triggerAction one-shot+error-contained+sibling-isolated; 3 wired examples (wish-undo/order-detail/invitation-copy)
 - [Phase 12]: check:md3 now 11/11 PASS (#9 motion + #10 emoji lanes closed by 01B)
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
