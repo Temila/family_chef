@@ -49,7 +49,7 @@
 <details open>
 <summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
 
-- [ ] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 3 plans in 2 waves
+- [x] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 3 plans in 2 waves (completed 2026-07-29)
 - [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
 
 </details>
@@ -87,7 +87,7 @@ Plans:
 
 **Wave 1 (gap closure)**
 
-- [ ] 14-04-PLAN.md — UAT gap closure: BUG-02 table alignment + BUG-04 dropdown race + unified card design rules for WishCard/DishCard/MobileIngredientCard (4 design rules: uniform size, right-aligned buttons, text truncation, missing-field placeholders)
+- [x] 14-04-PLAN.md — UAT gap closure: BUG-02 table alignment + BUG-04 dropdown race + unified card design rules for WishCard/DishCard/MobileIngredientCard (4 design rules: uniform size, right-aligned buttons, text truncation, missing-field placeholders)
 
 ### Phase 15: Navigation Restructure & Test Data
 
@@ -126,5 +126,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 3/4 | In progress (gap closure) | 2026-07-29 |
+| 14. UI Bugfix & Filter Popup | v1.3 | 4/4 | Complete   | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |

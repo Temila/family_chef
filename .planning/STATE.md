@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T08:59:14Z"
+last_updated: "2026-07-29T13:00:24.416Z"
 last_activity: 2026-07-29
 progress:
   total_phases: 2
-  completed_phases: 0
-  total_plans: 3
-  completed_plans: 3
-  percent: 0
+  completed_phases: 1
+  total_plans: 4
+  completed_plans: 4
+  percent: 50
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 14 — ui-bugfix-filter-popup (COMPLETE — awaiting Phase 15)
+**Current focus:** Phase 14 — ui-bugfix-filter-popup
 
 ## Branch State
 
@@ -35,9 +35,9 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 14 (ui-bugfix-filter-popup) — COMPLETE (3/3 plans)
-Plan: 3 of 3
-Status: Phase complete — ready for Phase 15
+Phase: 14 (ui-bugfix-filter-popup) — ALL PLANS COMPLETE
+Plan: 4 of 4 (14-01/02/03/04 done — gap closure for BUG-02/03/04/05)
+Status: Ready for verification
 Last activity: 2026-07-29
 
 ## Session Continuity
@@ -107,6 +107,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 14 P01 | 1min | 2 tasks | 4 files |
 | Phase 14 P02 | 4min | 3 tasks | 4 files |
 | Phase 14 P03 | 2min | 2 tasks | 2 files |
+| Phase 14 P04 | 2min | 3 tasks | 5 files (gap-closure: BUG-02/03/04/05) |
 
 ## Decisions
 
@@ -167,6 +168,9 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase ?]: [Phase 14-03] AdminIngredientsPage click-outside uses closest('[data-dropdown-id]') (matches both trigger button AND Portal'd menu); AdminDishesPage preserves ref.contains() per plan — clicks on Portal'd menu trigger close, but menu items fire onClick before React unmounts Portal so add/toggle still works
 - [Phase ?]: [Phase 14-03] AdminIngredientsPage mobile card restructured with Card root display:flex/flexDirection:column + spacer <div flex:1/> + Button row marginTop:'auto' — same WishCard footer pattern, no Card.footer slot migration; BUG-05 satisfied
 - [Phase ?]: [Phase 14-03] Advanced-filter Sheet wraps existing renderCategorySection helper verbatim — region-cuisine parent/child deselection logic preserved unchanged; no state migration to Sheet, advCategoryIds/sfFilter still drive loadDishes/loadIngredients useEffect
+- [Phase 14-04]: BUG-02 fix = scoped `.pc-data-table th:first-child` padding-left replaces the old `th::before` 48px pseudo-element that shifted ALL headers — only first column header now aligns with the body's edit-button column; other columns stay unshifted
+- [Phase 14-04]: BUG-04 fix = click-outside listeners switched mousedown→click + `closest('[data-ing-dropdown]')`/`closest('[data-sf-dropdown]')` guards — React onClick on Portal'd menu items now fires before close; clicks no longer swallowed (note: data-* attrs already existed from 14-03, plan step was a confirming no-op)
+- [Phase 14-04]: Card design rules unified across 5 mobile cards (AdminDishes/ChefDishes dish, AdminIngredients ingredient, WishCard) — Card `footer` slot + right-aligned `flex-1` equal-width buttons + 2-line `-webkit-box` clamp on names + single-line ellipsis on secondary text + `minHeight` placeholders (chefs 28px, aliases 1.2rem, WishCard secondary 2rem) for missing optional fields so grid rows stay aligned
 
 ## Operator Next Steps
 
