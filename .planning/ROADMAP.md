@@ -79,7 +79,7 @@ Plans:
 **Wave 1**
 
 - [x] 14-01-PLAN.md — Sheet composite + D-11 dark-mode border (Wave 1)
-- [ ] 14-02-PLAN.md — Bugfix sweep: BottomBar, table th, card uniformity, D-08 CSS reset (Wave 1)
+- [x] 14-02-PLAN.md — Bugfix sweep: BottomBar, table th, card uniformity, D-08 CSS reset (Wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -122,5 +122,5 @@ Plans:
 | 11. Composite & Navigation Components | v1.2 | 3/3 | Complete | 2026-07-28 |
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
-| 14. UI Bugfix & Filter Popup | v1.3 | 1/3 | In Progress|  |
+| 14. UI Bugfix & Filter Popup | v1.3 | 2/3 | In Progress|  |
 | 15. Navigation Restructure & Test Data | v1.3 | 0/0 | Not started | - |

@@ -7,9 +7,9 @@
 
 ### Bugfixes
 
-- [ ] **BUG-01**: 修复 md-bottom-bar 宽度间隙问题（部分分辨率左右空隙）
-- [ ] **BUG-02**: 修复表格表头与内容错位（th 缺少 ::before 占位）
-- [ ] **BUG-03**: 移动端愿望单卡片单列全宽统一高度
+- [x] **BUG-01**: 修复 md-bottom-bar 宽度间隙问题（部分分辨率左右空隙）
+- [x] **BUG-02**: 修复表格表头与内容错位（th 缺少 ::before 占位）
+- [x] **BUG-03**: 移动端愿望单卡片单列全宽统一高度
 - [ ] **BUG-04**: 食材管理下拉菜单按钮圆角半径缩小到当前 1/4
 - [ ] **BUG-05**: 移动端食材管理的编辑和删除按钮固定到卡片最下方，各行卡片按钮在同一水平线上
 - [ ] **BUG-06**: 创建覆盖有/无食谱、有/无介绍、有/无图片等情况的测试菜谱，保证移动端卡片同大、按钮齐平
@@ -55,9 +55,9 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | Phase 14 | Pending |
-| BUG-02 | Phase 14 | Pending |
-| BUG-03 | Phase 14 | Pending |
+| BUG-01 | Phase 14 | Complete |
+| BUG-02 | Phase 14 | Complete |
+| BUG-03 | Phase 14 | Complete |
 | BUG-04 | Phase 14 | Pending |
 | BUG-05 | Phase 14 | Pending |
 | BUG-06 | Phase 15 | Pending |
