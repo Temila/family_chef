@@ -16,6 +16,9 @@ import Icon from './primitives/Icon';
 export default function DishCard({ dish, simple }) {
   const navigate = useNavigate();
 
+  // BUG-03/D-05: flex 列布局让 grid stretch 后 footer margin-top:auto 钉到底部
+  const cardStyle = { display: 'flex', flexDirection: 'column' };
+
   const handleImageError = (e) => {
     e.target.style.display = 'none';
     const sibling = e.target.nextElementSibling;
@@ -52,9 +55,10 @@ export default function DishCard({ dish, simple }) {
     <Card
       variant="elevated"
       image={image}
+      style={cardStyle}
       onClick={() => navigate(`/dishes/${dish.id}`)}
       footer={!simple && (
-        <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: 'auto' }}>
           <Badge tone="info">{dish.category_name || '默认'}</Badge>
           {dish.is_available ? (
             <Badge tone="success">可点</Badge>

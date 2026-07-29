@@ -143,6 +143,7 @@ export default function WishCard({
     (wish.status === '已拒绝' && wish.reject_reason);
 
   // Card 高亮 + readonly 样式（替换旧 .wish-card-highlight / .wish-card-readonly className）
+  // BUG-03/D-06: flex 列布局让 grid stretch 后 footer 能 margin-top:auto 钉到底部
   const cardStyle = {
     width: '100%',
     maxWidth: '600px',
@@ -156,6 +157,8 @@ export default function WishCard({
       boxShadow: '0 0 0 4px var(--md-color-primary-container)',
     } : {}),
     ...(!hasActions ? { opacity: 0.7 } : {}),
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   // 未读红点（替换旧 .wish-card-unread-dot）
@@ -202,9 +205,9 @@ export default function WishCard({
             display: 'flex',
             gap: 'var(--md-spacing-2)',
             flexWrap: 'wrap',
-            marginTop: 'var(--md-spacing-2)',
             paddingTop: 'var(--md-spacing-2)',
             borderTop: '1px dashed var(--md-color-outline-variant)',
+            marginTop: 'auto'
           }}
           onClick={(e) => e.stopPropagation()}
         >
