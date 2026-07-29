@@ -90,8 +90,22 @@ export default function AdminDishesPage() {
         setShowIngDropdown(false);
       }
     };
+    // WR-01/WR-06: dropdown 打开期间任何 scroll/resize/orientationchange 触发立即关闭
+    // capture: true 确保捕获 Modal body 内部 overflow-y:auto 的滚动事件
+    const closeOnScroll = () => {
+      setShowIngDropdown(false);
+      setIngDropdownCoords(null);
+    };
     document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    window.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnScroll);
+    window.addEventListener('orientationchange', closeOnScroll);
+    return () => {
+      document.removeEventListener('click', handler);
+      window.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnScroll);
+      window.removeEventListener('orientationchange', closeOnScroll);
+    };
   }, [showIngDropdown]);
 
   useEffect(() => {
@@ -103,8 +117,22 @@ export default function AdminDishesPage() {
         setShowSfDropdown(false);
       }
     };
+    // WR-01/WR-06: dropdown 打开期间任何 scroll/resize/orientationchange 触发立即关闭
+    // capture: true 确保捕获 Modal body 内部 overflow-y:auto 的滚动事件
+    const closeOnScroll = () => {
+      setShowSfDropdown(false);
+      setSfDropdownCoords(null);
+    };
     document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    window.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnScroll);
+    window.addEventListener('orientationchange', closeOnScroll);
+    return () => {
+      document.removeEventListener('click', handler);
+      window.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnScroll);
+      window.removeEventListener('orientationchange', closeOnScroll);
+    };
   }, [showSfDropdown]);
 
   const loadDishes = async () => {
@@ -175,6 +203,31 @@ export default function AdminDishesPage() {
     .filter(i => !form.ingredient_ids.includes(i.id))
     .filter(i => !ingCategoryFilter || i.category === ingCategoryFilter)
     .filter(i => !ingSearch || i.name.includes(ingSearch) || (i.aliases || []).some(a => a.includes(ingSearch)));
+
+  // CR-01: opener 同时被 onClick 和 onKeyDown 调用，确保键盘激活也捕获 coords（Portal 才能渲染）
+  const openIngDropdown = () => {
+    if (showIngDropdown) {
+      setShowIngDropdown(false);
+      return;
+    }
+    if (ingDropdownRef.current) {
+      const rect = ingDropdownRef.current.getBoundingClientRect();
+      setIngDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      setShowIngDropdown(true);
+    }
+  };
+
+  const openSfDropdown = () => {
+    if (showSfDropdown) {
+      setShowSfDropdown(false);
+      return;
+    }
+    if (sfDropdownRef.current) {
+      const rect = sfDropdownRef.current.getBoundingClientRect();
+      setSfDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      setShowSfDropdown(true);
+    }
+  };
 
   const openCreate = (prefill = {}) => {
     setEditingDish(null);
@@ -773,16 +826,8 @@ export default function AdminDishesPage() {
                   className="field-trigger compact-interactive-target"
                   role="button"
                   tabIndex={0}
-                  onClick={() => {
-                    if (showIngDropdown) {
-                      setShowIngDropdown(false);
-                    } else if (ingDropdownRef.current) {
-                      const rect = ingDropdownRef.current.getBoundingClientRect();
-                      setIngDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
-                      setShowIngDropdown(true);
-                    }
-                  }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowIngDropdown(!showIngDropdown); } }}
+                  onClick={openIngDropdown}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIngDropdown(); } }}
                 >
                   {showIngDropdown ? '搜索并选择食材...' : '点击选择食材...'}
                 </div>
@@ -809,16 +854,8 @@ export default function AdminDishesPage() {
                     className="field-trigger compact-interactive-target"
                     role="button"
                     tabIndex={0}
-                    onClick={() => {
-                      if (showSfDropdown) {
-                        setShowSfDropdown(false);
-                      } else if (sfDropdownRef.current) {
-                        const rect = sfDropdownRef.current.getBoundingClientRect();
-                        setSfDropdownCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
-                        setShowSfDropdown(true);
-                      }
-                    }}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowSfDropdown(!showSfDropdown); } }}
+                    onClick={openSfDropdown}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSfDropdown(); } }}
                   >
                     {showSfDropdown ? '搜索并选择半成品...' : '点击选择半成品食材...'}
                   </div>
