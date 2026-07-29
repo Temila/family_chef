@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-29T14:02:55.238Z"
+last_updated: "2026-07-29T14:08:40.040Z"
 last_activity: 2026-07-29
 progress:
   total_phases: 2
@@ -36,13 +36,13 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 14 (ui-bugfix-filter-popup) — EXECUTING
-Plan: 6 of 7 (14-05 complete; 14-06/07 remain)
+Plan: 7 of 7 (14-05 complete; 14-06/07 remain)
 Status: Ready to execute
 Last activity: 2026-07-29
 
 ## Session Continuity
 
-Last session: 2026-07-29T14:02:41.671Z
+Last session: 2026-07-29T14:08:19.418Z
 Stopped at: Completed 14-05-PLAN.md (BUG-02 表头对齐覆盖全 7 页 — 基线 + with-leading 修饰类)
 Next: 14-06 (Portal dropdown 键盘激活 + scroll/resize 关闭) + 14-07 (ChefDishesPage Portal + ingredient 触发圆角)
 
@@ -110,6 +110,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 14 P04 | 2min | 3 tasks | 5 files (gap-closure: BUG-02/03/04/05) |
 | Phase 14 P05 | 3min | 3 tasks | 5 files (gap-closure round 2: BUG-02 7-page alignment) |
 | Phase 14 P06 | 1min | 3 tasks | 1 files |
+| Phase 14 P07 | 3min | 3 tasks | 2 files |
 
 ## Decisions
 
@@ -176,6 +177,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 14-05]: BUG-02 final fix = baseline + --with-leading modifier split — Plan 14-04's universal `th:first-child { 48px }` hack correctly aligned 4 avatar tables but over-shifted 3 non-avatar tables (blank left band); replaced with `.pc-data-table` baseline (12px md-spacing-3) + `.pc-data-table--with-leading` modifier (56px = 12+36 avatar+8 gap) mounted on 4 avatar pages; 3 plain-text pages keep baseline
 - [Phase 14-05]: 36px avatar dimension hardcoded in CSS calc (not tokenized) — only the 4 avatar tables consume this value and avatar size is inline-hardcoded in JSX; tokenizing is out of scope for this bugfix
 - [Phase ?]: [Phase 14-06]: openIngDropdown/openSfDropdown opener 统一 onClick+onKeyDown 路径 — 键盘激活同步捕获 coords (CR-01 WCAG 2.1.1/4.1.2)
+- [Phase 14]: [Phase 14-07] ChefDishesPage 提取 openIngDropdown/openSfDropdown opener 函数（镜像 14-06 AdminDishesPage），onClick 与 onKeyDown 共享 coords 捕获，键盘激活也能渲染 Portal — plan Task 2 字面建议 inline coords 捕获，但参照 AdminDishesPage.jsx:780 opener 模式更干净且 plan 明确要求 mirror 该模式
 
 ## Operator Next Steps
 
