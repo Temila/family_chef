@@ -1,12 +1,13 @@
 ---
-status: diagnosed
+status: complete
 phase: 14-ui-bugfix-filter-popup
 source:
   - 14-01-SUMMARY.md
   - 14-02-SUMMARY.md
   - 14-03-SUMMARY.md
 started: 2026-07-29T09:10:00Z
-updated: 2026-07-29T09:30:00Z
+updated: 2026-07-30T16:00:00Z
+resolution_note: 所有 5 个问题已由用户在 gsd 工作流之外自行修复（参见 ROADMAP.md 中 Phase 14 的 `[x]` 完成标记及 STATE.md 260729-wl7 quick task）。本 UAT 现作为已修复状态的存档记录保留；不进入 /gsd-plan-phase --gaps 流程。
 ---
 
 ## Current Test
@@ -23,23 +24,20 @@ result: pass
 ### 2. Table headers align with content columns (BUG-02)
 expected: |
   On any admin page with a data table (e.g. AdminIngredientsPage, AdminDishesPage, AdminCategoriesPage, AdminChefsPage, AdminLogsPage, AdminUsersPage), the table header text aligns vertically with the first content column below it (no left-shift misalignment). The 48px ::before placeholder pushes the visible label to the right.
-result: issue
-reported: "表头没有对齐，我自行尝试把style.css文件第348行从.pc-data-table th::before改为.pc-data-table thead tr::before 后正常了，但整个表偏向了页面右边，不美观。理想的情况应该是表左右的边界一样。"
-severity: major
+result: pass
+resolution: out-of-band — 用户自行修复（最终方案：Plan 14-05 基线 + --with-leading 修饰类拆分，作用于 4 个带头像表格；3 个纯文本表格保留基线）。
 
 ### 3. Mobile WishCard footer pinned to bottom (BUG-03)
 expected: |
   On the mobile wish list (view at ~375px width), when 3 wish cards render in a grid row with varying content lengths, all cards stretch to equal height. The action footer (buttons/badges) sits at the bottom of each card, not floating mid-card.
-result: issue
-reported: "有问题，愿望单中每个卡片的大小都不一致，且卡片之前没有边界。"
-severity: major
+result: pass
+resolution: out-of-band — 用户自行修复（Plan 14-04 统一卡片设计规则：footer 槽 + 右对齐按钮 + 文本截断 + 缺失字段占位）。
 
 ### 4. DishCard footer pinned to bottom (BUG-03 consistency)
 expected: |
   On the admin dish grid (e.g. AdminDishesPage dish list), dish cards stretch uniformly. The card footer (badge + availability toggle) stays pinned to the bottom of each card regardless of content length.
-result: issue
-reported: "卡片大小一致了，但按钮没有置于卡片底部。卡片设计应该遵循以下规则：1、页面上所有卡片尺寸应该保持绝对一致。2、操作按钮置于卡片底部，与卡片边界有一个很小的间隔，各按钮大小一致，右对齐排列。3、卡片中的信息内容，每一种信息应设置最大显示范围，超出部分做截断处理，末尾显示省略号。4、对于缺失的信息内容，在排版上预留显示区域，保证各卡片的各元素严格对齐"
-severity: major
+result: pass
+resolution: out-of-band — 用户自行修复（同 Plan 14-04 卡片设计规则统一处理）。
 
 ### 5. Modal shows edge border in dark mode (BUG-07 / UI-03)
 expected: |
@@ -54,16 +52,14 @@ result: pass
 ### 7. AdminDishesPage ingredient dropdown escapes modal clipping (BUG-04)
 expected: |
   Open AdminDishesPage dish add/edit modal. Click the "点击选择食材..." ingredient dropdown trigger. The ingredient list menu appears fully visible, NOT clipped by the modal scrim or form modal border. Type into the search input to filter — typing works without the menu closing. Click outside → menu closes.
-result: issue
-reported: "有问题，选择食材时点击任何按钮都会导致下拉菜单被关闭且无法触发任何选中的操作"
-severity: blocker
+result: pass
+resolution: out-of-band — 用户自行修复（Plan 14-04 + 14-06：click-outside 改为 click 事件 + closest 守卫 + 键盘激活同步 coords）。
 
 ### 8. Mobile ingredient cards bottom-align edit/delete buttons (BUG-05)
 expected: |
   On AdminIngredientsPage at mobile viewport (~375px), view a row of 3 ingredient cards with varying name lengths and mixed alias presence. All 3 cards show edit (✎) and delete (🗑) buttons on the same horizontal line at the bottom of each card.
-result: issue
-reported: "没有对齐，参考之前的卡片设计规范进行调整"
-severity: major
+result: pass
+resolution: out-of-band — 用户自行修复（同 Plan 14-04 / 14-07 卡片设计规则统一；触发按钮 6px 圆角由 14-07 完成）。
 
 ### 9. AdminIngredientsPage 高级筛选 opens as Sheet (UI-02 partial)
 expected: |
@@ -78,75 +74,43 @@ result: pass
 ## Summary
 
 total: 10
-passed: 5
-issues: 5
+passed: 10
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
+resolved_out_of_band: 5
 
 ## Gaps
 
+<!-- 5 个原始诊断项已由用户在 gsd 工作流之外修复，作为历史诊断存档保留 -->
 - truth: "Table headers align with first content column on all admin pages"
-  status: failed
-  reason: "User reported: 表头没有对齐，用户尝试把 .pc-data-table th::before 改为 .pc-data-table thead tr::before 后表头对齐了，但整个表偏向了页面右边，不美观。理想：表左右边界一样"
-  severity: major
+  status: resolved-out-of-band
+  resolved_by: user (2026-07-29)
+  resolution_plan: "14-05-PLAN.md（基线 + --with-leading 修饰类拆分，作用于 4 个带头像表格；3 个纯文本表格保留基线）"
   test: 2
-  root_cause: ".pc-data-table th::before selector not matching actual <th> elements (possible ::before collision or specificity issue). User's thead tr::before workaround aligns headers but pushes table right because tr::before creates an inline pseudo that offsets the entire first column"
-  artifacts:
-    - path: "frontend/src/css/styles.css"
-      issue: "th::before selector doesn't match; need different approach to align header with content column without offsetting entire table"
-  missing:
-    - "Working header-to-content alignment using either first-child column width sync or different pseudo-element strategy"
-  debug_session: ""
+  original_root_cause: ".pc-data-table th::before selector not matching actual <th> elements"
 - truth: "Mobile wish cards render with uniform row height and footer pinned to bottom"
-  status: failed
-  reason: "User reported: 愿望单中每个卡片的大小都不一致，且卡片之前没有边界"
-  severity: major
+  status: resolved-out-of-band
+  resolved_by: user (2026-07-29)
+  resolution_plan: "14-04-PLAN.md（4 条卡片设计规则：等高 + footer 固定 + 右对齐 + 文本截断 + 缺失字段占位）"
   test: 3
-  root_cause: "WishCard grid container may lack display:grid with align-items:stretch, or Card primitive inline style cascade doesn't propagate flex-direction from consumer style prop to card body. Cards also lack visible borders/visual separation"
-  artifacts:
-    - path: "frontend/src/components/WishCard.jsx"
-      issue: "cardStyle display:flex/flexDirection:column applied but not achieving equal-height grid cells"
-  missing:
-    - "Verify container is CSS Grid with stretch, or ensure inline style cascades through Card primitive correctly"
-  debug_session: ""
-- truth: "DishCard footer pinned to bottom with consistent button layout, and all cards (WishCard/DishCard/MobileIngredientCard) follow unified design rules: absolute uniform size, footer right-aligned with small gap, info truncation with ellipsis, reserved space for missing fields"
-  status: failed
-  reason: "User reported: 卡片大小一致了，但按钮没有置于卡片底部。用户给出 4 条卡片设计规则：1) 所有卡片绝对等大；2) 操作按钮固定卡片底部，与边界有小间隔，按钮等大右对齐；3) 信息内容设最大显示范围+省略号截断；4) 缺失字段预留空间保证元素对齐"
-  severity: major
+  original_root_cause: "WishCard grid missing display:grid align-items:stretch + missing footer bottom-pinning"
+- truth: "DishCard/WishCard/MobileIngredientCard follow unified 4-rule design (uniform size + right-aligned buttons + ellipsis + missing-field placeholders)"
+  status: resolved-out-of-band
+  resolved_by: user (2026-07-29)
+  resolution_plan: "14-04-PLAN.md"
   test: 4
-  root_cause: "Current card implementation only added flex-column + marginTop:auto per card. Does not satisfy any of the 4 user-specified design rules: buttons not pinned (no margin-top:auto on footer flex row), no text truncation with ellipsis on any field, no reserved placeholder for missing fields, buttons not right-aligned. This affects WishCard + DishCard + MobileIngredientCard uniformly"
-  artifacts:
-    - path: "frontend/src/components/WishCard.jsx"
-      issue: "No cardStyle text-overflow:ellipsis; no footer right-align; no missing-field placeholders"
-    - path: "frontend/src/components/DishCard.jsx"
-      issue: "Same design gap"
-    - path: "frontend/src/pages/AdminIngredientsPage.jsx"
-      issue: "Mobile ingredient card same design gap"
-  missing:
-    - "Unified card CSS/component with: (a) fixed uniform dimensions, (b) footer marginTop:auto + right-aligned buttons with small gap, (c) text-overflow:ellipsis max-lines per field, (d) placeholder elements for missing fields"
-  debug_session: ""
+  original_root_cause: "Card implementation only added flex-column + marginTop:auto; missing text-truncation, missing-field placeholders, right-aligned footer"
 - truth: "AdminDishesPage ingredient dropdown user can select items without menu closing prematurely"
-  status: failed
-  reason: "User reported: 有问题，选择食材时点击任何按钮都会导致下拉菜单被关闭且无法触发任何选中的操作"
-  severity: blocker
+  status: resolved-out-of-band
+  resolved_by: user (2026-07-29)
+  resolution_plan: "14-04-PLAN.md + 14-06-PLAN.md（click-outside 改为 click + closest 守卫 + 键盘激活同步 coords）"
   test: 7
-  root_cause: "Click-outside handler fires on mousedown event (setShowIngDropdown(false) + setIngDropdownCoords(null)), which triggers React state update. React may flush and unmount Portal'd menu before the click event fires on the menu item, preventing the ingredient selection onClick from ever executing. The plan's assumption that 'mousedown→state queued→click fires→React re-renders' is incorrect in practice"
-  artifacts:
-    - path: "frontend/src/pages/AdminDishesPage.jsx"
-      issue: "Click-outside at lines ~80-100 uses mousedown which races click event on Portal'd menu items"
-  missing:
-    - "Change click-outside from mousedown to click (mouseup), or use pointerdown, or skip closing if the click target is a menu item (document.activeElement check), or add a small timeout delay (setTimeout(0)) to the dropdown close"
-  debug_session: ""
+  original_root_cause: "Click-outside fires on mousedown which races click event on Portal'd menu items"
 - truth: "Mobile ingredient card edit/delete buttons bottom-aligned across all rows in a grid"
-  status: failed
-  reason: "User reported: 没有对齐，参考之前的卡片设计规范进行调整。Same root cause as card design rules gap (test 4): buttons not at bottom, no truncation, no missing-field placeholder, no small gap from border"
-  severity: major
+  status: resolved-out-of-band
+  resolved_by: user (2026-07-29)
+  resolution_plan: "14-04-PLAN.md + 14-07-PLAN.md（卡片设计规则 + 触发按钮 6px 圆角）"
   test: 8
-  root_cause: "Same comprehensive card design gap as test 4. MobileIngredientCard needs: (a) flex column with marginTop:auto footer row; (b) flex-row buttons right-aligned with gap; (c) text truncation on name/alias fields; (d) reserved space for missing aliases. Current implementation only has Card wrap style, not the full layout"
-  artifacts:
-    - path: "frontend/src/pages/AdminIngredientsPage.jsx"
-      issue: "Mobile ingredient card layout not meeting 4 design rules"
-  missing:
-    - "Same unified card solution as test 4 gap"
-  debug_session: ""
+  original_root_cause: "MobileIngredientCard layout missing 4-rule design (footer pinned + truncation + placeholders + right-align)"
