@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
 Plan: 6 of 6
 Status: Phase complete — ready for verification
-Last activity: 2026-07-30 - Completed quick task 260730-lmy: filter-action-row 对称 48px 缩进（实验性）
+Last activity: 2026-07-30 - Completed quick task 260730-luk: 食材管理页已关联/未关联互斥筛选
 
 ## Session Continuity
 
@@ -78,6 +78,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260730-ks4 | 修正 260730-k5g：三按钮移到搜索栏下方（页面级 filter-action-row），删除死代码 --split | 2026-07-30 | [260730-ks4-filter-row-below-search](./quick/260730-ks4-filter-row-below-search/) |
 | 260730-kz4 | filter-action-row 边缘对齐：添加右侧对齐清空（margin-right 4px，镜像 search-bar 手法）| 2026-07-30 | [260730-kz4-filter-row-align-edges](./quick/260730-kz4-filter-row-align-edges/) |
 | 260730-lmy | filter-action-row 左右对称 48px 缩进（实验性），移除 margin-right hack | 2026-07-30 | [260730-lmy-filter-row-48px-inset](./quick/260730-lmy-filter-row-48px-inset/) |
+| 260730-luk | 食材管理页增加已关联/未关联互斥筛选（SQL EXISTS 过滤 + 单一状态 toggleAssoc）| 2026-07-30 | [260730-luk-ingredient-association-filter](./quick/260730-luk-ingredient-association-filter/) |
 
 ## Performance Metrics
 
