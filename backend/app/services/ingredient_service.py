@@ -3,12 +3,13 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.ingredient import Ingredient, IngredientAlias
+from app.models.dish import DishIngredient
 from sqlalchemy.orm import selectinload
 
 
 class IngredientService:
     """食材服务"""
-    
+
     @staticmethod
     async def get_ingredient_by_id(db: AsyncSession, ingredient_id: int) -> Optional[Ingredient]:
         """根据 ID 获取食材"""
@@ -16,12 +17,13 @@ class IngredientService:
             select(Ingredient).where(Ingredient.id == ingredient_id)
         )
         return result.scalar_one_or_none()
-    
+
     @staticmethod
     async def list_ingredients(
         db: AsyncSession,
         category: Optional[str] = None,
         search: Optional[str] = None,
+        has_dishes: Optional[bool] = None,
     ) -> List[Ingredient]:
         """查询食材列表"""
         query = select(Ingredient).options(selectinload(Ingredient.aliases))
@@ -32,9 +34,19 @@ class IngredientService:
             query = query.where(
                 Ingredient.name.like(search_pattern)
             )
-        
+        if has_dishes is True:
+            link_exists = select(DishIngredient.id).where(
+                DishIngredient.ingredient_id == Ingredient.id
+            )
+            query = query.where(link_exists.exists())
+        elif has_dishes is False:
+            link_exists = select(DishIngredient.id).where(
+                DishIngredient.ingredient_id == Ingredient.id
+            )
+            query = query.where(~link_exists.exists())
+
         query = query.order_by(Ingredient.name)
-        
+
         result = await db.execute(query)
         return list(result.scalars().all())
     
