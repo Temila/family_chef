@@ -4,7 +4,7 @@ milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: verifying
 last_updated: "2026-07-30T09:35:00.000Z"
-last_activity: 2026-07-30 - Completed quick task 260730-oa9: 订单详情页两段式 MD3 布局：div1 grid 40/60 双卡（订单信息/下单人+偏好），div2 全宽菜品列表+点击展开菜谱
+last_activity: 2026-07-30 - Quick task 260730-oa9 修正：根据部署版还原为 3 卡堆叠
 progress:
   total_phases: 2
   completed_phases: 2
@@ -81,7 +81,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260730-luk | 食材管理页增加已关联/未关联互斥筛选（SQL EXISTS 过滤 + 单一状态 toggleAssoc）| 2026-07-30 |  | [260730-luk-ingredient-association-filter](./quick/260730-luk-ingredient-association-filter/) |
 | 260730-m1p | filter-action-row 左组靠左（padding 左 16px / 右 48px 非对称），已关联/未关联挨着高级筛选 | 2026-07-30 |  | [260730-m1p-filter-row-left-flush](./quick/260730-m1p-filter-row-left-flush/) |
 | 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 |  | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
-| 260730-oa9 | 订单详情页两段式 MD3 布局：div1 grid 40/60 双卡（订单信息/下单人+偏好），div2 全宽菜品列表+点击展开菜谱 | 2026-07-30 | 7028075 | [260730-oa9-http-localhost-5173-orders-1-1-div-div-m](./quick/260730-oa9-http-localhost-5173-orders-1-1-div-div-m/) |
+| 260730-oa9 | 订单详情页两段式 MD3 布局（初版 2div+40/60grid，后修正为 3 卡堆叠匹配部署版参考） | 2026-07-30 | 7028075→2fdcddd | [260730-oa9-http-localhost-5173-orders-1-1-div-div-m](./quick/260730-oa9-http-localhost-5173-orders-1-1-div-div-m/) |
 
 ## Performance Metrics
 

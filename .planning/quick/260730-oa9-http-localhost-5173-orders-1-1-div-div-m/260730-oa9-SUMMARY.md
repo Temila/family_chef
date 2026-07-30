@@ -65,9 +65,15 @@ None —— plan executed exactly as specified. All 5 要点 (cards fixed 4:6 / 
 
 - `7028075` — refactor(260730-oa9): 订单详情页两段式 MD3 布局重构
 
-## Visual Verification Required
+## Post-Completion Correction
 
-用户需在 `http://localhost:5173/orders/<id>` 页面检查：
-- 顶部两个卡片 4:6 固定比例（即使窄屏也保持此比例）
-- 下方菜品列表每行可点击切换 `查看菜谱 ▼` / `收起 ▲`
-- chef 角色（admin/chef）底部状态变更按钮正常显示
+**触发**：用户提供部署版 `https://familychef.temila-ms06f.top/orders/1` 作为排版参考，确认该页面采用 3 卡直接堆叠布局（非 2 div + 40/60 grid）。
+
+**操作**：还原 `OrderDetailPage.jsx` 到 `9516e48` 版本的 3 张 `<Card variant="elevated">` 上下排列：
+- **Card 1**：订单信息（订单号 / 状态 badge / 下单时间 / 用餐时间）
+- **Card 2**：下单人（头像 + 名字 / 口味偏好 via `<Chip>`）
+- **Card 3**：菜品列表（每行菜品 + `查看菜谱 ▼` / `收起 ▲` 切换）
+
+**仅调整 layout 结构**，不改变任何视觉 token（`--md-spacing-*` / `--md-color-*` / `--md-radius-*`）、icon 主题、或 Chef 操作按钮逻辑。
+
+**Commit**: `2fdcddd` — refactor(260730-oa9-revert): 还原为 3 卡堆叠排版，匹配部署版参考
