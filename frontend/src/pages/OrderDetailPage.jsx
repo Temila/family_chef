@@ -64,86 +64,95 @@ export default function OrderDetailPage() {
         } />
 
       <section className="section">
-        <Card variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--md-spacing-3)'}}>
-              <h3 style={{ margin: 0 }}>
-                订单 #{order.id}
-                {order.is_guest && (
-                  <Badge tone="warn" style={{ marginLeft: 'var(--md-spacing-2)', verticalAlign: 'middle' }}>
-                    访客订单
-                  </Badge>
-                )}
-              </h3>
-              <Badge status={order.status} />
-            </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-1)'}}>
-              <div>下单时间：{new Date(order.created_at).toLocaleString('zh-CN')}</div>
-              {order.meal_date && (
-                <div>用餐时间：{order.meal_date} {mealTypeMap[order.meal_type] || order.meal_type}</div>
-              )}
-              {order.notes && <div>备注：{order.notes}</div>}
-            </div>
-        </Card>
-
-        {order.customer && (
-          <Card variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
-              <h4 style={{ margin: '0 0 var(--md-spacing-2)'}}>下单人</h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)'}}>
-                <div className="avatar avatar-md">
-                  {(order.customer.display_name || order.customer.username).charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{order.customer.display_name || order.customer.username}</div>
-                </div>
+        {/* div 1: 上下两段式中的第一段 —— 订单概览 + 下单人 */}
+        <div style={{ width: '100%', marginBottom: 'var(--md-spacing-4)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: 'var(--md-spacing-3)' }}>
+            {/* 左卡 40%: 订单号 / 状态 / 下单时间 / 用餐时间 / 备注 */}
+            <Card variant="elevated">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--md-spacing-3)' }}>
+                <h3 style={{ margin: 0 }}>
+                  订单 #{order.id}
+                  {order.is_guest && (
+                    <Badge tone="warn" style={{ marginLeft: 'var(--md-spacing-2)', verticalAlign: 'middle' }}>访客订单</Badge>
+                  )}
+                </h3>
+                <Badge status={order.status} />
               </div>
-              {order.customer.preferences && order.customer.preferences.length > 0 && (
-                <div style={{ marginTop: 'var(--md-spacing-2)'}}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)'}}>口味偏好</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)'}}>
-                    {order.customer.preferences.map((p, i) => (
-                      <Chip key={i} variant="assist" leadingIcon={p.type === 'allergy' ? 'warning' : undefined}>
-                        {p.type === 'allergy' ? '忌口' : '不爱吃'}: {p.ingredient}
-                      </Chip>
-                    ))}
-                  </div>
-                </div>
-              )}
-          </Card>
-        )}
+              <div style={{ fontSize: '0.85rem', color: 'var(--md-color-on-surface-variant)', display: 'flex', flexDirection: 'column', gap: 'var(--md-spacing-1)' }}>
+                <div>下单时间：{new Date(order.created_at).toLocaleString('zh-CN')}</div>
+                {order.meal_date && (
+                  <div>用餐时间：{order.meal_date} {mealTypeMap[order.meal_type] || order.meal_type}</div>
+                )}
+                {order.notes && <div>备注：{order.notes}</div>}
+              </div>
+            </Card>
 
-        <Card variant="elevated" style={{ marginBottom: 'var(--md-spacing-3)'}}>
-            <h4 style={{ margin: '0 0 var(--md-spacing-2)'}}>菜品</h4>
-            {order.items && order.items.map(item => (
-              <div key={item.id} style={{ borderBottom: '1px solid var(--md-color-outline-variant)', paddingBottom: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)'}}>
-                <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                  onClick={() => setExpandedDish(expandedDish === item.dish_id ? null : item.dish_id)}
-                >
+            {/* 右卡 60%: 下单人 + 口味偏好 */}
+            {order.customer && (
+              <Card variant="elevated">
+                <h4 style={{ margin: '0 0 var(--md-spacing-2)' }}>下单人</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)' }}>
+                  <div className="avatar avatar-md">
+                    {(order.customer.display_name || order.customer.username).charAt(0).toUpperCase()}
+                  </div>
                   <div>
-                    <span style={{ fontWeight: 600 }}>{item.dish_name}</span>
-                    <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 'var(--md-spacing-2)'}}>×{item.quantity}</span>
+                    <div style={{ fontWeight: 600 }}>{order.customer.display_name || order.customer.username}</div>
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
-                    {item.recipe ? (expandedDish === item.dish_id ? '收起 ▲' : '查看菜谱 ▼') : ''}
-                  </span>
                 </div>
-                {expandedDish === item.dish_id && item.recipe && (
-                  <div
-                    style={{
-                      marginTop: 'var(--md-spacing-2)', padding: 'var(--md-spacing-3)',
-                      background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)',
-                      fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'left',
-                    }}
-                    className="markdown-body"
-                    dangerouslySetInnerHTML={{ __html: marked(item.recipe || '') }}
-                  />
+                {order.customer.preferences && order.customer.preferences.length > 0 && (
+                  <div style={{ marginTop: 'var(--md-spacing-2)' }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: 'var(--md-spacing-1)' }}>口味偏好</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-1)' }}>
+                      {order.customer.preferences.map((p, i) => (
+                        <Chip key={i} variant="assist" leadingIcon={p.type === 'allergy' ? 'warning' : undefined}>
+                          {p.type === 'allergy' ? '忌口' : '不爱吃'}: {p.ingredient}
+                        </Chip>
+                      ))}
+                    </div>
+                  </div>
                 )}
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* div 2: 菜品列表（单卡片，全宽） */}
+        <Card variant="elevated">
+          <h4 style={{ margin: '0 0 var(--md-spacing-2)' }}>菜品</h4>
+          {order.items && order.items.map(item => (
+            <div key={item.id} style={{ borderBottom: '1px solid var(--md-color-outline-variant)', paddingBottom: 'var(--md-spacing-2)', marginBottom: 'var(--md-spacing-2)' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                onClick={() => setExpandedDish(expandedDish === item.dish_id ? null : item.dish_id)}
+              >
+                <div style={{ textAlign: 'left' }}>
+                  <span style={{ fontWeight: 600 }}>{item.dish_name}</span>
+                  <span style={{ color: 'var(--md-color-on-surface-variant)', marginLeft: 'var(--md-spacing-2)' }}>×{item.quantity}</span>
+                </div>
+                {item.recipe ? (
+                  <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)' }}>
+                    {expandedDish === item.dish_id ? '收起 ▲' : '查看菜谱 ▼'}
+                  </span>
+                ) : <span />}
               </div>
-            ))}
+              {expandedDish === item.dish_id && item.recipe && (
+                <div
+                  style={{
+                    marginTop: 'var(--md-spacing-2)', padding: 'var(--md-spacing-3)',
+                    background: 'var(--md-color-surface-container)', borderRadius: 'var(--md-radius-sm)',
+                    fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'left',
+                  }}
+                  className="markdown-body"
+                  dangerouslySetInnerHTML={{ __html: marked(item.recipe || '') }}
+                />
+              )}
+            </div>
+          ))}
         </Card>
 
+        {/* chef 操作按钮区（保留原位置——位于 section 末尾、菜品卡之后） */}
         {isChef && (
-          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', marginTop: 'var(--md-spacing-4)'}}>
+          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', marginTop: 'var(--md-spacing-4)' }}>
             {order.status === 'pending' && (
               <>
                 <Button variant="outlined" className="flex-1" onClick={() => handleUpdateStatus('cancelled')}>拒绝</Button>
