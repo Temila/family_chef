@@ -245,7 +245,7 @@ export default function AdminIngredientsPage() {
       <Header
         title="食材管理"
         actions={
-          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button variant="outlined" size="sm" onClick={openParseModal}><Icon name="inventory-2" size={18} /> 从菜谱解析</Button>
             <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
           </div>
