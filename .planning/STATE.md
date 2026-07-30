@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
-status: completed
-last_updated: "2026-07-30T03:45:06.758Z"
-last_activity: 2026-07-29
+status: executing
+last_updated: "2026-07-30T04:02:42.951Z"
+last_activity: 2026-07-30
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 13
-  completed_plans: 7
+  completed_plans: 8
   percent: 50
 ---
 
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 15 — navigation-restructure-test-data (Phase 14 complete 2026-07-29; user manually fixed remaining bugs)
+**Current focus:** Phase 15 — navigation-restructure-test-data
 
 ## Branch State
 
@@ -35,14 +35,14 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 14 (ui-bugfix-filter-popup) — COMPLETE
-Plan: 7 of 7 (all plans 14-01..14-07 have PLAN.md + SUMMARY.md)
-Status: Complete — remaining bugs fixed by user via other methods (per quick task 260729-wl7)
-Last activity: 2026-07-29
+Phase: 15 (navigation-restructure-test-data) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
+Last activity: 2026-07-30
 
 ## Session Continuity
 
-Last session: 2026-07-30T03:45:06.746Z
+Last session: 2026-07-30T04:02:23.260Z
 Stopped at: Phase 15 plans verified
 Next: Phase 15 (Navigation Restructure & Test Data) — not started
 
@@ -109,6 +109,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 14 P05 | 3min | 3 tasks | 5 files (gap-closure round 2: BUG-02 7-page alignment) |
 | Phase 14 P06 | 1min | 3 tasks | 1 files |
 | Phase 14 P07 | 3min | 3 tasks | 2 files |
+| Phase 15 P01 | 6min | 2 tasks | 2 files |
 
 ## Decisions
 
@@ -176,6 +177,8 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 14-05]: 36px avatar dimension hardcoded in CSS calc (not tokenized) — only the 4 avatar tables consume this value and avatar size is inline-hardcoded in JSX; tokenizing is out of scope for this bugfix
 - [Phase ?]: [Phase 14-06]: openIngDropdown/openSfDropdown opener 统一 onClick+onKeyDown 路径 — 键盘激活同步捕获 coords (CR-01 WCAG 2.1.1/4.1.2)
 - [Phase 14]: [Phase 14-07] ChefDishesPage 提取 openIngDropdown/openSfDropdown opener 函数（镜像 14-06 AdminDishesPage），onClick 与 onKeyDown 共享 coords 捕获，键盘激活也能渲染 Portal — plan Task 2 字面建议 inline coords 捕获，但参照 AdminDishesPage.jsx:780 opener 模式更干净且 plan 明确要求 mirror 该模式
+- [Phase ?]: Phase 15-01: Adapted phase12 footer-pinning test into nav-only 80dp invariant (footer 48dp assertions obsolete under NAV-03 zero-button contract)
+- [Phase ?]: Phase 15-01: Lowered md3-compliance touch-target threshold 5->3 to match fixture reality after NAV-03 removed footer buttons from the interactive-target audit
 
 ## Operator Next Steps
 

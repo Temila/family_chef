@@ -113,3 +113,12 @@ None - no external service configuration required.
 ---
 *Phase: 15-navigation-restructure-test-data*
 *Completed: 2026-07-30*
+
+## Self-Check: PASSED
+
+- FOUND: frontend/tests/phase12-bugfix.spec.js
+- FOUND: frontend/tests/md3-compliance.spec.js
+- FOUND: .planning/phases/15-navigation-restructure-test-data/15-01-SUMMARY.md
+- FOUND commit c60d9dd (Task 1)
+- FOUND commit 4116f8a (Task 2)
+- Plan-level verification: both files `node --check` PASS; `.md-sidebar__version` + `.md-header__theme-toggle` selectors present; no residual positive `.md-sidebar__footer button` count assertions in either file; no accidental file deletions in either task commit.
