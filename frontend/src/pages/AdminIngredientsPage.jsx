@@ -44,10 +44,11 @@ export default function AdminIngredientsPage() {
   const [allIngredients, setAllIngredients] = useState([]);
   const [parseDecisions, setParseDecisions] = useState({});
   const [importLoading, setImportLoading] = useState(false);
+  const [assocFilter, setAssocFilter] = useState(null);
 
   useEffect(() => {
     loadIngredients();
-  }, [advCategory]);
+  }, [advCategory, assocFilter]);
 
   useEffect(() => {
     if (openDropdown === null) return;
@@ -69,13 +70,17 @@ export default function AdminIngredientsPage() {
     try {
       setLoading(true);
       const category = advCategory || null;
-      const res = await api.getIngredients(category, searchQuery || null);
+      const res = await api.getIngredients(category, searchQuery || null, assocFilter);
       setIngredients(res.items || []);
     } catch (err) {
       showToast('加载食材失败', 'error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleAssoc = (value) => {
+    setAssocFilter((prev) => (prev === value ? null : value));
   };
 
   const handleClear = () => {
@@ -261,6 +266,16 @@ export default function AdminIngredientsPage() {
 
       <div className="filter-action-row">
         <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
+        <Button
+          variant={assocFilter === true ? 'filled' : 'outlined'}
+          size="sm"
+          onClick={() => toggleAssoc(true)}
+        >已关联</Button>
+        <Button
+          variant={assocFilter === false ? 'filled' : 'outlined'}
+          size="sm"
+          onClick={() => toggleAssoc(false)}
+        >未关联</Button>
         <div className="filter-action-row__actions">
           <Button variant="tonal" size="sm" onClick={openParseModal}><Icon name="edit" size={18} /> 解析文本</Button>
           <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
