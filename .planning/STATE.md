@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: verifying
-last_updated: "2026-07-30T04:27:32.648Z"
-last_activity: 2026-07-30
+last_updated: "2026-07-30T09:35:00.000Z"
+last_activity: 2026-07-30 - Completed quick task 260730-oa9: 订单详情页两段式 MD3 布局：div1 grid 40/60 双卡（订单信息/下单人+偏好），div2 全宽菜品列表+点击展开菜谱
 progress:
   total_phases: 2
   completed_phases: 2
@@ -61,26 +61,27 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | technical-debt | IN-01: WishDeepLinkRedirect 未 encodeURIComponent(id) | Low-risk | 2026-07-24 |
 | technical-debt | IN-04: actingId 跨卡片点击残留 | Very low repro | 2026-07-24 |
 | technical-debt | 前端全量 lint 基线红（≥90 errors） | Pre-existing | 2026-07-24 |
-| debug | wish-deeplink-false-missing-toast | Acknowledged at v1.2 close | 2026-07-29 |
+| debug | wish-deeplink-false-missing-toast | Resolved 2026-07-30 (Phase 07-05 `fetchedOnce` 守门) | 2026-07-29 |
 | quick_task | 260727-i2g-sync-dev-with-main-split-wishlist-commit | Acknowledged at v1.2 close | 2026-07-29 |
 | quick_task | 260727-ig2-v1-2-feature-ui-rebuild | Acknowledged at v1.2 close | 2026-07-29 |
 | uat_gap | Phase 12 0-pending UAT | Acknowledged at v1.2 close | 2026-07-29 |
 
 ## Quick Tasks Completed
 
-| # | Description | Date | Directory |
-|---|-------------|------|-----------|
-| 260727-i2g | sync dev/main, split wishlist→v1.1 + UI-rebuild→v1.2, release | 2026-07-27 | [260727-i2g-sync-dev-with-main-split-wishlist-commit](./quick/260727-i2g-sync-dev-with-main-split-wishlist-commit/) |
-| 260727-ig2 | 撤销 v1.2 发布，重建 feature/ui-rebuild 分支 | 2026-07-27 | [260727-ig2-v1-2-feature-ui-rebuild](./quick/260727-ig2-v1-2-feature-ui-rebuild/) |
-| 260729-wl7 | 把 phase 14 标记为已完成（用户已用其他办法修复了 bug）| 2026-07-29 | [260729-wl7-phase-14-bug](./quick/260729-wl7-phase-14-bug/) |
-| 260730-jqm | 直接在数据库中添加 8 道测试菜品（DATA-01 seed 一次性注入，绕过 env guard）| 2026-07-30 | [260730-jqm-seed-test-dishes-db](./quick/260730-jqm-seed-test-dishes-db/) |
-| 260730-k5g | 菜品/食材管理 action-bar 排版：解析文本重命名+edit 图标、高级筛选与操作按钮同行左右分布（--split 修饰符）| 2026-07-30 | [260730-k5g-action-bar-layout](./quick/260730-k5g-action-bar-layout/) |
-| 260730-ks4 | 修正 260730-k5g：三按钮移到搜索栏下方（页面级 filter-action-row），删除死代码 --split | 2026-07-30 | [260730-ks4-filter-row-below-search](./quick/260730-ks4-filter-row-below-search/) |
-| 260730-kz4 | filter-action-row 边缘对齐：添加右侧对齐清空（margin-right 4px，镜像 search-bar 手法）| 2026-07-30 | [260730-kz4-filter-row-align-edges](./quick/260730-kz4-filter-row-align-edges/) |
-| 260730-lmy | filter-action-row 左右对称 48px 缩进（实验性），移除 margin-right hack | 2026-07-30 | [260730-lmy-filter-row-48px-inset](./quick/260730-lmy-filter-row-48px-inset/) |
-| 260730-luk | 食材管理页增加已关联/未关联互斥筛选（SQL EXISTS 过滤 + 单一状态 toggleAssoc）| 2026-07-30 | [260730-luk-ingredient-association-filter](./quick/260730-luk-ingredient-association-filter/) |
-| 260730-m1p | filter-action-row 左组靠左（padding 左 16px / 右 48px 非对称），已关联/未关联挨着高级筛选 | 2026-07-30 | [260730-m1p-filter-row-left-flush](./quick/260730-m1p-filter-row-left-flush/) |
-| 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260727-i2g | sync dev/main, split wishlist→v1.1 + UI-rebuild→v1.2, release | 2026-07-27 |  | [260727-i2g-sync-dev-with-main-split-wishlist-commit](./quick/260727-i2g-sync-dev-with-main-split-wishlist-commit/) |
+| 260727-ig2 | 撤销 v1.2 发布，重建 feature/ui-rebuild 分支 | 2026-07-27 |  | [260727-ig2-v1-2-feature-ui-rebuild](./quick/260727-ig2-v1-2-feature-ui-rebuild/) |
+| 260729-wl7 | 把 phase 14 标记为已完成（用户已用其他办法修复了 bug）| 2026-07-29 |  | [260729-wl7-phase-14-bug](./quick/260729-wl7-phase-14-bug/) |
+| 260730-jqm | 直接在数据库中添加 8 道测试菜品（DATA-01 seed 一次性注入，绕过 env guard）| 2026-07-30 |  | [260730-jqm-seed-test-dishes-db](./quick/260730-jqm-seed-test-dishes-db/) |
+| 260730-k5g | 菜品/食材管理 action-bar 排版：解析文本重命名+edit 图标、高级筛选与操作按钮同行左右分布（--split 修饰符）| 2026-07-30 |  | [260730-k5g-action-bar-layout](./quick/260730-k5g-action-bar-layout/) |
+| 260730-ks4 | 修正 260730-k5g：三按钮移到搜索栏下方（页面级 filter-action-row），删除死代码 --split | 2026-07-30 |  | [260730-ks4-filter-row-below-search](./quick/260730-ks4-filter-row-below-search/) |
+| 260730-kz4 | filter-action-row 边缘对齐：添加右侧对齐清空（margin-right 4px，镜像 search-bar 手法）| 2026-07-30 |  | [260730-kz4-filter-row-align-edges](./quick/260730-kz4-filter-row-align-edges/) |
+| 260730-lmy | filter-action-row 左右对称 48px 缩进（实验性），移除 margin-right hack | 2026-07-30 |  | [260730-lmy-filter-row-48px-inset](./quick/260730-lmy-filter-row-48px-inset/) |
+| 260730-luk | 食材管理页增加已关联/未关联互斥筛选（SQL EXISTS 过滤 + 单一状态 toggleAssoc）| 2026-07-30 |  | [260730-luk-ingredient-association-filter](./quick/260730-luk-ingredient-association-filter/) |
+| 260730-m1p | filter-action-row 左组靠左（padding 左 16px / 右 48px 非对称），已关联/未关联挨着高级筛选 | 2026-07-30 |  | [260730-m1p-filter-row-left-flush](./quick/260730-m1p-filter-row-left-flush/) |
+| 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 |  | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
+| 260730-oa9 | 订单详情页两段式 MD3 布局：div1 grid 40/60 双卡（订单信息/下单人+偏好），div2 全宽菜品列表+点击展开菜谱 | 2026-07-30 | 7028075 | [260730-oa9-http-localhost-5173-orders-1-1-div-div-m](./quick/260730-oa9-http-localhost-5173-orders-1-1-div-div-m/) |
 
 ## Performance Metrics
 
