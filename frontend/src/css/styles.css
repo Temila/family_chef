@@ -106,8 +106,8 @@ input, textarea, select { font-family: var(--md-font-body); }
 .search-bar input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
 .search-bar .search-icon { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); color: var(--md-color-on-surface-variant); font-size: 1rem; pointer-events: none; }
 
-.filter-action-row { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--md-spacing-4) var(--md-spacing-2); }
-.filter-action-row__actions { display: flex; gap: var(--md-spacing-2); margin-right: var(--md-spacing-1); }
+.filter-action-row { display: flex; align-items: center; justify-content: space-between; padding: 0 48px var(--md-spacing-2); }
+.filter-action-row__actions { display: flex; gap: var(--md-spacing-2); }
 
 /* Sections */
 .section { padding: var(--md-spacing-4); }
