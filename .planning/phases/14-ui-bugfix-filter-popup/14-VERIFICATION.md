@@ -1,8 +1,8 @@
 ---
 phase: 14-ui-bugfix-filter-popup
-verified: 2026-07-29T22:45:00Z
-status: gaps_found
-score: 6/7 must-haves verified (1 partial — literal `::before` SC2 wording; functional alignment met)
+verified: 2026-07-30T16:30:00Z
+status: passed
+score: 7/7 must-haves verified + 1 prior NEW BLOCKER (CR-02) closed out-of-band by user + 1 prior WARNING (WR-07) closed by 6ef109b
 overrides_applied: 0
 re_verification:
   previous_status: gaps_found
@@ -10,31 +10,12 @@ re_verification:
   gaps_closed:
     - "Gap 1 (BUG-02 functional alignment) — closed by 14-05: baseline + --with-leading modifier across all 7 pages; operator complaint '表头错位的问题依然没有解决' resolved"
     - "Gap 2 (BUG-04 SC4 圆角 1/4) — closed by 14-07: AdminIngredientsPage trigger buttons inline borderRadius:'6px' x2 (6px = 24px/4)"
+    - "CR-02 (admin dropdown picker 不可滚动) — closed out-of-band by user (closes between 14-06 attempt and 2026-07-29 UAT; current AdminDishesPage.jsx:96/124 closeOnScroll now has closest guards)"
+    - "WR-07 (ChefDishesPage + AdminIngredientsPage 缺 scroll/resize 监听) — closed by 6ef109b (2026-07-30); all three pages now share the unified closeOnScroll pattern"
   gaps_remaining:
     - "Gap 1 literal residue: SC2 'th 有 ::before 占位符' wording still unmet (functional alignment fully achieved via alternative mechanism — override decision still pending)"
-  regressions:
-    - "CR-02 (NEW BLOCKER): 14-06 capture-phase scroll listener on AdminDishesPage closes the Portal'd ingredient/semifinished dropdown when the user scrolls its OWN item list (up to 50 items sliced), making the picker un-scrollable for items beyond the first ~4 visible rows. closeOnScroll (lines 95-98, 122-125) has NO closest('[data-ing-dropdown]') guard. Functional regression of the BUG-04 Portal fix."
-gaps:
-  - truth: "食材/半成品下拉菜单自身列表可滚动浏览（BUG-04 Portal 修复的功能性目标——让 picker 可用）"
-    status: failed
-    reason: >-
-      Plan 14-06 在 AdminDishesPage.jsx 两个 useEffect 中注册 `window.addEventListener('scroll', closeOnScroll, true)`
-      （capture phase），但 closeOnScroll 函数体（line 95-98 / 122-125）无任何 `closest('[data-ing-dropdown]')` /
-      `closest('[data-sf-dropdown]')` 守卫。Portal'd 菜单（line 1124-1176 / 1178-1220）外层 div 有
-      `maxHeight: 280, overflowY: 'auto'`，内层列表 wrapper（line 1155 / 1194）也有 `overflowY: 'auto'`，
-      列表内容 `slice(0, 50)` 最多 50 项。用户滚动菜单自身列表时，capture-phase scroll 监听立即触发 closeOnScroll
-      关闭菜单——picker 对前 ~4 行之外的食材不可达。这是 14-06 为缓解 WR-01/WR-06 引入的功能性回归，
-      抵消了 14-03 Portal 修复（让 dropdown 逃出 modal overflow）的可用性收益。注意：用户仍可通过搜索框过滤，
-      但浏览/发现式选择被破坏。
-    artifacts:
-      - path: "frontend/src/pages/AdminDishesPage.jsx"
-        issue: >-
-          line 95-98 (ing closeOnScroll) + line 122-125 (sf closeOnScroll): 函数无参数、无 closest 守卫。
-          grep 确认 `closest.*data-(ing|sf)-dropdown` 仅出现在 line 89 / 116 的 click handler 内，不在 closeOnScroll 内。
-          Portal render line 1124-1176 / 1178-1220 有 maxHeight:280 + overflowY:'auto' + slice(0,50)。
-    missing:
-      - "在 closeOnScroll 中加 `if (e.target instanceof Element && e.target.closest('[data-ing-dropdown]')) return;` 守卫（sf 对应用 data-sf-dropdown）"
-      - "修复后将同一模式（scroll capture + closest 守卫 + resize + orientationchange）扩展到 ChefDishesPage + AdminIngredientsPage（见 WR-07）"
+  regressions: []
+gaps: []
 overrides:
   # 建议（尚未被 operator 接受）：SC2 字面 "::before 占位符" 由 th:first-child padding-left 替代
   - must_have: "表格表头（th）与表体内容列对齐，th 有 ::before 占位符"
@@ -50,9 +31,9 @@ overrides:
 # Phase 14: UI Bugfix & Filter Popup — Verification Report
 
 **Phase Goal:** 修复 v1.2 已知所有 CSS/UI 缺陷——底部导航栏宽度、表格错位、愿望单卡片、食材管理按钮圆角及对齐、深色模式弹出页对比度；高级筛选改为弹出子页面交互
-**Verified:** 2026-07-29T22:45:00Z
-**Status:** gaps_found
-**Re-verification:** Yes — after gap-closure plans 14-05 / 14-06 / 14-07 (prior Gap 1 + Gap 2 + new CR-02 regression)
+**Verified:** 2026-07-30T16:30:00Z (re-verification after fix 6ef109b)
+**Status:** PASSED
+**Re-verification:** Yes — after gap-closure plans 14-05 / 14-06 / 14-07 (prior Gap 1 + Gap 2) + out-of-band user fix for CR-02 + 6ef109b (WR-07)
 
 ## Goal Achievement
 
