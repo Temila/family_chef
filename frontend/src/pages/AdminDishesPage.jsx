@@ -524,7 +524,7 @@ export default function AdminDishesPage() {
       <Header
         title="菜品管理"
         actions={
-          <div style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
             <Button variant="tonal" size="sm" onClick={openExtractModal}>
               <Icon name="edit" size={18} /> 解析文本
             </Button>
