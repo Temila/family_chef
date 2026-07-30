@@ -62,8 +62,20 @@ export default function AdminIngredientsPage() {
         }
       }
     };
+    const closeOnScroll = (e) => {
+      if (e.target?.closest?.('[data-dropdown-id]')) return;
+      setOpenDropdown(null);
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnScroll);
+    window.addEventListener('orientationchange', closeOnScroll);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnScroll);
+      window.removeEventListener('orientationchange', closeOnScroll);
+    };
   }, [openDropdown]);
 
   const loadIngredients = async () => {

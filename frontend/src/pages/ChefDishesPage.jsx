@@ -89,8 +89,21 @@ export default function ChefDishesPage() {
         setShowIngDropdown(false);
       }
     };
+    const closeOnScroll = (e) => {
+      if (e.target?.closest?.('[data-ing-dropdown]')) return;
+      setShowIngDropdown(false);
+      setIngDropdownCoords(null);
+    };
     document.addEventListener('click', handler, true);
-    return () => document.removeEventListener('click', handler, true);
+    window.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnScroll);
+    window.addEventListener('orientationchange', closeOnScroll);
+    return () => {
+      document.removeEventListener('click', handler, true);
+      window.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnScroll);
+      window.removeEventListener('orientationchange', closeOnScroll);
+    };
   }, [showIngDropdown]);
 
   useEffect(() => {
@@ -101,8 +114,21 @@ export default function ChefDishesPage() {
         setShowSfDropdown(false);
       }
     };
+    const closeOnScroll = (e) => {
+      if (e.target?.closest?.('[data-sf-dropdown]')) return;
+      setShowSfDropdown(false);
+      setSfDropdownCoords(null);
+    };
     document.addEventListener('click', handler, true);
-    return () => document.removeEventListener('click', handler, true);
+    window.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnScroll);
+    window.addEventListener('orientationchange', closeOnScroll);
+    return () => {
+      document.removeEventListener('click', handler, true);
+      window.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnScroll);
+      window.removeEventListener('orientationchange', closeOnScroll);
+    };
   }, [showSfDropdown]);
 
   const loadDishes = async () => {
