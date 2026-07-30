@@ -24,12 +24,30 @@ export default function UserHomePage() {
     },
   ];
 
-  if (user?.role === 'chef' || user?.role === 'admin') {
+  if (user?.role === 'admin') {
+    // D-NAV04-04: admin 看到 5 项（含订单管理）；chef 不在 UserHomePage 看订单管理（走 BottomBar）
     menuEntries.push({
       icon: 'chef',
       title: '订单管理',
       desc: '查看和处理订单',
       onClick: () => navigate('/chef/orders'),
+    });
+  }
+
+  if (user?.role === 'chef' || user?.role === 'admin') {
+    // D-NAV04-01/02: 菜品管理 — chef → /chef/dishes, admin → /admin/dishes
+    menuEntries.push({
+      icon: 'set-meal',
+      title: '菜品管理',
+      desc: '管理菜品信息与食谱',
+      onClick: () => navigate(user.role === 'admin' ? '/admin/dishes' : '/chef/dishes'),
+    });
+    // D-NAV04-01: 食材管理 — 两端都路由到 /ingredients
+    menuEntries.push({
+      icon: 'eco',
+      title: '食材管理',
+      desc: '管理食材与库存',
+      onClick: () => navigate('/ingredients'),
     });
   }
 
