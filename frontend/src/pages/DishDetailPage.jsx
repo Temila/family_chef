@@ -129,12 +129,14 @@ export default function DishDetailPage() {
         title={dish.name}
         showBack
         actions={
-          <IconButton
-            icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
-            ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
-            onClick={handleFavorite}
-            selected={dish.is_favorite}
-          />
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+            <IconButton
+              icon={dish.is_favorite ? 'favorite' : 'favorite-border'}
+              ariaLabel={dish.is_favorite ? '取消收藏' : '收藏'}
+              onClick={handleFavorite}
+              selected={dish.is_favorite}
+            />
+          </div>
         }
       />
 

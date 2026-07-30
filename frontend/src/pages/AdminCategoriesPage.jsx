@@ -112,7 +112,11 @@ export default function AdminCategoriesPage() {
     <div className="page-container">
       <Header
         title="分类管理"
-        actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
+        actions={
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+            <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
+          </div>
+        }
       />
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-3)'}}>

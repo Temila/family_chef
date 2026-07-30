@@ -58,7 +58,9 @@ export default function OrderDetailPage() {
   return (
     <div className="page-container">
       <Header title={`订单 #${order.id}`} actions={
-          <Button variant="tonal" size="sm" onClick={() => navigate('/chef/orders')}>← 返回</Button>
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+            <Button variant="tonal" size="sm" onClick={() => navigate('/chef/orders')}>← 返回</Button>
+          </div>
         } />
 
       <section className="section">

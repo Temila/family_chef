@@ -132,7 +132,11 @@ export default function AdminUsersPage() {
     <div className="page-container">
       <Header
         title="用户管理"
-        actions={<Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>}
+        actions={
+          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
+            <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
+          </div>
+        }
       />
 
       <div className="search-bar">
