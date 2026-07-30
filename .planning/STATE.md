@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-30T04:12:18.770Z"
+last_updated: "2026-07-30T04:16:35.234Z"
 last_activity: 2026-07-30
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 50
 ---
 
@@ -36,14 +36,14 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-07-30
 
 ## Session Continuity
 
-Last session: 2026-07-30T04:12:09.689Z
-Stopped at: Completed 15-03-PLAN.md
+Last session: 2026-07-30T04:16:24.915Z
+Stopped at: Completed 15-04-PLAN.md
 Next: 15-03 (Wave 2 caller-wrap) or remaining Phase 15 plans
 
 ## Deferred Items
@@ -112,6 +112,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 15 P01 | 6min | 2 tasks | 2 files |
 | Phase 15 P02 | 4min | 2 tasks | 5 files |
 | Phase 15 P03 | 1min | 3 tasks | 3 files |
+| Phase 15 P04 | 2min | 3 tasks | 6 files |
 
 ## Decisions
 
@@ -186,6 +187,8 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 15]: Phase 15-02: Sidebar footer = single .md-sidebar__version text node; removed useState/theme/logout from Sidebar (D-NAV03-01/04/05); logout path now exclusively via Header avatar menu
 - [Phase 15]: Phase 15-02: Version source = Vite build-time define injection (vite.config.js binds import.meta.env.VITE_APP_VERSION to process.env.npm_package_version) over hardcoded literal — auto-updates with package.json version, proven in production bundle
 - [Phase ?]: Phase 15-03: Header actions wrapper on 3 multi-button management pages (AdminDishes/AdminIngredients/ChefDishes) adds className=header-action-bar while preserving inline style (display:flex/gap) — belt-and-suspenders defense against CSS ordering regressions; all parse/add button handlers untouched
+- [Phase 15]: Phase 15-04: Chef 订单管理 removed from UserHomePage (relocated to BottomBar 订单 tab); chef UserHomePage locked at 4 menuEntries per D-NAV04-04 — Rationale: CONTEXT D-NAV04-04 locks chef UserHomePage at 4 entries (开始点菜/口味偏好/菜品管理/食材管理); chef accesses orders via BottomBar instead
+- [Phase 15]: Phase 15-04: BottomBar logout fully removed (destructure + tab action + onClick branch) — logout centralized in Header avatar dropdown per D-NAV05-01 — Rationale: D-NAV05-01 mandates logout removal from bottom nav; single logout path via Header avatar menu (D-NAV02-01)
 
 ## Operator Next Steps
 

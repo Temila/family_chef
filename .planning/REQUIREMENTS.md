@@ -20,8 +20,8 @@
 - [x] **NAV-01**: md-header 重组——仅保留用户头像（含下拉菜单）和主题切换按钮，其他功能按钮移到 header 下方 div 中（不能是 BottomBar）
 - [x] **NAV-02**: 用户头像下拉菜单仅保留"编辑资料"和"退出登录"两个功能
 - [x] **NAV-03**: md-sidebar 取消主题切换和退出登录按钮
-- [ ] **NAV-04**: 厨师移动端首页添加菜品管理和食谱管理入口
-- [ ] **NAV-05**: md-bottom-bar 图标确保"首页"在最左边
+- [x] **NAV-04**: 厨师移动端首页添加菜品管理和食谱管理入口
+- [x] **NAV-05**: md-bottom-bar 图标确保"首页"在最左边
 
 ### UI Components
 
@@ -65,8 +65,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | NAV-01 | Phase 15 | Complete |
 | NAV-02 | Phase 15 | Complete |
 | NAV-03 | Phase 15 | Complete |
-| NAV-04 | Phase 15 | Pending |
-| NAV-05 | Phase 15 | Pending |
+| NAV-04 | Phase 15 | Complete |
+| NAV-05 | Phase 15 | Complete |
 | UI-01 | Phase 15 | Pending |
 | UI-02 | Phase 14 | Complete |
 | UI-03 | Phase 14 | Complete |

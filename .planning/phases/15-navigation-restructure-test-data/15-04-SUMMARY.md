@@ -124,3 +124,19 @@ None - no external service configuration required. No new dependencies introduce
 ---
 *Phase: 15-navigation-restructure-test-data*
 *Completed: 2026-07-30*
+
+## Self-Check: PASSED
+
+- FOUND: .planning/phases/15-navigation-restructure-test-data/15-04-SUMMARY.md
+- FOUND: 2756b14 (Task 1 feat commit)
+- FOUND: e281c2f (Task 2 feat commit)
+- FOUND: f590a98 (Task 3 feat commit)
+- FOUND: frontend/src/pages/AdminUsersPage.jsx (className="header-action-bar" present)
+- FOUND: frontend/src/pages/AdminCategoriesPage.jsx (className="header-action-bar" present)
+- FOUND: frontend/src/pages/OrderDetailPage.jsx (className="header-action-bar" present)
+- FOUND: frontend/src/pages/DishDetailPage.jsx (className="header-action-bar" present)
+- FOUND: frontend/src/components/composites/BottomBar.jsx (chef-orders Badge preserved, no logout action, 后台/首页 tabs present)
+- FOUND: frontend/src/pages/UserHomePage.jsx (菜品管理 + 食材管理 entries present; admin-only 订单管理 condition)
+- Plan-level verification: all `<verification>` assertions PASS — 4 Header callers wrapped, BottomBar NAV-05 arrays + logout removal, UserHomePage chef extension, AdminHomePage audit entries intact
+- Build sanity: `npm run build` succeeds (4012 modules, zero errors)
+- No accidental file deletions in any task commit
