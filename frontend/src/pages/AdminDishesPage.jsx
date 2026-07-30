@@ -524,13 +524,16 @@ export default function AdminDishesPage() {
       <Header
         title="菜品管理"
         actions={
-          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
-            <Button variant="tonal" size="sm" onClick={openExtractModal}>
-              <Icon name="edit" size={18} /> 解析文本
-            </Button>
-            <Button variant="filled" size="sm" onClick={() => openCreate()}>
-              + 添加
-            </Button>
+          <div className="header-action-bar header-action-bar--split">
+            <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-2)' }}>
+              <Button variant="tonal" size="sm" onClick={openExtractModal}>
+                <Icon name="edit" size={18} /> 解析文本
+              </Button>
+              <Button variant="filled" size="sm" onClick={() => openCreate()}>
+                + 添加
+              </Button>
+            </div>
           </div>
         }
       />
@@ -548,16 +551,6 @@ export default function AdminDishesPage() {
           <Button variant="filled" size="sm" className="btn-search" onClick={loadDishes}>搜索</Button>
           <Button variant="tonal" size="sm" className="btn-search" onClick={() => { setSearchQuery(''); setAdvCategoryIds([]); }}>清空</Button>
         </div>
-      </div>
-
-      <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
-        <Button
-          variant="tonal"
-          size="sm"
-          onClick={() => setShowAdvFilter(true)}
-        >
-          高级筛选
-        </Button>
       </div>
 
       {showAdvFilter && (
