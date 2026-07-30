@@ -245,9 +245,12 @@ export default function AdminIngredientsPage() {
       <Header
         title="食材管理"
         actions={
-          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
-            <Button variant="outlined" size="sm" onClick={openParseModal}><Icon name="inventory-2" size={18} /> 从菜谱解析</Button>
-            <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
+          <div className="header-action-bar header-action-bar--split">
+            <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-2)' }}>
+              <Button variant="tonal" size="sm" onClick={openParseModal}><Icon name="edit" size={18} /> 解析文本</Button>
+              <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
+            </div>
           </div>
         }
       />
@@ -265,16 +268,6 @@ export default function AdminIngredientsPage() {
           <Button variant="filled" size="sm" className="btn-search" onClick={loadIngredients}>搜索</Button>
           <Button variant="tonal" size="sm" className="btn-search" onClick={() => { handleClear(); }}>清空</Button>
         </div>
-      </div>
-
-      <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
-        <Button
-          variant="tonal"
-          size="sm"
-          onClick={() => setShowAdvFilter(true)}
-        >
-          高级筛选
-        </Button>
       </div>
 
       {showAdvFilter && (
@@ -500,7 +493,7 @@ export default function AdminIngredientsPage() {
         <Modal
           open
           onClose={() => setShowParseModal(false)}
-          title={parseStep === 'input' ? '从菜谱解析食材' : '解析结果 — 选择操作'}
+          title={parseStep === 'input' ? '从文本解析食材' : '解析结果 — 选择操作'}
           style={{ maxWidth: parseStep === 'review' ? 700 : 480 }}
           actions={[
             <Button key="back" variant="tonal" onClick={() => {
