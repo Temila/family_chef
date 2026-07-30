@@ -115,8 +115,15 @@ Plans:
   8. 因内容差异导致卡片高度不一致时，按钮仍保持在同一水平线上对齐
   9. 所有高级筛选控件改为弹出子页面交互（类似"添加"按钮的弹窗行为）
 
-**Plans**: TBD
+**Plans**: 6 plans (Wave 0 test migration + Wave 1 header/sidebar shell + Wave 2 multi-button callers + Wave 3 single-button callers/bottom-bar/user-home + Wave 4 order-page sheet + Wave 5 seed + tests)
 **UI hint**: yes
+Plans:
+- [ ] 15-01-PLAN.md — Wave 0 test migration: replace phase12-bugfix.spec.js and md3-compliance.spec.js Sidebar footer button assertions with NAV-03 contract (version text + zero buttons)
+- [ ] 15-02-PLAN.md — Wave 1 header/sidebar shell: Header action-bar wrapper + theme IconButton + 2-item avatar menu with Divider; Sidebar footer version text + cleanup imports/state
+- [ ] 15-03-PLAN.md — Wave 2 multi-button Header caller wraps: AdminDishesPage, AdminIngredientsPage, ChefDishesPage actions wrapped in .header-action-bar
+- [ ] 15-04-PLAN.md — Wave 3 single-button callers + BottomBar + UserHomePage: 4 single-button Header wraps; BottomBar 7/7/4 tab arrays with logout removed; UserHomePage chef 菜品管理 + 食材管理 entries
+- [ ] 15-05-PLAN.md — Wave 4 OrderPage filter Sheet migration: tonal 高级筛选 Button replaces 展开筛选 Chip; Sheet wraps existing filter chip block with 清空/应用 footer
+- [ ] 15-06-PLAN.md — Wave 5 backend seed (8 dev dishes covering 2³ combinations) + main.py wiring + frontend Playwright tests + backend pytest cases
 
 ## Progress
 
