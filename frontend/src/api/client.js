@@ -218,10 +218,11 @@ class ApiClient {
   }
 
   // ─── Ingredients ─────────────────────────────────────
-  async getIngredients(category = null, search = null) {
+  async getIngredients(category = null, search = null, hasDishes = null) {
     const qs = new URLSearchParams();
     if (category) qs.set('category', category);
     if (search) qs.set('search', search);
+    if (hasDishes !== null) qs.set('has_dishes', hasDishes);
     return this.get(`/ingredients?${qs}`);
   }
 
