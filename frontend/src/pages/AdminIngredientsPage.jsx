@@ -265,17 +265,19 @@ export default function AdminIngredientsPage() {
       </div>
 
       <div className="filter-action-row">
-        <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
-        <Button
-          variant={assocFilter === true ? 'filled' : 'outlined'}
-          size="sm"
-          onClick={() => toggleAssoc(true)}
-        >已关联</Button>
-        <Button
-          variant={assocFilter === false ? 'filled' : 'outlined'}
-          size="sm"
-          onClick={() => toggleAssoc(false)}
-        >未关联</Button>
+        <div className="filter-action-row__filters">
+          <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
+          <Button
+            variant={assocFilter === true ? 'filled' : 'outlined'}
+            size="sm"
+            onClick={() => toggleAssoc(true)}
+          >已关联</Button>
+          <Button
+            variant={assocFilter === false ? 'filled' : 'outlined'}
+            size="sm"
+            onClick={() => toggleAssoc(false)}
+          >未关联</Button>
+        </div>
         <div className="filter-action-row__actions">
           <Button variant="tonal" size="sm" onClick={openParseModal}><Icon name="edit" size={18} /> 解析文本</Button>
           <Button variant="filled" size="sm" onClick={openCreate}>+ 添加</Button>
