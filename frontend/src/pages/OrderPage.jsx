@@ -288,6 +288,13 @@ export default function OrderPage() {
     ? cuisines.filter(c => c.parent_id === selectedRegion)
     : cuisines;
 
+  const handleClearFilters = () => {
+    setSelectedRegion(null);
+    setSelectedCuisine(null);
+    setSelectedFilters({});
+    // favoritesOnly and sortBy NOT reset (per UI-SPEC.md — 它们是 top-level 控件，不是 advanced filter)
+  };
+
   const renderChefAvatars = (published, size = 24) => (
     <div style={{ display: 'flex', }}>
       {published.slice(0, 3).map(c => (
@@ -364,7 +371,17 @@ export default function OrderPage() {
       </div>
 
       {showFilters && (
-        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <Sheet
+          open
+          onClose={() => setShowFilters(false)}
+          title="高级筛选"
+          footer={
+            <div style={{ display: 'flex', gap: 'var(--md-spacing-2)', width: '100%' }}>
+              <Button variant="tonal" className="flex-1" onClick={handleClearFilters}>清空</Button>
+              <Button variant="filled" className="flex-1" onClick={() => setShowFilters(false)}>应用</Button>
+            </div>
+          }
+        >
           <div className="filter-section">
             <div className="filter-section-label">{getTypeMeta('region').label}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 0 var(--md-spacing-1)'}}>
@@ -439,7 +456,7 @@ export default function OrderPage() {
               </div>
             );
           })}
-        </div>
+        </Sheet>
       )}
 
       {loading ? (
