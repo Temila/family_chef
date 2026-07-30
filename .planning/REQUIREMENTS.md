@@ -12,7 +12,7 @@
 - [x] **BUG-03**: 移动端愿望单卡片单列全宽统一高度
 - [x] **BUG-04**: 食材管理下拉菜单按钮圆角半径缩小到当前 1/4
 - [x] **BUG-05**: 移动端食材管理的编辑和删除按钮固定到卡片最下方，各行卡片按钮在同一水平线上
-- [ ] **BUG-06**: 创建覆盖有/无食谱、有/无介绍、有/无图片等情况的测试菜谱，保证移动端卡片同大、按钮齐平
+- [x] **BUG-06**: 创建覆盖有/无食谱、有/无介绍、有/无图片等情况的测试菜谱，保证移动端卡片同大、按钮齐平
 - [x] **BUG-07**: 深色模式下弹出页面与背景对比度不够，给弹出页面周围增加主题色边框
 
 ### Navigation
@@ -31,7 +31,7 @@
 
 ### Data
 
-- [ ] **DATA-01**: 创建测试菜谱 seed 数据，覆盖有/无食谱、有/无介绍、有/无图片的组合场景
+- [x] **DATA-01**: 创建测试菜谱 seed 数据，覆盖有/无食谱、有/无介绍、有/无图片的组合场景
 
 ## v2 Requirements
 
@@ -60,7 +60,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | BUG-03 | Phase 14 | Complete |
 | BUG-04 | Phase 14 | Complete |
 | BUG-05 | Phase 14 | Complete |
-| BUG-06 | Phase 15 | Pending |
+| BUG-06 | Phase 15 | Complete |
 | BUG-07 | Phase 14 | Complete |
 | NAV-01 | Phase 15 | Complete |
 | NAV-02 | Phase 15 | Complete |
@@ -70,7 +70,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | UI-01 | Phase 15 | Complete |
 | UI-02 | Phase 14 | Complete |
 | UI-03 | Phase 14 | Complete |
-| DATA-01 | Phase 15 | Pending |
+| DATA-01 | Phase 15 | Complete |
 
 **Coverage:**
 - v1 requirements: 16 total

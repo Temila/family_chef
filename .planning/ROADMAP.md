@@ -50,7 +50,7 @@
 <summary>🚧 v1.3 Bugfix + UI Refinements (Phases 14-15) — IN PROGRESS</summary>
 
 - [x] **Phase 14: UI Bugfix & Filter Popup** — 修复所有已知 CSS/布局缺陷：底部导航栏、表格、愿望单卡片、深色模式对比度等；高级筛选改为弹出子页面 — 4 plans in 2 waves (completed 2026-07-29) + 3 gap-closure plans in 2 waves (14-05/06/07 — VERIFICATION Gap 1/2 + REVIEW CR-01/WR-05/WR-01/06) — COMPLETE 2026-07-29
-- [ ] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景
+- [x] **Phase 15: Navigation Restructure & Test Data** — 重组导航组件：精简 md-header/md-sidebar，统一 avatar 下拉菜单，厨师首页入口；创建测试 seed 数据覆盖组合场景 (completed 2026-07-30)
 
 </details>
 
@@ -123,7 +123,7 @@ Plans:
 - [x] 15-03-PLAN.md — Wave 2 multi-button Header caller wraps: AdminDishesPage, AdminIngredientsPage, ChefDishesPage actions wrapped in .header-action-bar
 - [x] 15-04-PLAN.md — Wave 3 single-button callers + BottomBar + UserHomePage: 4 single-button Header wraps; BottomBar 7/7/4 tab arrays with logout removed; UserHomePage chef 菜品管理 + 食材管理 entries
 - [x] 15-05-PLAN.md — Wave 4 OrderPage filter Sheet migration: tonal 高级筛选 Button replaces 展开筛选 Chip; Sheet wraps existing filter chip block with 清空/应用 footer
-- [ ] 15-06-PLAN.md — Wave 5 backend seed (8 dev dishes covering 2³ combinations) + main.py wiring + frontend Playwright tests + backend pytest cases
+- [x] 15-06-PLAN.md — Wave 5 backend seed (8 dev dishes covering 2³ combinations) + main.py wiring + frontend Playwright tests + backend pytest cases
 
 ## Progress
 
@@ -143,4 +143,4 @@ Plans:
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
 | 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | ✓ Complete | 2026-07-29 |
-| 15. Navigation Restructure & Test Data | v1.3 | 5/6 | In Progress|  |
+| 15. Navigation Restructure & Test Data | v1.3 | 6/6 | Complete   | 2026-07-30 |
