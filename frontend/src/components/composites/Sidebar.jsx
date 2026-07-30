@@ -40,23 +40,23 @@ export default function Sidebar() {
   if (role === 'admin') {
     navItems = [
       { icon: 'dashboard', label: '管理后台', path: '/admin' },
-      { icon: 'restaurant', label: '菜品管理', path: '/admin/dishes' },
+      { icon: 'set-meal', label: '菜品管理', path: '/admin/dishes' },
       { icon: 'eco', label: '食材管理', path: '/ingredients' },
       { icon: 'folder', label: '分类管理', path: '/admin/categories' },
       { icon: 'chef', label: '厨师管理', path: '/admin/chefs' },
       { icon: 'group', label: '用户管理', path: '/admin/users' },
       { icon: 'bar-chart', label: '数据统计', path: '/admin/stats' },
       { icon: 'description', label: '系统日志', path: '/admin/logs' },
-      { icon: 'restaurant', label: '点菜预览', path: '/order' },
+      { icon: 'ramen-dining', label: '点菜预览', path: '/order' },
       { icon: 'lightbulb', label: '愿望总览', path: '/admin/wishes' },
     ];
   } else if (role === 'chef') {
     navItems = [
       { icon: 'home', label: '首页', path: '/home' },
       { icon: 'chef', label: '订单管理', path: '/chef/orders' },
-      { icon: 'restaurant', label: '菜品管理', path: '/chef/dishes' },
+      { icon: 'set-meal', label: '菜品管理', path: '/chef/dishes' },
       { icon: 'eco', label: '食材管理', path: '/ingredients' },
-      { icon: 'restaurant', label: '点菜', path: '/order' },
+      { icon: 'ramen-dining', label: '点菜', path: '/order' },
       { icon: 'spa', label: '口味偏好', path: '/preferences' },
       { icon: 'lightbulb', label: '愿望管理', path: '/chef/wishes' },
       { icon: 'person', label: '我的', path: '/profile' },
@@ -64,7 +64,7 @@ export default function Sidebar() {
   } else {
     navItems = [
       { icon: 'home', label: '首页', path: '/home' },
-      { icon: 'restaurant', label: '点菜', path: '/order' },
+      { icon: 'ramen-dining', label: '点菜', path: '/order' },
       { icon: 'spa', label: '口味偏好', path: '/preferences' },
       { icon: 'lightbulb', label: '我的愿望', path: '/my-wishes' },
       { icon: 'person', label: '我的', path: '/profile' },

@@ -10,6 +10,7 @@
     "check:md3": "bash scripts/check-m3-tokens.sh",
     "gen:tokens": "node ../scripts/generate-tokens.cjs",
     "audit:touch": "node scripts/audit-touch-targets.mjs",
+    "audit:md3": "node scripts/audit-md3-compliance.mjs",
     "lint": "eslint .",
     "lint:css": "stylelint \"src/**/*.css\"",
     "check:all": "npm run lint:css && npm run check:md3 && npm run build",

@@ -314,7 +314,7 @@ input, textarea, select { font-family: var(--md-font-body); }
   padding: var(--md-spacing-1) var(--md-spacing-2); border: 1px solid var(--md-color-outline-variant); border-radius: var(--md-radius-sm);
   background: var(--md-color-surface-container-high); color: var(--md-color-on-surface); font-size: 0.8rem;
 }
-.pc-action-btns { display: flex; gap: var(--md-spacing-1); align-items: center; justify-content: center; flex-wrap: wrap; }
+.pc-action-btns { display: flex; gap: var(--md-spacing-1); align-items: center; justify-content: center; flex-wrap: nowrap; }
 .pc-user-cell { display: flex; align-items: center; gap: var(--md-spacing-2); }
 .pc-user-name { font-weight: 600; font-size: 0.9rem; }
 .pc-user-sub { font-size: 0.75rem; color: var(--md-color-on-surface-variant); }
@@ -342,7 +342,7 @@ input, textarea, select { font-family: var(--md-font-body); }
   width: 100%; border-collapse: collapse; font-size: 0.85rem;
 }
 .pc-data-table th {
-  text-align: left; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
+  text-align: center; padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 2px solid var(--md-color-outline-variant);
   font-weight: 600; color: var(--md-color-on-surface-variant); font-size: 0.8rem; white-space: nowrap;
 }
 /* BUG-02 (Phase 14-05): 首列基线 padding-left — 对齐到首列 cell 文本，无头像偏移 */
@@ -361,9 +361,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 .pc-data-table td {
   padding: var(--md-spacing-2) var(--md-spacing-3); border-bottom: 1px solid var(--md-color-outline-variant); vertical-align: middle; text-align: left;
 }
-.pc-data-table tr { position: relative; overflow: hidden; z-index: 0; }
-.pc-data-table tbody tr::before { content: ''; position: absolute; inset: 0; background-color: var(--md-state-layer-primary); opacity: 0; pointer-events: none; z-index: -1; transition: opacity var(--md-motion-duration-short) var(--md-motion-easing-standard); }
-.pc-data-table tbody tr:hover::before { opacity: var(--md-state-layer-hover); }
+.pc-data-table tbody tr:hover { background-color: color-mix(in srgb, var(--md-state-layer-primary) calc(var(--md-state-layer-hover) * 100%), transparent); }
 
 /* ═══ Mobile override: hide sidebar (now .md-sidebar), show bottom bar ═══════════════════ */
 /* 11-02-MIGRATION: .pc-sidebar 已迁移至 composites/Sidebar.css，display:none 由该 CSS @media (max-width: 1023px) 接管
@@ -550,6 +548,14 @@ button, a, input, select, textarea,
 .compact-interactive-target .quick-action {
   min-width: 12px;
   min-height: 12px;
+}
+
+/* PC 端 checkbox 不受 48dp 全局触控目标约束，按文字尺寸缩放 */
+@media (min-width: 1024px) {
+  input[type="checkbox"] {
+    min-width: 0;
+    min-height: 0;
+  }
 }
 
 /* 11-02-MIGRATION: .tab-item / .pc-sidebar-item / .header-back 已从 48dp 全局列表移除

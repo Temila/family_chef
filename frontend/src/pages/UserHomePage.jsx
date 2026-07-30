@@ -17,7 +17,7 @@ export default function UserHomePage() {
       onClick: () => navigate('/order'),
     },
     {
-      icon: 'restaurant',
+      icon: 'spa',
       title: '口味偏好',
       desc: '管理你的饮食偏好',
       onClick: () => navigate('/preferences'),

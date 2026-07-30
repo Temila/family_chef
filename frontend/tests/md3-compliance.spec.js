@@ -10,6 +10,8 @@ import { resolve } from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
+/* global process */
+
 const FIXTURE = '/tests/fixtures/phase12-bugfix.html';
 const FRONTEND_ROOT = process.cwd();
 

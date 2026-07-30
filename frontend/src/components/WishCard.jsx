@@ -129,7 +129,7 @@ export default function WishCard({
     if (HTTP_URL_RE.test(url)) {
       return (
         <a href={url} target="_blank" rel="noopener noreferrer"
-           style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', maxWidth: '100%' }}>
+           style={{ wordBreak: 'break-all', display: 'block', maxWidth: '100%' }}>
           {url}
         </a>
       );
@@ -147,9 +147,6 @@ export default function WishCard({
   // BUG-03/D-06: flex 列布局让 grid stretch 后 footer 能 margin-top:auto 钉到底部
   const cardStyle = {
     width: '100%',
-    maxWidth: '600px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
     minHeight: '120px',
     marginBottom: 'var(--md-spacing-4)',
     ...(highlight ? {
@@ -219,7 +216,7 @@ export default function WishCard({
     >
       {/* 顶行：菜名（大号）+ 未读红点 + 状态徽章 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--md-spacing-2)', position: 'relative' }}>
-        <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+        <div style={{ fontFamily: 'var(--md-font-display)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--md-color-on-surface)', lineHeight: 1.3, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
           {wish.dish_name}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--md-spacing-2)', flexShrink: 0 }}>
@@ -251,7 +248,7 @@ export default function WishCard({
         {hasSecondary ? (
           <>
             {renderReferenceUrl()}
-            {wish.note && <div style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', wordBreak: 'break-word' }}>{wish.note}</div>}
+            {wish.note && <div style={{ wordBreak: 'break-word' }}>{wish.note}</div>}
             {wish.related_dish_id && relatedDishName && (
               <Link to={'/dishes/' + wish.related_dish_id}>关联菜品：{relatedDishName}</Link>
             )}

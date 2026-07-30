@@ -33,7 +33,8 @@ export default function BottomBar() {
   if (role === 'admin') {
     tabs = [
       { id: 'admin-home', icon: 'dashboard', label: '后台', path: '/admin' },
-      { id: 'admin-dishes', icon: 'restaurant', label: '菜品', path: '/admin/dishes' },
+      { id: 'admin-dishes', icon: 'set-meal', label: '菜品', path: '/admin/dishes' },
+      { id: 'order-preview', icon: 'ramen-dining', label: '点菜预览', path: '/order' },
       { id: 'admin-ingredients', icon: 'eco', label: '食材', path: '/ingredients' },
       { id: 'admin-wishes', icon: 'lightbulb', label: '愿望', path: '/admin/wishes' },
       { id: 'admin-users', icon: 'group', label: '用户', path: '/admin/users' },
@@ -42,7 +43,7 @@ export default function BottomBar() {
   } else if (role === 'chef') {
     tabs = [
       { id: 'chef-orders', icon: 'chef', label: '订单', path: '/chef/orders' },
-      { id: 'order-dish', icon: 'restaurant', label: '点菜', path: '/order' },
+      { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
       { id: 'chef-wishes', icon: 'lightbulb', label: '愿望', path: '/chef/wishes' },
       { id: 'user-home', icon: 'home', label: '首页', path: '/home' },
       { id: 'user-profile', icon: 'person', label: '我的', path: '/profile' },
@@ -50,7 +51,7 @@ export default function BottomBar() {
   } else {
     tabs = [
       { id: 'user-home', icon: 'home', label: '首页', path: '/home' },
-      { id: 'order-dish', icon: 'restaurant', label: '点菜', path: '/order' },
+      { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
       { id: 'user-wishes', icon: 'lightbulb', label: '愿望', path: '/my-wishes' },
       { id: 'user-profile', icon: 'person', label: '我的', path: '/profile' },
     ];

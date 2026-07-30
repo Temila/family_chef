@@ -139,7 +139,7 @@ export default function Ripple({ children, disabled = false, className = '', sty
     <span
       ref={containerRef}
       className={`md-ripple-layer ${className}`}
-      style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', ...style }}
+      style={{ position: 'relative', overflow: 'hidden', display: 'flex', ...style }}
       onPointerDown={handlePointerDown}
     >
       {children}

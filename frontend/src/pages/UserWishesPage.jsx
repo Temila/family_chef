@@ -305,17 +305,18 @@ export default function UserWishesPage() {
       ) : (
         <section className="section pt-0">
           {wishes.map((w) => (
-            <WishCard
-              key={w.id}
-              wish={w}
-              currentUser={user}
-              currentRole="user"
-              relatedDishName={relatedDishNames[String(w.related_dish_id)]}
-              highlighted={highlightedId === String(w.id)}
-              onEdit={(wish) => setEditingWish(wish)}
-              onCancel={(wish) => setCancelTarget(wish)}
-              onTap={handleCardTap}
-            />
+            <div key={w.id} style={{ width: '100%' }}>
+              <WishCard
+                wish={w}
+                currentUser={user}
+                currentRole="user"
+                relatedDishName={relatedDishNames[String(w.related_dish_id)]}
+                highlighted={highlightedId === String(w.id)}
+                onEdit={(wish) => setEditingWish(wish)}
+                onCancel={(wish) => setCancelTarget(wish)}
+                onTap={handleCardTap}
+              />
+            </div>
           ))}
 
           {wishes.length < total ? (

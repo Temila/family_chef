@@ -92,16 +92,17 @@ export default function AdminDishesPage() {
     };
     // WR-01/WR-06: dropdown 打开期间任何 scroll/resize/orientationchange 触发立即关闭
     // capture: true 确保捕获 Modal body 内部 overflow-y:auto 的滚动事件
-    const closeOnScroll = () => {
+    const closeOnScroll = (e) => {
+      if (e.target?.closest?.('[data-ing-dropdown]')) return;
       setShowIngDropdown(false);
       setIngDropdownCoords(null);
     };
-    document.addEventListener('click', handler);
+    document.addEventListener('click', handler, true);
     window.addEventListener('scroll', closeOnScroll, true);
     window.addEventListener('resize', closeOnScroll);
     window.addEventListener('orientationchange', closeOnScroll);
     return () => {
-      document.removeEventListener('click', handler);
+      document.removeEventListener('click', handler, true);
       window.removeEventListener('scroll', closeOnScroll, true);
       window.removeEventListener('resize', closeOnScroll);
       window.removeEventListener('orientationchange', closeOnScroll);
@@ -119,16 +120,17 @@ export default function AdminDishesPage() {
     };
     // WR-01/WR-06: dropdown 打开期间任何 scroll/resize/orientationchange 触发立即关闭
     // capture: true 确保捕获 Modal body 内部 overflow-y:auto 的滚动事件
-    const closeOnScroll = () => {
+    const closeOnScroll = (e) => {
+      if (e.target?.closest?.('[data-sf-dropdown]')) return;
       setShowSfDropdown(false);
       setSfDropdownCoords(null);
     };
-    document.addEventListener('click', handler);
+    document.addEventListener('click', handler, true);
     window.addEventListener('scroll', closeOnScroll, true);
     window.addEventListener('resize', closeOnScroll);
     window.addEventListener('orientationchange', closeOnScroll);
     return () => {
-      document.removeEventListener('click', handler);
+      document.removeEventListener('click', handler, true);
       window.removeEventListener('scroll', closeOnScroll, true);
       window.removeEventListener('resize', closeOnScroll);
       window.removeEventListener('orientationchange', closeOnScroll);
@@ -229,6 +231,14 @@ export default function AdminDishesPage() {
     }
   };
 
+  const closeDishModal = () => {
+    setShowDishModal(false);
+    setShowIngDropdown(false);
+    setIngDropdownCoords(null);
+    setShowSfDropdown(false);
+    setSfDropdownCoords(null);
+  };
+
   const openCreate = (prefill = {}) => {
     setEditingDish(null);
     setForm({
@@ -291,6 +301,10 @@ export default function AdminDishesPage() {
         showToast('创建成功');
       }
       setShowDishModal(false);
+      setShowIngDropdown(false);
+      setIngDropdownCoords(null);
+      setShowSfDropdown(false);
+      setSfDropdownCoords(null);
       loadDishes();
     } catch (err) {
       showToast(err.message || '操作失败', 'error');
@@ -603,9 +617,9 @@ export default function AdminDishesPage() {
             <table className="pc-data-table pc-data-table--with-leading">
               <thead>
                   <tr>
-                    <th>菜品</th>
-                    <th>分类</th>
-                    <th>厨师</th>
+                    <th style={{ width: '30%' }}>菜品</th>
+                    <th style={{ width: '22%' }}>分类</th>
+                    <th style={{ width: '10%' }}>厨师</th>
                     <th>状态</th>
                     <th>操作</th>
                   </tr>
@@ -755,11 +769,11 @@ export default function AdminDishesPage() {
       {showDishModal && (
         <Modal
           open
-          onClose={() => setShowDishModal(false)}
+          onClose={closeDishModal}
           title={editingDish ? '编辑菜品' : '添加菜品'}
           style={{ maxWidth: 600 }}
           actions={[
-            <Button key="cancel" variant="tonal" onClick={() => setShowDishModal(false)}>取消</Button>,
+            <Button key="cancel" variant="tonal" onClick={closeDishModal}>取消</Button>,
             <Button key="save" variant="filled" onClick={handleSave}>保存</Button>,
           ]}
         >
@@ -885,7 +899,7 @@ export default function AdminDishesPage() {
                     type="checkbox"
                     checked={form.is_semifinished}
                     onChange={(e) => setForm({ ...form, is_semifinished: e.target.checked })}
-                    style={{ width: 18, height: 18 }}
+                    style={{ width: '0.85rem', height: '0.85rem' }}
                   />
                   <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--md-color-on-surface-variant)' }}>标记为半成品</span>
                 </label>
@@ -917,7 +931,7 @@ export default function AdminDishesPage() {
                     type="checkbox"
                     checked={smartMode}
                     onChange={(e) => setSmartMode(e.target.checked)}
-                    style={{ width: 16, height: 16 }}
+                    style={{ width: '0.85rem', height: '0.85rem' }}
                   />
                   智能解析
                 </label>
@@ -1139,6 +1153,7 @@ export default function AdminDishesPage() {
             <div style={{ display: 'flex', gap: 'var(--md-spacing-1)', flexWrap: 'wrap', marginBottom: 'var(--md-spacing-1)'}}>
               <Chip variant="filter" selected={!ingCategoryFilter}
                 onClick={() => setIngCategoryFilter('')}
+                style={{ minBlockSize: 24, fontSize: '0.7rem', padding: '0 6px', lineHeight: '14px' }}
               >
                 全部
               </Chip>
@@ -1146,6 +1161,7 @@ export default function AdminDishesPage() {
                 <Chip variant="filter" selected={ingCategoryFilter === c.name}
                   key={c.id}
                   onClick={() => setIngCategoryFilter(c.name)}
+                  style={{ minBlockSize: 24, fontSize: '0.7rem', padding: '0 6px', lineHeight: '14px' }}
                 >
                   {c.name}
                 </Chip>

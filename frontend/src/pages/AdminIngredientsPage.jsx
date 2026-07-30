@@ -341,15 +341,13 @@ export default function AdminIngredientsPage() {
                             setOpenDropdown(prev => prev === item.id ? null : item.id);
                           }}
                           style={{
-                            marginLeft: 'var(--md-spacing-1)', verticalAlign: 'middle',
+                            marginLeft: '6px', verticalAlign: 'middle',
                             background: 'transparent',
                             color: 'var(--md-color-primary)',
-                            border: 'none',
-                            padding: 'var(--md-spacing-1)',
-                            borderRadius: '6px',
-                            display: 'inline-flex',
-                            alignItems: 'center', justifyContent: 'center',
-                            fontSize: '0.65rem', lineHeight: 1, cursor: 'pointer',
+                            border: '1px solid var(--md-color-outline)',
+                            borderRadius: 'var(--md-radius-sm)',
+                            padding: '1px 6px',
+                            fontSize: '0.7rem', cursor: 'pointer',
                           }}
                           aria-label="查看关联菜品"
                           title="查看关联菜品"
@@ -429,14 +427,13 @@ export default function AdminIngredientsPage() {
                                 setOpenDropdown(prev => prev === item.id ? null : item.id);
                               }}
                               style={{
+                                marginLeft: '6px', verticalAlign: 'middle',
                                 background: 'transparent',
                                 color: 'var(--md-color-primary)',
-                                border: 'none',
-                                padding: 'var(--md-spacing-1)',
-                                borderRadius: '6px',
-                                display: 'inline-flex',
-                                alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.65rem', lineHeight: 1, cursor: 'pointer',
+                                border: '1px solid var(--md-color-outline)',
+                                borderRadius: 'var(--md-radius-sm)',
+                                padding: '1px 6px',
+                                fontSize: '0.7rem', cursor: 'pointer',
                               }}
                               aria-label="查看关联菜品"
                               title="查看关联菜品"

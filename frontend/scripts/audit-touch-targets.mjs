@@ -31,21 +31,33 @@ const OUTPUT_PATH = resolve(FRONTEND_ROOT, 'touch-audit-results.json');
 // Dev server base URL — Vite 默认 5173
 const BASE_URL = process.env.AUDIT_BASE_URL || 'http://localhost:5173';
 
+function decodeJwtPayload(token) {
+  if (!token) return null;
+  try {
+    const encoded = token.split('.')[1];
+    const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+    return JSON.parse(Buffer.from(padded, 'base64').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
 // 待审计页面清单（来自 UI-SPEC.md §5 + 09-02 PLAN.md task1 action）
-// 注意: /chef/orders, /my-wishes 等路径需鉴权；未注入 token 时会被路由重定向到 /login
+// roles 使单个 JWT 只审计其实际可访问路由，避免把角色重定向误记为目标页 PASS。
 const PAGES = [
-  { url: '/login', name: 'Login', auth: false },
-  { url: '/home', name: 'User Home', auth: true },
-  { url: '/chef/orders', name: 'Chef Orders', auth: true },
-  { url: '/admin/dishes', name: 'Admin Dishes', auth: true },
-  { url: '/my-wishes', name: 'User Wishes', auth: true },
-  { url: '/chef/wishes', name: 'Chef Wishes', auth: true },
-  { url: '/admin/wishes', name: 'Admin Wishes', auth: true },
-  { url: '/admin/chefs', name: 'Admin Chefs', auth: true },
-  { url: '/order', name: 'Order Page', auth: true },
-  { url: '/profile', name: 'Profile', auth: true },
-  { url: '/preferences', name: 'Preferences', auth: true },
-  { url: '/admin/stats', name: 'Stats', auth: true },
+  { url: '/login', name: 'Login', auth: false, roles: [] },
+  { url: '/home', name: 'User Home', auth: true, roles: ['user', 'chef'] },
+  { url: '/chef/orders', name: 'Chef Orders', auth: true, roles: ['chef', 'admin'] },
+  { url: '/admin/dishes', name: 'Admin Dishes', auth: true, roles: ['admin'] },
+  { url: '/my-wishes', name: 'User Wishes', auth: true, roles: ['user'] },
+  { url: '/chef/wishes', name: 'Chef Wishes', auth: true, roles: ['chef', 'admin'] },
+  { url: '/admin/wishes', name: 'Admin Wishes', auth: true, roles: ['admin'] },
+  { url: '/admin/chefs', name: 'Admin Chefs', auth: true, roles: ['admin'] },
+  { url: '/order', name: 'Order Page', auth: true, roles: ['user'] },
+  { url: '/profile', name: 'Profile', auth: true, roles: ['user', 'chef', 'admin'] },
+  { url: '/preferences', name: 'Preferences', auth: true, roles: ['user', 'chef', 'admin'] },
+  { url: '/admin/stats', name: 'Stats', auth: true, roles: ['admin'] },
 ];
 
 /**
@@ -57,6 +69,11 @@ const PAGES = [
 async function auditPage(page, url, name) {
   try {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 15000 });
+    const expectedPath = new URL(url).pathname;
+    const currentPath = new URL(page.url()).pathname;
+    if (currentPath !== expectedPath) {
+      throw new Error(`route redirected to ${currentPath}`);
+    }
 
     // 在浏览器上下文中查询所有可交互元素并测量尺寸
     const violations = await page.evaluate((min) => {
@@ -100,12 +117,12 @@ async function auditPage(page, url, name) {
         .filter((el) => el.violations.length > 0);
     }, MIN_TOUCH);
 
-    RESULTS.push({ page: name, url, violations });
+    RESULTS.push({ page: name, url, status: violations.length === 0 ? 'PASS' : 'FAIL', violations });
     console.log(`${name}: ${violations.length} violations`);
   } catch (error) {
-    // 页面加载失败（404、超时、重定向）— 记录 SKIPPED 不中断后续页面
-    RESULTS.push({ page: name, url, error: error.message, violations: [] });
-    console.log(`${name}: SKIPPED (${error.message})`);
+    // 页面加载失败（404、超时、重定向）— 记录 FAIL，不用空违规伪装 PASS
+    RESULTS.push({ page: name, url, status: 'FAIL', error: error.message, violations: [] });
+    console.log(`${name}: FAIL (${error.message})`);
   }
 }
 
@@ -117,9 +134,21 @@ async function auditPage(page, url, name) {
   // 1. 解析 JWT token（CLI --token= 优先，env FC_TEST_TOKEN 兜底）
   const tokenArg = process.argv.find((a) => a.startsWith('--token='));
   const token = tokenArg ? tokenArg.split('=')[1] : process.env.FC_TEST_TOKEN;
+  const payload = decodeJwtPayload(token);
+  const role = payload?.role;
+  const storedUser = payload ? {
+    id: Number(payload.sub),
+    username: payload.username || 'audit-user',
+    display_name: payload.username || '审计用户',
+    role,
+    is_active: true,
+    force_pwd_change: false,
+  } : null;
 
   if (!token) {
-    console.warn('⚠️  No FC_TEST_TOKEN provided — will only audit unauthenticated pages (login)');
+    console.warn('No FC_TEST_TOKEN provided — authenticated routes will be SKIPPED');
+  } else if (!role) {
+    console.warn('FC_TEST_TOKEN payload has no supported role — authenticated routes will be SKIPPED');
   }
 
   // 2. 启动 Chromium
@@ -129,29 +158,30 @@ async function auditPage(page, url, name) {
   });
   const page = await context.newPage();
 
-  // 3. 注入 JWT（如有）— 在 SPA 入口页 localStorage 中写入 fc_token
-  if (token) {
+  // 3. 注入 JWT（如有）— 使用生产 AuthManager 的 fc_access_token/fc_user 键名
+  if (token && storedUser) {
     await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 15000 });
-    await page.evaluate((t) => {
-      localStorage.setItem('fc_token', t);
-      // 同时写入 token + user（AuthContext 依赖 user 字段做路由判断）
-      try {
-        const payload = JSON.parse(atob(t.split('.')[1]));
-        localStorage.setItem('fc_user', JSON.stringify(payload));
-      } catch (e) {
-        // 部分实现只读 fc_token；payload 解析失败不阻断审计
-      }
-    }, token);
+    await page.evaluate(({ accessToken, user }) => {
+      localStorage.setItem('fc_access_token', accessToken);
+      localStorage.setItem('fc_user', JSON.stringify(user));
+    }, { accessToken: token, user: storedUser });
   }
 
   // 4. 逐页审计
   const auditDate = new Date().toISOString();
   let totalPages = 0;
   let totalViolations = 0;
-  for (const { url, name, auth } of PAGES) {
-    if (auth && !token) {
-      console.log(`${name}: SKIPPED (auth required, no token provided)`);
-      RESULTS.push({ page: name, url, error: 'auth required, no token provided', violations: [] });
+  let roleSkippedPages = 0;
+  for (const { url, name, auth, roles } of PAGES) {
+    if (auth && (!token || !role)) {
+      console.log(`${name}: SKIPPED (auth required, usable token not provided)`);
+      RESULTS.push({ page: name, url, status: 'SKIPPED', error: 'auth required, usable token not provided', violations: [] });
+      continue;
+    }
+    if (auth && !roles.includes(role)) {
+      console.log(`${name}: SKIPPED (not applicable to ${role} role)`);
+      RESULTS.push({ page: name, url, status: 'SKIPPED', skipReason: `not applicable to ${role} role`, violations: [] });
+      roleSkippedPages += 1;
       continue;
     }
     const fullUrl = `${BASE_URL}${url}`;
@@ -166,12 +196,20 @@ async function auditPage(page, url, name) {
   for (const entry of RESULTS) {
     totalViolations += entry.violations ? entry.violations.length : 0;
   }
-  const status = totalViolations === 0 ? 'PASS' : 'PARTIAL';
+  const hasRuntimeFailure = RESULTS.some((entry) => entry.status === 'FAIL' && entry.error);
+  const status = totalViolations > 0 || hasRuntimeFailure
+    ? 'FAIL'
+    : !token || !role
+      ? 'INCOMPLETE'
+      : 'PASS';
 
-  // 7. 输出 JSON 报告（包含元数据）
+  // 7. 输出 JSON 报告（不含 token）
   const report = {
     auditDate,
     pagesAudited: totalPages,
+    pagesSkipped: RESULTS.filter((entry) => entry.status === 'SKIPPED').length,
+    roleSkippedPages,
+    auditedRole: role || null,
     totalViolations,
     status,
     minTouchTarget: MIN_TOUCH,
@@ -185,6 +223,8 @@ async function auditPage(page, url, name) {
   console.log(`Report: ${OUTPUT_PATH}`);
   console.log('========================================');
 
-  // TODO: Guest page audit (e.g., /guest/menu/{token}) requires a real one-time
-  // guest invitation token from the backend API — run manually with --url flag.
+  if (status === 'FAIL') process.exitCode = 1;
+  if (status === 'INCOMPLETE') process.exitCode = 2;
+
+  // Guest page touch coverage lives in audit-md3-compliance.mjs and requires FC_GUEST_TOKEN.
 })();

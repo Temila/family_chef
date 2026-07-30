@@ -343,18 +343,19 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       ) : (
         <section className="section pt-0">
           {wishes.map((w) => (
-            <WishCard
-              key={w.id}
-              wish={w}
-              currentUser={user}
-              currentRole={currentRole}
-              viewAsAdmin={viewAsAdmin}
-              relatedDishName={relatedDishNames[String(w.related_dish_id)]}
-              highlighted={highlightedId === String(w.id)}
-              onClaim={handleClaim}
-              onAdvance={openAdvance}
-              onReject={openReject}
-            />
+            <div key={w.id} style={{ width: '100%' }}>
+              <WishCard
+                wish={w}
+                currentUser={user}
+                currentRole={currentRole}
+                viewAsAdmin={viewAsAdmin}
+                relatedDishName={relatedDishNames[String(w.related_dish_id)]}
+                highlighted={highlightedId === String(w.id)}
+                onClaim={handleClaim}
+                onAdvance={openAdvance}
+                onReject={openReject}
+              />
+            </div>
           ))}
 
           {wishes.length < total ? (
