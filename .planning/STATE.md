@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
 Plan: 6 of 6
 Status: Phase complete — ready for verification
-Last activity: 2026-07-30
+Last activity: 2026-07-30 - Completed quick task 260730-jqm: 直接在数据库中添加 8 道测试菜品
 
 ## Session Continuity
 
-Last session: 2026-07-30T04:27:32.640Z
-Stopped at: Completed 15-04-PLAN.md
-Next: 15-03 (Wave 2 caller-wrap) or remaining Phase 15 plans
+Last session: 2026-07-30T06:15:00.000Z
+Stopped at: Phase 15 complete + quick task 260730-jqm (test dishes seeded into DB)
+Next: /gsd-verify-work 15 (verify Phase 15) or /gsd-complete-milestone (close v1.3)
 
 ## Deferred Items
 
@@ -73,6 +73,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260727-i2g | sync dev/main, split wishlist→v1.1 + UI-rebuild→v1.2, release | 2026-07-27 | [260727-i2g-sync-dev-with-main-split-wishlist-commit](./quick/260727-i2g-sync-dev-with-main-split-wishlist-commit/) |
 | 260727-ig2 | 撤销 v1.2 发布，重建 feature/ui-rebuild 分支 | 2026-07-27 | [260727-ig2-v1-2-feature-ui-rebuild](./quick/260727-ig2-v1-2-feature-ui-rebuild/) |
 | 260729-wl7 | 把 phase 14 标记为已完成（用户已用其他办法修复了 bug）| 2026-07-29 | [260729-wl7-phase-14-bug](./quick/260729-wl7-phase-14-bug/) |
+| 260730-jqm | 直接在数据库中添加 8 道测试菜品（DATA-01 seed 一次性注入，绕过 env guard）| 2026-07-30 | [260730-jqm-seed-test-dishes-db](./quick/260730-jqm-seed-test-dishes-db/) |
 
 ## Performance Metrics
 
