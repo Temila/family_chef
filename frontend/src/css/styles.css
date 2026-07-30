@@ -106,6 +106,9 @@ input, textarea, select { font-family: var(--md-font-body); }
 .search-bar input:focus { outline: var(--md-focus-ring-outer); outline-offset: 2px; box-shadow: 0 0 0 4px var(--md-focus-ring-inner); }
 .search-bar .search-icon { position: absolute; left: 32px; top: 50%; transform: translateY(-50%); color: var(--md-color-on-surface-variant); font-size: 1rem; pointer-events: none; }
 
+.filter-action-row { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--md-spacing-4) var(--md-spacing-2); }
+.filter-action-row__actions { display: flex; gap: var(--md-spacing-2); }
+
 /* Sections */
 .section { padding: var(--md-spacing-4); }
 .section-title { font-family: var(--md-font-display); font-size: 1rem; font-weight: 600; color: var(--md-color-on-surface); margin-bottom: var(--md-spacing-3); display: flex; align-items: center; gap: var(--md-spacing-2); }
