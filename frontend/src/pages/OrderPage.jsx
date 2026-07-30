@@ -16,6 +16,7 @@ import IconButton from '../components/primitives/IconButton';
 import Icon from '../components/primitives/Icon';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Sheet from '../components/composites/Sheet';
 
 export default function OrderPage() {
   const navigate = useNavigate();
@@ -333,13 +334,14 @@ export default function OrderPage() {
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
-        <Chip variant="filter"
-          
-          onClick={() => setShowFilters(!showFilters)}
-          style={{ fontSize: '0.75rem' }}
+        <Button
+          variant="tonal"
+          size="sm"
+          onClick={() => setShowFilters(true)}
+          startIcon={<Icon name="filter" size={18} />}
         >
-          {showFilters ? '收起筛选 ▲' : '展开筛选 ▼'}
-        </Chip>
+          高级筛选
+        </Button>
         <Chip variant="filter" selected={favoritesOnly}
           
           onClick={() => setFavoritesOnly(!favoritesOnly)}
