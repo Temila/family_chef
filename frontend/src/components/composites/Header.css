@@ -145,3 +145,23 @@
   outline: var(--md-focus-ring-outer);
   outline-offset: -2px;
 }
+
+/* ── D-NAV01-03: Header 下方 action-bar（Page 传入的 actions 渲染在主行下方） ── */
+.header-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--md-spacing-2);
+  height: 56px;
+  padding: 0 var(--md-spacing-4);
+  background: var(--md-color-surface);
+  border-top: 1px solid var(--md-color-outline-variant);
+}
+
+/* D-NAV02-01: 退出登录 menuitem 用 error 颜色（与现有 destructive 样式一致） */
+.md-header__menu-item--danger {
+  color: var(--md-color-error);
+}
+.md-header__menu-item--danger:hover {
+  background: color-mix(in srgb, var(--md-color-error-container), var(--md-color-on-surface) var(--md-state-layer-hover));
+}

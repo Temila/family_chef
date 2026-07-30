@@ -21,6 +21,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { theme } from '../../utils';
 import Icon from '../primitives/Icon';
 import IconButton from '../primitives/IconButton';
+import Divider from './Divider';
 import './Header.css';
 
 // 路径 → 页面标题（useLocation 推断）
@@ -52,6 +53,11 @@ export default function Header({ title, showBack = false, actions }) {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  // 主题状态：切换后立即重渲染以更新 IconButton 图标（D-NAV03-03 主题切换已迁至 Header 主行）
+  const [currentTheme, setCurrentTheme] = useState(() => theme.getTheme());
+  const handleToggleTheme = () => {
+    setCurrentTheme(theme.toggleTheme());
+  };
 
   // Click-outside 关闭菜单
   useEffect(() => {
@@ -68,83 +74,97 @@ export default function Header({ title, showBack = false, actions }) {
   const resolvedTitle = title || PAGE_TITLES[location.pathname] || '家味';
 
   return (
-    <header className="md-header">
-      {/* 左：返回按钮 或 logo + 品牌 */}
-      <div className="md-header__left">
-        {showBack ? (
-          <IconButton icon="arrow-back" ariaLabel="返回" onClick={() => navigate(-1)} />
-        ) : (
-          <div className="md-header__logo">
-            <Icon name="restaurant" size={20} />
-            <span className="md-header__brand">家味</span>
-            <span className="md-header__subtitle">Family Chef</span>
-          </div>
-        )}
-      </div>
+    <>
+      <header className="md-header">
+        {/* 左：返回按钮 或 logo + 品牌 */}
+        <div className="md-header__left">
+          {showBack ? (
+            <IconButton icon="arrow-back" ariaLabel="返回" onClick={() => navigate(-1)} />
+          ) : (
+            <div className="md-header__logo">
+              <Icon name="restaurant" size={20} />
+              <span className="md-header__brand">家味</span>
+              <span className="md-header__subtitle">Family Chef</span>
+            </div>
+          )}
+        </div>
 
-      {/* 中：页面标题 */}
-      <h1 className="md-header__title">{resolvedTitle}</h1>
+        {/* 中：页面标题 */}
+        <h1 className="md-header__title">{resolvedTitle}</h1>
 
-      {/* 右：自定义 actions + 用户菜单 */}
-      <div className="md-header__right" ref={menuRef}>
-        {actions}
-        {user && (
-          <>
-            <button
-              type="button"
-              className="md-header__avatar"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="用户菜单"
-              aria-expanded={menuOpen}
-            >
-              {(user.display_name || user.username || '?').charAt(0).toUpperCase()}
-            </button>
-            {menuOpen && (
-              <div className="md-header__menu" role="menu">
-                <div className="md-header__menu-info">
-                  <div className="md-header__menu-name">
-                    {user.display_name || user.username}
+        {/* 右：主题切换 IconButton + 用户菜单（actions 已下沉至下方独立 action 区，D-NAV01-01/02） */}
+        <div className="md-header__right" ref={menuRef}>
+          <IconButton
+            icon={currentTheme === 'dark' ? 'light-mode' : 'dark-mode'}
+            ariaLabel={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
+            onClick={handleToggleTheme}
+            className="md-header__theme-toggle"
+          />
+          {user && (
+            <>
+              <button
+                type="button"
+                className="md-header__avatar"
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="用户菜单"
+                aria-expanded={menuOpen}
+              >
+                {(user.display_name || user.username || '?').charAt(0).toUpperCase()}
+              </button>
+              {menuOpen && (
+                <div className="md-header__menu" role="menu">
+                  <div className="md-header__menu-info">
+                    <div className="md-header__menu-name">
+                      {user.display_name || user.username}
+                    </div>
+                    <div className="md-header__menu-role">
+                      {user.role === 'admin'
+                        ? '管理员'
+                        : user.role === 'chef'
+                        ? '厨师'
+                        : '用户'}
+                    </div>
                   </div>
-                  <div className="md-header__menu-role">
-                    {user.role === 'admin'
-                      ? '管理员'
-                      : user.role === 'chef'
-                      ? '厨师'
-                      : '用户'}
-                  </div>
+                  {/* D-NAV02-02: 编辑资料 */}
+                  <button
+                    type="button"
+                    className="md-header__menu-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate('/profile');
+                    }}
+                  >
+                    <Icon name="edit" size={18} />
+                    <span>编辑资料</span>
+                  </button>
+                  {/* D-NAV02-03: 中性动作与危险动作语义分隔 */}
+                  <Divider />
+                  {/* D-NAV02-01: 退出登录（label 由 退出 扩展为 退出登录） */}
+                  <button
+                    type="button"
+                    className="md-header__menu-item md-header__menu-item--danger"
+                    role="menuitem"
+                    onClick={() => {
+                      logout();
+                      navigate('/login');
+                    }}
+                  >
+                    <Icon name="logout" size={18} />
+                    <span>退出登录</span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="md-header__menu-item"
-                  role="menuitem"
-                  onClick={() => {
-                    theme.toggleTheme();
-                    setMenuOpen(false);
-                  }}
-                >
-                  <Icon
-                    name={theme.getTheme() === 'dark' ? 'light-mode' : 'dark-mode'}
-                    size={18}
-                  />
-                  <span>切换主题</span>
-                </button>
-                <button
-                  type="button"
-                  className="md-header__menu-item"
-                  role="menuitem"
-                  onClick={() => {
-                    logout();
-                    navigate('/login');
-                  }}
-                >
-                  <Icon name="logout" size={18} />
-                  <span>退出</span>
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </header>
+              )}
+            </>
+          )}
+        </div>
+      </header>
+      {/* D-NAV01-01/02: actions 渲染在主行下方；actions 为空时不渲染该 div */}
+      {actions && (
+        <div className="header-action-bar">
+          {actions}
+        </div>
+      )}
+    </>
   );
 }
