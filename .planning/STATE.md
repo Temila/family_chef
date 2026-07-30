@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
 Plan: 6 of 6
 Status: Phase complete — ready for verification
-Last activity: 2026-07-30 - Completed quick task 260730-k5g: 菜品/食材管理 action-bar 排版调整
+Last activity: 2026-07-30 - Completed quick task 260730-ks4: 三按钮移到搜索栏下方（修正 260730-k5g 位置错误）
 
 ## Session Continuity
 
@@ -75,6 +75,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260729-wl7 | 把 phase 14 标记为已完成（用户已用其他办法修复了 bug）| 2026-07-29 | [260729-wl7-phase-14-bug](./quick/260729-wl7-phase-14-bug/) |
 | 260730-jqm | 直接在数据库中添加 8 道测试菜品（DATA-01 seed 一次性注入，绕过 env guard）| 2026-07-30 | [260730-jqm-seed-test-dishes-db](./quick/260730-jqm-seed-test-dishes-db/) |
 | 260730-k5g | 菜品/食材管理 action-bar 排版：解析文本重命名+edit 图标、高级筛选与操作按钮同行左右分布（--split 修饰符）| 2026-07-30 | [260730-k5g-action-bar-layout](./quick/260730-k5g-action-bar-layout/) |
+| 260730-ks4 | 修正 260730-k5g：三按钮移到搜索栏下方（页面级 filter-action-row），删除死代码 --split | 2026-07-30 | [260730-ks4-filter-row-below-search](./quick/260730-ks4-filter-row-below-search/) |
 
 ## Performance Metrics
 
