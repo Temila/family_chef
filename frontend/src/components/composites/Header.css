@@ -158,6 +158,11 @@
   border-top: 1px solid var(--md-color-outline-variant);
 }
 
+/* 修饰符：高级筛选(左) + 操作按钮(右) 左右分布，仅用于多按钮分栏页面（AdminDishes/AdminIngredients） */
+.header-action-bar--split {
+  justify-content: space-between;
+}
+
 /* D-NAV02-01: 退出登录 menuitem 用 error 颜色（与现有 destructive 样式一致） */
 .md-header__menu-item--danger {
   color: var(--md-color-error);
