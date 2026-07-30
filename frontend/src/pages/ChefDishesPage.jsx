@@ -656,7 +656,8 @@ export default function ChefDishesPage() {
                     <td>
                       <div className="pc-action-btns">
                         {!dish.is_semifinished && (
-                          <Button variant="tonal" size="sm" onClick={() => handleTogglePublish(dish)}>
+                          <Button variant="outlined" size="sm" onClick={() => handleTogglePublish(dish)}
+                            style={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' } : undefined; })()}>
                             {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
                           </Button>
                         )}
@@ -678,7 +679,8 @@ export default function ChefDishesPage() {
                 footer={
                   <div className="flex gap-3" style={{ width: '100%' }}>
                     {!dish.is_semifinished && (
-                      <Button variant="tonal" size="sm" className="flex-1" onClick={() => handleTogglePublish(dish)}>
+                      <Button variant="outlined" size="sm" className="flex-1" onClick={() => handleTogglePublish(dish)}
+                        style={(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' } : undefined; })()}>
                         {(() => { const my = dish.chefs?.find(c => c.id === user?.id); return my?.publish_status === 'published' ? '下架' : '上架'; })()}
                       </Button>
                     )}

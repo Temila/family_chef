@@ -665,7 +665,8 @@ export default function AdminDishesPage() {
                     <td><Badge status={dish.status} /></td>
                     <td>
                       <div className="pc-action-btns">
-                        <Button variant="tonal" size="sm" onClick={() => handleToggleEnabled(dish)}>
+                        <Button variant="outlined" size="sm" onClick={() => handleToggleEnabled(dish)}
+                          style={dish.status === 'enabled' ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' } : undefined}>
                           {dish.status === 'enabled' ? '禁用' : '启用'}
                         </Button>
                         <Button variant="outlined" size="sm" onClick={() => openEdit(dish)}>编辑</Button>
@@ -688,7 +689,8 @@ export default function AdminDishesPage() {
                 style={{ marginBottom: 'var(--md-spacing-3)' }}
                 footer={
                   <div className="flex gap-3" style={{ width: '100%' }}>
-                    <Button variant="tonal" size="sm" className="flex-1" onClick={() => handleToggleEnabled(dish)}>
+                    <Button variant="outlined" size="sm" className="flex-1" onClick={() => handleToggleEnabled(dish)}
+                      style={dish.status === 'enabled' ? { borderColor: 'var(--md-color-error)', color: 'var(--md-color-error)' } : undefined}>
                       {dish.status === 'enabled' ? '禁用' : '启用'}
                     </Button>
                     <Button variant="outlined" size="sm" className="flex-1" onClick={() => openEdit(dish)}>编辑</Button>
