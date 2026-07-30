@@ -23,6 +23,7 @@ router = APIRouter()
 async def list_ingredients(
     category: Optional[str] = Query(None, description="食材分类"),
     search: Optional[str] = Query(None, description="搜索关键词"),
+    has_dishes: Optional[bool] = Query(None, description="已关联菜品：True=仅已关联，False=仅未关联"),
     db: AsyncSession = Depends(get_db),
 ):
     """食材列表"""
@@ -30,6 +31,7 @@ async def list_ingredients(
         db,
         category=category,
         search=search,
+        has_dishes=has_dishes,
     )
 
     ing_ids = [ing.id for ing in ingredients]
