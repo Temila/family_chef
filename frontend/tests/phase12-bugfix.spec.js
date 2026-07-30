@@ -3,7 +3,8 @@
  *
  * 用真实鼠标点击 / 键盘 Tab+Enter 验证 Button / IconButton / FAB 的 onClick 命中
  * （D-BUG-01 Ripple self-mode 修复），并验证 PcLayout 只渲染一个 <header>、
- * Sidebar footer 主题/退出可用且 footer 操作项为 48dp 居中于 56px 行（D-BUG-02）。
+ * Sidebar footer 仅显示版本号无按钮、Header 主行主题切换可用、导航项保持 80dp
+ * （D-BUG-02 / Phase 15 NAV-03 迁移：footer 按钮移除，主题切换迁至 Header）。
  *
  * 不使用 HTMLElement.click() —— 回归点是浏览器命中测试（hit-testing）。
  */
@@ -85,11 +86,20 @@ test('已认证布局仅渲染一个 header 元素', async ({ page }) => {
   expect(headerCount).toBe(1);
 });
 
-// ── D-BUG-02：Sidebar footer 主题切换 ──
+// ── NAV-03：Sidebar footer 仅显示版本号（footer 按钮已移除） ──
 
-test('Sidebar footer 主题按钮切换 data-theme', async ({ page }) => {
+test('Sidebar footer 仅显示版本号，无按钮', async ({ page }) => {
   await page.locator('.md-sidebar__footer').waitFor();
-  const themeButton = page.locator('.md-sidebar__footer button').first();
+  // footer 现为版本号文本节点（D-NAV03-01），不再包含任何交互按钮
+  await expect(page.locator('.md-sidebar__version')).toBeVisible();
+  await expect(page.locator('.md-sidebar__footer button')).toHaveCount(0);
+});
+
+// ── NAV-03 / D-NAV03-03：主题切换迁至 Header 主行（替代原 Sidebar footer 测试） ──
+
+test('Header 主题按钮切换 data-theme（替代原 Sidebar footer 测试）', async ({ page }) => {
+  await page.locator('.md-header').waitFor();
+  const themeButton = page.locator('.md-header__theme-toggle');
 
   const before = await page.evaluate(() => document.documentElement.dataset.theme);
   await themeButton.click();
@@ -97,55 +107,22 @@ test('Sidebar footer 主题按钮切换 data-theme', async ({ page }) => {
   expect(after).not.toBe(before);
 });
 
-// ── D-BUG-02：Sidebar footer 退出仍可调用（真实 AuthProvider 清空 user） ──
+// ── NAV-03：footer 已无按钮；仅保留 导航项 80dp 不变量 ──
+// （原 D-BUG-02 footer 48dp 校验已在 Phase 15 NAV-03 失效：footer 按钮已移除）
 
-test('Sidebar footer 退出按钮清空认证态并卸载 Sidebar', async ({ page }) => {
-  await page.locator('.md-sidebar__footer').waitFor();
-  await expect(page.locator('.md-sidebar')).toHaveCount(1);
+test('导航项保持 80dp（footer 按钮已在 NAV-03 移除）', async ({ page }) => {
+  await page.locator('.md-sidebar__nav').waitFor();
 
-  // footer 第二个按钮为退出（主题在前、退出在后）
-  await page.locator('.md-sidebar__footer button').nth(1).click();
-  // 真实 logout() 清空 user → Sidebar 返回 null 卸载
-  await expect(page.locator('.md-sidebar')).toHaveCount(0);
-});
-
-// ── D-BUG-02：footer 操作项 48dp 居中于 56px 行，不重叠；导航项保持 80dp ──
-
-test('footer 操作项为 48dp 非 80dp，导航项保持 80dp，互不重叠', async ({ page }) => {
-  await page.locator('.md-sidebar__footer').waitFor();
-
-  const layout = await page.evaluate(() => {
-    const footerItems = Array.from(document.querySelectorAll('.md-sidebar__footer .md-sidebar__item'));
-    const navItems = Array.from(document.querySelectorAll('.md-sidebar__nav .md-sidebar__item'));
-    const measure = (el) => {
-      const cs = getComputedStyle(el);
-      const r = el.getBoundingClientRect();
-      return {
-        height: r.height,
-        minBlockSize: cs.minBlockSize || cs.minHeight,
-        top: r.top,
-        bottom: r.bottom,
-      };
-    };
-    return {
-      footer: footerItems.map(measure),
-      nav: navItems.map(measure),
-    };
+  const navHeights = await page.evaluate(() => {
+    const navItems = Array.from(
+      document.querySelectorAll('.md-sidebar__nav .md-sidebar__item'),
+    );
+    return navItems.map((el) => el.getBoundingClientRect().height);
   });
 
-  // footer 操作项：≥48px 且 < 80px
-  expect(layout.footer.length).toBe(2);
-  for (const item of layout.footer) {
-    expect(item.height).toBeGreaterThanOrEqual(48);
-    expect(item.height).toBeLessThan(80);
-    expect(parseInt(String(item.minBlockSize), 10)).toBeGreaterThanOrEqual(48);
-  }
-  // 两项不重叠：第一项 bottom <= 第二项 top
-  expect(layout.footer[0].bottom).toBeLessThanOrEqual(layout.footer[1].top);
-
   // 导航项保持 80dp
-  expect(layout.nav.length).toBeGreaterThan(0);
-  for (const item of layout.nav) {
-    expect(item.height).toBe(80);
+  expect(navHeights.length).toBeGreaterThan(0);
+  for (const height of navHeights) {
+    expect(height).toBe(80);
   }
 });
