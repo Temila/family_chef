@@ -2,6 +2,9 @@
 家味 · Family Chef - 初始化数据
 """
 
+import os
+import random
+
 from sqlalchemy import select
 from app.database import async_session_factory
 from app.models.user import User
@@ -420,3 +423,95 @@ async def create_preset_ingredients():
 
         await session.commit()
         print(f"✅ 预设食材数据创建成功 ({len(PRESET_INGREDIENTS)} 个食材)")
+
+
+async def create_seed_test_dishes():
+    """
+    注入 8 道测试菜品（食谱×介绍×图片 的 2³ = 8 种组合）。
+
+    仅在开发环境生效（通过 ENVIRONMENT=development 或 AUTO_SEED_DEMO_DISHES=1 触发）。
+    production 默认跳过。幂等：检测已存在的 [1]..[8] 前缀名称后跳过。
+    """
+    # D-DATA01-01: 环境变量守卫 - production 默认不注入
+    if not (
+        os.environ.get("ENVIRONMENT") == "development"
+        or os.environ.get("AUTO_SEED_DEMO_DISHES") == "1"
+    ):
+        return
+
+    # D-DATA01-03: 固定种子 - 保证 dev 环境每次 8 道菜品状态一致（截图可复现）
+    rng = random.Random(42)
+
+    from app.models.dish import Dish, DishCategory
+    from app.models.category import Category
+    from app.models.user import User
+    from sqlalchemy import select
+
+    async with async_session_factory() as session:
+        # 找到默认 admin (D-DATA01-02)
+        admin_res = await session.execute(
+            select(User).where(User.username == "admin")
+        )
+        admin = admin_res.scalar_one_or_none()
+        if not admin:
+            print("⚠️  默认 admin 不存在，跳过 seed 测试菜品")
+            return
+
+        # 找一个 region 分类作为默认分类 (D-DATA01-04)
+        region_res = await session.execute(
+            select(Category).where(Category.type == "region")
+        )
+        regions = region_res.scalars().all()
+        if not regions:
+            print("⚠️  region 分类不存在，跳过 seed 测试菜品")
+            return
+
+        # D-DATA01-02: 8 个组合定义（recipe × description × image 的 2³ 矩阵）
+        combinations = [
+            {"recipe": True,  "description": True,  "image": True},
+            {"recipe": True,  "description": True,  "image": False},
+            {"recipe": True,  "description": False, "image": True},
+            {"recipe": True,  "description": False, "image": False},
+            {"recipe": False, "description": True,  "image": True},
+            {"recipe": False, "description": True,  "image": False},
+            {"recipe": False, "description": False, "image": True},
+            {"recipe": False, "description": False, "image": False},
+        ]
+
+        # 幂等：检测已存在的 seed 行（按 name 前缀匹配）
+        existing_res = await session.execute(
+            select(Dish.name).where(Dish.name.like("测试菜品 %"))
+        )
+        existing_names = {row[0] for row in existing_res.all()}
+        if len(existing_names) >= 8:
+            print(f"✅ 测试菜品已存在 ({len(existing_names)} 道)，跳过 seed")
+            return
+
+        flags = ["有食谱", "无食谱"]
+        descs = ["有介绍", "无介绍"]
+        imgs = ["有图", "无图"]
+
+        for idx, combo in enumerate(combinations, start=1):
+            label = f"测试菜品 {idx} · {flags[0 if combo['recipe'] else 1]}{descs[0 if combo['description'] else 1]}{imgs[0 if combo['image'] else 1]}"
+            if label in existing_names:
+                continue  # 单条已存在则跳过（partial-failure 兼容）
+
+            dish = Dish(
+                name=label,
+                description=f"测试菜品 {idx} 的介绍文字" if combo["description"] else None,
+                recipe=f"# 食谱 {idx}\n食材：...\n步骤：..." if combo["recipe"] else None,
+                image_url="https://via.placeholder.com/400x300?text=Test+Dish+" + str(idx) if combo["image"] else None,
+                status=rng.choice(["published", "draft"]),
+                is_popular=rng.choice([True, False]),
+                is_semifinished=rng.choice([True, False]),
+                created_by=admin.id,
+            )
+            session.add(dish)
+            await session.flush()  # flush to get dish.id
+
+            # 关联随机一个 region 分类
+            cat = rng.choice(regions)
+            session.add(DishCategory(dish_id=dish.id, category_id=cat.id))
+
+        await session.commit()
+        print(f"✅ Seed 测试菜品注入完成（{len(combinations)} 道）")

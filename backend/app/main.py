@@ -234,11 +234,12 @@ async def startup():
     # See .planning/phases/07-wish-list-frontend/07-04-PLAN.md for context.
     await init_db()
 
-    from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients
+    from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients, create_seed_test_dishes
 
     await create_initial_data()
     await create_preset_categories()
     await create_preset_ingredients()
+    await create_seed_test_dishes()
 
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
