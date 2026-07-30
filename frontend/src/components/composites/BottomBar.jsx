@@ -6,7 +6,8 @@
  * safe-area-inset-bottom 适配。
  *
  * 角色路由 tabs 与现有 BottomBar.jsx 完全一致：保留 admin / chef / user 三组。
- * 现有 logout / navigate(path) / usePendingOrderCount Badge 行为零回归。
+ * Phase 15 NAV-05：logout 已从 BottomBar 迁出至 Header 头像菜单；navigate(path) /
+ * usePendingOrderCount Badge 行为零回归。
  *
  * 公开 API：<BottomBar />（无 props）
  */
@@ -22,7 +23,7 @@ import './BottomBar.css';
 export default function BottomBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const pendingCount = usePendingOrderCount();
 
   if (!user) return null;
@@ -31,24 +32,29 @@ export default function BottomBar() {
   let tabs;
 
   if (role === 'admin') {
+    // D-NAV05-03: Admin 7-tab (后台 first, 我的 last, no logout)
     tabs = [
       { id: 'admin-home', icon: 'dashboard', label: '后台', path: '/admin' },
       { id: 'admin-dishes', icon: 'set-meal', label: '菜品', path: '/admin/dishes' },
-      { id: 'order-preview', icon: 'ramen-dining', label: '点菜预览', path: '/order' },
       { id: 'admin-ingredients', icon: 'eco', label: '食材', path: '/ingredients' },
       { id: 'admin-wishes', icon: 'lightbulb', label: '愿望', path: '/admin/wishes' },
       { id: 'admin-users', icon: 'group', label: '用户', path: '/admin/users' },
-      { id: 'logout', icon: 'logout', label: '退出', action: 'logout' },
+      { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
+      { id: 'user-profile', icon: 'person', label: '我的', path: '/profile' },
     ];
   } else if (role === 'chef') {
+    // D-NAV05-02: Chef 7-tab (首页 first, 我的 last, no logout)
     tabs = [
-      { id: 'chef-orders', icon: 'chef', label: '订单', path: '/chef/orders' },
-      { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
-      { id: 'chef-wishes', icon: 'lightbulb', label: '愿望', path: '/chef/wishes' },
       { id: 'user-home', icon: 'home', label: '首页', path: '/home' },
+      { id: 'chef-orders', icon: 'chef', label: '订单', path: '/chef/orders' },
+      { id: 'chef-dishes', icon: 'set-meal', label: '菜品', path: '/chef/dishes' },
+      { id: 'admin-ingredients', icon: 'eco', label: '食材', path: '/ingredients' },
+      { id: 'chef-wishes', icon: 'lightbulb', label: '愿望', path: '/chef/wishes' },
+      { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
       { id: 'user-profile', icon: 'person', label: '我的', path: '/profile' },
     ];
   } else {
+    // D-NAV05-04: User 4-tab (首页 first, 我的 last, no 菜品/食材 — user role lacks access)
     tabs = [
       { id: 'user-home', icon: 'home', label: '首页', path: '/home' },
       { id: 'order-dish', icon: 'ramen-dining', label: '点菜', path: '/order' },
@@ -71,14 +77,7 @@ export default function BottomBar() {
             <button
               type="button"
               className={`md-tab md-interactive ${active ? 'md-tab--active' : ''}`}
-              onClick={() => {
-                if (tab.action === 'logout') {
-                  logout();
-                  navigate('/login');
-                } else {
-                  navigate(tab.path);
-                }
-              }}
+              onClick={() => navigate(tab.path)}
               aria-label={tab.label}
               aria-current={active ? 'page' : undefined}
             >
