@@ -101,12 +101,13 @@ test('至少十个可见代表元素的 padding/margin/gap 均落在 4dp 网格'
   expect(result.failures).toEqual([]);
 });
 
+// NAV-03: Sidebar footer is now a version text node (non-interactive),
+// exempt from 48dp touch target — removed from the interactive-target audit.
 test('代表交互目标维持至少 48dp 命中区', async ({ page }) => {
   await openFixture(page);
 
   const targets = await page.evaluate(() => Array.from(document.querySelectorAll([
     '.md-button', '.md-icon-button', '.md-fab',
-    '.md-sidebar__footer button',
   ].join(','))).filter((element) => {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
@@ -120,11 +121,23 @@ test('代表交互目标维持至少 48dp 命中区', async ({ page }) => {
     };
   }));
 
-  expect(targets.length).toBeGreaterThanOrEqual(5);
+  // NAV-03: footer 按钮已移除，代表交互目标从原 5（含 footer 2 个）下调为 3
+  expect(targets.length).toBeGreaterThanOrEqual(3);
   for (const target of targets) {
     expect(target.width).toBeGreaterThanOrEqual(48);
     expect(target.height).toBeGreaterThanOrEqual(48);
   }
+});
+
+// ── NAV-03：Sidebar footer 为版本号文本节点（非交互），校验版本号格式 ──
+
+test('Sidebar footer 版本号文本符合 vX.Y.Z 格式', async ({ page }) => {
+  await openFixture(page);
+  await page.locator('.md-sidebar__footer').waitFor();
+  // NAV-03: Sidebar footer is now a version text node (non-interactive),
+  // exempt from 48dp touch target
+  const versionText = await page.locator('.md-sidebar__version').textContent();
+  expect(versionText).toMatch(/^v\d+\.\d+\.\d+$/);
 });
 
 test('audit:md3 入口声明四族结果并写入固定 JSON 报告', async () => {
