@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-30T04:02:42.951Z"
+last_updated: "2026-07-30T04:09:10.683Z"
 last_activity: 2026-07-30
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 13
-  completed_plans: 8
+  completed_plans: 9
   percent: 50
 ---
 
@@ -36,15 +36,15 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-07-30
 
 ## Session Continuity
 
-Last session: 2026-07-30T04:02:23.260Z
-Stopped at: Phase 15 plans verified
-Next: Phase 15 (Navigation Restructure & Test Data) — not started
+Last session: 2026-07-30T04:08:12Z
+Stopped at: Completed 15-02-PLAN.md (Header + Sidebar navigation shell foundation)
+Next: 15-03 (Wave 2 caller-wrap) or remaining Phase 15 plans
 
 ## Deferred Items
 
@@ -110,6 +110,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 14 P06 | 1min | 3 tasks | 1 files |
 | Phase 14 P07 | 3min | 3 tasks | 2 files |
 | Phase 15 P01 | 6min | 2 tasks | 2 files |
+| Phase 15 P02 | 4min | 2 tasks | 5 files |
 
 ## Decisions
 
@@ -179,6 +180,10 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 14]: [Phase 14-07] ChefDishesPage 提取 openIngDropdown/openSfDropdown opener 函数（镜像 14-06 AdminDishesPage），onClick 与 onKeyDown 共享 coords 捕获，键盘激活也能渲染 Portal — plan Task 2 字面建议 inline coords 捕获，但参照 AdminDishesPage.jsx:780 opener 模式更干净且 plan 明确要求 mirror 该模式
 - [Phase ?]: Phase 15-01: Adapted phase12 footer-pinning test into nav-only 80dp invariant (footer 48dp assertions obsolete under NAV-03 zero-button contract)
 - [Phase ?]: Phase 15-01: Lowered md3-compliance touch-target threshold 5->3 to match fixture reality after NAV-03 removed footer buttons from the interactive-target audit
+- [Phase 15]: Phase 15-02: Header action-bar wrapper — page actions render BELOW main row in .header-action-bar (null actions = no bar div); theme toggle moved to Header main row as .md-header__theme-toggle IconButton — locks D-NAV01-01/02/03 + D-NAV03-03
+- [Phase 15]: Phase 15-02: Avatar menu reduced to 2 menuitems (编辑资料 + 退出登录) separated by <Divider />; 编辑资料 is NEW (pre-Phase-15 menu had only 切换主题 + 退出) — locks D-NAV02-01..04
+- [Phase 15]: Phase 15-02: Sidebar footer = single .md-sidebar__version text node; removed useState/theme/logout from Sidebar (D-NAV03-01/04/05); logout path now exclusively via Header avatar menu
+- [Phase 15]: Phase 15-02: Version source = Vite build-time define injection (vite.config.js binds import.meta.env.VITE_APP_VERSION to process.env.npm_package_version) over hardcoded literal — auto-updates with package.json version, proven in production bundle
 
 ## Operator Next Steps
 

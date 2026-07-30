@@ -110,3 +110,19 @@ None - no external service configuration required. No new dependencies introduce
 ---
 *Phase: 15-navigation-restructure-test-data*
 *Completed: 2026-07-30*
+
+## Self-Check: PASSED
+
+- FOUND: .planning/phases/15-navigation-restructure-test-data/15-02-SUMMARY.md
+- FOUND: af90b94 (Task 1 feat commit)
+- FOUND: cebe7f7 (Task 2 feat commit)
+- FOUND: 5697b4c (SUMMARY docs commit)
+- FOUND: frontend/src/components/composites/Header.jsx
+- FOUND: frontend/src/components/composites/Header.css
+- FOUND: frontend/src/components/composites/Sidebar.jsx
+- FOUND: frontend/src/components/composites/Sidebar.css
+- FOUND: frontend/vite.config.js
+- Plan-level verification: all `<verification>` assertions PASS (header-action-bar x1, `<Divider />`, md-header__theme-toggle, 退出登录, NO 切换主题 in Header.jsx; .header-action-bar + .md-header__menu-item--danger in Header.css; .md-sidebar__version + font-size 0.75rem in Sidebar.css; no footer buttons; no currentTheme state in Sidebar.jsx)
+- Build sanity: `npm run build` succeeds (4012 modules, zero errors); Vite define version injection proven in bundle
+- Re-export frontend/src/components/Header.jsx unchanged (empty diff vs HEAD~2)
+- No accidental file deletions in either task commit
