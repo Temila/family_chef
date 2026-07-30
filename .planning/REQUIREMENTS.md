@@ -25,7 +25,7 @@
 
 ### UI Components
 
-- [ ] **UI-01**: 所有高级筛选功能改为弹出子页面（类似菜品管理中"添加"按钮的行为）
+- [x] **UI-01**: 所有高级筛选功能改为弹出子页面（类似菜品管理中"添加"按钮的行为）
 - [x] **UI-02**: md-bottom-bar 宽度修复（与 BUG-01 关联，确保弹出筛选页不破坏布局）
 - [x] **UI-03**: Dark mode 弹出页面主题色边框（与 BUG-07 关联）
 
@@ -67,7 +67,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | NAV-03 | Phase 15 | Complete |
 | NAV-04 | Phase 15 | Complete |
 | NAV-05 | Phase 15 | Complete |
-| UI-01 | Phase 15 | Pending |
+| UI-01 | Phase 15 | Complete |
 | UI-02 | Phase 14 | Complete |
 | UI-03 | Phase 14 | Complete |
 | DATA-01 | Phase 15 | Pending |

@@ -96,3 +96,14 @@ None - no external service configuration required. No new dependencies introduce
 ---
 *Phase: 15-navigation-restructure-test-data*
 *Completed: 2026-07-30*
+
+## Self-Check: PASSED
+
+- FOUND: .planning/phases/15-navigation-restructure-test-data/15-05-SUMMARY.md
+- FOUND: 30e20eb (Task 1 feat commit)
+- FOUND: 34daae4 (Task 2 feat commit)
+- FOUND: 226f31b (docs commit)
+- FOUND: frontend/src/pages/OrderPage.jsx (Sheet import + 高级筛选 Button + Sheet-wrapped chip block + handleClearFilters present)
+- Plan-level verification: all `<verification>` assertions PASS — Sheet import, 高级筛选 trigger, Sheet-wrapped chip block, 清空/应用 footer, favoritesOnly/sortBy inline, Modals unchanged
+- Build sanity: `npm run build` succeeds (4012 modules, zero errors)
+- No accidental file deletions in any task commit

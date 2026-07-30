@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Bugfix + UI Refinements
 status: executing
-last_updated: "2026-07-30T04:16:35.234Z"
+last_updated: "2026-07-30T04:20:24.657Z"
 last_activity: 2026-07-30
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 50
 ---
 
@@ -36,13 +36,13 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-07-30
 
 ## Session Continuity
 
-Last session: 2026-07-30T04:16:24.915Z
+Last session: 2026-07-30T04:20:09.089Z
 Stopped at: Completed 15-04-PLAN.md
 Next: 15-03 (Wave 2 caller-wrap) or remaining Phase 15 plans
 
@@ -113,6 +113,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 15 P02 | 4min | 2 tasks | 5 files |
 | Phase 15 P03 | 1min | 3 tasks | 3 files |
 | Phase 15 P04 | 2min | 3 tasks | 6 files |
+| Phase 15 P05 | 2min | 2 tasks | 1 files |
 
 ## Decisions
 
@@ -189,6 +190,8 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase ?]: Phase 15-03: Header actions wrapper on 3 multi-button management pages (AdminDishes/AdminIngredients/ChefDishes) adds className=header-action-bar while preserving inline style (display:flex/gap) — belt-and-suspenders defense against CSS ordering regressions; all parse/add button handlers untouched
 - [Phase 15]: Phase 15-04: Chef 订单管理 removed from UserHomePage (relocated to BottomBar 订单 tab); chef UserHomePage locked at 4 menuEntries per D-NAV04-04 — Rationale: CONTEXT D-NAV04-04 locks chef UserHomePage at 4 entries (开始点菜/口味偏好/菜品管理/食材管理); chef accesses orders via BottomBar instead
 - [Phase 15]: Phase 15-04: BottomBar logout fully removed (destructure + tab action + onClick branch) — logout centralized in Header avatar dropdown per D-NAV05-01 — Rationale: D-NAV05-01 mandates logout removal from bottom nav; single logout path via Header avatar menu (D-NAV02-01)
+- [Phase 15]: Phase 15-05: OrderPage 高级筛选 trigger uses <Icon name="filter" /> (FilterList) not "tune" — tune is not in Icon.jsx mapping table (PATTERNS Finding 1) — tune icon absent from @material-symbols-svg/react@0.13.0 import set; filter is the established semantic equivalent already used elsewhere
+- [Phase 15]: Phase 15-05: handleClearFilters preserves favoritesOnly + sortBy — only resets region/cuisine/filters — UI-SPEC locked decision: favoritesOnly and sortBy are top-level controls, not advanced filters
 
 ## Operator Next Steps
 

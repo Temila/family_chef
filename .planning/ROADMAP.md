@@ -122,7 +122,7 @@ Plans:
 - [x] 15-02-PLAN.md — Wave 1 header/sidebar shell: Header action-bar wrapper + theme IconButton + 2-item avatar menu with Divider; Sidebar footer version text + cleanup imports/state
 - [x] 15-03-PLAN.md — Wave 2 multi-button Header caller wraps: AdminDishesPage, AdminIngredientsPage, ChefDishesPage actions wrapped in .header-action-bar
 - [x] 15-04-PLAN.md — Wave 3 single-button callers + BottomBar + UserHomePage: 4 single-button Header wraps; BottomBar 7/7/4 tab arrays with logout removed; UserHomePage chef 菜品管理 + 食材管理 entries
-- [ ] 15-05-PLAN.md — Wave 4 OrderPage filter Sheet migration: tonal 高级筛选 Button replaces 展开筛选 Chip; Sheet wraps existing filter chip block with 清空/应用 footer
+- [x] 15-05-PLAN.md — Wave 4 OrderPage filter Sheet migration: tonal 高级筛选 Button replaces 展开筛选 Chip; Sheet wraps existing filter chip block with 清空/应用 footer
 - [ ] 15-06-PLAN.md — Wave 5 backend seed (8 dev dishes covering 2³ combinations) + main.py wiring + frontend Playwright tests + backend pytest cases
 
 ## Progress
@@ -143,4 +143,4 @@ Plans:
 | 12. Page-Level Refactor + 8dp Grid + HUMAN-UAT | v1.2 | 4/4 | Complete | 2026-07-29 |
 | 13. Bugfix Sweep | v1.2 | 3/3 | Complete | 2026-07-29 |
 | 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | ✓ Complete | 2026-07-29 |
-| 15. Navigation Restructure & Test Data | v1.3 | 4/6 | In Progress|  |
+| 15. Navigation Restructure & Test Data | v1.3 | 5/6 | In Progress|  |
