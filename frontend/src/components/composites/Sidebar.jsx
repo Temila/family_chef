@@ -11,26 +11,21 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePendingOrderCount } from '../../hooks/usePendingOrderCount';
-import { theme } from '../../utils';
 import Icon from '../primitives/Icon';
 import Ripple from '../primitives/Ripple';
 import Badge from '../primitives/Badge';
 import './Sidebar.css';
 
+// D-NAV03-01: 版本号来源 — Vite 构建期注入（vite.config.js define），非 Vite 环境回退 0.0.0
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.0.0';
+
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const pendingCount = usePendingOrderCount();
-  // 主题状态：切换后立即重渲染以更新 Icon 与 accessible name（D-BUG-02 Sidebar footer）
-  const [currentTheme, setCurrentTheme] = useState(() => theme.getTheme());
-
-  const handleToggleTheme = () => {
-    setCurrentTheme(theme.toggleTheme());
-  };
 
   if (!user) return null;
 
@@ -101,35 +96,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="md-sidebar__footer">
-        <Ripple style={{ width: '100%' }}>
-          <button
-            type="button"
-            className="md-sidebar__item md-interactive"
-            onClick={handleToggleTheme}
-            aria-label={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
-            title={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
-          >
-            <span className="md-sidebar__item-icon">
-              <Icon name={currentTheme === 'dark' ? 'light-mode' : 'dark-mode'} size={24} />
-            </span>
-          </button>
-        </Ripple>
-        <Ripple style={{ width: '100%' }}>
-          <button
-            type="button"
-            className="md-sidebar__item md-interactive"
-            onClick={() => {
-              logout();
-              navigate('/login');
-            }}
-            aria-label="退出"
-            title="退出"
-          >
-            <span className="md-sidebar__item-icon">
-              <Icon name="logout" size={24} />
-            </span>
-          </button>
-        </Ripple>
+        {/* D-NAV03-01: 显示版本号（主题切换 + 退出已迁至 Header） */}
+        <div className="md-sidebar__version" aria-label="应用版本">
+          v{APP_VERSION}
+        </div>
       </div>
     </aside>
   );
