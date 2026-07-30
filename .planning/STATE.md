@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 15 (navigation-restructure-test-data) — EXECUTING
 Plan: 6 of 6
 Status: Phase complete — ready for verification
-Last activity: 2026-07-30 - Completed quick task 260730-m1p: filter-action-row 左组靠左（padding 左 16px）
+Last activity: 2026-07-30 - Completed quick task 260730-m6k: 撤销 m1p，包装左筛选按钮到 `__filters` div
 
 ## Session Continuity
 
@@ -80,6 +80,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260730-lmy | filter-action-row 左右对称 48px 缩进（实验性），移除 margin-right hack | 2026-07-30 | [260730-lmy-filter-row-48px-inset](./quick/260730-lmy-filter-row-48px-inset/) |
 | 260730-luk | 食材管理页增加已关联/未关联互斥筛选（SQL EXISTS 过滤 + 单一状态 toggleAssoc）| 2026-07-30 | [260730-luk-ingredient-association-filter](./quick/260730-luk-ingredient-association-filter/) |
 | 260730-m1p | filter-action-row 左组靠左（padding 左 16px / 右 48px 非对称），已关联/未关联挨着高级筛选 | 2026-07-30 | [260730-m1p-filter-row-left-flush](./quick/260730-m1p-filter-row-left-flush/) |
+| 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
 
 ## Performance Metrics
 
