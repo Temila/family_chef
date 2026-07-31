@@ -72,10 +72,25 @@ Deferred to future release. Tracked but not in current roadmap.
 | UI-03 | Phase 14 | Complete |
 | DATA-01 | Phase 15 | Complete |
 
+
+## v1.4 Requirements — Tech Debt Cleanup
+
+| ID | Description | Phase | Status |
+|----|-------------|-------|--------|
+| TD-01 | `::before` 字面值 override 确认关闭 | Phase 16 | Pending |
+| TD-02 | 版本号读 config.yaml 而非 package.json | Phase 16 | Pending |
+| TD-03 | CORS `allow_origins` 确认已收窄（验证 config.yaml） | Phase 16 | Pending |
+| TD-04 | `config.yaml` 添加 `app.url` 显式配置 | Phase 16 | Pending |
+| TD-05 | `alembic env.py` 添加 `render_as_batch=True` 修复 SQLite batch 缺陷 | Phase 16 | Pending |
+| TD-06 | 启动时自动 `alembic upgrade head` | Phase 16 | Pending |
+| TD-07 | `WishDeepLinkRedirect` 补 `encodeURIComponent(id)` | Phase 16 | Pending |
+| TD-08 | `actingId` 跨卡片点击残留修复 | Phase 16 | Pending |
+| TD-09 | 后端测试套件引用漂移修复（107 fail → 0 fail） | Phase 16 | Pending |
+| TD-10 | 前端 lint 基线修复（101 errors → 0 errors, 22 warnings） | Phase 16 | Pending |
+
 **Coverage:**
-- v1 requirements: 16 total
-- Mapped to phases: 16
-- Unmapped: 0 ✓
+- v1.4 requirements: 10 total
+- Mapped to Phase 16: 10
 
 ---
 *Requirements defined: 2026-07-29*

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Bugfix + UI Refinements
-status: verifying
-last_updated: "2026-07-30T09:35:00.000Z"
-last_activity: 2026-07-30 - Quick task 260730-oa9 修正：根据部署版还原为 3 卡堆叠
+milestone: v1.4
+milestone_name: Tech Debt Cleanup
+status: planning
+last_updated: "2026-07-30T10:00:00.000Z"
+last_activity: 2026-07-30 - Closed v1.3 milestone; created v1.4 Tech Debt Cleanup
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 13
-  completed_plans: 13
-  percent: 100
+  total_phases: 1
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 15 — navigation-restructure-test-data
+**Current focus:** Phase 16 — Tech Debt Cleanup (planning)
 
 ## Branch State
 
@@ -28,23 +28,23 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 |------|------|------|
 | `main` | `14ed5fd` (v1.1) | v1.2 已撤销，回退到 v1.1（含完整 wishlist） |
 | `dev` | `14ed5fd` (v1.1) | 与 main 同步 |
-| `feature/ui-rebuild` | `eaeed75` | Phase 8-14 成果（MD3 令牌 + 动效/state-layer + bugfix sweep + Sheet + Portal dropdowns），v1.2 后续开发基分支 |
-| Tags | v1.0, v1.1 | v1.2 tag/release 已删除 |
+| `feature/ui-rebuild` | `2fdcddd` | Phase 8-15 成果（MD3 令牌 + 动效/state-layer + bugfix sweep + Sheet + Portal dropdowns + 导航重构 + seed），v1.3 基分支 |
+| Tags | v1.0, v1.1, v1.3 |
 
 ⚠️ **Phase 10-14 已基于 `feature/ui-rebuild` 开发**——main/dev 上没有 MD3 令牌基础。
 
 ## Current Position
 
-Phase: 15 (navigation-restructure-test-data) — EXECUTING
-Plan: 6 of 6
-Status: Phase complete — ready for verification
-Last activity: 2026-07-30 - Completed quick task 260730-m6k: 撤销 m1p，包装左筛选按钮到 `__filters` div
+Phase: 16 (tech-debt-cleanup) — PLANNING
+Plan: TBD
+Status: Planning — new milestone v1.4 created after v1.3 close
+Last activity: 2026-07-30 - Closed v1.3 milestone
 
 ## Session Continuity
 
-Last session: 2026-07-30T06:15:00.000Z
-Stopped at: Phase 15 complete + quick task 260730-jqm (test dishes seeded into DB)
-Next: /gsd-verify-work 15 (verify Phase 15) or /gsd-complete-milestone (close v1.3)
+Last session: 2026-07-30T10:00:00.000Z
+Stopped at: v1.3 closed; v1.4 Tech Debt Cleanup created
+Next: /gsd-plan-phase 16 to plan the cleanup phase
 
 ## Deferred Items
 
@@ -65,6 +65,17 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | quick_task | 260727-i2g-sync-dev-with-main-split-wishlist-commit | Acknowledged at v1.2 close | 2026-07-29 |
 | quick_task | 260727-ig2-v1-2-feature-ui-rebuild | Acknowledged at v1.2 close | 2026-07-29 |
 | uat_gap | Phase 12 0-pending UAT | Acknowledged at v1.2 close | 2026-07-29 |
+| quick_task | 260729-wl7-phase-14-bug | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-jqm-seed-test-dishes-db | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-k5g-action-bar-layout | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-ks4-filter-row-below-search | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-kz4-filter-row-align-edges | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-lmy-filter-row-48px-inset | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-lmy-filter-row-48px-inset-tmp | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-luk-ingredient-association-filter | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-m1p-filter-row-left-flush | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-m6k-wrap-left-filters | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260730-oa9-http-localhost-5173-orders-1-1-div-div-m | Acknowledged at v1.3 close | 2026-07-30 |
 
 ## Quick Tasks Completed
 

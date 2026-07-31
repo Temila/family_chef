@@ -266,7 +266,7 @@ cd frontend && npx eslint . 2>&1 | tail -3                   # expect: 101 error
 | A5 | Frontend `process` no-undef errors in `tests/phase15-navigation.spec.js` are fixed by adding `globals.node` for test files (or `/* global process */`) | TD-10 | If instead the project intends browser-only globals, spec files must import `process` from node: — small diff either way. |
 | A6 | The `WishDeepLinkRedirect` id is numeric (wish ids are SQLite INTEGER PKs) | TD-07 | Even so, encoding is harmless and future-proofs string ids; no behavior change for numeric ids. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **TD-09 fix strategy: middleware vs. test-URL rewrite?**
    - What we know: middleware fixes all ~80 slash failures with a 10-line diff; test rewrite matches the "reference drift" wording but touches ~140 URLs across 20 files. Both verified viable.

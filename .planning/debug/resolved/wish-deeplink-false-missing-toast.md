@@ -1,3 +1,10 @@
+---
+status: resolved
+trigger: "深链高亮误触发\"未找到该愿望\"toast（H-3）— 访问 /wishes/:id 弹出虚假 missing toast"
+created: 2026-07-29T00:00:00Z
+updated: 2026-07-30T00:00:00Z
+---
+
 # Debug Session: 深链高亮误触发"未找到该愿望"toast（H-3）
 
 ## 现象
@@ -111,3 +118,15 @@ cd /home/temila/family_chef && python3 repro_final.py
 - 触发评审：`.planning/phases/07-wish-list-frontend/07-REVIEW.md` CR-01（commit f9d1839）
 - UAT 入口：`.planning/phases/07-wish-list-frontend/07-HUMAN-UAT.md` H-3
 - 复现脚本：`repro_bug.py` / `repro_final.py`（仓库根，已加 .gitignore）
+
+## Resolution
+
+root_cause: `UserWishesPage.jsx` / `ChefWishesPage.jsx` mount effect 的 `.finally(() => setLoading(false))` 在 `requestSeqRef` 抢占的过期响应下仍执行，导致 `loading=false` + `wishes=[]` 的瞬态窗口；高亮 effect 在该窗口排程 `setTimeout(0)` 弹 missing-toast，React 19 调度下 macrotask 抢先于 microtask commit+cleanup。
+
+fix: Phase 07-05 gap-closure 引入 `fetchedOnce` state 守门：仅当 wishes 至少被成功填充过一次才允许 missing-toast 排程（`UserWishesPage.jsx:37,155` 与 `ChefWishesPage.jsx:55,179` 的 `if (loading || !fetchedOnce) return undefined;`）。逻辑编号：方案 1（`fetchedOnce` 守门），与本文件"修复方向"建议的"1 + 3"组合中的方案 1 一致；方案 3 (`setTimeout(100)`) 已在 Phase 07-05 同期合并。
+
+verification: user1 登录后依次访问 `/wishes/1`、`/wishes/2`、`/wishes/3`，无 missing-toast 弹出，对应卡片蓝色描边 4 秒。STATE.md 决策行 `[Phase 07-05]: fetchedOnce + setTimeout(100) closes deep-link highlight race`。
+
+fix_commit: 7419be0 feat: Material Design 3 UI 重构 (v1.2) (#23) — 该 squashed commit 包含 Phase 07-05 的 `fetchedOnce` 修复（v1.2 tag/release 已删除，squash 后无独立 commit 可指）。
+
+status_change: 2026-07-30 由用户确认为已修复，从 Deferred Items 移除（或改写为 Resolved）。
