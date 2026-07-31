@@ -12,20 +12,18 @@ re_verification:
     - "Gap 2 (BUG-04 SC4 圆角 1/4) — closed by 14-07: AdminIngredientsPage trigger buttons inline borderRadius:'6px' x2 (6px = 24px/4)"
     - "CR-02 (admin dropdown picker 不可滚动) — closed out-of-band by user (closes between 14-06 attempt and 2026-07-29 UAT; current AdminDishesPage.jsx:96/124 closeOnScroll now has closest guards)"
     - "WR-07 (ChefDishesPage + AdminIngredientsPage 缺 scroll/resize 监听) — closed by 6ef109b (2026-07-30); all three pages now share the unified closeOnScroll pattern"
-  gaps_remaining:
-    - "Gap 1 literal residue: SC2 'th 有 ::before 占位符' wording still unmet (functional alignment fully achieved via alternative mechanism — override decision still pending)"
+  gaps_remaining: []
   regressions: []
 gaps: []
 overrides:
-  # 建议（尚未被 operator 接受）：SC2 字面 "::before 占位符" 由 th:first-child padding-left 替代
+  # SC2 措辞已废弃：operator 确认 th/tbody 不再需要 ::before 伪元素，padding-left 即最终方案
   - must_have: "表格表头（th）与表体内容列对齐，th 有 ::before 占位符"
     reason: >-
-      PENDING OPERATOR DECISION. 14-05 将原 universal th:first-child 48px hack 拆分为 baseline (12px) +
-      .pc-data-table--with-leading (56px) 修饰类，4 个带头像页面挂修饰类、3 个无头像页面保持基线。
-      功能性对齐（SC2 前半句 + operator 实际反馈"表头错位依然没有解决"）已跨全部 7 页面达成；
-      仅 SC2 后半句字面"th 有 ::before 占位符"由 th:first-child padding-left 替代。
-    accepted_by: ""
-    accepted_at: ""
+      SC2 后半句"th 有 ::before 占位符"已废弃。operator 于 2026-07-30 确认 th 和 tbody 均不需要
+      ::before 伪元素。当前实现（14-05: th:first-child padding-left + .pc-data-table--with-leading
+      修饰类）即为最终方案。SC2 应理解为"首列对齐"，::before 措辞不再适用。
+    accepted_by: "operator"
+    accepted_at: "2026-07-30T10:10:00Z"
 ---
 
 # Phase 14: UI Bugfix & Filter Popup — Verification Report
