@@ -1,430 +1,495 @@
-# Domain Pitfalls: Guest Ordering Invitation Feature
+# Pitfalls Research: Adding Dynamic Theming to an Existing MD3 Token System
 
-**Domain:** Guest/unauthenticated ordering flow added to existing authenticated family meal ordering system
-**Researched:** 2026-05-24
-**Confidence:** HIGH (based on codebase analysis + library documentation + established patterns)
+**Domain:** Dynamic runtime theming / custom skins layered on top of an existing Material Design 3 CSS-variable token system in a React 19 SPA
+**Project:** 家味 · Family Chef — v1.5 自定义网站皮肤
+**Researched:** 2026-07-31
+**Confidence:** HIGH (grounded in this codebase's actual `tokens.css` / `index.html` / `utils/index.js` + official `@material/material-color-utilities` docs)
+
+> **Scope note:** This research assumes the v1.2 MD3 token system is already shipped and working (light/dark toggle via `data-theme` attribute). It covers ONLY the failure modes introduced by adding *dynamic runtime overrides* of those tokens. Generic React pitfalls (effect cleanup, stale closures) are out of scope unless they interact with theming.
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause security vulnerabilities, data corruption, or require significant rewrites.
+### Pitfall 1: FOUC — Flash of Default-Theme Color Before Custom Theme Applies
 
----
+**What goes wrong:**
+On hard refresh, the page paints with the hardcoded `tokens.css` `:root` greens for 1–3 frames, then snaps to the user's custom "Autumn Orange" theme once React mounts and `ThemeContext` reads localStorage / fetches custom themes from the DB. Users see a visible color flash on every load. This is *worse* than the existing light/dark FOUC because custom themes can be radically different hues (spring pink → winter blue), making the flash jarring rather than subtle.
 
-### Pitfall 1: Token Enumeration via Timing / Error Differentiation
+**Why it happens:**
+The existing FOUC prevention in `frontend/index.html:8-16` only handles the **light/dark axis** — it reads `fc_theme` and sets `data-theme`. It knows nothing about custom themes. The natural temptation is to apply custom tokens inside a `useEffect` in `ThemeContext` (mirroring `AuthContext.jsx:16-25`), but `useEffect` runs **after** the browser's first paint. React 19's concurrent renderer makes this gap larger, not smaller. Any approach that waits for React to mount is too late.
 
-**What goes wrong:** The guest invitation endpoint returns different error messages or response times depending on whether a token exists, is expired, or has been used. An attacker systematically probes tokens to discover valid ones.
+**How to avoid:**
+Extend the **inline blocking `<script>` in `index.html`**, not a React effect. The custom theme's token overrides must be written to `document.documentElement.style` (or an injected `<style>` tag in `<head>`) *before* the browser paints. Concrete pattern:
 
-**Why it happens:** Developers naturally write helpful error messages like "邀请链接不存在" (link not found) vs "邀请链接已过期" (link expired) vs "邀请链接已使用" (link already used). These distinctions leak state.
-
-**Consequences:** With ~128 bits of entropy in UUID4, brute-force is infeasible — but if token generation is weak (e.g., sequential IDs, short hex strings), enumeration becomes practical. Even with UUID4, the API design pattern of revealing token state is a bad habit that amplifies any future token weakness.
-
-**Prevention:**
-- Use a single generic error for all invalid-token cases: "链接无效或已过期"
-- Do NOT distinguish between expired, used, and non-existent tokens in the API response
-- Use constant-time comparison for token validation (`hmac.compare_digest`) to prevent timing attacks
-- Ensure response time is consistent regardless of whether the token exists in DB
-
-**Detection:** Review all guest-facing endpoints — if any return different messages based on token state, it's vulnerable.
-
-```python
-# BAD — leaks token state
-if not invitation:
-    raise HTTPException(404, "邀请链接不存在")
-if invitation.is_expired:
-    raise HTTPException(410, "邀请链接已过期")
-if invitation.is_used:
-    raise HTTPException(409, "邀请链接已使用")
-
-# GOOD — single generic response
-if not invitation or not invitation.is_valid:
-    raise HTTPException(404, "链接无效或已过期")
+```html
+<!-- index.html — runs synchronously before first paint -->
+<script>
+  (function () {
+    // 1. Existing light/dark logic (keep verbatim)
+    var saved = localStorage.getItem('fc_theme');
+    var preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && preferDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    // 2. NEW: apply custom skin tokens if present
+    var skin = localStorage.getItem('fc_active_skin'); // flat token map: {"--md-color-primary":"#..."}
+    if (skin) {
+      try {
+        var tokens = JSON.parse(skin);
+        var root = document.documentElement.style;
+        // MUST branch on current mode — see Pitfall 5
+        var mode = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        var map = tokens[mode] || tokens.light || {};
+        for (var k in map) root.setProperty(k, map[k]);
+      } catch (e) { /* corrupt localStorage — fall through to defaults */ }
+    }
+  })();
+</script>
 ```
 
-**Confidence:** HIGH — well-established security pattern, confirmed by FastAPI security docs and OWASP guidelines.
+The active skin stored in localStorage must be the **pre-resolved flat token map** (both `light` and `dark` variants), not the seed color — resolving HCT at boot in the inline script is too heavy and requires loading the color library synchronously. Resolution happens at save time; localStorage holds the result.
+
+**Warning signs:**
+- Color flash visible when throttling CPU to "4× slowdown" in DevTools (simulates slow phones — the project's primary target is mobile browsers per PROJECT.md Constraints).
+- Bug reports like "page flashes green when I open it" from users with non-green custom themes.
+- Lighthouse "Layout Shift" complaints are not the same metric — FOUC is a *visual* flash, not CLS. Don't rely on Lighthouse to catch it; manually verify with DevTools "Disable cache" + hard reload + slow CPU.
+
+**Phase to address:**
+**Phase 1 (Foundation / Storage + Apply Layer).** The inline-script extension and the localStorage schema for `fc_active_skin` are foundational — every later phase depends on the apply mechanism being FOUC-safe. If Phase 1 ships the apply logic inside React, every subsequent phase inherits the flash and refactoring it late means re-testing every component.
 
 ---
 
-### Pitfall 2: Race Condition on One-Time Link Use (Double Submission)
+### Pitfall 2: Token Override Specificity Wars — Editing `tokens.css` or Losing to `:root`
 
-**What goes wrong:** A guest (or attacker) opens the invitation link in two browser tabs. Both tabs submit an order simultaneously. Two orders get created from a single "one-time" invitation.
+**What goes wrong:**
+Two opposite failure modes, both common:
+1. **Editing `tokens.css` directly** to add custom-theme variants — but the file header explicitly says `由 scripts/generate-tokens.cjs 自动生成（勿手动编辑）` ("auto-generated, do not edit manually"). The next `npm run gen:tokens` wipes custom changes silently.
+2. **Overriding via `document.documentElement.style.setProperty('--md-color-primary', ...)`** — works, but if any component CSS later adds a more-specific rule like `.my-card { --md-color-primary: #legacy; }`, the inline style on `<html>` still wins (inline beats rules), but a `:root { --md-color-primary: ... }` in a *later-loaded* stylesheet with `!important` would not be beaten by a non-important inline custom property. CSS custom property `!important` precedence is notoriously counterintuitive.
 
-**Why it happens:** The check-then-act pattern (`if not invitation.is_used: ... create order ... mark used`) is not atomic. Between the check and the mark, another request can pass the same check. This is the **exact same pattern** as the existing order number race condition documented in CONCERNS.md (line 68-70).
+**Why it happens:**
+The token system has a strict authoring contract (code-generated file). Developers who don't read the header, or who join mid-milestone, treat it as a normal CSS file. On the override side, the cascade rules for custom properties with `!important` are subtle: an `!important` custom property declaration in a stylesheet *beats* an inline style without `!important`, which is the reverse of normal property intuition.
 
-**Consequences:** Violates the "one link = one order" business rule. Chef receives two orders for the same guest. Invitation remains "used" but two orders exist with no way to reconcile.
+**How to avoid:**
+1. **Never edit `tokens.css`.** Custom themes live in a *runtime override layer* applied via JS to `document.documentElement.style` (the inline-style approach) or to a dedicated `<style id="active-skin">` element injected into `<head>` *after* `tokens.css` loads. The `<style>` approach is preferable because:
+   - It's inspectable in DevTools (inline `style` on `<html>` gets very long with 40+ tokens).
+   - It can be cleared wholesale (`el.textContent = ''`) on theme switch without iterating properties.
+   - It naturally sits later in the cascade than the linked `tokens.css`.
 
-**Prevention:**
-- Use an atomic database-level approach: set `is_used = True` with a WHERE clause condition and check affected row count
-- Wrap the entire check-usage-and-create-order sequence in a database transaction with appropriate isolation
-- Add a UNIQUE constraint or database-level lock on the invitation's usage state
+   ```js
+   // ThemeContext apply function
+   function applySkin(tokens, mode) {
+     const style = document.getElementById('active-skin') ||
+       Object.assign(document.createElement('style'), { id: 'active-skin' });
+     document.head.appendChild(style);
+     const map = tokens[mode];
+     style.textContent = `:root, [data-theme="light"], [data-theme="dark"] {\n${
+       Object.entries(map).map(([k, v]) => `  ${k}: ${v};`).join('\n')
+     }\n}`;
+   }
+   ```
 
-```python
-# BAD — race condition window between check and update
-invitation = await db.execute(select(GuestInvitation).where(token == token))
-if invitation.is_used:
-    raise Error("已使用")
-invitation.is_used = True  # <-- another request can pass the check before this commits
+   Note the selector lists *all three* of `:root`, `[data-theme="light"]`, `[data-theme="dark"]` — this guarantees the override wins regardless of which mode attribute is set (see Pitfall 5 for why both modes need separate maps).
 
-# GOOD — atomic compare-and-swap
-result = await db.execute(
-    update(GuestInvitation)
-    .where(GuestInvitation.token == token, GuestInvitation.is_used == False)
-    .values(is_used=True, used_at=datetime.now(timezone.utc))
-)
-if result.rowcount == 0:
-    raise HTTPException(409, "链接已使用或无效")
-# Now safely create order
-```
+2. **Audit for stray token redefinitions.** Verified during research: `rg "var\(--md-palette" frontend/src/components` returns ZERO matches, and no component CSS hardcodes hex/rgba outside `tokens.css`. This means semantic `--md-color-*` overrides WILL cascade everywhere today. **Add a CI lint rule** (`rg "#[0-9a-fA-F]{3,8}" frontend/src/components --glob '*.css'`) to keep it that way — any new hardcoded color in a component silently breaks theming.
 
-**Existing codebase amplification:** The codebase already has the order number race condition (CONCERNS.md line 68-70) with the same count-then-insert pattern. SQLite's single-writer lock provides limited protection under async concurrency — `await` yields control between the check and the write.
+**Warning signs:**
+- A component "doesn't respond" to custom theme (its color stays default while neighbors change) — it has a hardcoded color or a local token redefinition.
+- `tokens.css` shows up in `git diff` for a custom-theme PR — the generation contract is being violated.
+- DevTools "Computed" panel on `<html>` shows `--md-color-primary` overridden, but element still renders old color — a descendant redefined it.
 
-**Confidence:** HIGH — confirmed by SQLAlchemy AsyncSession docs ("not safe for use in concurrent tasks") and existing known bug in codebase.
-
----
-
-### Pitfall 3: CSRF on Guest Order Submission Endpoint
-
-**What goes wrong:** The guest order submission endpoint (`POST /api/guest/orders`) has no CSRF protection. Since guest endpoints don't use JWT (no Authorization header), the browser sends cookies automatically. If CORS is configured as `allow_origins: ["*"]` (which it currently is — see CONCERNS.md line 108), any website can forge a POST request to submit a guest order.
-
-**Why it happens:** CSRF is typically associated with cookie-based auth. Developers reason "guests have no auth, so no CSRF risk." This is wrong if:
-1. The token is passed in the URL (GET param) — attacker can craft the URL
-2. The token is passed in the request body — attacker can include it
-3. CORS is set to `allow_origins: ["*"]` — any origin can send the request
-
-**Consequences:** A malicious website can submit orders on behalf of a guest who clicks a crafted link. The guest's "one-time" invitation is consumed without their knowledge.
-
-**Prevention:**
-- Pass the invitation token in the request body (not URL) for the POST submission
-- Validate the `Origin` or `Referer` header on guest POST endpoints
-- Use a custom header (e.g., `X-Request-With`) that browsers don't send cross-origin automatically
-- **Most importantly**: Do NOT rely on the current `allow_origins: ["*"]` CORS config for guest endpoints — restrict to your actual frontend origin
-
-```python
-# Add to guest order endpoint
-@router.post("/guest/orders")
-async def guest_submit_order(
-    request: Request,
-    body: GuestOrderCreate,  # token is in body, not URL
-):
-    origin = request.headers.get("origin")
-    if origin and origin not in ALLOWED_ORIGINS:
-        raise HTTPException(403, "Forbidden origin")
-    # ... proceed with order
-```
-
-**Confidence:** HIGH — FastAPI 0.65.2 release notes explicitly document a CSRF fix (Content-Type check before assuming JSON). Current codebase CORS config is `["*"]` (confirmed in config.yaml line 41).
+**Phase to address:**
+**Phase 1 (Foundation).** The override mechanism (`<style id="active-skin">` injection + selector strategy) is decided once and used by every preset/custom/seasonal flow afterward. Also add the hex-lint CI gate in Phase 1 so it catches regressions across all later phases.
 
 ---
 
-### Pitfall 4: `Order.user_id` is `nullable=False` — Guest Orders Break
+### Pitfall 3: Accessibility Collapse — Users Pick Legally-Blind Color Combos
 
-**What goes wrong:** The existing `Order` model has `user_id = Column(Integer, ForeignKey("users.id"), nullable=False)`. The PROJECT.md Key Decision to "set user_id to NULL for guest orders" (line 72) will fail immediately — the database constraint rejects NULL, and SQLAlchemy will raise an IntegrityError.
+**What goes wrong:**
+The custom editor lets users drag a hue slider for `--md-color-primary`. They pick a pale yellow primary on the white `surface-container-lowest` background. Result: primary-colored text/buttons become unreadable (contrast ratio ~1.8:1, WCAG AA requires 4.5:1). The app becomes unusable for anyone with low vision and legally non-compliant. Because MD3's `on-primary` (white) is *separate* from `primary`, naive editors that only expose `primary` produce `white text on pale-yellow` buttons.
 
-**Why it happens:** The decision was made at the architecture level without checking the actual model definition. The model was designed for authenticated users only.
+**Why it happens:**
+RGB/HSL sliders give users 16M colors but no contrast feedback. MD3's role-pair system (`primary`/`on-primary`, `primary-container`/`on-primary-container`) means every editable color is actually *two* colors that must maintain contrast against each other AND against their container. Exposing only "primary hue" forces the editor to either (a) hardcode `on-primary: #ffffff` (breaks for light primaries) or (b) let the user set both independently (guarantees mistakes).
 
-**Consequences:** Either: (a) the migration fails, (b) runtime errors on every guest order, or (c) developers hack around it with a fake user record (which creates worse problems — ghost users in user lists, stats, and notifications).
+**How to avoid:**
+**Use the official `@material/material-color-utilities` library to derive all role-pairs from a single seed color**, instead of letting users edit individual tokens. This library is the canonical MD3 implementation (published by `material-foundation`, the same org that owns the spec). It exposes:
 
-**Prevention:**
-- Run an Alembic migration to alter `user_id` from `NOT NULL` to `NULLABLE` on the `orders` table
-- Update the SQLAlchemy model: `user_id = Column(Integer, ForeignKey("users.id"), nullable=True)`
-- Audit ALL code that accesses `order.user_id` without null-checks — there are many:
-  - `order_service.py:98` — `create_order_auto_split()` takes `user_id` as required param
-  - `order_service.py:179` — `notify_order()` fetches `User` by `user_id` — will return None for guests
-  - `order_service.py:335` — `update_order_status()` fetches `User` by `order.user_id`
-  - `order_service.py:387` — `cancel_order()` checks `order.user_id != user_id` — always True for guest
-  - Frontend `OrderPage` likely assumes `user` exists on order objects
+- `SchemeTonalSpot(Hct.fromInt(seedArgb), isDark, contrastLevel)` → generates a *complete, accessible* role set for one mode from one seed.
+- `Contrast.ratioOfTones(toneA, toneB)` → returns the WCAG ratio between two HCT tones (≥4.5 = AA).
+- `Contrast.lighter(bgTone, 4.5)` → returns the lightest tone meeting 4.5:1, or `-1` if impossible.
 
-**Prevention:**
-```python
-# Migration: alembic revision --autogenerate -m "allow_null_user_id_on_orders"
-op.alter_column('orders', 'user_id', nullable=True)
+The custom editor's data model is therefore a **single seed color + optional contrast level**, NOT 40 individual token values. The editor UI exposes "seed color" + "feel" (vibrant/muted/expressive scheme variants: `SchemeVibrant`, `SchemeContent`, `SchemeExpressive`); the library computes the rest. This:
 
-# Model update
-user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # was nullable=False
+1. Makes bad combos impossible by construction (the library guarantees ≥4.5:1 for body text roles).
+2. Solves the light/dark matrix (Pitfall 5) for free — one seed generates both modes.
+3. Matches MD3 spec exactly (the existing `tokens.css` was itself generated from 4 key colors using this same algorithm — see file header).
 
-# Guard ALL user access
-user_name = "访客"
-if order.user_id:
-    user_result = await db.execute(select(User).where(User.id == order.user_id))
-    order_user = user_result.scalar_one_or_none()
-    if order_user:
-        user_name = order_user.display_name or order_user.username
-```
+```js
+import { Hct, SchemeTonalSpot, hexFromArgb } from '@material/material-color-utilities';
 
-**Confidence:** HIGH — verified by reading `backend/app/models/order.py` line 13: `nullable=False`.
-
----
-
-### Pitfall 5: Frontend Auth Redirect Loop on Guest Routes
-
-**What goes wrong:** The guest order page is added as a route inside the existing React SPA. The `ProtectedRoute` wrapper (App.jsx line 36-60) checks `useAuth().user` — if no user is logged in, it redirects to `/login`. Guest users have no token, so they get redirected to `/login`, which redirects back (or to `/`) creating a loop.
-
-**Why it happens:** The existing SPA wraps nearly every route in `<ProtectedRoute>` (23 routes in App.jsx). The natural developer instinct is to add the guest route alongside existing routes. But the `ProtectedRoute` component unconditionally redirects unauthenticated users.
-
-**Consequences:** Guest users see a blank page or infinite redirect. If they somehow reach the guest page via direct URL, the API client (`client.js` line 30-37) intercepts 401 responses and does `window.location.href = '/login'` — which is wrong for guest endpoints that intentionally don't use JWT.
-
-**Prevention:**
-- **Best approach (per PROJECT.md Key Decision):** Create the guest ordering page as a completely separate route **outside** the `<ProtectedRoute>` wrapper and **outside** the `<PcLayout>` wrapper (which includes the Sidebar).
-- Do NOT use `api.getAuthHeader()` for guest API calls — create a separate `GuestApiClient` that sends the invitation token in the request body instead.
-- Place the guest route **before** the catch-all `*` route (App.jsx line 240: `<Route path="*" element={<Navigate to="/" replace />} />`)
-- The guest page should NOT use `useAuth()` or `AuthProvider` at all — it's a standalone page.
-
-```jsx
-// In App.jsx — guest route OUTSIDE ProtectedRoute and PcLayout
-<Routes>
-  <Route path="/login" element={<LoginPage />} />
-  <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
-  {/* GUEST ROUTE — no auth, no sidebar */}
-  <Route path="/guest/:token" element={<GuestOrderPage />} />
-  <Route path="/" element={<RedirectRoute />} />
-  
-  <Route element={<PcLayout />}>
-    {/* ... all protected routes ... */}
-  </Route>
-  
-  <Route path="*" element={<Navigate to="/" replace />} />
-</Routes>
-```
-
-**Also critical:** The `ApiClient.request()` method (client.js line 30-37) auto-redirects to `/login` on any 401. Guest endpoints must NOT return 401 — they should use 404/410 for invalid tokens. Or create a separate API client for guest endpoints that doesn't intercept 401.
-
-**Confidence:** HIGH — verified by reading App.jsx ProtectedRoute implementation and client.js 401 handling.
-
----
-
-## Moderate Pitfalls
-
-### Pitfall 6: Mid-Order Link Expiration
-
-**What goes wrong:** A guest opens the invitation link at 1:59 PM. The link expires at 2:00 PM. The guest spends 5 minutes browsing dishes and selecting items. When they submit at 2:04 PM, the server rejects the submission because the link has expired. All their selections are lost.
-
-**Why it happens:** Expiration is checked server-side on each request (the "database layer check" from PROJECT.md line 74). The guest frontend doesn't know when the link expires and can't warn the user.
-
-**Consequences:** Frustrated guest gives up. Chef doesn't get the order. The invitation is now "expired" but was never actually used — a wasted invitation.
-
-**Prevention:**
-- Return the expiration timestamp in the initial invitation validation response so the frontend can display a countdown
-- Add a client-side timer that warns the guest when they have < 5 minutes remaining
-- Consider a grace period: allow submission within N minutes of the page load, even if the link technically expired while browsing
-- **Critical:** Don't check expiration on every dish-list API call — only check on the initial page load and the final submission. This avoids the case where the dish list API returns 404 while the guest is browsing.
-
-```python
-# API response for initial invitation validation
-{
-    "token": "abc-123",
-    "chef_name": "张大厨",
-    "expires_at": "2026-05-24T14:00:00Z",  # Frontend needs this!
-    "status": "valid"
+function buildSkin(seedHex, isDark) {
+  const hct = Hct.fromInt(parseInt(seedHex.slice(1), 16));
+  const scheme = new SchemeTonalSpot(hct, isDark, 0.0);
+  return {
+    '--md-color-primary': hexFromArgb(scheme.primary),
+    '--md-color-on-primary': hexFromArgb(scheme.onPrimary),
+    '--md-color-primary-container': hexFromArgb(scheme.primaryContainer),
+    '--md-color-on-primary-container': hexFromArgb(scheme.onPrimaryContainer),
+    // ... all 30+ roles for BOTH primary/secondary/tertiary/error/neutrals
+  };
 }
 ```
 
-**Confidence:** HIGH — standard UX pattern for time-limited flows.
+If individual-token editing is still desired (power users), gate it behind a live `Contrast.ratioOfTones` check that disables "Save" when any role-pair drops below 4.5:1, with a visible "⚠️ 对比度不足" warning.
+
+**Warning signs:**
+- Designer/PM can't read button labels on a custom theme during review.
+- Axe DevTools browser extension flags color-contrast violations on the `/theme` preview card.
+- A custom theme with a light primary renders invisible primary buttons (white-on-white).
+
+**Phase to address:**
+**Phase 2 (Custom Theme Editor).** The editor's data model decision (seed-based vs. token-level) is made here. If Phase 2 ships token-level editing without contrast guards, retrofitting seed-based generation in a later phase means migrating every saved custom theme in the DB.
 
 ---
 
-### Pitfall 7: WeChat In-App Browser Link Mangling
+### Pitfall 4: Elevation Shadows & Surface-Tint Don't Track Custom Colors
 
-**What goes wrong:** The invitation link is shared via WeChat (微信). WeChat's in-app browser modifies URLs — it may add tracking parameters, strip fragments, or in some versions, open links in its own "webview" with different behavior than standard browsers. The token in the URL might be corrupted or the SPA routing might fail.
+**What goes wrong:**
+Custom themes override `--md-color-primary` and the surface roles, but two token groups are silently missed:
 
-**Why it happens:** WeChat is the primary sharing channel for Chinese users (stated in PROJECT.md line 34: "朋友通常通过手机微信打开链接"). WeChat's built-in browser has known quirks:
-- May not properly handle SPA client-side routing (React Router)
-- History API may behave differently
-- localStorage may be cleared when the user leaves the webview
-- Cookie handling is inconsistent across WeChat versions
+1. **Elevation shadows are hardcoded `rgba(0,0,0,X)`** in `tokens.css:163-167`. In dark mode (or any custom dark skin), black shadows on a near-black surface are invisible — cards lose their depth cue and the UI looks flat/broken. The existing light/dark toggle doesn't fix this either; it's a pre-existing latent issue that custom *dark* themes make obvious.
+2. **`--md-color-surface-tint`** (`tokens.css:51, 236`) is the color blended into elevated surfaces to communicate height. It's separately defined per mode and **defaults to the primary color**. If a custom theme overrides `primary` but forgets `surface-tint`, MD3's elevation-through-tint system breaks: elevated cards in dark mode stay neutral-gray instead of taking on the custom hue.
 
-**Consequences:** Guest can't access the ordering page, or the page loads but state is lost mid-session.
+State-layer tokens, by contrast, are SAFE: `tokens.css:189-190` defines `--md-state-layer-primary: var(--md-color-primary)` and `--md-state-layer-on-surface: var(--md-color-on-surface)`. These auto-cascade when their base color is overridden. (Verified: no component overrides state-layer tokens.)
 
-**Prevention:**
-- Put the invitation token in the URL path (`/guest/{token}`) not in query parameters (`/guest?t={token}`) — path-based tokens are less likely to be stripped by URL processors
-- Don't rely on localStorage for guest session state — use React state or sessionStorage (which is tab-scoped and survives page reloads but not new tabs)
-- Test in WeChat DevTools (微信开发者工具) before launch
-- Consider a server-rendered "landing" page that then redirects to the SPA, ensuring the token survives the initial load
+**Why it happens:**
+Developers think "I overrode primary, I'm done." The MD3 spec's elevation system is two-channel (shadow + surface-tint), and only one channel (the color channels) is obvious. The shadow channel is structural and easy to miss because it doesn't use a color *token* — it uses literal `rgba()`.
 
-**Confidence:** MEDIUM — WeChat behavior is well-documented in Chinese developer community but varies by version. Specific behavior should be validated during development.
+**How to avoid:**
+1. **`surface-tint` must be part of every generated scheme.** When building a skin via `SchemeTonalSpot`, include `surfaceTint` (which the library maps to the primary tone for the current mode). Add it to the override map explicitly:
+   ```js
+   '--md-color-surface-tint': hexFromArgb(scheme.primary), // MD3 spec: surfaceTint === primary
+   ```
+2. **Elevation needs a mode-aware override.** Two acceptable strategies:
+   - **(Recommended, matches MD3 spec):** In dark mode, override the 5 `--md-elevation-*` tokens to use the custom surface-tint at low alpha instead of pure black. Provide a `darkElevations(tintColor)` helper that emits `0 1px 2px ${tintColor}22` etc.
+   - **(Minimal fix):** Accept that dark custom themes have weaker shadow contrast, but explicitly override `--md-color-shadow` (currently unused-in-dark but defined) — no, this won't help since the elevation tokens bypass `--md-color-shadow` with literal `rgba(0,0,0,...)`.
+
+   The clean minimal fix is to **regenerate the 5 elevation tokens as part of the skin apply**, conditioned on mode. Add this to the inline `<script>` and the `<style id="active-skin">` block for dark mode.
+
+**Warning signs:**
+- Cards in dark mode with a custom theme look "flat" — no visual hierarchy between `surface-container` and `surface-container-high`.
+- A custom "midnight blue" dark theme shows no difference between elevation-1 and elevation-4 cards.
+- MD3 elevation spec review fails: surfaces should gain ~2% tint per level in dark mode.
+
+**Phase to address:**
+**Phase 1 (Foundation — token apply layer).** The apply function must include elevation + surface-tint in its override set, even if Phase 1 only ships the default theme. Adding them later means every preset and saved custom theme needs regeneration. Phase 3 (Presets) then verifies the 4 seasonal presets render with correct elevation in both modes.
 
 ---
 
-### Pitfall 8: Notification Sent to Wrong Person or Missing Guest Name
+### Pitfall 5: The Light/Dark × Custom-Color Matrix — Two Independent Axes That Multiply
 
-**What goes wrong:** After a guest submits an order, the Feishu notification goes to the wrong person (the guest's "user" — but guests have no user record) or the notification shows "未知用户" (unknown user) because `order.user` is NULL.
+**What goes wrong:**
+A user creates a beautiful "Spring Pink" custom theme while in light mode. They toggle dark mode (the independent header button, which PROJECT.md explicitly says STAYS separate). The custom theme either (a) reverts to the default green dark theme, losing the pink, or (b) keeps the light-mode pink values which now look terrible on a dark background (pale pink on near-black, or invisible pink on dark pink).
 
-**Why it happens:** The existing `notify_order()` method (order_service.py line 168-226) is designed for registered users:
-- Line 179: Fetches `User` by `user_id` — will be None for guest orders
-- Line 180: Gets `user_name` from the user record — crashes or returns "未知用户"
-- Line 183: Fetches `TastePreference` by `user_id` — returns empty for guests (acceptable)
-- Line 221-224: Notifies the **chef** — this is correct for guest orders, but the notification content will be confusing
+**Why it happens:**
+The existing system has ONE axis: `data-theme="light|dark"` flips ~35 color tokens. Adding "custom skin" introduces a SECOND orthogonal axis. Naive implementations store the custom theme as a single flat token map and apply it unconditionally — but every MD3 role has a different value in light vs. dark (e.g. `primary` is tone 40 in light, tone 80 in dark). One flat map can't serve both modes.
 
-**Consequences:** Chef receives a notification saying "未知用户 下单了" — no way to know which friend this order is from. Or worse, the notification crashes due to NoneType access on the user object.
+**How to avoid:**
+**Store and apply custom themes as a `{ light: {...}, dark: {...} }` pair, generated together from one seed.** The `SchemeTonalSpot(hct, isDark, contrast)` library call is invoked TWICE per save — once with `isDark=false`, once with `isDark=true`. Both maps are persisted. On apply (in the inline script AND the ThemeContext), the code branches on the *current* `data-theme`:
 
-**Prevention:**
-- Store a `guest_name` field on the invitation (optional — the guest can enter their name when ordering) or in the order notes
-- Modify `notify_order()` to handle the NULL user_id case
-- Pass the guest's display info from the invitation, not from a User record
-- The notification should clearly indicate this is a "访客订单" (guest order)
-
-```python
-# Updated notification logic
-if order.user_id:
-    # Existing user order
-    user_result = await db.execute(select(User).where(User.id == order.user_id))
-    order_user = user_result.scalar_one_or_none()
-    user_name = order_user.display_name if order_user else "未知用户"
-else:
-    # Guest order — get name from invitation
-    inv_result = await db.execute(
-        select(GuestInvitation).where(GuestInvitation.order_id == order.id)
-    )
-    invitation = inv_result.scalar_one_or_none()
-    user_name = invitation.guest_name if invitation and invitation.guest_name else "访客"
+```js
+// At save time (custom editor)
+const seedHct = Hct.fromInt(parseInt(seedHex.slice(1), 16));
+const skin = {
+  light: buildRoleMap(new SchemeTonalSpot(seedHct, false, 0)),
+  dark:  buildRoleMap(new SchemeTonalSpot(seedHct, true,  0)),
+};
+localStorage.setItem('fc_active_skin', JSON.stringify(skin));
+// persist `skin` to backend DB too for cross-device
 ```
 
-**Confidence:** HIGH — verified by reading `notify_order()` implementation at order_service.py lines 168-226.
-
----
-
-### Pitfall 9: Invitation Table Design Leaking Chef Information
-
-**What goes wrong:** The `guest_invitations` table stores `chef_id` (the chef whose dishes the guest can see). If the guest API returns the full invitation object including `chef_id`, or if the dish-list endpoint for guests doesn't filter properly, a guest could discover other chefs' dishes or the internal user IDs.
-
-**Why it happens:** Reusing existing dish-list endpoints with a "chef_id filter" parameter. If the guest passes a different `chef_id` in the query, they see another chef's dishes.
-
-**Consequences:** Information disclosure — a guest can see all dishes from all chefs, not just the invited chef.
-
-**Prevention:**
-- Create a dedicated guest dish-list endpoint that hardcodes the chef_id from the invitation token — do NOT accept chef_id as a request parameter
-- Do NOT expose internal `user_id` values in guest-facing API responses
-- Validate that every dish in the guest's order belongs to the invitation's bound chef
-
-```python
-# BAD — guest can manipulate chef_id
-@router.get("/guest/dishes")
-async def guest_list_dishes(chef_id: int, ...):
-    # Guest could pass any chef_id!
-
-# GOOD — chef_id comes from invitation, not request
-@router.get("/guest/{token}/dishes")
-async def guest_list_dishes(token: str, ...):
-    invitation = await validate_invitation(token)
-    # chef_id is hardcoded from invitation
-    dishes = await dish_service.list_dishes(db, chef_id=invitation.chef_id)
+```js
+// At apply time — RE-Applies when light/dark toggles
+function applySkin(skin, mode) {
+  if (!skin) return;
+  writeOverrideStyle(skin[mode] || skin.light);
+}
+// ThemeToggle's onClick must trigger applySkin(currentSkin, newMode) AFTER setAttribute
 ```
 
-**Confidence:** HIGH — standard authorization bypass pattern.
+**Critical integration point:** The existing `theme.toggleTheme()` in `frontend/src/utils/index.js:26-31` only flips the attribute. It must be augmented (or wrapped by ThemeContext) to re-apply the current skin for the new mode. The light/dark toggle and the custom skin are NOT independent in *application* — only in *selection*. Selecting is independent (user picks skin X and mode Y separately); applying is joint (mode Y's tokens come from skin X's Y-map).
+
+**Warning signs:**
+- Toggling dark mode with a custom theme active shows default greens instead of the custom dark palette.
+- A custom theme "looks right" in one mode but broken in the other.
+- `ThemeToggle` works but `ThemeContext` doesn't re-render after the toggle (the existing `ThemeToggle.jsx:10` uses local `useState`, not context).
+
+**Phase to address:**
+**Phase 1 (Foundation — data model + apply).** The `{light, dark}` schema is decided here. Phase 2 (Editor) uses `SchemeTonalSpot` to populate both. Phase 4 (Seasonal) inherits the same shape. If Phase 1 ships a flat map, Phase 2's editor must regenerate every saved theme when the matrix bug is discovered.
 
 ---
 
-### Pitfall 10: Order Number Race Condition Amplified by Guest Flow
+### Pitfall 6: localStorage ↔ DB Sync Conflicts Across Devices
 
-**What goes wrong:** The existing order number generation has a known race condition (CONCERNS.md line 68-70). Guest orders add a new concurrent path: guests and authenticated users can now create orders simultaneously, increasing the likelihood of collision.
+**What goes wrong:**
+Per PROJECT.md: presets + active selection in localStorage, custom themes in backend DB. A user creates a custom theme on their phone, then opens the app on a tablet. The tablet's localStorage has no custom themes; the DB does. Two failure modes:
+1. **Stale localStorage wins:** Tablet reads `fc_active_skin` from localStorage (a different/old skin), never queries DB, shows wrong theme. Even after the DB fetch completes, localStorage overwrites it on next save.
+2. **Last-write-wins data loss:** User edits custom theme "Spring" on phone (saving v2 to DB). Meanwhile, the phone's cached localStorage still has v1. A different flow writes v1 back to DB, destroying v2.
 
-**Why it happens:** `generate_order_no()` (order_service.py line 24-40) uses count-then-insert. With guest orders, there are now two code paths (authenticated + guest) both calling this method concurrently.
+**Why it happens:**
+Hybrid storage creates two sources of truth with no reconciliation. The existing app has no sync layer — `AuthContext` loads from localStorage once at mount and never refreshes. Adding a second async source (DB) without a merge strategy guarantees races.
 
-**Consequences:** Duplicate order numbers, UNIQUE constraint violations (which at least are caught), or silent data corruption if the constraint is somehow bypassed.
+**How to avoid:**
+1. **Treat DB as source of truth for custom themes; localStorage as a cache + the active-skin snapshot.** Schema:
+   - `fc_active_skin`: the *resolved token map* for FOUC (fast, synchronous, possibly stale — acceptable for first paint, corrected after DB fetch).
+   - `fc_custom_themes_cache`: `{ [id]: { seed, name, updatedAt, version } }` — full custom theme list, with `updatedAt` timestamps.
+2. **On mount, after the FOUC script has painted, fetch custom themes from DB and reconcile:** for each theme ID, if `db.updatedAt > cache.updatedAt`, replace the cache entry. This is last-write-wins on `updatedAt`, which is correct for a single-user-per-account system.
+3. **On save (create/edit/delete custom theme):** write to DB first; on success, update localStorage cache. If DB write fails, do NOT update localStorage — show a toast (project pattern: `ToastContext`) and keep the editor open. This prevents the "saved locally, lost globally" failure.
+4. **Active skin resolution:** on each mount, after DB sync, if `fc_active_skin_id` points to a theme that was edited remotely, re-resolve the token map (re-run `SchemeTonalSpot`) and overwrite `fc_active_skin`. The brief flash of stale colors (1 frame) is acceptable; the FOUC script's stale data is still *valid* (just an older version of the same theme), not broken.
 
-**Prevention:** Fix the root cause before adding guest orders:
-- Use `uuid.uuid4().hex[:8].upper()` for all order numbers (the fallback at line 40 already does this)
-- Or use a database sequence
-- Or add a proper `SELECT ... FOR UPDATE` lock within a transaction
+**Warning signs:**
+- "My theme reverted" bug reports from multi-device users.
+- Network panel shows DB fetch finishing *after* localStorage already applied a stale skin, with no re-apply.
+- Two browser tabs editing the same custom theme silently overwrite each other (out of scope for v1.5 but worth a known-limitation note).
 
-**Confidence:** HIGH — existing known bug, amplified by new concurrent flow.
-
----
-
-## Minor Pitfalls
-
-### Pitfall 11: Guest Order Appears in User's Order History
-
-**What goes wrong:** If `user_id` is set to the invitation creator's ID (rather than NULL), guest orders appear in the inviting user's order history, mixing up their personal orders with guest orders they merely invited.
-
-**Prevention:** Use `user_id = NULL` for guest orders. Add an `is_guest_order` flag or a `source` column (`"user"` / `"guest_invitation"`) to filter guest orders out of normal user queries.
-
-**Confidence:** HIGH — straightforward data modeling concern.
-
----
-
-### Pitfall 12: Multiple Invitations from Same User to Same Chef
-
-**What goes wrong:** No limit on how many invitations a user can create for the same chef. A user could spam-create hundreds of invitations, each creating a database record. Over time, the `guest_invitations` table fills with unused expired links.
-
-**Prevention:** Add a reasonable rate limit (e.g., max 5 active invitations per user at a time). Add periodic cleanup of expired invitations.
-
-**Confidence:** MEDIUM — depends on expected usage patterns.
+**Phase to address:**
+**Phase 1 (Foundation — storage schema + reconciliation).** The reconciliation logic runs at mount and must be in place before Phase 2 (Editor) can save. Phase 5 (Backend persistence — if separate phase) implements the actual `/api/themes` CRUD; Phase 1 stubs the client-side sync contract.
 
 ---
 
-### Pitfall 13: Guest Page Loads Main App Bundle (Performance on Mobile)
+### Pitfall 7: Slider Drag Re-Renders the Whole App on Every `input` Event
 
-**What goes wrong:** The guest ordering page is part of the main SPA bundle. The guest downloads the entire React app (including all admin pages, order management, etc.) just to see a simple dish list and submit button. On a mobile WeChat connection, this could be 500KB+ of unnecessary JavaScript.
+**What goes wrong:**
+The custom editor has a hue slider. Naive implementation: `onChange` → `setSeed(hex)` in ThemeContext → context value changes → every consumer re-renders. A drag fires ~60-120 `input` events/second. With 30+ components consuming theme-derived styles, the main thread saturates, the slider stutters, and on low-end mobile (the project's target) the page becomes unresponsive. Compounding: the existing `AuthContext.jsx:47-57` builds a fresh `value` object on every render with no `useMemo` — if ThemeContext copies this pattern, every context consumer re-renders even if nothing changed.
 
-**Prevention:** Consider lazy-loading the guest page component. Or, if the PROJECT.md Key Decision is to make it "independent from the main SPA," use Vite's code splitting with `React.lazy()` for the GuestOrderPage component.
+**Why it happens:**
+CSS custom property updates via `document.documentElement.style.setProperty` are themselves cheap (the browser handles recascade natively). The expensive parts are: (a) React re-rendering consumers, and (b) the HCT → 40-token resolution running synchronously on every drag event. Developers often store the seed in context state, causing (a); and run `SchemeTonalSpot` in the render path, causing (b).
 
-```jsx
-const GuestOrderPage = React.lazy(() => import('./pages/GuestOrderPage'));
-```
+**How to avoid:**
+Three layers of defense, all required:
 
-**Confidence:** MEDIUM — depends on actual bundle size, which should be measured.
+1. **Don't put the dragging seed in React state at all for the live preview.** Write tokens directly to a *preview-only* `<style id="skin-preview">` element on `input` events, bypassing React entirely:
+   ```jsx
+   const onHueInput = (e) => {
+     const seed = e.target.value;
+     const hct = Hct.fromInt(parseInt(seed.slice(1), 16));
+     // Write preview tokens directly — no setState, no re-render
+     const lightMap = buildRoleMap(new SchemeTonalSpot(hct, false, 0));
+     previewStyleRef.current.textContent = formatAsCss(lightMap);
+   };
+   ```
+   The preview component reads colors from CSS (it's styled by the tokens), so it visually updates without React. Only the slider's own position is React state (a single cheap re-render of one input).
 
----
+2. **Debounce the seed → context propagation.** Use the existing `debounce` helper (`frontend/src/utils/index.js:126-136`) to propagate the seed to ThemeContext / DB-save at ~150ms quiescence:
+   ```jsx
+   const propagateSeed = useMemo(() => debounce((seed) => {
+     setThemeSeed(seed); // context update — triggers consumer re-render ONCE after drag ends
+   }, 150), []);
+   ```
 
-### Pitfall 14: Guest Access to Admin/Debug Endpoints
+3. **Memoize the context value.** Unlike `AuthContext`, ThemeContext should wrap its value in `useMemo` keyed on the stable theme identity (not the live-dragging seed). Consumers re-render only on actual theme *change*, not on every drag tick.
 
-**What goes wrong:** The guest ordering flow bypasses JWT authentication. If the guest endpoints accidentally expose or can reach other endpoints that also bypass auth (e.g., the currently unauthenticated `GET /api/users` endpoint documented in CONCERNS.md line 73-78), a guest user can enumerate all users, roles, and Feishu open IDs.
+4. **Optional: `useDeferredValue`** (React 19) for the seed shown in any text readout, so the readout lags without blocking the slider.
 
-**Prevention:** Fix the existing unauthenticated endpoints (CONCERNS.md lines 73-84) BEFORE implementing guest flow. Audit all endpoints that don't use `Depends(get_current_user_from_token)`.
+**Warning signs:**
+- Slider feels "sticky" / drops frames during drag — check React DevTools Profiler; if it shows 30+ components rendering per drag tick, this pitfall is live.
+- CPU profiler shows `SchemeTonalSpot` constructor dominating flame chart during drag.
+- Low-end Android test device becomes unresponsive during color editing.
 
-**Confidence:** HIGH — existing known vulnerability, must fix regardless.
-
----
-
-### Pitfall 15: Invitation Token in URL Gets Logged
-
-**What goes wrong:** The invitation link `/guest/{token}` is accessed by the guest. Server access logs record the full URL including the token. If logs are stored persistently or shared, the token is exposed. The middleware logging module (`middleware/logging.py`) logs request details including paths.
-
-**Prevention:** Strip or hash the token in access logs. Or use a short-lived signed URL pattern where the token in logs is useless after expiration.
-
-**Confidence:** MEDIUM — standard operational security concern.
-
----
-
-## Phase-Specific Warnings
-
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Database migration | `Order.user_id` NOT NULL constraint blocks guest orders (#4) | Create Alembic migration first, update model, audit all `order.user` access |
-| Guest invitation API | Token enumeration via error messages (#1) | Single generic error, constant-time comparison |
-| Guest order submission | Race condition on one-time use (#2) | Atomic compare-and-swap on `is_used` field |
-| Guest frontend page | Auth redirect loop from ProtectedRoute (#5) | Route outside ProtectedRoute and PcLayout; separate API client |
-| Feishu notification | NULL user_id crashes `notify_order()` (#8) | Handle NULL user_id branch; use guest name from invitation |
-| CORS configuration | `allow_origins: ["*"]` enables CSRF on guest endpoints (#3) | Restrict CORS to actual frontend origin |
-| Order number generation | Race condition amplified by guest concurrent orders (#10) | Fix root cause (use UUID-based order numbers) |
-| Mobile/WeChat testing | URL mangling in WeChat in-app browser (#7) | Test in WeChat DevTools; put token in URL path |
-| Expiration handling | Guest loses selections when link expires mid-order (#6) | Return `expires_at` in API response; client-side countdown |
-| Dish authorization | Guest sees other chefs' dishes via parameter manipulation (#9) | Hardcode chef_id from invitation, don't accept as parameter |
+**Phase to address:**
+**Phase 2 (Custom Theme Editor).** The preview-direct-to-DOM pattern is an editor implementation detail, decided when the editor is built. If Phase 2 ships context-state-driven previews, the perf bug is baked in and fixing it later means re-architecting the editor.
 
 ---
 
-## Summary: Must-Fix-Before-Starting Checklist
+### Pitfall 8: Seasonal Auto-Switch Fights Manual Selection (Ping-Pong / Surprise Switches)
 
-These issues from the existing codebase MUST be addressed before adding guest features:
+**What goes wrong:**
+User enables "seasonal auto-switch" in March (spring). In May they manually pick a custom "Summer Beach" theme for a party. Three failure modes:
+1. **Surprise revert:** On next page load (still May), the seasonal logic sees "current season = summer" and overrides their manual pick back to the "Summer" preset. The user's manual choice is lost.
+2. **Timezone drift:** "Summer" starts June 1 — but in what timezone? The server is UTC, the user is UTC+8 (project context). The switch happens 8 hours early/late, confusing users.
+3. **Minute-granularity fighting:** If auto-switch runs on every mount, a user toggling dark mode (which re-applies skin) might trigger the seasonal check, which re-applies the seasonal preset, clobbering a manual custom theme set seconds earlier in the same session.
 
-1. **`Order.user_id` nullable migration** — Without this, guest orders are impossible (#4)
-2. **Fix `notify_order()` NULL user handling** — Will crash on every guest order (#8)
-3. **Fix order number race condition** — Guest flow amplifies the existing bug (#10)
-4. **Restrict CORS from `["*"]`** — Guest endpoints without JWT are CSRF-vulnerable with wildcard CORS (#3)
-5. **Fix unauthenticated user endpoints** — Guest users can enumerate all users via existing bugs in CONCERNS.md
+**Why it happens:**
+Auto-switch and manual selection share the same apply channel with no priority/lockout discipline. There's no concept of "user intent" — last writer wins, and the seasonal check runs unconditionally.
+
+**How to avoid:**
+1. **Manual selection sets a "user override" flag with a TTL.** When the user manually picks a theme (preset or custom), set `fc_user_override = { themeId, expiresAt: now + 30 days }` in localStorage. The seasonal auto-switch checks this flag; if present and unexpired, it does NOT override. This gives manual selection clear priority while letting seasonal resume after the user forgets.
+
+2. **Seasonal switch evaluates ONCE per season boundary, not on every mount.** Store `fc_last_season = 'spring'`. On mount, compute current season; if equal to last, do nothing. If different AND no user override is active, switch and update `fc_last_season`. This prevents intra-session fighting.
+
+3. **Season computed in USER's timezone, not server's.** Use the browser's `Intl.DateTimeFormat` to determine the user's hemisphere/season:
+   ```js
+   const month = new Date().getMonth(); // user's local month
+   // Simple N-hemisphere mapping (refine for S-hemisphere offset if needed):
+   const season = ['winter','spring','summer','autumn'][Math.floor(((month + 1) % 12) / 3)];
+   ```
+   Don't ask the backend what season it is — the server's UTC "now" doesn't know the user's local May.
+
+4. **Make auto-switch opt-in and reversible.** The toggle in `/theme` page is OFF by default. When ON, show a one-time toast "已开启按季节自动切换；手动选择将暂停自动切换 30 天" so the behavior is discoverable.
+
+**Warning signs:**
+- Bug report: "I set my theme but it keeps changing back."
+- A user's `fc_active_skin_id` in localStorage doesn't match what's actually rendered after a reload.
+- Season boundary test (set system clock to June 1 00:00) switches theme at the wrong wall-clock time for the user's timezone.
+
+**Phase to address:**
+**Phase 4 (Seasonal Auto-Switch).** This pitfall is entirely scoped to the seasonal feature. Phase 4 must ship the user-override flag and once-per-boundary evaluation together — shipping auto-switch without the override is the single fastest way to erode user trust in the feature.
+
+---
+
+## Technical Debt Patterns
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Apply custom skin inside `useEffect` (not inline `<script>`) | Less code, reuses React context | Permanent FOUC on every load; worse on slow mobile | **Never** — FOUC is a regression vs. the existing light/dark toggle |
+| Edit `tokens.css` to add seasonal presets | Quick, "just CSS" | Lost on next `npm run gen:tokens`; breaks the generation contract | **Never** — file header explicitly forbids |
+| Store custom theme as flat token list (single mode) | Simpler schema, half the storage | Dark mode breaks for every custom theme; forced re-migration | **Never** for any theme that should work in both modes |
+| Let users edit individual role tokens (not seed-based) | Power-user flexibility, "more control" | Accessibility violations, role-pair contrast breaks, unmanageable state space | Only behind explicit "Advanced" mode with live contrast gating |
+| Skip `useMemo` on ThemeContext value (copy AuthContext pattern) | Consistency with existing code | Whole-app re-render on every theme-related state tick | **Never** — AuthContext's pattern is wrong for high-frequency state; ThemeContext must memoize |
+| Re-resolve HCT scheme on every render | Simpler data flow | 60-120×/sec resolution during slider drag; main-thread lockup | **Never** in render path — resolve at save/apply time only |
+| Persist active skin as seed color (not resolved tokens) | Smaller localStorage, "single source of truth" | Inline FOUC script must load the HCT library synchronously → slow boot | **Never** — localStorage holds resolved `{light, dark}` token maps; seed is metadata |
+
+---
+
+## Integration Gotchas
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| **Existing `theme` singleton** (`utils/index.js:7-37`) | Replacing it with ThemeContext and missing a call site | Keep `theme` as the low-level light/dark manipulator; ThemeContext wraps it and adds skin re-application on toggle. Audit all 3 call sites: `ThemeToggle.jsx`, `LoginPage.jsx:22`, `utils/index.js` |
+| **`AuthContext` pattern** (`contexts/AuthContext.jsx`) | Copying its non-memoized `value` object (line 47-57) into ThemeContext | ThemeContext MUST `useMemo` its value — auth state changes rarely, theme preview state changes 100×/sec during drag |
+| **`queueMicrotask` convention** (`AuthContext.jsx:18`) | Calling `setState` directly inside `useEffect` | Follow the project convention: wrap initial-state reads in `queueMicrotask` to satisfy `react-hooks` lint rules |
+| **`ToastContext`** for save errors | Silently swallowing DB save failures (project pattern in `order_service.py:217-218`) | Theme save failures MUST surface a toast — silent failure means user thinks they saved but DB has nothing |
+| **Feishu / backend notification** | Assuming theme changes need to notify the backend | They don't — themes are client-rendered. Only custom-theme CRUD hits the backend. Don't add Feishu noise. |
+| **`ProtectedRoute`** | Gating `/theme` page behind auth | Presets + active selection work for logged-out users (localStorage); only custom-theme CRUD needs auth. Route the page public, gate the save-custom API. |
+| **Vite HMR** | Custom skin lost on every hot reload during dev | Write the apply function to re-read `fc_active_skin` on mount; Vite preserves localStorage across HMR but not in-memory React state |
+| **Backend `User` model** | Adding theme columns to `users` table directly | Use a separate `user_themes` table (one-to-many: a user has many custom themes) — matches the existing pattern of separate tables for separate concerns (cf. `guest_invitations`, `wishes`) |
+
+---
+
+## Performance Traps
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| **Slider drag triggers full-app re-render** | UI freezes during color drag; Profiler shows 30+ components/tick | Write preview tokens directly to `<style id="skin-preview">` on `input`, bypass React; debounce context propagation 150ms | Mid-range Android at ~10 saved themes rendered as preview cards |
+| **`SchemeTonalSpot` in render path** | Flame chart dominated by HCT math during drag | Resolve at save/apply time only; never in render. Cache resolved maps in a `useRef` during a drag session. | Any device, any number of themes — the math is ~5ms/call |
+| **Inline `<style id="active-skin">` grows unbounded** | Slow stylesheet recascade; DevTools shows huge `<style>` block | Override only the ~35 mode-dependent tokens, not the 90+ tonal palette tokens (palette tokens aren't consumed by components — verified) | Only if a future component starts using `--md-palette-*` directly (currently zero consumers) |
+| **localStorage JSON.parse on every apply** | Jank on page load (parse of large skin JSON) | Keep `fc_active_skin` compact (~35 tokens × 2 modes = ~70 entries). Parse once in inline script, cache in module variable. | >200 custom themes if you accidentally cache the full list in active-skin key |
+| **DB fetch blocking first paint** | White screen → theme flash → corrected theme | FOUC script uses localStorage only (synchronous, fast); DB fetch is async and reconciles AFTER paint. Stale-but-valid is fine. | Slow 3G on first visit from a new device |
+| **`<style>` recascade cost** | Visible hitch when switching themes | Browser recascade of 35 custom properties is ~1-2ms on modern hardware; acceptable. Avoid transitioning ALL properties (use targeted `transition: background-color, color` on specific elements, not `transition: all`). | Only if `transition: all` is added globally — DO NOT |
+
+---
+
+## Security Mistakes
+
+| Mistake | Risk | Prevention |
+|---------|------|------------|
+| **Trusting user-supplied token values verbatim into CSS** | CSS injection (`--md-color-primary: red; } body { background: url(attacker)`) — though CSP mitigates, malformed CSS can break the whole stylesheet | Validate every token value matches `/^#[0-9a-fA-F]{6}$/` before writing to `<style>`. Reject anything else. Seed-based generation sidesteps this entirely. |
+| **Storing other users' theme seeds without ownership check** | User A reads/deletes user B's custom themes via ID enumeration | Backend `/api/themes/{id}` must verify `theme.user_id == current_user.id` on every GET/PUT/DELETE. Follow the project's existing `require_role` + ownership pattern. |
+| **Custom theme name XSS** | `<script>` in theme name renders in the `/theme` card grid | React auto-escapes JSX text — but verify no `dangerouslySetInnerHTML` is used on theme names. Cap name length (e.g. 30 chars) server-side. |
+| **localStorage poisoning from shared device** | Family member's custom theme contains offensive name persisted across logins | On logout (`AuthContext.logout()`), optionally clear `fc_active_skin` and `fc_custom_themes_cache` — but PRESERVE `fc_theme` (light/dark) since that's device-level. Make this a settings toggle. |
+
+---
+
+## UX Pitfalls
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| **Preview card doesn't use the theme's own tokens** | User sees generic preview, can't tell themes apart | Each theme card is styled by a scoped `<div style={theme.tokens.light}>` — the card IS the preview, using the tokens inline so it's isolated from the page's active theme |
+| **No "reset to default" escape hatch** | User picks broken theme, can't recover | Always-visible "恢复默认" button in `/theme` header, independent of any theme card. One click restores the v1.2 default. |
+| **Seasonal toggle with no feedback** | User enables auto-switch, nothing visibly changes (until next season) | Show "下次自动切换：2026-09-01 立秋 → 秋季主题" with the next boundary date and target theme |
+| **Custom editor's live preview only shows one mode** | User saves theme, discovers it's broken in the mode they didn't preview | Editor shows split or toggleable light/dark preview; "保存" disabled until both modes previewed at least once (or auto-preview both side-by-side) |
+| **Color picker uses raw hex** | Non-designer users can't reason about `#34834E` | Use a hue wheel / saturation picker (native `<input type="color">` is acceptable on mobile); show the seed color as a swatch, not a hex string |
+| **Theme switch with no transition** | Hard color cut feels jarring | Add `transition: background-color 200ms, color 200ms, border-color 200ms` on key containers (NOT `transition: all` — see Performance Traps) |
+| **5 presets shown but 1 is "current default"** | User deletes the default and can't restore | Presets are immutable (PROJECT.md: "仅可编辑，不可删除"). Enforce in UI by hiding delete button on preset cards, not just in API. |
+
+---
+
+## "Looks Done But Isn't" Checklist
+
+- [ ] **FOUC:** First paint on hard reload (DevTools → Disable cache → Ctrl+Shift+R) shows the custom theme immediately, not a green flash — verify on slow CPU throttling
+- [ ] **Dark mode + custom theme:** Toggle dark mode with a custom theme active → custom dark palette applies (not default green dark). Verify `data-theme="dark"` + custom skin coexist.
+- [ ] **`ThemeToggle` integration:** Clicking the existing header light/dark button (which uses the OLD `theme` singleton, not new context) still re-applies the custom skin for the new mode
+- [ ] **Elevation in custom dark theme:** Cards in dark mode with a non-default skin show visible elevation hierarchy (surface-container-high visibly raised above surface-container)
+- [ ] **Contrast on custom themes:** Run Axe DevTools on `/theme` page with a custom theme active → zero color-contrast violations
+- [ ] **Cross-device sync:** Create custom theme on device A, open app on device B → theme appears in `/theme` list within one mount cycle (DB fetch + cache reconciliation)
+- [ ] **Slider performance:** Drag hue slider for 5 seconds on a mid-range device → no dropped frames in React Profiler, slider stays under the cursor
+- [ ] **Seasonal override:** With auto-switch ON, manually pick a custom theme, reload page → manual theme persists (auto-switch does NOT clobber it within the override TTL)
+- [ ] **Season boundary:** Set system clock to season boundary → theme switches exactly once, not on every mount within the new season
+- [ ] **Logout behavior:** Decide and verify — does logout clear the active skin? (Recommendation: keep light/dark, optionally clear custom skin per the security table above)
+- [ ] **Backend ownership:** User A cannot GET/PUT/DELETE user B's theme by guessing the ID — write a negative test
+- [ ] **`tokens.css` untouched:** `git diff frontend/src/css/tokens.css` is EMPTY in the custom-theme PR — the generation contract is intact
+- [ ] **Hex-lint CI gate:** `rg "#[0-9a-fA-F]{3,8}" frontend/src/components --glob '*.css'` returns zero matches — no component hardcoded colors that would resist theming
+- [ ] **`prefers-reduced-motion`:** Theme switch transition respects the media query (existing pattern in `styles.css` — verify the new transition does too)
+
+---
+
+## Recovery Strategies
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| Shipped with `useEffect`-based apply (FOUC) | MEDIUM | Move apply logic into inline `<script>` in `index.html`; keep ThemeContext for runtime changes only. No DB migration needed. |
+| Shipped flat-map (single-mode) custom themes | HIGH | DB migration: for each stored custom theme, look up saved seed (if present) and regenerate `{light, dark}` via `SchemeTonalSpot`. If seed wasn't stored, themes are unrecoverable — must be recreated by users. **Store the seed always.** |
+| Shipped token-level editor without contrast checks | HIGH | Retroactively compute contrast for all saved themes; flag and disable any failing themes in the UI with a "对比度不足，请重新编辑" warning. Can't auto-fix without the user's intent. |
+| Shipped seasonal auto-switch without override flag | MEDIUM | Add `fc_user_override` logic in a patch; users who already abandoned the feature won't come back, but future manual selections will stick. |
+| Shipped non-memoized ThemeContext | LOW | Wrap `value` in `useMemo([themeId, mode])`. One-line fix, no data migration. |
+| Hardcoded color leaked into a component | LOW | Replace with `var(--md-color-X)`. Verify hex-lint CI catches it next time. |
+| Elevation broken in custom dark themes | LOW | Add elevation tokens to the apply layer's override map for dark mode. No data migration — elevations are derived, not stored. |
+
+---
+
+## Pitfall-to-Phase Mapping
+
+Assuming a typical milestone decomposition (adjust to actual ROADMAP.md):
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| **P1: FOUC** | Phase 1 — Foundation (storage + apply) | Hard reload with custom theme → no green flash under 4× CPU throttle |
+| **P2: Specificity / don't edit tokens.css** | Phase 1 — Foundation | `git diff tokens.css` empty; hex-lint CI gate merged; `<style id="active-skin">` injection works |
+| **P3: Accessibility / contrast** | Phase 2 — Custom Editor | Axe DevTools zero violations on `/theme`; seed-based `SchemeTonalSpot` is the data model |
+| **P4: Elevation + surface-tint** | Phase 1 — Foundation (apply layer) + Phase 3 — Presets (verification) | Custom dark theme shows visible elevation hierarchy across 5 levels |
+| **P5: Light/dark × custom matrix** | Phase 1 — Foundation (schema) | Toggling dark mode with custom theme keeps the custom hue in both modes |
+| **P6: localStorage ↔ DB sync** | Phase 1 — Foundation (reconciliation) + Phase 5 — Backend CRUD | Create theme on device A, appears on device B after one reload; no stale-localStorage wins |
+| **P7: Slider drag perf** | Phase 2 — Custom Editor | React Profiler shows zero consumer re-renders during drag; preview writes direct to DOM |
+| **P8: Seasonal auto-switch fighting manual** | Phase 4 — Seasonal | Manual pick persists across reload when auto-switch ON; season boundary switches exactly once |
+
+**Phase ordering rationale:**
+- **Phase 1 must come first** because P1 (FOUC), P2 (override mechanism), P4 (elevation in apply set), P5 (matrix schema), and P6 (sync contract) are all *foundational apply/storage decisions*. Every later phase consumes them. Skipping Phase 1 to jump to the editor (Phase 2) guarantees rework.
+- **Phase 2 (Editor) second** because P3 (accessibility) and P7 (perf) are editor-internal and depend on the Phase 1 data model being seed-based.
+- **Phase 3 (Presets) third** — straightforward once the apply layer exists; mainly verifies P4 across the 4 seasonal presets.
+- **Phase 4 (Seasonal) can run in parallel with Phase 5 (Backend CRUD)** — seasonal is client-side logic, backend is API work; they only meet at P6 reconciliation.
+
+**Research flags for phases:**
+- **Phase 2 (Editor):** Highest research need — HCT color space, scheme variants (TonalSpot vs Vibrant vs Content), and the direct-to-DOM preview pattern all need validation. Spike the `@material/material-color-utilities` integration before committing the data model.
+- **Phase 4 (Seasonal):** Needs research on season-definition (meteorological vs astronomical vs solar terms 立春/立夏 — the project is Chinese-context, 节气 may be more culturally appropriate than June 1 boundaries). Flag for discuss-phase.
+- **Phase 1, 3, 5:** Standard patterns once the apply mechanism is decided; low research risk.
 
 ---
 
 ## Sources
 
-- **FastAPI security docs** (Context7): OAuth2PasswordBearer, `auto_error=False` for optional auth, CSRF fix in 0.65.2
-- **SQLAlchemy AsyncSession docs** (Context7): "AsyncSession is not safe for use in concurrent tasks"
-- **React Router docs** (Context7): `redirect()` in loaders, middleware for auth guards
-- **Codebase analysis**: `backend/app/models/order.py`, `backend/app/services/order_service.py`, `frontend/src/App.jsx`, `frontend/src/contexts/AuthContext.jsx`, `frontend/src/api/client.js`, `backend/app/routers/auth.py`
-- **CONCERNS.md**: Existing race conditions, unauthenticated endpoints, CORS misconfiguration
-- **PROJECT.md**: Key decisions on guest flow architecture
+- **Codebase (HIGH confidence, directly inspected):**
+  - `frontend/src/css/tokens.css` — token structure, generation contract, hardcoded elevation `rgba(0,0,0,X)` at lines 163-167, state-layer cascade at lines 189-190
+  - `frontend/index.html:8-16` — existing inline FOUC-prevention script (the pattern to extend)
+  - `frontend/src/utils/index.js:7-37` — existing `theme` singleton util (`fc_theme` localStorage key, `data-theme` attribute)
+  - `frontend/src/contexts/AuthContext.jsx:16-57` — context pattern to follow (and the non-memoized `value` to NOT copy)
+  - `frontend/src/components/ThemeToggle.jsx` — existing light/dark toggle that must coexist with custom skin re-application
+  - `rg "var(--md-palette" frontend/src/components` → 0 matches (verified: no component uses palette tokens directly, so semantic overrides cascade cleanly)
+  - `rg "#[0-9a-fA-F]{3,8}" frontend/src/components --glob '*.css'` → 0 matches (verified: no hardcoded colors in components)
+- **Official `@material/material-color-utilities` docs (HIGH confidence, via Context7):**
+  - `SchemeTonalSpot(hct, isDark, contrastLevel)` — generates complete accessible role set from one seed; the canonical MD3 algorithm — [material-foundation/material-color-utilities](https://github.com/material-foundation/material-color-utilities)
+  - `Contrast.ratioOfTones(t1, t2)` / `Contrast.lighter(bgTone, 4.5)` — WCAG contrast validation API
+  - `TonalPalette.fromHct(hct)` — 13-tone palette generation per color family
+  - "A difference of 40 in tone guarantees at least 3.0 contrast ratio (WCAG AA)" — official heuristic
+- **MD3 spec (MEDIUM confidence, general knowledge cross-referenced with library behavior):**
+  - Elevation = shadow channel + surface-tint channel (two-channel system)
+  - `surfaceTint` role defaults to primary tone
+  - Role-pair contrast requirements (primary/on-primary ≥ 4.5:1 for text roles)
+- **Established patterns (HIGH confidence, web-platform fundamentals):**
+  - Inline `<script>` in `<head>` runs before first paint; `useEffect` runs after — the basis for FOUC prevention
+  - CSS custom property cascade: later stylesheets beat earlier; `!important` in stylesheet beats non-important inline custom property (counterintuitive)
+  - React 19 context re-renders all consumers when provider `value` identity changes; `useMemo` required for high-frequency state
+  - `prefers-color-scheme` media query and `data-theme` attribute are independent mechanisms (the latter is the project's choice)
 
 ---
-
-*Pitfalls research: 2026-05-24*
+*Pitfalls research for: Adding dynamic runtime theming to an existing MD3 CSS-variable token system*
+*Researched: 2026-07-31*

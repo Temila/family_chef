@@ -1,455 +1,291 @@
-# Technology Stack — Guest Ordering Invitation Feature
+# Stack Research — v1.5 自定义网站皮肤 (Dynamic MD3 Theming)
 
-**Project:** 家味·Family Chef — 访客点菜邀请
-**Researched:** 2026-05-24
-**Scope:** NEW technology decisions only; existing stack documented in `.planning/codebase/STACK.md`
+**Domain:** Runtime user-customizable Material Design 3 color theming for an existing React 19 + Vite SPA
+**Researched:** 2026-07-31
+**Confidence:** HIGH
 
----
-
-## Research Area 1: Invitation Token Strategy (UUID vs JWT vs Custom)
-
-### Recommendation: UUID4 stored in database (HIGH confidence)
-
-**Why UUID4, not JWT:**
-- JWTs are stateless — you can't revoke or mark one as "used" without a denylist, which re-introduces DB state and defeats the purpose
-- The requirement is strictly one-time-use with expiry; this is inherently stateful — the server must track "has this link been used?"
-- UUID4 provides 122 bits of entropy (2^122 possibilities), making brute-force enumeration infeasible
-- UUID4 is natively supported by Python's `uuid.uuid4()`, SQLite can index it efficiently as a `String(36)`
-
-**Why not custom tokens (e.g., `secrets.token_urlsafe`):**
-- UUID4 is simpler, more debuggable (recognizable format), and perfectly adequate for this threat model
-- `secrets.token_urlsafe(32)` is also fine — but UUID4 is more conventional for invitation links and the project already uses `uuid` in `order_service.py`
-
-**Implementation pattern:**
-```python
-# In the GuestInvitation model
-import uuid
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Boolean
-from sqlalchemy.sql import func
-from app.database import Base
-
-class GuestInvitation(Base):
-    __tablename__ = "guest_invitations"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    token = Column(String(36), unique=True, nullable=False, index=True)  # UUID4
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # who created the invite
-    chef_id = Column(Integer, ForeignKey("users.id"), nullable=False)     # bound chef
-    is_used = Column(Boolean, nullable=False, default=False)              # one-time flag
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)    # FK to created order (set after use)
-    expires_at = Column(DateTime, nullable=False)                         # 2 hours from creation
-    created_at = Column(DateTime, nullable=False, server_default=func.now())
-
-    creator = relationship("User", foreign_keys=[created_by])
-    chef = relationship("User", foreign_keys=[chef_id])
-    order = relationship("Order", foreign_keys=[order_id])
-```
-
-**Token generation:**
-```python
-token = str(uuid.uuid4())  # e.g., "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-```
-
-**URL format:** `/guest/{token}` — short, clean, works in WeChat/ messaging apps.
+> **Scope note:** This research covers ONLY the new stack additions for v1.5's theme customization feature. The existing FastAPI + SQLAlchemy 2.0 (async) + React 19 + Vite + SQLite stack (documented in `codebase/STACK.md` and `AGENTS.md`) is validated and deliberately NOT re-researched here.
 
 ---
 
-## Research Area 2: Unauthenticated Guest Access in FastAPI
+## TL;DR — The Stack Diff Is Tiny
 
-### Recommendation: Separate router with token-based dependency (HIGH confidence)
+The headline finding: **this feature needs almost no new dependencies.** The critical library — Google's `@material/material-color-utilities` (the only JS implementation of the HCT color space that powers Material You) — is **already installed as a devDependency** and is already proven working in `scripts/generate-tokens.cjs`.
 
-The existing auth system uses `HTTPBearer` + `get_current_user_from_token` as a dependency. Guest routes must bypass this entirely — no JWT, no `Authorization` header.
+The only changes required:
 
-**Pattern: Dedicated guest router with its own dependency chain**
+| Action | Package | Why |
+|--------|---------|-----|
+| **PROMOTE** `devDependencies` → `dependencies` | `@material/material-color-utilities@^0.4.0` | Token generation moves from build-time (Node script) to **runtime** (in-browser, on user color pick). The devDep status is wrong for runtime code. |
+| **ADD** to `dependencies` | `react-colorful@^5.8.0` | The color picker UI for the custom theme editor. |
+| **NONE** | (backend) | Existing SQLAlchemy + Alembic + Pydantic fully cover the theme persistence table. |
 
-```python
-# backend/app/routers/guest.py
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.database import get_db
-from app.models import GuestInvitation
-
-router = APIRouter()  # NO security scheme attached
-
-async def get_valid_invitation(
-    token: str,
-    db: AsyncSession = Depends(get_db),
-) -> GuestInvitation:
-    """Validate guest invitation token — replaces JWT auth for guest routes."""
-    from sqlalchemy import select
-    from datetime import datetime
-
-    result = await db.execute(
-        select(GuestInvitation).where(GuestInvitation.token == token)
-    )
-    invitation = result.scalar_one_or_none()
-
-    if not invitation:
-        raise HTTPException(status_code=404, detail="邀请链接不存在")
-
-    if invitation.expires_at < datetime.now():
-        raise HTTPException(status_code=410, detail="邀请链接已过期")
-
-    if invitation.is_used:
-        # Used links become read-only — return invitation so caller can decide
-        return invitation  # caller checks is_used to return order view
-
-    return invitation
-```
-
-**Why a separate router, not `auto_error=False` on HTTPBearer:**
-
-The `auto_error=False` pattern on `HTTPBearer` (documented in FastAPI 0.11.0 release notes) is designed for "authenticated OR anonymous" endpoints on the same route. But guest routes are fundamentally different:
-- They use a path parameter (`/guest/{token}`), not a Bearer header
-- They have completely different authorization logic (invitation validity, not user identity)
-- Mixing them creates confusing API docs and unnecessary branching
-
-**Registration in `main.py`:**
-```python
-from app.routers import guest
-app.include_router(guest.router, prefix="/api/guest", tags=["访客点菜"])
-```
-
-**Key constraint — the 401 redirect in `ApiClient`:**
-
-The existing `frontend/src/api/client.js:30-37` auto-redirects to `/login` on any 401. The guest API client must NOT do this. Two options:
-
-1. **Create a separate `GuestApiClient`** (recommended) — a minimal fetch wrapper with no auth headers and no 401 redirect:
-   ```javascript
-   // frontend/src/api/guestClient.js
-   class GuestApiClient {
-     constructor() { this.baseURL = '/api/guest'; }
-
-     async request(method, url, body = null) {
-       const headers = { 'Content-Type': 'application/json' };
-       const options = { method, headers };
-       if (body) options.body = JSON.stringify(body);
-       const res = await fetch(this.baseURL + url, options);
-       const data = await res.json();
-       if (!res.ok) throw new Error(data.detail || '请求失败');
-       return data;
-     }
-
-     async getInvitation(token) { return this.request('GET', `/${token}`); }
-     async getDishes(token) { return this.request('GET', `/${token}/dishes`); }
-     async submitOrder(token, data) { return this.request('POST', `/${token}/order`, data); }
-     async getOrder(token) { return this.request('GET', `/${token}/order`); }
-   }
-   export const guestApi = new GuestApiClient();
-   ```
-
-2. **Modify existing ApiClient** — add a `guest` flag to skip auth/redirect. Less clean, risks regressions in existing flows.
-
-**Choose option 1** because it isolates guest concerns completely, and the guest page is a standalone SPA route anyway.
+That's it. Two lines in `package.json`. No new backend deps, no new build tools, no new CSS frameworks.
 
 ---
 
-## Research Area 3: Mobile-First Responsive Design for Guest Order Page
+## Recommended Stack
 
-### Recommendation: Standalone mobile-first page, separate from main SPA layout (HIGH confidence)
+### Core Technologies (Runtime MD3 Engine)
 
-**Context:** Guest links are shared via WeChat / messaging apps. Users will open them on mobile browsers. The page must:
-- Load fast on mobile (no heavy SPA bundle if possible, but we're using React so we optimize within that)
-- Look like a native food ordering page (think: 美团/饿了么 dish list)
-- Not show the sidebar/header/login chrome of the main app
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `@material/material-color-utilities` | `^0.4.0` (latest: 0.4.0) | **The** HCT color space + MD3 DynamicScheme + tonal palette engine. Converts a single source color → full 6-family × 13-tone palette + semantic role assignments for light/dark. | Google's official, authoritative implementation. **Only JS library that implements HCT** (Hue-Chroma-Tone, the CAM16-xy-L* color space Material You is built on). Any "MD3 theme" feature is fundamentally an MCU wrapper. Already proven in `generate-tokens.cjs` which produces the exact `tokens.css` format we override at runtime. |
+| `react-colorful` | `^5.8.0` (latest: 5.8.0, released 2026-07-13) | Color picker component for the custom theme editor UI. | 3.1 KB gzipped, **zero dependencies**, tree-shakeable, WAI-ARIA accessible, mobile-friendly (touch support), React 19 compatible (peer dep `react >=16.8.0`). Supports HEX/RGB/HSL/HSV models and ships `HexColorInput` companion for typed hex entry. The de-facto modern React color picker — 3.5k stars, used by Storybook/Leva. 12× lighter than legacy `react-color`. |
 
-**Frontend architecture decision:**
+### Runtime CSS Override Mechanism (No Library — Native Browser API)
 
-The guest page should be a **separate route in the same React SPA** but with a **completely different layout** — no `PcLayout`, no `Sidebar`, no `AuthProvider` dependency.
+The mechanism for applying a generated theme at runtime is the **CSS Custom Properties API**, already a native browser standard. No library is needed:
 
-**Route setup in App.jsx:**
-```jsx
-{/* Guest route — outside PcLayout, no ProtectedRoute wrapper */}
-<Route path="/guest/:token" element={<GuestOrderPage />} />
-<Route path="/guest/:token/order" element={<GuestOrderSuccessPage />} />
+```javascript
+// Apply a single overridden token at runtime
+document.documentElement.style.setProperty('--md-color-primary', '#056d37');
+
+// Or, the cleaner pattern: inject a <style> block with a full theme object
+// (matches how the existing tokens.css is structured for :root + [data-theme="dark"])
 ```
 
-Placing it before the `PcLayout` route ensures it renders without the sidebar. The `GuestOrderPage` component manages its own state using `GuestApiClient` (no `AuthProvider` needed).
+**Why native over a library:** The existing `tokens.css` is 100% CSS custom properties on `:root` (light) and `[data-theme="dark"]` (dark). The entire app already consumes tokens via `var(--md-color-*)`. Runtime override is a one-liner per token. Libraries like `@vanilla-extract/dynamic-theme-plugin` or CSS-in-JS would add complexity and fight the existing token architecture. **Stay native.**
 
-**Mobile-first CSS approach:**
+### Backend Persistence (No New Libraries)
 
-The existing `frontend/src/css/styles.css` uses CSS custom properties for theming. For the guest page:
+| Concern | Solution | Notes |
+|---------|----------|-------|
+| Custom theme storage (cross-device sync) | New SQLAlchemy model + Alembic migration | One new table `custom_themes` (or `user_themes`): `id`, `user_id` FK, `name`, `theme_data` (JSON: source colors + optional overrides), `created_at`, `updated_at`. JSON column type is supported by SQLite via SQLAlchemy's `JSON` type. |
+| API endpoints | New FastAPI router `routers/themes.py` | Standard CRUD: `GET /api/themes`, `POST /api/themes`, `PUT /api/themes/{id}`, `DELETE /api/themes/{id}`. Follows existing router pattern exactly. |
+| Schema validation | Pydantic v2 schemas in `schemas/theme.py` | `ThemeCreate`, `ThemeUpdate`, `ThemeResponse`. Validate that `theme_data.source_color` is a valid `#RRGGBB` hex string; reject if malformed. |
+| Hybrid storage | localStorage (presets + current selection) + DB (custom themes) | localStorage keys: `fc_theme_presets_v1`, `fc_active_theme_id`, `fc_season_autoswitch`. The existing `fc_theme` key (light/dark mode) is preserved untouched. |
 
-1. **Use `100dvh`** (dynamic viewport height) — handles mobile browser chrome (address bar) properly
-2. **Touch-friendly targets:** minimum 44px tap targets (WCAG guidelines, also Apple HIG)
-3. **No sidebar/bottom bar** — guest page is a single-column card layout
-4. **Sticky bottom cart bar** — standard food-ordering pattern (like 美团)
-5. **Image lazy loading** — dish images via `<img loading="lazy">` for mobile bandwidth
-6. **Avoid hover states** — design for tap, not mouse
+**No new backend dependencies** — `sqlalchemy>=2.0.0`, `alembic>=1.12.0`, `pydantic>=2.0.0` are all already in `pyproject.toml`.
 
-**Recommended CSS pattern:**
-```css
-/* Guest page — mobile-first, single column */
-.guest-page {
-  min-height: 100dvh;
-  max-width: 480px;        /* cap width on tablets/desktop */
-  margin: 0 auto;          /* center on wider screens */
-  padding-bottom: 80px;    /* space for sticky cart bar */
-}
+### Supporting Libraries (None Required)
 
-.guest-dish-card {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  /* tap target: entire card is clickable */
-}
+| Library | Purpose | When to Use |
+|---------|---------|-------------|
+| *(none)* | — | The MCU + react-colorful + native CSS variables combo covers every v1.5 requirement. See "Alternatives Considered" for libraries explicitly evaluated and rejected. |
 
-.guest-dish-card img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-}
+### Development Tools (No New Tools)
 
-.guest-cart-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-width: 480px;        /* match parent */
-  margin: 0 auto;
-  padding: 12px 16px;
-  background: var(--color-card);
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-}
-
-.guest-submit-btn {
-  min-height: 44px;        /* touch-friendly */
-  width: 100%;
-  border-radius: 8px;
-}
-```
-
-**WeChat in-app browser considerations:**
-- WeChat WebView supports standard ES2020+ and CSS custom properties — no polyfills needed
-- Images served from same origin (no CORS issues with `/uploads/`)
-- No special meta tags needed for basic functionality
-- Add `<meta name="viewport" content="width=device-width, initial-scale=1.0">` (likely already present in `index.html`)
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| *(none)* | — | Vite 8, ESLint 10, stylelint 17, and the existing `npm run gen:tokens` pipeline already cover development. The `generate-tokens.cjs` script remains as the **build-time** generator for the 5 preset themes (deterministic output committed to repo); MCU runtime is used only for **user-created custom themes**. |
 
 ---
 
-## Research Area 4: Link Expiration Strategy
+## Critical Design Decision: HCT vs. Other Color Spaces
 
-### Recommendation: Database-level check on each request (HIGH confidence)
+The feature spec asks users to "adjust MD3 primary/primary-container/secondary/accent colors." A naive implementation would let users directly edit `--md-color-primary` as a hex value. **This is wrong for MD3.** MD3 colors are not independent — they are *derived* from a small set of source colors via HCT tonal palettes.
 
-**Why not Redis:** The project uses SQLite. Adding Redis for a single feature (2-hour link expiry) is massive overkill — new infrastructure, new dependency, new failure mode.
+### The Correct Mental Model (from `generate-tokens.cjs`)
 
-**Why not in-memory:** Single-process app (uvicorn single worker). Works technically, but:
-- Lost on restart (all active invitations become invalid)
-- Doesn't scale if they ever move to multi-worker
-- DB is already right there and fast enough
-
-**Database-level check pattern:**
-```python
-# On every guest request:
-from datetime import datetime
-
-if invitation.expires_at < datetime.now():
-    raise HTTPException(status_code=410, detail="邀请链接已过期")
+```
+User picks 1-3 source colors (primary, optional secondary, optional tertiary)
+    ↓ (MCU themeFromSourceColor)
+HCT color space computation
+    ↓
+6 tonal palettes (primary/secondary/tertiary/neutral/neutral-variant/error)
+    ↓
+~30 semantic role tokens (light scheme + dark scheme)
+    ↓
+CSS custom properties on :root + [data-theme="dark"]
 ```
 
-**Performance concern — is this fast enough?**
+**Implication for the UI:** The custom theme editor should let users pick **source colors** (typically just primary, optionally secondary/tertiary), and MCU generates the *entire* derived token set. Users do NOT hand-edit 30+ tokens. This is how Material Theme Builder, Android 12+ Material You, and every compliant MD3 implementation works.
 
-With SQLite WAL mode (already enabled) and an index on `guest_invitations.token`, a `SELECT ... WHERE token = ?` query takes microseconds. At the scale of a family app (single-digit concurrent guests), this is negligible.
+**This is why MCU is non-negotiable** — no other JS library can perform the HCT → tonal palette → DynamicScheme derivation. `culori` (v4.0.2) explicitly does NOT support HCT (verified at culorijs.org/color-spaces/ — supports Oklab/Oklch/CIELAB/Jzazbz/ICtCp, but no HCT). `color` (v5.0.3) likewise has no HCT support.
 
-**Index requirement:**
-```python
-token = Column(String(36), unique=True, nullable=False, index=True)
-```
+### Does react-colorful Need HCT/OKLCH Support? **No.**
 
-The `unique=True` constraint implicitly creates an index in most databases. For SQLite specifically, the unique index handles the lookup efficiently.
+The downstream consumer explicitly asks this. Answer: **react-colorful's lack of HCT/OKLCH modes is irrelevant.** The picker only needs to capture a single source color as HEX/RGB. MCU then does all HCT math. The picker is the *input*; MCU is the *engine*. Conflating them is a category error.
 
-**Expiration value:** Set `expires_at = created_at + 2 hours` at creation time. No background cleanup job needed — expired links are simply rejected on access. For hygiene, a manual cleanup admin endpoint can be added later.
+If a future phase wanted a perceptually-uniform picker (constant-lightness hue/chroma plane), `react-colorful` would be swapped for a custom canvas picker using `culori`'s `okhsl` mode — but that is out of scope for v1.5 and not needed.
 
 ---
 
-## Research Area 5: Extending SQLAlchemy Models Without Disrupting Order Model
+## Installation
 
-### Recommendation: New `guest_invitations` table + minimal `Order` model change (HIGH confidence)
+```bash
+# From frontend/ directory
 
-**The key insight:** The PROJECT.md already decided that `user_id` on `Order` can be `NULL` for guest orders. This is the minimal-change approach. Let's verify the impact.
+# 1. PROMOTE material-color-utilities from devDep to runtime dep
+#    (it must ship in the bundle now, not just be a build tool)
+npm install @material/material-color-utilities@^0.4.0
 
-**Current `Order` model (`backend/app/models/order.py`):**
-```python
-user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ← currently NOT NULL
+# 2. ADD the color picker
+npm install react-colorful@^5.8.0
+
+# 3. REMOVE material-color-utilities from devDependencies
+#    (it should no longer be in both sections)
+npm uninstall -D @material/material-color-utilities 2>/dev/null || true
+# Then re-add to dependencies if step 1 didn't already move it:
+# Final state: it lives ONLY in "dependencies".
 ```
 
-**Required change:**
-```python
-user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # ← allow NULL for guest orders
+**Verification after install:**
+
+```bash
+# Confirm package.json has MCU in dependencies (not devDependencies) and react-colorful added
+node -e "const p=require('./package.json'); console.log('deps:', p.dependencies); console.log('devDeps:', p.devDependencies)"
 ```
 
-**Impact analysis — what depends on `user_id` being non-null?**
+**Resulting `package.json` diff:**
 
-1. **`OrderDetailResponse` schema** — has `user_id: int` → change to `user_id: Optional[int] = None`
-2. **`create_order` service** — always passes `user_id` → guest flow passes `None`
-3. **`create_order_auto_split`** — same pattern, caller decides
-4. **Order list queries** — filter by `user_id` → guest orders won't appear in user order lists (correct behavior — guests don't have accounts)
-5. **`Order.user` relationship** — must handle `None`: change to `user = relationship("User", foreign_keys=[user_id], lazy="selectin")` and handle None in response building
-6. **`CustomerInfo` in response** — already `Optional[CustomerInfo] = None` in schema — works perfectly
-
-**New model — `GuestInvitation` (separate table):**
-
-See the model definition in Research Area 1 above. This is a clean separation:
-- `guest_invitations` table stores invitation lifecycle (token, expiry, used flag)
-- `guest_invitations.order_id` links to the created order (set when guest submits)
-- `orders.guest_invitation_id` (optional reverse FK) — NOT needed; the invitation points to the order, not vice versa
-
-**Alembic migration approach:**
-
-Two changes in one migration:
-1. Create `guest_invitations` table
-2. Alter `orders.user_id` from `NOT NULL` to `NULL` (SQLite limitation: this requires table recreation via `batch_alter_table`)
-
-```python
-# Alembic migration
-def upgrade():
-    # Create new table
-    op.create_table(
-        'guest_invitations',
-        sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column('token', sa.String(36), nullable=False, unique=True),
-        sa.Column('created_by', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
-        sa.Column('chef_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
-        sa.Column('is_used', sa.Boolean(), nullable=False, server_default='0'),
-        sa.Column('order_id', sa.Integer(), sa.ForeignKey('orders.id'), nullable=True),
-        sa.Column('expires_at', sa.DateTime(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_index('ix_guest_invitations_token', 'guest_invitations', ['token'], unique=True)
-
-    # SQLite batch alter for nullable user_id
-    with op.batch_alter_table('orders') as batch_op:
-        batch_op.alter_column('user_id', nullable=True)
-```
-
-**Important — SQLite batch_alter_table:** SQLite doesn't support `ALTER COLUMN`. Alembic's `batch_alter_table` handles this by creating a new table, copying data, dropping old, renaming. This is safe but worth testing.
-
----
-
-## New Dependencies Required
-
-| Library | Version | Purpose | Why Needed |
-|---------|---------|---------|------------|
-| None | — | — | All required technology (`uuid`, `datetime`, FastAPI path params, SQLAlchemy) is already in the stack |
-
-**No new pip/npm packages required.** This is a significant advantage — the entire feature can be built with existing dependencies:
-- `uuid.uuid4()` — stdlib, already imported in `order_service.py`
-- `fastapi.APIRouter` — already used for all routers
-- `sqlalchemy` — already the ORM
-- `alembic` — already the migration tool
-- `react-router-dom` — already handles dynamic routes (`/guest/:token`)
-
----
-
-## Recommended New File Structure
-
-```
-backend/
-  app/
-    models/
-      guest_invitation.py          # NEW — GuestInvitation model
-    routers/
-      guest.py                     # NEW — guest routes (no JWT auth)
-    services/
-      guest_service.py             # NEW — invitation CRUD, guest order creation
-    schemas/
-      guest.py                     # NEW — request/response schemas for guest endpoints
-
-frontend/
-  src/
-    api/
-      guestClient.js               # NEW — standalone API client (no auth)
-    pages/
-      GuestOrderPage.jsx           # NEW — mobile-first dish browsing + cart
-      GuestOrderSuccessPage.jsx    # NEW — order confirmation / read-only view
-```
-
-**Files to modify (minimal changes):**
-
-| File | Change | Scope |
-|------|--------|-------|
-| `backend/app/models/__init__.py` | Add `GuestInvitation` import | 2 lines |
-| `backend/app/models/order.py` | `user_id` nullable → `True` | 1 line |
-| `backend/app/schemas/order.py` | `user_id: int` → `Optional[int]` | 2 lines |
-| `backend/app/main.py` | Register `guest.router` | 2 lines |
-| `frontend/src/App.jsx` | Add guest routes (no ProtectedRoute) | 3 lines |
-| `frontend/vite.config.js` | No change needed — `/api/guest/*` already proxied | 0 lines |
-
----
-
-## Architecture Diagram — Guest Flow
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ Guest (mobile browser, via WeChat/SMS link)                  │
-│ Opens: https://family-chef.example.com/guest/{uuid4}         │
-└─────────────────────┬────────────────────────────────────────┘
-                      │
-                      ▼
-┌──────────────────────────────────────────────────────────────┐
-│ React: GuestOrderPage                                         │
-│ Route: /guest/:token (NO ProtectedRoute, NO AuthProvider)    │
-│ API: GuestApiClient → /api/guest/{token}                     │
-└─────────────────────┬────────────────────────────────────────┘
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-┌────────────────────┐  ┌─────────────────────────┐
-│ GET /api/guest/T   │  │ POST /api/guest/T/order  │
-│ (validate token,   │  │ (submit order, mark      │
-│  return chef info) │  │  invitation as used)     │
-└────────┬───────────┘  └──────────┬──────────────┘
-         │                         │
-         ▼                         ▼
-┌──────────────────────────────────────────────────────────────┐
-│ FastAPI: guest.py router                                      │
-│ Dependency: get_valid_invitation(token, db)                   │
-│ Service: guest_service.py                                     │
-│   - validate_invitation() → check expiry + used flag          │
-│   - get_chef_dishes() → query DishChef for bound chef         │
-│   - create_guest_order() → new Order(user_id=NULL) + items    │
-│   - notify_chef() → reuse FeishuClient.send_order_notification│
-└─────────────────────┬────────────────────────────────────────┘
-                      │
-                      ▼
-┌──────────────────────────────────────────────────────────────┐
-│ SQLite                                                        │
-│ guest_invitations (NEW) ←→ orders (user_id now nullable)     │
-│                └──→ users (created_by, chef_id FKs)           │
-└──────────────────────────────────────────────────────────────┘
+```diff
+ "dependencies": {
++  "@material/material-color-utilities": "^0.4.0",
+   "@material-symbols-svg/react": "^0.13.0",
+   "marked": "^18.0.3",
+   "react": "^19.2.5",
+   "react-dom": "^19.2.5",
+-  "react-router-dom": "^7.15.0"
++  "react-router-dom": "^7.15.0",
++  "react-colorful": "^5.8.0"
+ },
+ "devDependencies": {
+-  "@material/material-color-utilities": "^0.4.0",
+   "@eslint/js": "^10.0.1",
+   ...
+ }
 ```
 
 ---
 
 ## Alternatives Considered
 
-| Decision Point | Recommended | Alternative | Why Not |
-|----------------|-------------|-------------|---------|
-| Token format | UUID4 | JWT | Can't revoke/mark-used statelessly; need DB anyway for one-time constraint |
-| Token format | UUID4 | `secrets.token_urlsafe` | Also fine, but UUID4 is more conventional and already used in codebase |
-| Auth bypass | Separate router + token dep | `auto_error=False` on HTTPBearer | Guest routes use path param, not Bearer header; different auth semantics entirely |
-| API client | Separate `GuestApiClient` | Modify existing `ApiClient` | Isolates guest concerns; avoids 401-redirect regression risk |
-| Guest page layout | Separate React route, no PcLayout | Iframe / separate SPA / SSR | Same SPA is simplest, React Router handles it naturally |
-| Guest page scope | Part of main SPA build | Separate Vite entry point / micro-front | Overkill for one page; increases build complexity |
-| Expiration | DB check on access | Redis TTL | No Redis in stack; would add infra dependency for one feature |
-| Expiration | DB check on access | In-memory dict | Lost on restart; doesn't survive redeploy |
-| Order model | `user_id` nullable | Separate `GuestOrder` table | Duplicates order logic; the PROJECT.md already decided on nullable FK |
-| Invitation storage | Dedicated `guest_invitations` table | Embed in Order as fields | Violates separation of concerns; invitation lifecycle ≠ order lifecycle |
+| Category | Recommended | Alternative | Why Not (or When to Use Alternative) |
+|----------|-------------|-------------|--------------------------------------|
+| MD3 color engine | `@material/material-color-utilities` | `culori` (v4.0.2) | **Does NOT support HCT.** Only Oklab/Oklch/CIELAB/Jzazbz. Cannot generate MD3 tonal palettes. Would require reimplementing Google's CAM16-xy-L* math — multi-month effort, guaranteed bugs. Use culori ONLY if a future phase needs non-MD3 perceptual color work (e.g., data viz palettes). |
+| MD3 color engine | `@material/material-color-utilities` | `color` (v5.0.3, by Qix) | General-purpose converter (RGB/HSL/HSV/Lab). No HCT, no DynamicScheme, no tonal palettes. Strictly inferior to MCU for this use case. |
+| MD3 color engine | `@material/material-color-utilities` | `@material/web` (Material Web Components) | Different abstraction level — full web components, not a color library. Pulls in the entire MWC runtime. Massive overkill and would conflict with the existing custom React component layer built in v1.2. |
+| Color picker | `react-colorful` | `react-color` (v2.19.3) | **12× larger bundle** (~38 KB vs 3.1 KB gzipped). Built on class components, less accessible, slower maintenance cadence. Was the pre-2021 default; `react-colorful` is the modern replacement (acknowledged in `react-color`'s own ecosystem migration guides). |
+| Color picker | `react-colorful` | `react-colorful` v3 beta (`3.0.0-beta.1`) | Beta. Wait for stable. v5.8.0 is the current stable line and fully covers needs. |
+| Color picker | `react-colorful` | Custom `<input type="color">` | Native color input is inconsistent across browsers, has no HSV/HSL plane, poor UX for design work, and cannot be styled to match MD3. Acceptable only for a trivial "pick primary color" MVP — but the feature spec calls for a real editor with real-time preview, so `react-colorful` is the floor. |
+| Color picker | `react-colorful` | `vanilla-colorful` | Web-component port of react-colorful. Only choose if migrating off React — we're not. |
+| Runtime CSS application | Native `style.setProperty` / injected `<style>` | CSS-in-JS (styled-components, emotion) | Would fight the existing CSS custom property token system. The entire app reads `var(--md-color-*)` from static CSS files; CSS-in-JS cannot override `:root` custom properties more efficiently than a 3-line native helper. Adds ~12 KB+ for zero benefit. |
+| Theme persistence | SQLAlchemy `JSON` column | Separate normalized tables (one row per token override) | Over-normalized. A theme is a small opaque blob of source colors + optional token overrides — JSON column is the right granularity. Normalizing would force N+1 queries and complex migrations for no query benefit (themes are always loaded whole). |
+| State management | React Context (existing pattern) | Zustand / Jotai / Redux | The existing app uses React Context for all global state (`AuthContext`, `CategoriesContext`, `ToastContext`). A `ThemeContext` fits this pattern perfectly. Adding a state library for one feature violates the v1.2 architecture decision ("No state management library"). |
+
+---
+
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `culori` for MD3 palette generation | **No HCT support** (verified). Would produce non-compliant MD3 palettes that don't match Material You behavior. | `@material/material-color-utilities` |
+| `react-color` (any version) | 12× bundle bloat vs `react-colorful`, class-component architecture, declining maintenance, less accessible. | `react-colorful@^5.8.0` |
+| CSS-in-JS libraries (styled-components, emotion, stitches) | Conflicts with the existing static CSS custom property token architecture. Cannot override `:root` vars more efficiently than native API. Adds 10-50 KB for zero gain. | Native `document.documentElement.style.setProperty()` + injected `<style>` for bulk theme application. |
+| `@material/web` (Material Web Components) | Full web-component framework; conflicts with existing v1.2 React primitive components. Would create two parallel component systems. | Existing `components/primitives/*` (Button, Card, Input, etc.) + react-colorful for the picker. |
+| Client-side state libraries (Zustand/Redux) | Violates established v1.2 architecture (Context-only). One feature does not justify a global state library. | `ThemeContext.jsx` following the existing `AuthContext.jsx` pattern. |
+| `color` / `chroma-js` / `tinycolor2` | Redundant with MCU for HCT work; MCU's `Color` utility namespace covers ARGB↔hex↔RGB conversions. Adding a second color lib creates conversion ambiguity. | MCU's built-in `hexFromArgb` / `argbFromHex` (already used in `generate-tokens.cjs`). |
+| Theme-builder SaaS / runtime theme APIs (e.g., remote Material Theme Builder) | Adds network dependency + latency to a feature that should be instant and offline-capable. MCU runs client-side in <5ms. | MCU, fully client-side. |
+
+---
+
+## Stack Patterns by Variant
+
+**If the editor lets users pick only 1 source color (primary):**
+- Use `MCU.themeFromSourceColor(primaryArgb)` — single-argument form.
+- MCU auto-derives secondary + tertiary via `temperature`/`blend` modules.
+- Simplest UX; recommended for v1.5 MVP.
+
+**If the editor lets users pick primary + secondary + tertiary (3 source colors):**
+- Use `MCU.themeFromSourceColor(primaryArgb, [{name:'secondary', value: secArgb, blend:true}, {name:'tertiary', value: tertArgb, blend:true}])`.
+- This is **exactly** what `generate-tokens.cjs` already does for the default theme (lines 162-165). Copy that pattern at runtime.
+- More control; recommended if discuss-phase confirms 3-color editor.
+
+**If the editor lets users override individual semantic tokens (power-user mode):**
+- Generate the base scheme from source colors (MCU), then apply user overrides on top as a final layer.
+- Overrides stored as a sparse map: `{"--md-color-primary": "#custom"}` — only non-null entries applied.
+- Do NOT allow overriding tonal palette tokens (`--md-palette-*`) — those are always MCU-derived to stay MD3-compliant.
+
+**If a preset theme needs to be "baked" into the repo (the 4 seasonal presets):**
+- Generate them at build time by extending `generate-tokens.cjs` to accept a `--presets` flag that emits 4 additional `tokens-spring.css` / `tokens-summer.css` / etc. files OR a single `presets.css` with `[data-theme-preset="spring"]` selectors.
+- This keeps presets deterministic and FOUC-free (decision D-86 in PROJECT.md: "MD3 令牌生成一次/hardcode 模式 — 避免 FOUC").
+- Runtime custom themes use MCU live; preset themes use pre-built CSS classes.
+
+---
+
+## Version Compatibility
+
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `@material/material-color-utilities@0.4.0` | Vite 8, esbuild, Node 18+ | **Known ESM packaging defect:** several `.js` files have relative imports missing `.js` extensions. **Node native ESM loader fails** (must patch — see `ensurePackageImportable()` in `generate-tokens.cjs`). **Vite/esbuild bundler resolves them automatically** — no patch needed for browser runtime. ⚠ If you ever import MCU from a Node ESM context at runtime (e.g., SSR), apply the patch. For pure client-side Vite usage, no action needed. |
+| `@material/material-color-utilities@0.4.0` | React 19 | MCU is framework-agnostic (pure TS). No React coupling. Works in any JS runtime. |
+| `react-colorful@5.8.0` | React 19.2.5, React DOM 19.2.5 | Peer dep `react >=16.8.0` (hooks). React 19 confirmed compatible — no breaking changes in 5.x line. Latest release 2026-07-13. |
+| `react-colorful@5.8.0` | Vite 8, ESLint 10 | Pure ESM (`"type": "module"` not required by consumer). Ships `dist/index.mjs`. No CJS-only gotchas. |
+| MCU + react-colorful | Each other | No shared deps, no peer conflicts. Both are leaf libraries (MCU has 0 deps; react-colorful has 0 deps). Safe to coexist. |
+| New `ThemeContext` | Existing `AuthContext`/`ToastContext`/`CategoriesContext` | Follows identical pattern (Context + Provider + `useTheme` hook). No interaction risk. |
+
+---
+
+## Bundle Size Impact
+
+Measured via `npm pack --dry-run` (tarball sizes; real tree-shaken bundle is smaller):
+
+| Package | Tarball | Estimated gzipped runtime (tree-shaken) | Notes |
+|---------|---------|------------------------------------------|-------|
+| `react-colorful` | 104 KB | **~3.1 KB** | Only `HexColorPicker` + `HexColorInput` imported → rest tree-shaken. Documented 2.8 KB min+gzip by maintainer. |
+| `@material/material-color-utilities` | 177 KB | **~15-25 KB** | Importing `themeFromSourceColor` + `argbFromHex` + `hexFromArgb` pulls in `hct` + `palettes` + `scheme` + `dynamiccolor` modules. Cannot easily tree-shake further (scheme generation needs the HCT stack). Acceptable for a theme editor that's lazy-loaded behind `/theme` route. |
+| **Total new client JS** | — | **~20-28 KB gzipped** | Mitigation: **code-split** the `/theme` route + MCU import behind `React.lazy(() => import('./pages/ThemePage.jsx'))` so it never loads on the main app shell. Theme *application* (the runtime `setProperty` calls) is <1 KB and loads eagerly. |
+
+**Recommendation:** Lazy-load `ThemePage.jsx` (and therefore MCU + react-colorful) via React.lazy. Only the tiny `ThemeContext` + the active theme's CSS-variable-application logic ship to the main bundle. Users who never visit `/theme` never download MCU.
+
+---
+
+## Integration with Existing Token Architecture
+
+This is the single most important architectural consideration, and it is **clean**:
+
+### What Already Exists (from v1.2 — do not break)
+- `frontend/src/css/tokens.css`: ~240 lines of CSS custom properties on `:root` (light) and `[data-theme="dark"]` (dark). Defines `--md-color-*` semantic roles AND `--md-palette-{family}-{tone}` tonal palettes (13 tones × 6 families = 78 palette tokens).
+- All components consume tokens via `var(--md-color-*)` — no hardcoded colors.
+- `frontend/src/utils/index.js` → `theme` object manages `data-theme` attribute (light/dark) on `<html>`, persisted to `localStorage['fc_theme']`.
+
+### What v1.5 Adds
+1. **`ThemeContext.jsx`** — new context providing `{ activeTheme, setTheme, customThemes, presets, seasonAutoswitch }`. Mirrors `AuthContext` pattern.
+2. **Theme application layer** — a `applyTheme(theme)` utility that:
+   - If theme is a preset: toggles a `data-theme-preset="spring"` attribute (preset CSS lives in a new `presets.css`, generated at build time by extended `generate-tokens.cjs`).
+   - If theme is custom: calls MCU `themeFromSourceColor()` → writes derived tokens to `document.documentElement.style` (inline style overrides `:root` cascade — higher specificity, no `!important` needed).
+3. **`ThemePage.jsx`** — lazy-loaded route at `/theme`. Houses the 5 preset cards + custom theme editor (react-colorful pickers + live preview).
+4. **No changes** to `tokens.css`, no changes to existing components, no changes to `theme` object (light/dark toggle stays independent in header per spec).
+
+### Specificity Strategy (Critical)
+- `:root { --md-color-primary: #056d37; }` (from tokens.css) → specificity 0,0,1,0 (pseudo-class)
+- `document.documentElement.style.setProperty('--md-color-primary', '#...')` → inline style → highest specificity, wins.
+
+This means **runtime-applied custom themes cleanly override the default tokens without `!important`** and without modifying `tokens.css`. To reset, call `document.documentElement.style.removeProperty('--md-color-primary')` for each token — the cascade falls back to `:root`. ✅
 
 ---
 
 ## Sources
 
-- **FastAPI `auto_error` on security schemes:** Context7 `/fastapi/fastapi` — release notes 0.11.0, confirmed `auto_error` parameter on `HTTPBearer`
-- **SQLAlchemy nullable FK patterns:** Context7 `/websites/sqlalchemy_en_20` — `Mapped[Optional[int]]` with `ForeignKey`, confirmed nullable inference from `Optional[]`
-- **React Router layout routes:** Context7 `/remix-run/react-router` — layout routes without `path`, `<Outlet />` for child rendering
-- **FastAPI router organization:** Context7 `/fastapi/fastapi` — `APIRouter`, `include_router` with prefix/tags
-- **Alembic batch mode for SQLite:** SQLAlchemy/Alembic docs — `batch_alter_table` required for column nullability changes on SQLite
-- **UUID4 entropy analysis:** Python stdlib docs — `uuid.uuid4()` generates 122 random bits; NIST considers 112 bits sufficient for authentication tokens
-- **Mobile touch targets:** WCAG 2.5.5 Target Size (Level AAA) — minimum 44×44 CSS pixels; Apple HIG recommends 44×44 points
+### HIGH confidence (verified against official sources)
+
+| Source | What was verified | URL |
+|--------|-------------------|-----|
+| `@material/material-color-utilities` npm registry | Latest version `0.4.0`, license Apache-2.0, no deps | `npm view @material/material-color-utilities` (2026-07-31) |
+| Material Color Utilities GitHub (material-foundation) | Component list confirms `hct`, `palettes`, `scheme`, `dynamiccolor`, `blend` modules; TS availability | https://github.com/material-foundation/material-color-utilities |
+| `react-colorful` npm registry | Latest `5.8.0`, peer dep `react>=16.8.0`, 0 dependencies | `npm view react-colorful` (2026-07-31) |
+| `react-colorful` GitHub README | 3.1 KB gzipped, 12× lighter than react-color, WAI-ARIA, mobile-friendly, `HexColorInput` companion | https://github.com/omgovich/react-colorful |
+| `culori` color spaces docs | **HCT NOT supported** in v4.0.2 (supports Oklab/Oklch/CIELAB/Jzazbz/ICtCp only) — decisive for rejecting culori as MCU alternative | https://culorijs.org/color-spaces/ |
+| `color` npm registry | Latest `5.0.3`, no HCT support | `npm view color` (2026-07-31) |
+| `react-color` npm registry | Latest `2.19.3`, 12× larger than react-colorful | `npm view react-color` (2026-07-31) |
+| Project source `scripts/generate-tokens.cjs` | Confirms MCU `themeFromSourceColor` API + 3-source-color pattern + Node ESM packaging defect + bundler-works-fine note | `/home/temila/family_chef/scripts/generate-tokens.cjs` |
+| Project source `frontend/src/css/tokens.css` | Confirms exact token names (`--md-color-*`, `--md-palette-*`) and `:root` / `[data-theme="dark"]` structure | `/home/temila/family_chef/frontend/src/css/tokens.css` |
+| Project source `frontend/package.json` | Confirms MCU currently in `devDependencies`, react-colorful absent | `/home/temila/family_chef/frontend/package.json` |
+| Project source `frontend/src/utils/index.js` | Confirms existing `theme` object + `fc_theme` localStorage key + `data-theme` attribute pattern | `/home/temila/family_chef/frontend/src/utils/index.js` |
+
+### MEDIUM confidence
+
+| Source | What was verified | Confidence limiter |
+|--------|-------------------|--------------------|
+| Bundle size estimates (3.1 KB react-colorful, 15-25 KB MCU) | Tarball inspection + maintainer README claim | Actual tree-shaken size depends on which MCU exports are imported — should be validated with `vite build` + bundle analyzer during Phase 1 implementation. |
+
+### Not needed ( Context7 lookup )
+
+MCU and react-colorful have minimal docs beyond their GitHub READMEs and source code; the existing `generate-tokens.cjs` in-repo is the most authoritative usage example for MCU's API. Context7 was not queried because the in-repo working code already demonstrates the exact API surface needed.
 
 ---
 
-*Stack research: 2026-05-24*
+*Stack research for: v1.5 Dynamic MD3 Theme Customization*
+*Researched: 2026-07-31*
