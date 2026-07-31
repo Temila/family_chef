@@ -55,7 +55,8 @@ class Settings:
         self.MAX_UPLOAD_SIZE: int = upload.get("max_size", 5 * 1024 * 1024)
 
         cors = data.get("cors", {})
-        self.CORS_ORIGINS: list[str] = cors.get("origins", ["*"])
+        # 回退默认值与 config.yaml 开发环境保持一致：禁止 ["*"]（与 allow_credentials=True 冲突且不安全）
+        self.CORS_ORIGINS: list[str] = cors.get("origins", ["http://localhost:5173", "http://localhost:3000"])
 
 
 class SmartFeatureSettings:

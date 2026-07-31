@@ -56,6 +56,18 @@ def test_app_url_defaults_to_placeholder():
 
 
 # =============================================================================
+# Settings.CORS_ORIGINS 回退默认值 (TD-03: CORS 加固)
+# =============================================================================
+
+def test_cors_origins_defaults_to_dev_origins():
+    """当 YAML 未提供 cors.origins 时，回退默认值必须是开发环境来源，而非 ["*"]"""
+    from app.config import Settings
+
+    s = Settings({})
+    assert s.CORS_ORIGINS == ["http://localhost:5173", "http://localhost:3000"]
+
+
+# =============================================================================
 # Wish 模型新增列 (D-M01)
 # =============================================================================
 

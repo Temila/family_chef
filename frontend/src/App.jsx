@@ -95,7 +95,7 @@ function WishDeepLinkRedirect() {
   if (user.role === 'admin') base = '/admin/wishes';
   else if (user.role === 'chef') base = '/chef/wishes';
   else base = '/my-wishes';
-  return <Navigate to={base + '?wish=' + id} replace />;
+  return <Navigate to={base + '?wish=' + encodeURIComponent(id)} replace />;
 }
 
 function App() {
