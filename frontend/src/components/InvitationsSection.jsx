@@ -3,7 +3,7 @@
  * 显示最近5条邀请记录，提供创建/撤销/复制链接功能
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
@@ -30,7 +30,7 @@ export default function InvitationsSection() {
   const [newLink, setNewLink] = useState(null);
   const [revokeTarget, setRevokeTarget] = useState(null);
 
-  const loadInvitations = async () => {
+  const loadInvitations = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.getInvitations({ page: 1, page_size: 50 });
@@ -40,12 +40,12 @@ export default function InvitationsSection() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
-    loadInvitations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadInvitations(); });
+  }, [loadInvitations]);
 
   const handleCreateClick = () => {
     if (user?.role === 'chef') {

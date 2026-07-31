@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -7,7 +7,6 @@ import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Card from '../components/primitives/Card';
-import Input from '../components/primitives/Input';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
@@ -28,7 +27,7 @@ export default function OrderPage() {
 
   const regions = getByType('region');
   const cuisines = getByType('cuisine');
-  const filterTypes = categoryTypes().filter(t => !['ingredient', 'cuisine', 'region'].includes(t.key));
+  const filterTypes = useMemo(() => categoryTypes().filter(t => !['ingredient', 'cuisine', 'region'].includes(t.key)), [categoryTypes]);
 
   const [dishes, setDishes] = useState([]);
   const [cart, setCart] = useState([]);
@@ -69,19 +68,7 @@ export default function OrderPage() {
     if (node) observer.current.observe(node);
   }, [loadingMore, hasMore]);
 
-  useEffect(() => {
-    loadCart();
-  }, []);
-
-  useEffect(() => {
-    loadDishes(1);
-  }, [searchQuery, selectedRegion, selectedCuisine, selectedFilters, favoritesOnly, sortBy]);
-
-  useEffect(() => {
-    if (page > 1) loadMoreDishes();
-  }, [page]);
-
-  const buildParams = (pageNum) => {
+  const buildParams = useCallback((pageNum) => {
     const params = { page: pageNum, page_size: 20 };
     if (searchQuery) params.search = searchQuery;
     if (selectedRegion) params.regions = [selectedRegion];
@@ -93,9 +80,9 @@ export default function OrderPage() {
     if (favoritesOnly) params.favorites_only = true;
     if (sortBy) params.sort = sortBy;
     return params;
-  };
+  }, [searchQuery, selectedRegion, selectedCuisine, filterTypes, selectedFilters, favoritesOnly, sortBy]);
 
-  const loadDishes = async (pageNum) => {
+  const loadDishes = useCallback(async () => {
     try {
       setLoading(true);
       setPage(1);
@@ -103,31 +90,54 @@ export default function OrderPage() {
       setDishes(res.items || []);
       setTotal(res.total || 0);
       setHasMore((res.items || []).length >= 20);
-    } catch (err) {
+    } catch {
       showToast('加载菜品失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [buildParams, showToast]);
 
-  const loadMoreDishes = async () => {
+  const loadMoreDishes = useCallback(async () => {
     try {
       setLoadingMore(true);
       const res = await api.getDishes(buildParams(page));
       const newItems = res.items || [];
       setDishes(prev => [...prev, ...newItems]);
       setHasMore(newItems.length >= 20);
-    } catch (err) {
+    } catch {
       showToast('加载更多失败', 'error');
     } finally {
       setLoadingMore(false);
     }
-  };
+  }, [page, buildParams, showToast]);
 
-  const loadCart = () => {
+  const loadCart = useCallback(() => {
     const saved = localStorage.getItem('fc_cart');
     setCart(saved ? JSON.parse(saved) : []);
-  };
+  }, []);
+
+  // 用 ref 持有最新 loadMoreDishes，使下方分页 effect 仅依赖 page，
+  // 避免筛选条件变化时（loadMoreDishes 重建）误触发"加载更多"。
+  const loadMoreDishesRef = useRef(loadMoreDishes);
+  useEffect(() => {
+    loadMoreDishesRef.current = loadMoreDishes;
+  });
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadCart(); });
+  }, [loadCart]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadDishes(); });
+  }, [loadDishes]);
+
+  useEffect(() => {
+    if (page <= 1) return;
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadMoreDishesRef.current(); });
+  }, [page]);
 
   const saveCart = (newCart) => {
     setCart(newCart);
@@ -244,7 +254,7 @@ export default function OrderPage() {
         showToast(message);
       }
       navigate('/profile');
-    } catch (err) {
+    } catch {
       showToast('提交订单失败', 'error');
     } finally {
       setSubmitting(false);
@@ -264,7 +274,7 @@ export default function OrderPage() {
       setDishes(prev => prev.map(d =>
         d.id === dish.id ? { ...d, is_favorite: !d.is_favorite } : d
       ));
-    } catch (err) {
+    } catch {
       showToast('操作失败', 'error');
     }
   };

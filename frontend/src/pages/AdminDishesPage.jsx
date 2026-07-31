@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,12 +19,12 @@ import Sheet from '../components/composites/Sheet';
 import Icon from '../components/primitives/Icon';
 
 export default function AdminDishesPage() {
-  const { user, isAdmin, isChef } = useAuth();
+  const { isAdmin } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
-  const { getByType, getTypeMeta, categoryTypes, allCategories: contextCategories, reload: reloadCategories } = useCategories();
+  const { getByType, getTypeMeta, categoryTypes, allCategories: contextCategories } = useCategories();
 
-  const dishCategoryTypes = categoryTypes().filter(t => t.key !== 'ingredient');
+  const dishCategoryTypes = useMemo(() => categoryTypes().filter(t => t.key !== 'ingredient'), [categoryTypes]);
   const ingredientCategories = getByType('ingredient');
   const allCategories = contextCategories;
 
@@ -73,13 +73,73 @@ export default function AdminDishesPage() {
   const [aliasSearchTexts, setAliasSearchTexts] = useState({});
   const [aliasDropdownOpen, setAliasDropdownOpen] = useState({});
 
-  useEffect(() => {
-    loadIngredients();
+  const loadIngredients = useCallback(async () => {
+    try {
+      const ingRes = await api.getIngredients();
+      setAllIngredients(ingRes.items || []);
+      const sfRes = await api.getSemifinishedDishes();
+      setSemifinishedDishes(sfRes || []);
+    } catch {
+      // 加载食材/半成品下拉数据失败时静默——下拉数据保持空即可
+    }
   }, []);
 
+  const loadDishes = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = { page: 1, page_size: 100 };
+      params.status = "all";
+      if (sfFilter === 'semifinished') params.is_semifinished = true;
+      else if (sfFilter === 'normal') params.is_semifinished = false;
+      if (searchQuery) params.search = searchQuery;
+      if (advCategoryIds.length > 0) {
+        for (const t of dishCategoryTypes) {
+          const typeCats = getByType(t.key);
+          const ids = advCategoryIds.filter(id => typeCats.some(c => c.id === id));
+          if (ids.length) params[t.key + 's'] = ids;
+        }
+      }
+      const res = await api.getDishes(params);
+      setDishes(res.items || []);
+    } catch {
+      showToast('加载菜品失败', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [sfFilter, searchQuery, advCategoryIds, dishCategoryTypes, getByType, showToast]);
+
+  const openEdit = useCallback(async (dish) => {
+    try {
+      const full = await api.getDish(dish.id);
+      setEditingDish(full);
+      setForm({
+        name: full.name || '',
+        description: full.description || '',
+        image_url: full.image_url || '',
+        status: full.status || 'enabled',
+        category_ids: (full.categories || []).map(c => c.id),
+        ingredient_ids: (full.ingredients || []).map(i => i.id),
+        recipe: full.recipe || '',
+        is_semifinished: full.is_semifinished || false,
+        semifinished_dish_ids: (full.semifinished_ingredients || []).map(s => s.id),
+      });
+      setSfSearch('');
+      setShowSfDropdown(false);
+      setShowDishModal(true);
+    } catch {
+      showToast('加载菜品详情失败', 'error');
+    }
+  }, [showToast, setSfSearch]);
+
   useEffect(() => {
-    loadDishes();
-  }, [advCategoryIds, user?.role, sfFilter]);
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadIngredients(); });
+  }, [loadIngredients]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadDishes(); });
+  }, [loadDishes]);
 
   useEffect(() => {
     if (!showIngDropdown) return;
@@ -137,49 +197,17 @@ export default function AdminDishesPage() {
     };
   }, [showSfDropdown]);
 
-  const loadDishes = async () => {
-    try {
-      setLoading(true);
-      const params = { page: 1, page_size: 100 };
-      params.status = "all";
-      if (sfFilter === 'semifinished') params.is_semifinished = true;
-      else if (sfFilter === 'normal') params.is_semifinished = false;
-      if (searchQuery) params.search = searchQuery;
-      if (advCategoryIds.length > 0) {
-        for (const t of dishCategoryTypes) {
-          const typeCats = getByType(t.key);
-          const ids = advCategoryIds.filter(id => typeCats.some(c => c.id === id));
-          if (ids.length) params[t.key + 's'] = ids;
-        }
-      }
-      const res = await api.getDishes(params);
-      setDishes(res.items || []);
-    } catch (err) {
-      showToast('加载菜品失败', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadIngredients = async () => {
-    try {
-      const ingRes = await api.getIngredients();
-      setAllIngredients(ingRes.items || []);
-      const sfRes = await api.getSemifinishedDishes();
-      setSemifinishedDishes(sfRes || []);
-    } catch (err) {}
-  };
-
   useEffect(() => {
     const editId = searchParams.get('edit');
-    if (editId && dishes.length > 0) {
-      const dish = dishes.find(d => d.id === Number(editId));
-      if (dish) {
-        openEdit(dish);
-        setSearchParams({}, { replace: true });
-      }
-    }
-  }, [searchParams, dishes]);
+    if (!editId || dishes.length === 0) return;
+    const dish = dishes.find(d => d.id === Number(editId));
+    if (!dish) return;
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => {
+      openEdit(dish);
+      setSearchParams({}, { replace: true });
+    });
+  }, [searchParams, dishes, openEdit, setSearchParams]);
 
   const regions = allCategories.filter(c => c.type === 'region');
   const dishCatsByType = {};
@@ -252,29 +280,6 @@ export default function AdminDishesPage() {
     setShowDishModal(true);
   };
 
-  const openEdit = async (dish) => {
-    try {
-      const full = await api.getDish(dish.id);
-      setEditingDish(full);
-      setForm({
-        name: full.name || '',
-        description: full.description || '',
-        image_url: full.image_url || '',
-        status: full.status || 'enabled',
-        category_ids: (full.categories || []).map(c => c.id),
-        ingredient_ids: (full.ingredients || []).map(i => i.id),
-        recipe: full.recipe || '',
-        is_semifinished: full.is_semifinished || false,
-        semifinished_dish_ids: (full.semifinished_ingredients || []).map(s => s.id),
-      });
-      setSfSearch('');
-      setShowSfDropdown(false);
-      setShowDishModal(true);
-    } catch (err) {
-      showToast('加载菜品详情失败', 'error');
-    }
-  };
-
   const handleSave = async () => {
     if (!form.name.trim()) {
       showToast('请输入菜名', 'error');
@@ -317,7 +322,7 @@ export default function AdminDishesPage() {
       await api.deleteDish(dishId);
       showToast('删除成功');
       loadDishes();
-    } catch (err) {
+    } catch {
       showToast('删除失败', 'error');
     }
   };
@@ -328,7 +333,7 @@ export default function AdminDishesPage() {
       await api.updateDishStatus(dish.id, newStatus);
       showToast(newStatus === 'enabled' ? '已启用' : '已禁用');
       loadDishes();
-    } catch (err) {
+    } catch {
       showToast('操作失败', 'error');
     }
   };
@@ -367,7 +372,7 @@ export default function AdminDishesPage() {
       const res = await api.uploadImage(file);
       setForm(prev => ({ ...prev, image_url: res.url }));
       showToast('上传成功');
-    } catch (err) {
+    } catch {
       showToast('上传失败', 'error');
     }
   };

@@ -2,6 +2,8 @@
  * Snackbar Context - 全局 MD3 消息提示
  */
 
+/* eslint-disable react-refresh/only-export-components -- Context Provider 与 useToast 同文件导出是 React Context 标准范式；拆分 Hook 需改动所有消费方导入（架构变更，超出 lint 清理范围） */
+
 import {
   createContext,
   useCallback,
@@ -286,7 +288,6 @@ export const SnackbarProvider = ({ children }) => {
       item.action.onClick?.();
     } catch (err) {
       // 调用方提供的回调失败不应破坏 Snackbar 队列或冒泡为未处理 rejection
-      // eslint-disable-next-line no-console
       console.error('[Snackbar] action onClick threw:', err);
     }
     dismiss(item.id);

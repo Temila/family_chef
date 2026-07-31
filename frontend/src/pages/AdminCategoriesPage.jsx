@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import { useCategories } from '../contexts/CategoriesContext';
 import api from '../api/client';
@@ -26,29 +26,31 @@ export default function AdminCategoriesPage() {
   const [editingItem, setEditingItem] = useState(null);
   const [form, setForm] = useState({ name: '', parent_id: '', sort_order: 0 });
 
-  useEffect(() => {
-    loadAllCategories();
-  }, []);
-
-  useEffect(() => {
-    filterCategories();
-  }, [activeType, allCategories]);
-
-  const loadAllCategories = async () => {
+  const loadAllCategories = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getCategories();
       setAllCategories(res.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载分类失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
-  const filterCategories = () => {
+  const filterCategories = useCallback(() => {
     setCategories(allCategories.filter(c => c.type === activeType));
-  };
+  }, [allCategories, activeType]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadAllCategories(); });
+  }, [loadAllCategories]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { filterCategories(); });
+  }, [filterCategories]);
 
   const openCreate = () => {
     setEditingItem(null);

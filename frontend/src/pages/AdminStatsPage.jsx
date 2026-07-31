@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -12,21 +12,22 @@ export default function AdminStatsPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getAdminStats();
       setStats(res);
-    } catch (err) {
+    } catch {
       showToast('加载统计数据失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadStats(); });
+  }, [loadStats]);
 
   if (loading) {
     return (

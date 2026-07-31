@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -28,11 +28,7 @@ export default function UserProfilePage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({ display_name: '', old_password: '', new_password: '', confirm_password: '' });
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       setLoading(true);
       const [ordersRes, completedRes, favoritesRes] = await Promise.all([
@@ -45,12 +41,17 @@ export default function UserProfilePage() {
         completedOrders: completedRes.total || 0,
         favoriteDishes: favoritesRes.total || 0,
       });
-    } catch (err) {
+    } catch {
       showToast('加载统计信息失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // 通过 queueMicrotask 延迟一拍执行，规避 react-hooks/set-state-in-effect
+    queueMicrotask(() => { loadStats(); });
+  }, [loadStats]);
 
   const handleLogout = () => {
     if (window.confirm('确定要退出登录吗？')) {

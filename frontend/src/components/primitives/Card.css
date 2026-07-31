@@ -9,6 +9,7 @@
 .md-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
   border-radius: var(--md-radius-md); /* 16px — UI-SPEC §4.3 / Phase 8 D-08 */
   overflow: hidden;
   position: relative;

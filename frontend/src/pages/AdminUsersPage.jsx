@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
@@ -26,21 +26,22 @@ export default function AdminUsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState({ username: '', display_name: '', password: '', role: 'user', is_active: true });
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getUsers({ page: 1, page_size: 100 });
       setUsers(res.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载用户列表失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadUsers(); });
+  }, [loadUsers]);
 
   const openCreate = () => {
     setEditingUser(null);

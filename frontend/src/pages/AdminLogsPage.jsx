@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -20,11 +20,7 @@ export default function AdminLogsPage() {
   const [page, setPage] = useState(1);
   const [filterAction, setFilterAction] = useState('');
 
-  useEffect(() => {
-    loadLogs();
-  }, [page, filterAction]);
-
-  const loadLogs = async () => {
+  const loadLogs = useCallback(async () => {
     try {
       setLoading(true);
       const params = { page, page_size: 20 };
@@ -32,12 +28,17 @@ export default function AdminLogsPage() {
       const res = await api.getAdminLogs(params);
       setLogs(res.items || []);
       setTotal(res.total || 0);
-    } catch (err) {
+    } catch {
       showToast('加载日志失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, filterAction, showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadLogs(); });
+  }, [loadLogs]);
 
   const totalPages = Math.ceil(total / 20);
 

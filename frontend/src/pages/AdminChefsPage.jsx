@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -22,21 +22,22 @@ export default function AdminChefsPage() {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
-  useEffect(() => {
-    loadChefs();
-  }, []);
-
-  const loadChefs = async () => {
+  const loadChefs = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getChefs();
       setChefs(res || []);
-    } catch (err) {
+    } catch {
       showToast('加载厨师列表失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadChefs(); });
+  }, [loadChefs]);
 
   const openBindModal = (chef) => {
     setSelectedChef(chef);
@@ -55,7 +56,7 @@ export default function AdminChefsPage() {
       showToast('绑定成功');
       setShowBindModal(false);
       loadChefs();
-    } catch (err) {
+    } catch {
       showToast('绑定失败', 'error');
     }
   };

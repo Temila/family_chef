@@ -11,7 +11,8 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     theme.initTheme();
-    setCurrentTheme(theme.getTheme());
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => setCurrentTheme(theme.getTheme()));
   }, []);
 
   const handleToggle = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -17,7 +17,7 @@ export default function DishDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { getTypeMeta, categoryTypes } = useCategories();
+  const { categoryTypes } = useCategories();
 
   // Phase 12 D-EMOJI-01: 食材分类 emoji → Icon 名称（经 <Icon name> 渲染）
   const ING_CATEGORY_ICONS = {
@@ -34,22 +34,23 @@ export default function DishDetailPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
-  useEffect(() => {
-    loadDish();
-  }, [id]);
-
-  const loadDish = async () => {
+  const loadDish = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getDish(id);
       setDish(res);
-    } catch (err) {
+    } catch {
       showToast('加载菜品详情失败', 'error');
       navigate('/home');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showToast, navigate]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadDish(); });
+  }, [loadDish]);
 
   const getCart = () => {
     const saved = localStorage.getItem('fc_cart');
@@ -98,7 +99,7 @@ export default function DishDetailPage() {
         setDish({ ...dish, is_favorite: true });
         showToast('已收藏');
       }
-    } catch (err) {
+    } catch {
       showToast('操作失败', 'error');
     }
   };

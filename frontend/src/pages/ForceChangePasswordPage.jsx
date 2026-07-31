@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
@@ -8,7 +8,6 @@ import Button from '../components/primitives/Button';
 import Icon from '../components/primitives/Icon';
 
 export default function ForceChangePasswordPage() {
-  const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { showToast } = useToast();
 

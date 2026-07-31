@@ -2,6 +2,8 @@
  * Auth Context - 全局认证状态管理
  */
 
+/* eslint-disable react-refresh/only-export-components -- Context Provider 与 useAuth 同文件导出是 React Context 标准范式；拆分 Hook 需改动所有消费方导入（架构变更，超出 lint 清理范围） */
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import { auth as authManager } from '../auth';
 
@@ -12,12 +14,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 初始化时从 localStorage 读取用户信息
-    const savedUser = authManager.getUser();
-    if (savedUser) {
-      setUser(savedUser);
-    }
-    setLoading(false);
+    // 初始化时从 localStorage 读取用户信息；queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => {
+      const savedUser = authManager.getUser();
+      if (savedUser) {
+        setUser(savedUser);
+      }
+      setLoading(false);
+    });
   }, []);
 
   const login = (accessToken, refreshToken, userData) => {

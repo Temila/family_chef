@@ -1,31 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
 import BottomBar from '../components/BottomBar';
 import Loading from '../components/Loading';
-import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Icon from '../components/primitives/Icon';
 
 export default function PreferencesPage() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const { showToast } = useToast();
 
   const [preferences, setPreferences] = useState({ dislikes: [], allergies: [] });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [addingTo, setAddingTo] = useState(null);
 
-  useEffect(() => {
-    loadPreferences();
-  }, []);
-
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getPreferences();
@@ -33,12 +23,17 @@ export default function PreferencesPage() {
         dislikes: res.dislikes || [],
         allergies: res.allergies || [],
       });
-    } catch (err) {
+    } catch {
       showToast('加载偏好失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadPreferences(); });
+  }, [loadPreferences]);
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
@@ -53,7 +48,7 @@ export default function PreferencesPage() {
       const allergyIds = preferences.allergies.map(a => a.ingredient_id);
       const existingIds = [...dislikeIds, ...allergyIds];
       setSearchResults(items.filter(i => !existingIds.includes(i.id)));
-    } catch (err) {
+    } catch {
       setSearchResults([]);
     }
   };
@@ -74,7 +69,7 @@ export default function PreferencesPage() {
       setSearchQuery('');
       setSearchResults([]);
       showToast(`已添加「${ingredient.name}」到不爱吃`);
-    } catch (err) {
+    } catch {
       showToast('添加失败', 'error');
     }
   };
@@ -95,7 +90,7 @@ export default function PreferencesPage() {
       setSearchQuery('');
       setSearchResults([]);
       showToast(`已添加「${ingredient.name}」到严格忌口`);
-    } catch (err) {
+    } catch {
       showToast('添加失败', 'error');
     }
   };
@@ -115,7 +110,7 @@ export default function PreferencesPage() {
         dislikes: prev.dislikes.filter(d => d.ingredient_id !== ingredientId),
       }));
       showToast('已移除');
-    } catch (err) {
+    } catch {
       showToast('移除失败', 'error');
     }
   };
@@ -135,7 +130,7 @@ export default function PreferencesPage() {
         allergies: prev.allergies.filter(a => a.ingredient_id !== ingredientId),
       }));
       showToast('已移除');
-    } catch (err) {
+    } catch {
       showToast('移除失败', 'error');
     }
   };

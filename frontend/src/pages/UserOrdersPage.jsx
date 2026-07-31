@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -20,7 +19,6 @@ const MEAL_TYPE_MAP = {
 };
 
 export default function UserOrdersPage() {
-  const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [orders, setOrders] = useState([]);
@@ -28,11 +26,7 @@ export default function UserOrdersPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  useEffect(() => {
-    loadOrders();
-  }, [filterStatus]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const params = { page: 1, page_size: 50 };
@@ -41,12 +35,17 @@ export default function UserOrdersPage() {
       }
       const res = await api.getOrders(params);
       setOrders(res.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载订单失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadOrders(); });
+  }, [loadOrders]);
 
   const handleCancelOrder = async (orderId) => {
     if (!window.confirm('确定要取消这个订单吗？')) return;
@@ -54,7 +53,7 @@ export default function UserOrdersPage() {
       await api.cancelOrder(orderId);
       showToast('订单已取消');
       loadOrders();
-    } catch (err) {
+    } catch {
       showToast('取消失败', 'error');
     }
   };

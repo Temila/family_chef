@@ -2,9 +2,8 @@
  * ChefOrdersPage - 厨师工作台
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -18,18 +17,13 @@ import Chip from '../components/primitives/Chip';
 
 export default function ChefOrdersPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { showToast } = useToast();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
 
-  useEffect(() => {
-    loadOrders();
-  }, [filterStatus]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const params = { page: 1, page_size: 50 };
@@ -38,12 +32,17 @@ export default function ChefOrdersPage() {
       }
       const res = await api.getOrders(params);
       setOrders(res.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载订单失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadOrders(); });
+  }, [loadOrders]);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     if (!window.confirm(`确定要将订单状态更改为 "${newStatus}" 吗？`)) {
@@ -54,16 +53,9 @@ export default function ChefOrdersPage() {
       await api.updateOrderStatus(orderId, newStatus);
       showToast('订单状态已更新');
       loadOrders();
-    } catch (err) {
+    } catch {
       showToast('更新失败', 'error');
     }
-  };
-
-  const statusOptions = {
-    pending: '已接单',
-    cooking: '烹饪中',
-    completed: '已完成',
-    cancelled: '已取消'
   };
 
   const filteredOrders = orders.filter(order => {

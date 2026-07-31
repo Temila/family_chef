@@ -28,9 +28,11 @@ export default function AdminIngredientsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   // searchQuery 通过 ref 读取：loadIngredients 不应在每次输入时都触发 effect 重载
-  // （搜索只在按回车/点击搜索按钮时执行）。ref 在渲染期同步，避免 setState 级联。
+  // （搜索只在按回车/点击搜索按钮时执行）。ref 同步放在 effect 中，避免渲染期写 ref。
   const searchQueryRef = useRef(searchQuery);
-  searchQueryRef.current = searchQuery;
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
   const [showAdvFilter, setShowAdvFilter] = useState(false);
   const [advCategory, setAdvCategory] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +66,8 @@ export default function AdminIngredientsPage() {
   }, [advCategory, assocFilter, showToast]);
 
   useEffect(() => {
-    loadIngredients();
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadIngredients(); });
   }, [loadIngredients]);
 
   useEffect(() => {

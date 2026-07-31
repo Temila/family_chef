@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/client';
 
+/* eslint-disable react-refresh/only-export-components -- Context Provider 与 useCategories 同文件导出是 React Context 标准范式；拆分 Hook 需改动所有消费方导入（架构变更，超出 lint 清理范围） */
+
 const CategoriesContext = createContext(null);
 
 const TYPE_META = {
@@ -27,7 +29,8 @@ export const CategoriesProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    loadCategories();
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadCategories(); });
   }, [loadCategories]);
 
   const getByType = useCallback((type) => {

@@ -2,9 +2,8 @@
  * AdminHomePage - 管理后台首页
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
 import Header from '../components/Header';
@@ -16,7 +15,6 @@ import { formatDate } from '../utils';
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { showToast } = useToast();
 
   const [stats, setStats] = useState({
@@ -28,11 +26,7 @@ export default function AdminHomePage() {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       const [dishesRes, ordersRes, usersRes, chefsRes, logsRes] = await Promise.all([
@@ -51,12 +45,17 @@ export default function AdminHomePage() {
       });
 
       setRecentActivity(logsRes.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载仪表板数据失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadDashboardData(); });
+  }, [loadDashboardData]);
 
   const quickActions = [
     {

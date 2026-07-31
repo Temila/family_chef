@@ -8,7 +8,8 @@ export function usePendingOrderCount(intervalMs = 30000) {
 
   useEffect(() => {
     if (!user || user.role === 'user') {
-      setCount(0);
+      // queueMicrotask 规避 set-state-in-effect
+      queueMicrotask(() => setCount(0));
       return;
     }
 

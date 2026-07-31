@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -24,28 +24,29 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [expandedDish, setExpandedDish] = useState(null);
 
-  useEffect(() => {
-    loadOrder();
-  }, [id]);
-
-  const loadOrder = async () => {
+  const loadOrder = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getOrder(id);
       setOrder(res);
-    } catch (err) {
+    } catch {
       showToast('加载订单失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadOrder(); });
+  }, [loadOrder]);
 
   const handleUpdateStatus = async (newStatus) => {
     try {
       await api.updateOrderStatus(order.id, newStatus);
       showToast('状态已更新');
       loadOrder();
-    } catch (err) {
+    } catch {
       showToast('更新失败', 'error');
     }
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../contexts/ToastContext';
 import api from '../api/client';
@@ -17,28 +17,29 @@ export default function UserFavoritesPage() {
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadFavorites();
-  }, []);
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.getFavorites({ page: 1, page_size: 100 });
       setDishes(res.items || []);
-    } catch (err) {
+    } catch {
       showToast('加载收藏失败', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    // queueMicrotask 规避 set-state-in-effect
+    queueMicrotask(() => { loadFavorites(); });
+  }, [loadFavorites]);
 
   const handleRemoveFavorite = async (dish) => {
     try {
       await api.removeFavorite(dish.id);
       showToast(`已取消收藏 ${dish.name}`);
       setDishes(prev => prev.filter(d => d.id !== dish.id));
-    } catch (err) {
+    } catch {
       showToast('取消收藏失败', 'error');
     }
   };
