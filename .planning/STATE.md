@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Tech Debt Cleanup
-status: planning
-last_updated: "2026-07-30T10:00:00.000Z"
-last_activity: 2026-07-30 - Closed v1.3 milestone; created v1.4 Tech Debt Cleanup
+status: complete
+last_updated: "2026-07-30T11:30:00.000Z"
+last_activity: 2026-07-30 - v1.4 milestone archived and tagged
 progress:
   total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 4
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -76,6 +76,18 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | quick_task | 260730-m1p-filter-row-left-flush | Acknowledged at v1.3 close | 2026-07-30 |
 | quick_task | 260730-m6k-wrap-left-filters | Acknowledged at v1.3 close | 2026-07-30 |
 | quick_task | 260730-oa9-http-localhost-5173-orders-1-1-div-div-m | Acknowledged at v1.3 close | 2026-07-30 |
+| quick_task | 260727-i2g-sync-dev-with-main-split-wishlist-commit | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260727-ig2-v1-2-feature-ui-rebuild | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260729-wl7-phase-14-bug | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-jqm-seed-test-dishes-db | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-k5g-action-bar-layout | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-ks4-filter-row-below-search | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-kz4-filter-row-align-edges | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-lmy-filter-row-48px-inset | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-lmy-filter-row-48px-inset-tmp | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-luk-ingredient-association-filter | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-m1p-filter-row-left-flush | Acknowledged at v1.4 close | 2026-07-30 |
+| quick_task | 260730-m6k-wrap-left-filters | Acknowledged at v1.4 close | 2026-07-30 |
 
 ## Quick Tasks Completed
 

@@ -6,6 +6,7 @@
 - ✅ **v1.1 菜品愿望单** — Phases 5-7 (shipped 2026-07-24)
 - ✅ **v1.2 MD3 重构** — Phases 8-13 (shipped 2026-07-29)
 - ✅ **v1.3 Bugfix + UI Refinements** — Phases 14-15 (shipped 2026-07-30)
+- ✅ **v1.4 Tech Debt Cleanup** — Phase 16 (shipped 2026-07-30)
 
 ## Phases
 
@@ -46,18 +47,14 @@
 
 </details>
 
-<details open>
-<summary>🚧 v1.4 Tech Debt Cleanup — IN PROGRESS</summary>
+<details>
+<summary>✅ v1.4 Tech Debt Cleanup (Phase 16) — SHIPPED 2026-07-30</summary>
 
-- [ ] **Phase 16: Tech Debt Cleanup** — 修复全部 10 项积累的 tech debt：CORS 确认已修复；快速修复（::before 确认、app.url、 migration batch、IN-01 encodeURIComponent）；中等修复（版本号 config.yaml 源、auto_migrate、IN-04 actingId）；以及两个大项（107 个测试修复、101 个 lint error 修复）
+- [x] **Phase 16: Tech Debt Cleanup** — 修复全部 10 项积累的 tech debt：CORS 确认已修复；快速修复（::before 确认、app.url、 migration batch、IN-01 encodeURIComponent）；中等修复（版本号 config.yaml 源、auto_migrate、IN-04 actingId）；以及两个大项（108 个测试修复、101 个 lint error 修复） — 4 plans (completed 2026-07-30)
 
-**Requirements**: TD-01 ~ TD-10 (see REQUIREMENTS.md)
-**Plans**: 4 plans
+**Requirements**: TD-01 ~ TD-10 (all 10/10 satisfied)
 
-Plans:
-- [ ] 16-01-PLAN.md — TD-01 operator sign-off + quick fixes (TD-03/04/05/07)
-- [ ] 16-02-PLAN.md — Medium fixes (TD-02 version endpoint, TD-06 auto-migrate, TD-08 actingId)
-- [ ] 16-03-PLAN.md — TD-09 backend test suite repair (108 failures → 0)
+</details>
 - [ ] 16-04-PLAN.md — TD-10 frontend lint baseline cleanup (101 errors → 0)
 
 </details>
