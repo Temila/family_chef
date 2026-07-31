@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -27,6 +27,10 @@ export default function AdminIngredientsPage() {
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  // searchQuery 通过 ref 读取：loadIngredients 不应在每次输入时都触发 effect 重载
+  // （搜索只在按回车/点击搜索按钮时执行）。ref 在渲染期同步，避免 setState 级联。
+  const searchQueryRef = useRef(searchQuery);
+  searchQueryRef.current = searchQuery;
   const [showAdvFilter, setShowAdvFilter] = useState(false);
   const [advCategory, setAdvCategory] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -46,9 +50,22 @@ export default function AdminIngredientsPage() {
   const [importLoading, setImportLoading] = useState(false);
   const [assocFilter, setAssocFilter] = useState(null);
 
+  const loadIngredients = useCallback(async () => {
+    try {
+      setLoading(true);
+      const category = advCategory || null;
+      const res = await api.getIngredients(category, searchQueryRef.current || null, assocFilter);
+      setIngredients(res.items || []);
+    } catch {
+      showToast('加载食材失败', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [advCategory, assocFilter, showToast]);
+
   useEffect(() => {
     loadIngredients();
-  }, [advCategory, assocFilter]);
+  }, [loadIngredients]);
 
   useEffect(() => {
     if (openDropdown === null) return;
@@ -77,19 +94,6 @@ export default function AdminIngredientsPage() {
       window.removeEventListener('orientationchange', closeOnScroll);
     };
   }, [openDropdown]);
-
-  const loadIngredients = async () => {
-    try {
-      setLoading(true);
-      const category = advCategory || null;
-      const res = await api.getIngredients(category, searchQuery || null, assocFilter);
-      setIngredients(res.items || []);
-    } catch (err) {
-      showToast('加载食材失败', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const toggleAssoc = (value) => {
     setAssocFilter((prev) => (prev === value ? null : value));

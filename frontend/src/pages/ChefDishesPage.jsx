@@ -15,6 +15,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/primitives/Button';
 import Chip from '../components/primitives/Chip';
 import Modal from '../components/composites/Modal';
+import Sheet from '../components/composites/Sheet';
 import Icon from '../components/primitives/Icon';
 
 export default function ChefDishesPage() {
@@ -519,19 +520,7 @@ export default function ChefDishesPage() {
 
   return (
     <div className="page-container">
-      <Header
-        title="菜品管理"
-        actions={
-          <div className="header-action-bar" style={{ display: 'flex', gap: 'var(--md-spacing-2)'}}>
-            <Button variant="tonal" size="sm" onClick={openExtractModal}>
-              <Icon name="edit" size={18} /> 解析文本
-            </Button>
-            <Button variant="filled" size="sm" onClick={() => openCreate()}>
-              + 添加
-            </Button>
-          </div>
-        }
-      />
+      <Header title="菜品管理" />
 
       <div className="search-bar">
         <span className="search-icon"><Icon name="search" size={20} /></span>
@@ -548,8 +537,8 @@ export default function ChefDishesPage() {
         </div>
       </div>
 
-      <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-1)', display: 'flex', gap: 'var(--md-spacing-2)', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: 'var(--md-spacing-1)'}}>
+      <div className="filter-action-row">
+        <div className="filter-action-row__filters">
           {[
             { key: 'all', label: '全部' },
             { key: 'published', label: '已上架' },
@@ -562,18 +551,26 @@ export default function ChefDishesPage() {
               {f.label}
             </Chip>
           ))}
+          <Button variant="tonal" size="sm" onClick={() => setShowAdvFilter(true)}>高级筛选</Button>
         </div>
-        <Button
-          variant="tonal"
-          size="sm"
-          onClick={() => setShowAdvFilter(!showAdvFilter)}
-        >
-          {showAdvFilter ? '收起筛选 ▲' : '高级筛选 ▼'}
-        </Button>
+        <div className="filter-action-row__actions">
+          <Button variant="tonal" size="sm" onClick={openExtractModal}><Icon name="edit" size={18} /> 解析文本</Button>
+          <Button variant="filled" size="sm" onClick={() => openCreate()}>+ 添加</Button>
+        </div>
       </div>
 
       {showAdvFilter && (
-        <div style={{ padding: '0 var(--md-spacing-4) var(--md-spacing-3)', borderBottom: '1px solid var(--md-color-outline-variant)' }}>
+        <Sheet
+          open
+          onClose={() => setShowAdvFilter(false)}
+          title="高级筛选 — 菜品"
+          footer={
+            <div className="flex gap-3" style={{ width: '100%' }}>
+              <Button variant="tonal" className="flex-1" onClick={() => { setAdvCategoryIds([]); setSfFilter('all'); }}>清空</Button>
+              <Button variant="filled" className="flex-1" onClick={() => setShowAdvFilter(false)}>应用</Button>
+            </div>
+          }
+        >
           {renderCategorySection(getTypeMeta('region').label, regions, advCategoryIds, (id) => {
             setAdvCategoryIds(prev => {
               if (prev.includes(id)) {
@@ -606,7 +603,7 @@ export default function ChefDishesPage() {
               ))}
             </div>
           </div>
-        </div>
+        </Sheet>
       )}
 
       {loading ? (
