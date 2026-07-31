@@ -149,16 +149,44 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 ~ FND-07 | TBD (roadmap) | Pending |
-| TPAGE-01 ~ TPAGE-07 | TBD (roadmap) | Pending |
-| EDIT-01 ~ EDIT-07 | TBD (roadmap) | Pending |
-| SYNC-01 ~ SYNC-04 | TBD (roadmap) | Pending |
-| SEAS-01 ~ SEAS-04 | TBD (roadmap) | Pending |
+| FND-01 | Phase 17 | Pending |
+| FND-02 | Phase 17 | Pending |
+| FND-03 | Phase 17 | Pending |
+| FND-04 | Phase 17 | Pending |
+| FND-05 | Phase 17 | Pending |
+| FND-06 | Phase 17 | Pending |
+| FND-07 | Phase 17 | Pending |
+| TPAGE-01 | Phase 17 | Pending |
+| TPAGE-02 | Phase 17 | Pending |
+| TPAGE-03 | Phase 17 | Pending |
+| TPAGE-04 | Phase 17 | Pending |
+| TPAGE-05 | Phase 17 | Pending |
+| TPAGE-06 | Phase 17 | Pending |
+| TPAGE-07 | Phase 17 | Pending |
+| SYNC-01 | Phase 17 | Pending |
+| SYNC-02 | Phase 17 | Pending |
+| SYNC-03 | Phase 17 | Pending |
+| SYNC-04 | Phase 17 | Pending |
+| EDIT-01 | Phase 18 | Pending |
+| EDIT-02 | Phase 18 | Pending |
+| EDIT-03 | Phase 18 | Pending |
+| EDIT-04 | Phase 18 | Pending |
+| EDIT-05 | Phase 18 | Pending |
+| EDIT-06 | Phase 18 | Pending |
+| EDIT-07 | Phase 18 | Pending |
+| SEAS-01 | Phase 18 | Pending |
+| SEAS-02 | Phase 18 | Pending |
+| SEAS-03 | Phase 18 | Pending |
+| SEAS-04 | Phase 18 | Pending |
 
 **Coverage:**
 - v1.5 requirements: 29 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 29 ⚠️ (will be mapped during roadmap creation)
+- Mapped to phases: 29 (100%) ✓
+- Unmapped: 0
+
+**Phase summary:**
+- Phase 17 (Theme System Foundation — Engine, Page, Presets & Persistence): FND-01~07, TPAGE-01~07, SYNC-01~04 (18)
+- Phase 18 (Custom Editor & Seasonal Auto-Switch): EDIT-01~07, SEAS-01~04 (11)
 
 ---
 *Requirements defined: 2026-07-29*

@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-07-31T10:02:35.413Z"
 last_activity: 2026-07-31
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 16 — Tech Debt Cleanup (planning)
+**Current focus:** Phase 17 — Theme System Foundation: Engine, Page, Presets & Persistence (v1.5 自定义网站皮肤)
 
 ## Branch State
 
@@ -35,16 +35,18 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 17 of 18 (Theme System Foundation — Engine, Page, Presets & Persistence) — first phase of v1.5
 Plan: —
-Status: Defining requirements
-Last activity: 2026-07-31 — Milestone v1.5 started
+Status: Ready to plan (roadmap revised to 2 phases, awaiting /gsd-plan-phase 17)
+Last activity: 2026-07-31 — v1.5 roadmap compressed from 5 phases → 2 phases (Phase 17 + Phase 18), 29/29 requirements mapped
+
+Progress: [░░░░░░░░░░] 0% (0 of 2 v1.5 phases; Phases 1-16 shipped)
 
 ## Session Continuity
 
-Last session: 2026-07-30T10:00:00.000Z
-Stopped at: v1.3 closed; v1.4 Tech Debt Cleanup created
-Next: /gsd-plan-phase 16 to plan the cleanup phase
+Last session: 2026-07-31T10:02:00.000Z
+Stopped at: v1.5 roadmap revised — compressed to 2 phases (17-18). Phase 17 = FND/TPAGE/SYNC (18 reqs); Phase 18 = EDIT/SEAS (11 reqs). 29/29 requirements mapped, 0 orphans.
+Next: `/gsd-plan-phase 17` to plan the Theme System Foundation phase (LOW research flag; small MCU runtime-import spike only). Phase 18 will need `/gsd-plan-phase --research-phase 18` (HIGH — HCT/variant/direct-to-DOM preview spike).
 
 ## Deferred Items
 
@@ -227,5 +229,5 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 
 ## Operator Next Steps
 
-- Start Phase 15 (Navigation Restructure & Test Data) with /gsd-plan-phase 15
-- Or close v1.3 milestone with /gsd-complete-milestone after Phase 15 ships
+- Start Phase 17 (Theme System Foundation — Engine, Page, Presets & Persistence) with `/gsd-plan-phase 17`
+- Phase 18 (Custom Editor & Seasonal Auto-Switch) will need `/gsd-plan-phase --research-phase 18` (HIGH research flag — HCT/Variant/直写DOM preview spike; also season definition + hemisphere product decisions for discuss phase)
