@@ -73,6 +73,11 @@ class ApiClient {
     return this.post('/auth/refresh', { refresh_token });
   }
 
+  // ─── Version ─────────────────────────────────────
+  async getVersion() {
+    return this.get('/version');
+  }
+
   // ─── Dishes ─────────────────────────────────────
   async getDishes(params = {}) {
     const qs = new URLSearchParams();

@@ -10,22 +10,27 @@
  * 公开 API：<Sidebar />（无 props）
  */
 
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePendingOrderCount } from '../../hooks/usePendingOrderCount';
 import Icon from '../primitives/Icon';
 import Ripple from '../primitives/Ripple';
 import Badge from '../primitives/Badge';
+import api from '../../api/client';
 import './Sidebar.css';
 
-// D-NAV03-01: 版本号来源 — Vite 构建期注入（vite.config.js define），非 Vite 环境回退 0.0.0
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.0.0';
-
+// D-NAV03-01（TD-02 修订）：版本号来源 — 运行期从后端 GET /api/version 获取（config.yaml 为单一真相源）
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const pendingCount = usePendingOrderCount();
+  const [appVersion, setAppVersion] = useState('0.0.0');
+
+  useEffect(() => {
+    api.getVersion().then((d) => setAppVersion(d.version)).catch(() => {});
+  }, []);
 
   if (!user) return null;
 
@@ -98,7 +103,7 @@ export default function Sidebar() {
       <div className="md-sidebar__footer">
         {/* D-NAV03-01: 显示版本号（主题切换 + 退出已迁至 Header） */}
         <div className="md-sidebar__version" aria-label="应用版本">
-          v{APP_VERSION}
+          v{appVersion}
         </div>
       </div>
     </aside>

@@ -6,7 +6,10 @@ import asyncio
 import os
 import sys
 import threading
+from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -45,6 +48,15 @@ def _print_startup_info():
         host_port = os.environ.get("HOST_PORT", str(PORT))
         _log(f"  Exposed: http://localhost:{host_port}")
     _log("")
+
+
+def _run_migrations() -> None:
+    """启动时自动应用数据库迁移（TD-06；SQLite batch 见 TD-05）"""
+    ini_path = Path(__file__).resolve().parent.parent / "alembic.ini"
+    cfg = Config(str(ini_path))
+    # 锁定与应用相同的数据库 URL（忽略 CWD 差异）
+    cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    command.upgrade(cfg, "head")
 
 
 class _DownloadProgress:
@@ -229,9 +241,12 @@ async def startup():
     """应用启动事件"""
     _print_startup_info()
 
-    # NOTE(07-04): No automatic `alembic upgrade head` runs at startup.
-    # New migrations must be applied manually via `cd backend && uv run alembic upgrade head`.
-    # See .planning/phases/07-wish-list-frontend/07-04-PLAN.md for context.
+    # TD-06: 启动时自动迁移（AUTO_MIGRATE=0 关闭；pytest 下自动跳过）
+    if os.environ.get("AUTO_MIGRATE", "1") == "1" and "PYTEST_CURRENT_TEST" not in os.environ:
+        try:
+            await asyncio.to_thread(_run_migrations)
+        except Exception as e:
+            _log(f"  ⚠ 自动迁移失败: {e}（可手动执行 cd backend && uv run alembic upgrade head）")
     await init_db()
 
     from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients, create_seed_test_dishes
@@ -261,6 +276,12 @@ async def shutdown():
 async def health_check():
     """健康检查"""
     return {"status": "ok"}
+
+
+@app.get("/api/version")
+async def version_check():
+    """应用版本"""
+    return {"version": settings.APP_VERSION, "name": settings.APP_NAME}
 
 
 from app.routers import (

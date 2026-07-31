@@ -226,8 +226,8 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       } catch (err) {
         showToast(err.message || '认领失败', 'error');
       } finally {
-        await loadWishes({ page: 1, background: true });
         setActingId(null);
+        await loadWishes({ page: 1, background: true });
       }
     },
     [actingId, loadWishes, showToast, viewAsAdmin]
@@ -241,12 +241,12 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       try {
         await api.advanceWish(wish.id, relatedDishId);
         showToast('已成功关联 ' + dishName);
-        setAdvanceTarget(null);
       } catch (err) {
         showToast(err.message || '推进失败', 'error');
       } finally {
-        await loadWishes({ page: 1, background: true });
         setActingId(null);
+        setAdvanceTarget(null);
+        await loadWishes({ page: 1, background: true });
       }
     },
     [actingId, loadWishes, showToast, viewAsAdmin]
@@ -260,12 +260,12 @@ export default function ChefWishesPage({ viewAsAdmin = false }) {
       try {
         await api.rejectWish(wish.id, reason);
         showToast('已拒绝，提交者会收到通知');
-        setRejectTarget(null);
       } catch (err) {
         showToast(err.message || '拒绝失败', 'error');
       } finally {
-        await loadWishes({ page: 1, background: true });
         setActingId(null);
+        setRejectTarget(null);
+        await loadWishes({ page: 1, background: true });
       }
     },
     [actingId, loadWishes, showToast, viewAsAdmin]
