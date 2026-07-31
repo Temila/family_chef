@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: Tech Debt Cleanup
-status: complete
-last_updated: "2026-07-30T11:30:00.000Z"
-last_activity: 2026-07-30 - v1.4 milestone archived and tagged
+milestone: v1.5
+milestone_name: 自定义网站皮肤 / Theme Customization
+status: planning
+last_updated: "2026-07-31T10:02:35.413Z"
+last_activity: 2026-07-31
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -35,10 +35,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 16 (tech-debt-cleanup) — PLANNING
-Plan: TBD
-Status: Planning — new milestone v1.4 created after v1.3 close
-Last activity: 2026-07-30 - Closed v1.3 milestone
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-07-31 — Milestone v1.5 started
 
 ## Session Continuity
 

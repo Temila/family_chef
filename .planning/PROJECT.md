@@ -2,7 +2,7 @@
 
 ## What This Is
 
-家庭点菜系统（家味·Family Chef）：家庭成员通过手机浏览菜单、点菜、管理口味偏好；厨师发布菜品、接单、通过飞书收到通知。v1.0 新增"访客点菜邀请"，让未注册访客通过一次性链接参与点菜。v1.1 新增"菜品愿望单"——注册用户可以提交菜单上没有的菜，由厨师认领并推进到上架或拒绝。v1.2 完成 Material Design 3 (Material You) 前端重构——全面落实 5 级圆角体系 + MD3 配色令牌 + 涟漪/悬浮动效 + 8dp 网格 + 组件换皮，仅换皮（保留业务逻辑）。
+家庭点菜系统（家味·Family Chef）：家庭成员通过手机浏览菜单、点菜、管理口味偏好；厨师发布菜品、接单、通过飞书收到通知。v1.0 新增"访客点菜邀请"，让未注册访客通过一次性链接参与点菜。v1.1 新增"菜品愿望单"——注册用户可以提交菜单上没有的菜，由厨师认领并推进到上架或拒绝。v1.2 完成 Material Design 3 (Material You) 前端重构——全面落实 5 级圆角体系 + MD3 配色令牌 + 涟漪/悬浮动效 + 8dp 网格 + 组件换皮，仅换皮（保留业务逻辑）。v1.5 新增"自定义网站皮肤"——用户可调整 MD3 配色令牌、选择预设或创建无限自定义主题、按季节自动切换。
 
 ## Core Value
 
@@ -12,22 +12,18 @@
 
 **Shipped v1.2** — 2026-07-29: Material Design 3 前端重构完整交付。6 phases / 18 plans / 40+ tasks，完整 MD3 设计令牌 + 7 种原始组件 + 5 种复合组件 + 导航体系 + 8dp 网格 + 动效/state-layer。保留所有业务逻辑零回归。
 
-## Current Milestone: v1.3 Bugfix + UI Refinements
+## Current Milestone: v1.5 自定义网站皮肤 / Theme Customization
 
-**Goal:** 修复 v1.2 遗留的 3 个 UI 缺陷，并对导航栏结构、筛选交互、深色模式对比度进行调整。
+**Goal:** 让用户能够自定义网站配色（MD3 色彩令牌），选择预设或创建无限自定义皮肤，并支持按季节自动切换。
 
 **Target features:**
-- 修复 v1.2 已知缺陷（底部导航栏宽度、表格错位、愿望单卡片布局）
-- 食材管理下拉菜单按钮缩小圆角半径
-- md-header 重组：仅保留头像+主题切换，其他按钮移到下方 div
-- 用户头像下拉菜单精简为编辑资料+退出登录
-- md-sidebar 取消主题切换和退出登录
-- 高级筛选改为弹出子页面（类似添加菜品弹窗）
-- 深色模式弹出页面增加主题色边框
-- 移动端食材管理：编辑/删除按钮固定到卡片底部，各行按钮对齐
-- 创建覆盖有/无食谱、介绍、图片的测试菜谱；保证移动端卡片同大、按钮齐平
-- 厨师移动端首页添加菜品管理+食谱管理入口
-- md-bottom-bar 图标确保首页在最左边
+- Header 新增 /theme 入口按钮（位于主题切换与用户头像之间，图标待 discuss 阶段确认）
+- 新 /theme 页面：以卡片形式展示所有 theme，卡片本身即预览
+- 5 个预设 theme：当前配色 + 春/夏/秋/冬四季主题色（仅可编辑，不可删除）
+- 自定义 theme 编辑器：调整 MD3 主色/主色容器/次级色/强调色等参数，实时预览，保存为自定义 theme（数量无上限，可编辑可删除）
+- 季节自动切换开关
+- 存储：预设+当前选择存 localStorage；自定义 theme 存后端 DB（跨设备同步）
+- 明暗切换（light/dark）保留为 header 独立按钮，不整合进 /theme
 
 ## Requirements
 
@@ -52,6 +48,7 @@
 
 ### Active
 
+- [ ] 自定义 theme 入口 + /theme 页面 + 5 预设 + 自定义编辑器 + 季节自动切换 + 混合存储 (v1.5)
 - [ ] 访客备注功能（GORD-06，延期自 v1.0 → v2）
 - [ ] COMPO-09 Navigation Rail + Navigation Bar 缺陷修复 — v1.2 deferred
 - [ ] MOTION-05 MD3 motion duration/easing tokens — v1.2 deferred
@@ -68,8 +65,10 @@
 - **Shipped v1.0**: 访客点菜邀请功能完整交付，4 phases / 6 plans / 52 commits
 - **Shipped v1.1**: 菜品愿望单后端+通知+前端完整交付，3 phases / 11 plans / 104 commits
 - **Shipped v1.2**: Material Design 3 重构，6 phases / 18 plans / 242 files / +46k LOC
+- **Shipped v1.3**: Bugfix + UI Refinements，2 phases / 13 plans（导航重组 + 筛选弹窗 + seed 数据）
+- **Shipped v1.4**: Tech Debt Cleanup，1 phase / 4 plans（CORS/migration/test/lint 修复）
 - **Tech stack**: FastAPI + SQLAlchemy 2.0 (async) + React 19 + Vite + SQLite
-- **Feature branch**: feature/ui-rebuild
+- **Feature branch**: 待定（feature/custom-theme）
 
 ## Key Decisions
 
@@ -105,7 +104,7 @@ v1.2 在保留 v1.0/v1.1 全部业务能力（访客点菜 + 菜品愿望单）�
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-07-29 after v1.3 milestone start*
+*Last updated: 2026-07-31 after v1.5 milestone start*
 
 ## Constraints
 
