@@ -65,7 +65,7 @@ async def test_list_users_with_search(client: AsyncClient, admin_token: str):
 
 
 @pytest.mark.asyncio
-async def test_get_user(client: AsyncClient):
+async def test_get_user(client: AsyncClient, admin_token: str):
     """测试获取用户详情"""
     # 先注册用户
     await client.post("/api/auth/register", json={
@@ -74,13 +74,19 @@ async def test_get_user(client: AsyncClient):
         "display_name": "详情用户",
         "email": "detail@example.com"
     })
-    
-    # 获取用户列表找到 ID
-    list_response = await client.get("/api/users/?search=detailuser")
+
+    # 获取用户列表找到 ID（需管理员鉴权）
+    list_response = await client.get(
+        "/api/users/?search=detailuser",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
     user_id = list_response.json()["items"][0]["id"]
-    
-    response = await client.get(f"/api/users/{user_id}")
-    
+
+    response = await client.get(
+        f"/api/users/{user_id}",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+
     assert response.status_code == 200
     data = response.json()
     assert data["username"] == "detailuser"
@@ -89,10 +95,10 @@ async def test_get_user(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_get_user_not_found(client: AsyncClient):
-    """测试获取不存在的用户"""
+    """测试获取不存在的用户（未认证 → 鉴权先于存在性检查，返回 401）"""
     response = await client.get("/api/users/99999")
-    
-    assert response.status_code == 404
+
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio
@@ -104,18 +110,21 @@ async def test_update_user(client: AsyncClient, admin_token: str):
         "password": "pass123",
         "display_name": "更新前",
     })
-    
-    # 获取用户 ID
-    list_response = await client.get("/api/users/?search=updateuser")
+
+    # 获取用户 ID（需管理员鉴权）
+    list_response = await client.get(
+        "/api/users/?search=updateuser",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
     user_id = list_response.json()["items"][0]["id"]
-    
+
     # 更新用户
     response = await client.put(
         f"/api/users/{user_id}",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={"display_name": "更新后", "email": "updated@example.com"}
     )
-    
+
     assert response.status_code == 200
     assert response.json()["message"] == "用户更新成功"
 
@@ -142,10 +151,13 @@ async def test_change_password(client: AsyncClient, admin_token: str):
         "display_name": "密码用户",
     })
     
-    # 获取用户 ID
-    list_response = await client.get("/api/users/?search=pwduser")
+    # 获取用户 ID（需管理员鉴权）
+    list_response = await client.get(
+        "/api/users/?search=pwduser",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
     user_id = list_response.json()["items"][0]["id"]
-    
+
     # 修改密码
     response = await client.put(
         f"/api/users/{user_id}/password",
@@ -155,7 +167,7 @@ async def test_change_password(client: AsyncClient, admin_token: str):
             "new_password": "newpass456"
         }
     )
-    
+
     # 管理员可以修改任何人的密码
     assert response.status_code in [200, 403]  # 403 如果端点限制只能改自己的
 
@@ -170,8 +182,11 @@ async def test_change_password_wrong_old(client: AsyncClient, admin_token: str):
         "display_name": "密码用户 2",
     })
     
-    # 获取用户 ID
-    list_response = await client.get("/api/users/?search=pwduser2")
+    # 获取用户 ID（需管理员鉴权）
+    list_response = await client.get(
+        "/api/users/?search=pwduser2",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
     user_id = list_response.json()["items"][0]["id"]
     
     # 使用错误旧密码修改
@@ -197,8 +212,11 @@ async def test_delete_user(client: AsyncClient, admin_token: str):
         "display_name": "删除用户",
     })
     
-    # 获取用户 ID
-    list_response = await client.get("/api/users/?search=deleteuser")
+    # 获取用户 ID（需管理员鉴权）
+    list_response = await client.get(
+        "/api/users/?search=deleteuser",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
     user_id = list_response.json()["items"][0]["id"]
     
     # 删除用户

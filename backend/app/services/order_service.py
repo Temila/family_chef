@@ -88,6 +88,10 @@ class OrderService:
             )
             db.add(order_item)
 
+        await db.flush()
+        await db.refresh(order)
+        return order
+
     @staticmethod
     async def create_order_auto_split(
         db: AsyncSession,

@@ -25,7 +25,8 @@ async def test_create_dish(client: AsyncClient, admin_token: str):
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "麻婆豆腐"
-    assert data["status"] == "published"
+    # 管理员创建菜品时路由强制 status="enabled"（dishes.py 第 144-145 行）
+    assert data["status"] == "enabled"
 
 
 @pytest.mark.asyncio
@@ -186,10 +187,10 @@ async def test_search_dishes(client: AsyncClient, admin_token: str):
     )
     
     response = await client.get(
-        "/api/dishes/?search=番茄",
+        "/api/dishes/?search=番茄&status=all",
         headers={"Authorization": f"Bearer {admin_token}"}
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["total"] >= 1
@@ -212,12 +213,12 @@ async def test_update_dish_status(client: AsyncClient, admin_token: str):
     )
     
     dish_id = create_response.json()["id"]
-    
-    # 更新状态为 published
+
+    # 更新状态为 disabled（Dish.status 仅接受 enabled/disabled）
     response = await client.put(
         f"/api/dishes/{dish_id}/status",
         headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "published"}
+        json={"status": "disabled"}
     )
-    
+
     assert response.status_code == 200

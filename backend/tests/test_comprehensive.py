@@ -67,7 +67,7 @@ async def test_dish_update_with_ingredients(client: AsyncClient, admin_token: st
 
 @pytest.mark.asyncio
 async def test_dish_publish_unpublish(client: AsyncClient, admin_token: str):
-    """测试菜品上架/下架"""
+    """测试菜品上架/下架（/chef-publish 控制 DishChef.status）"""
     dish = await client.post(
         "/api/dishes/",
         headers={"Authorization": f"Bearer {admin_token}"},
@@ -75,20 +75,20 @@ async def test_dish_publish_unpublish(client: AsyncClient, admin_token: str):
     )
     assert dish.status_code == 201
     dish_id = dish.json()["id"]
-    
-    # 上架
+
+    # 上架（/status 仅接受 enabled/disabled，上架走 /chef-publish）
     resp = await client.put(
-        f"/api/dishes/{dish_id}/status",
+        f"/api/dishes/{dish_id}/chef-publish",
         headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "published"},
+        json={"publish": True},
     )
     assert resp.status_code == 200
-    
+
     # 下架
     resp = await client.put(
-        f"/api/dishes/{dish_id}/status",
+        f"/api/dishes/{dish_id}/chef-publish",
         headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "draft"},
+        json={"publish": False},
     )
     assert resp.status_code == 200
 
@@ -115,28 +115,23 @@ async def test_dish_delete(client: AsyncClient, admin_token: str):
 @pytest.mark.asyncio
 async def test_update_order_status_by_chef(client: AsyncClient, admin_token: str):
     """测试厨师更新订单状态"""
-    # 创建并发布一个菜品
+    # 管理员创建菜品（路由强制 status=enabled，可直接下单）
     dish = await client.post(
         "/api/dishes/",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={"name": "厨师订单测试菜覆盖"},
     )
     dish_id = dish.json()["id"]
-    await client.put(
-        f"/api/dishes/{dish_id}/status",
-        headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "published"},
-    )
-    
-    # 创建订单
+
+    # 创建订单（自动拆单返回列表）
     order = await client.post(
         "/api/orders/",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={"items": [{"dish_id": dish_id, "quantity": 1}]},
     )
     assert order.status_code == 201
-    order_id = order.json()["id"]
-    
+    order_id = order.json()[0]["id"]
+
     # 接受订单
     resp = await client.put(
         f"/api/orders/{order_id}/status",
@@ -144,7 +139,7 @@ async def test_update_order_status_by_chef(client: AsyncClient, admin_token: str
         json={"status": "accepted"},
     )
     assert resp.status_code == 200
-    
+
     # 制作中
     resp = await client.put(
         f"/api/orders/{order_id}/status",
@@ -152,7 +147,7 @@ async def test_update_order_status_by_chef(client: AsyncClient, admin_token: str
         json={"status": "cooking"},
     )
     assert resp.status_code == 200
-    
+
     # 完成
     resp = await client.put(
         f"/api/orders/{order_id}/status",
@@ -171,12 +166,7 @@ async def test_order_with_notes(client: AsyncClient, admin_token: str):
         json={"name": "备注测试菜覆盖"},
     )
     dish_id = dish.json()["id"]
-    await client.put(
-        f"/api/dishes/{dish_id}/status",
-        headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "published"},
-    )
-    
+
     order = await client.post(
         "/api/orders/",
         headers={"Authorization": f"Bearer {admin_token}"},
@@ -186,7 +176,9 @@ async def test_order_with_notes(client: AsyncClient, admin_token: str):
         },
     )
     assert order.status_code == 201
-    assert order.json()["notes"] == "不要辣，多加葱"
+    # 创建订单（自动拆单）返回列表
+    created = order.json()
+    assert (created[0] if isinstance(created, list) else created)["notes"] == "不要辣，多加葱"
 
 
 @pytest.mark.asyncio
@@ -198,19 +190,14 @@ async def test_cancel_order(client: AsyncClient, admin_token: str):
         json={"name": "取消订单测试菜覆盖"},
     )
     dish_id = dish.json()["id"]
-    await client.put(
-        f"/api/dishes/{dish_id}/status",
-        headers={"Authorization": f"Bearer {admin_token}"},
-        json={"status": "published"},
-    )
-    
+
     order = await client.post(
         "/api/orders/",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={"items": [{"dish_id": dish_id, "quantity": 1}]},
     )
-    order_id = order.json()["id"]
-    
+    order_id = order.json()[0]["id"]
+
     # 取消订单
     resp = await client.delete(
         f"/api/orders/{order_id}",

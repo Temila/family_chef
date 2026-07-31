@@ -99,7 +99,7 @@ async def test_preference_allergy_and_remove(db: AsyncSession):
 
     user = User(username="allergy_user", password_hash=hash_password("t"), display_name="T", role="user", is_active=True, force_pwd_change=False)
     db.add(user)
-    ing = Ingredient(name="花生", pinyin="huasheng", category="nut", is_active=True)
+    ing = Ingredient(name="花生", category="nut", is_active=True)
     db.add(ing)
     await db.flush()
 
@@ -134,8 +134,8 @@ async def test_preference_update_preferences(db: AsyncSession):
 
     user = User(username="batch_user", password_hash=hash_password("t"), display_name="T", role="user", is_active=True, force_pwd_change=False)
     db.add(user)
-    ing1 = Ingredient(name="牛奶", pinyin="niunai", category="dairy", is_active=True)
-    ing2 = Ingredient(name="鸡蛋", pinyin="jidan", category="egg", is_active=True)
+    ing1 = Ingredient(name="牛奶", category="dairy", is_active=True)
+    ing2 = Ingredient(name="鸡蛋", category="egg", is_active=True)
     db.add_all([ing1, ing2])
     await db.flush()
 

@@ -38,7 +38,7 @@ async def _create_user(db: AsyncSession, username: str = "svc_user", role: str =
 
 
 async def _create_ingredient(db: AsyncSession, name: str = "土豆") -> Ingredient:
-    ing = Ingredient(name=name, pinyin=name, category="vegetable", is_active=True)
+    ing = Ingredient(name=name, category="vegetable", is_active=True)
     db.add(ing)
     await db.flush()
     return ing
@@ -57,7 +57,7 @@ async def _create_dish_with_relations(
     ingredient_ids: list = None,
     category_ids: list = None,
 ) -> Dish:
-    dish = Dish(name=name, pinyin=name, status="published", is_popular=False)
+    dish = Dish(name=name, pinyin=name, status="enabled", is_popular=False)
     db.add(dish)
     await db.flush()
 
@@ -189,16 +189,22 @@ async def test_dish_update_status_invalid(db: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_dish_update_status_not_found(db: AsyncSession):
-    result = await DishService.update_dish_status(db, 99999, "published")
+    result = await DishService.update_dish_status(db, 99999, "enabled")
     assert result is None
 
 
 @pytest.mark.asyncio
 async def test_dish_list_with_filters(db: AsyncSession):
     """带筛选条件的菜品列表"""
+    chef = await _create_user(db, "filter_chef", "chef")
     cat = await _create_category(db, "粤菜")
-    await _create_dish_with_relations(db, "白切鸡", category_ids=[cat.id])
-    await _create_dish_with_relations(db, "烧鹅", category_ids=[cat.id])
+    d1 = await _create_dish_with_relations(db, "白切鸡", category_ids=[cat.id])
+    d2 = await _create_dish_with_relations(db, "烧鹅", category_ids=[cat.id])
+    # 菜品需有厨师发布（DishChef.status=published）才能出现在公开列表中（应用契约）
+    from app.models.dish import DishChef
+    db.add(DishChef(dish_id=d1.id, chef_id=chef.id, status="published"))
+    db.add(DishChef(dish_id=d2.id, chef_id=chef.id, status="published"))
+    await db.flush()
 
     params = PaginationParams(page=1, page_size=10)
     dishes, total = await DishService.list_dishes(
@@ -429,7 +435,7 @@ async def test_chef_workload(db: AsyncSession):
 async def test_ingredient_create_and_find(db: AsyncSession):
     """食材创建和查找"""
     ing = await IngredientService.create_ingredient(
-        db, name="西红柿", pinyin="xihongshi", category="vegetable",
+        db, name="西红柿", category="vegetable",
         aliases=["番茄", "洋柿子"],
     )
     await db.flush()

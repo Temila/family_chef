@@ -10,14 +10,17 @@ from httpx import AsyncClient
 # ─── 辅助函数 ─────────────────────────────────────────────
 
 async def create_published_dish(client: AsyncClient, chef_token: str, name: str = "测试菜品") -> dict:
-    """创建并发布一个菜品，返回 JSON"""
+    """创建并上架一个菜品（默认 enabled + 厨师 published），返回 JSON"""
     headers = {"Authorization": f"Bearer {chef_token}"}
     resp = await client.post("/api/dishes/", json={"name": name}, headers=headers)
     assert resp.status_code == 201, f"创建菜品失败: {resp.text}"
     dish = resp.json()
-    # 发布菜品
-    resp = await client.put(f"/api/dishes/{dish['id']}/status", json={"status": "published"}, headers=headers)
-    assert resp.status_code == 200, f"发布菜品失败: {resp.text}"
+    # 厨师上架菜品（DishChef.status=published）；/status 仅接受 enabled/disabled
+    resp = await client.put(
+        f"/api/dishes/{dish['id']}/chef-publish",
+        json={"publish": True}, headers=headers,
+    )
+    assert resp.status_code == 200, f"上架菜品失败: {resp.text}"
     return dish
 
 
@@ -217,18 +220,18 @@ async def test_dish_delete_not_found(client: AsyncClient, chef_token: str):
 
 @pytest.mark.asyncio
 async def test_dish_update_status(client: AsyncClient, chef_token: str):
-    """更新菜品状态: published/hidden/draft"""
+    """更新菜品状态: enabled/disabled（Dish.status 仅接受 enabled/disabled）"""
     headers = {"Authorization": f"Bearer {chef_token}"}
 
     resp = await client.post("/api/dishes/", json={"name": "状态测试菜"}, headers=headers)
     dish_id = resp.json()["id"]
 
-    # draft → published
-    resp = await client.put(f"/api/dishes/{dish_id}/status", json={"status": "published"}, headers=headers)
+    # enabled → disabled
+    resp = await client.put(f"/api/dishes/{dish_id}/status", json={"status": "disabled"}, headers=headers)
     assert resp.status_code == 200
 
-    # published → hidden
-    resp = await client.put(f"/api/dishes/{dish_id}/status", json={"status": "hidden"}, headers=headers)
+    # disabled → enabled
+    resp = await client.put(f"/api/dishes/{dish_id}/status", json={"status": "enabled"}, headers=headers)
     assert resp.status_code == 200
 
     # 缺少 status 字段
@@ -236,7 +239,7 @@ async def test_dish_update_status(client: AsyncClient, chef_token: str):
     assert resp.status_code == 400
 
     # 不存在的菜品
-    resp = await client.put("/api/dishes/99999/status", json={"status": "published"}, headers=headers)
+    resp = await client.put("/api/dishes/99999/status", json={"status": "enabled"}, headers=headers)
     assert resp.status_code == 404
 
 
@@ -270,7 +273,9 @@ async def test_order_create_and_list(client: AsyncClient, user_token: str, chef_
         "items": [{"dish_id": dish["id"], "quantity": 2}],
     }, headers=user_h)
     assert resp.status_code == 201
-    assert "items" in resp.json()
+    # 创建订单（自动按厨师拆单）返回订单列表
+    created = resp.json()
+    assert "items" in (created[0] if isinstance(created, list) else created)
 
     # 用户查列表
     resp = await client.get("/api/orders/", headers=user_h)
@@ -292,7 +297,7 @@ async def test_order_get_detail(client: AsyncClient, user_token: str, chef_token
     order = await client.post("/api/orders/", json={
         "items": [{"dish_id": dish["id"], "quantity": 1}],
     }, headers=user_h)
-    order_id = order.json()["id"]
+    order_id = order.json()[0]["id"]
 
     # 查看自己的订单
     resp = await client.get(f"/api/orders/{order_id}", headers=user_h)
@@ -313,7 +318,7 @@ async def test_order_update_status_by_chef(client: AsyncClient, user_token: str,
     order = await client.post("/api/orders/", json={
         "items": [{"dish_id": dish["id"], "quantity": 1}],
     }, headers=user_h)
-    order_id = order.json()["id"]
+    order_id = order.json()[0]["id"]
 
     # 厨师接单 → 烹饪中 → 完成（按状态机顺序）
     resp = await client.put(f"/api/orders/{order_id}/status", json={"status": "accepted"}, headers=chef_h)
@@ -337,7 +342,7 @@ async def test_order_update_status_forbidden(client: AsyncClient, user_token: st
         "items": [{"dish_id": dish["id"], "quantity": 1}],
     }, headers=user_h)
 
-    resp = await client.put(f"/api/orders/{order.json()['id']}/status",
+    resp = await client.put(f"/api/orders/{order.json()[0]['id']}/status",
         json={"status": "accepted"}, headers=user_h)
     assert resp.status_code == 403
 
@@ -353,7 +358,7 @@ async def test_order_cancel(client: AsyncClient, user_token: str, chef_token: st
         "items": [{"dish_id": dish["id"], "quantity": 1}],
     }, headers=user_h)
 
-    resp = await client.delete(f"/api/orders/{order.json()['id']}", headers=user_h)
+    resp = await client.delete(f"/api/orders/{order.json()[0]['id']}", headers=user_h)
     assert resp.status_code == 200
 
 
@@ -375,13 +380,15 @@ async def test_order_empty_items(client: AsyncClient, user_token: str):
 
 @pytest.mark.asyncio
 async def test_user_get_not_found(client: AsyncClient):
+    # 未认证 → 鉴权先于存在性检查，返回 401
     resp = await client.get("/api/users/99999")
-    assert resp.status_code == 404
+    assert resp.status_code == 401
 
 
 @pytest.mark.asyncio
-async def test_user_list_with_search(client: AsyncClient):
-    resp = await client.get("/api/users/", params={"search": "admin"})
+async def test_user_list_with_search(client: AsyncClient, admin_token: str):
+    resp = await client.get("/api/users/", params={"search": "admin"},
+                            headers={"Authorization": f"Bearer {admin_token}"})
     assert resp.status_code == 200
     assert "items" in resp.json()
 
@@ -509,9 +516,9 @@ async def test_ingredient_crud_via_router(client: AsyncClient, admin_token: str)
     resp = await client.delete(f"/api/ingredients/{ing_id}", headers=headers)
     assert resp.status_code == 204
 
-    # 删除（软删除，再次删除仍返回 True 因为记录还在）
+    # 再次删除已不存在的食材 → 404（应用契约）
     resp = await client.delete(f"/api/ingredients/{ing_id}", headers=headers)
-    assert resp.status_code == 204
+    assert resp.status_code == 404
 
 
 @pytest.mark.asyncio

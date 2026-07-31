@@ -55,16 +55,16 @@ async def test_order_get_others_forbidden(client: AsyncClient, user_token: str, 
     uh = {"Authorization": f"Bearer {user_token}"}
     ch = {"Authorization": f"Bearer {chef_token}"}
 
-    # 创建发布菜品
+    # 创建上架菜品（/status 仅接受 enabled/disabled，上架走 /chef-publish）
     r = await client.post("/api/dishes/", json={"name": "权限菜"}, headers=ch)
     did = r.json()["id"]
-    await client.put(f"/api/dishes/{did}/status", json={"status": "published"}, headers=ch)
+    await client.put(f"/api/dishes/{did}/chef-publish", json={"publish": True}, headers=ch)
 
     # 用户下单
     r = await client.post("/api/orders/", json={
         "items": [{"dish_id": did, "quantity": 1}],
     }, headers=uh)
-    oid = r.json()["id"]
+    oid = r.json()[0]["id"]
 
     # 注册另一个用户，尝试查看
     await client.post("/api/auth/register", json={
@@ -93,12 +93,12 @@ async def test_order_cancel_success(client: AsyncClient, user_token: str, chef_t
 
     r = await client.post("/api/dishes/", json={"name": "取消菜"}, headers=ch)
     did = r.json()["id"]
-    await client.put(f"/api/dishes/{did}/status", json={"status": "published"}, headers=ch)
+    await client.put(f"/api/dishes/{did}/chef-publish", json={"publish": True}, headers=ch)
 
     r = await client.post("/api/orders/", json={
         "items": [{"dish_id": did, "quantity": 1}],
     }, headers=uh)
-    oid = r.json()["id"]
+    oid = r.json()[0]["id"]
 
     r = await client.delete(f"/api/orders/{oid}", headers=uh)
     assert r.status_code == 200
@@ -188,10 +188,10 @@ async def test_favorite_list_with_dishes(client: AsyncClient, user_token: str, c
     uh = {"Authorization": f"Bearer {user_token}"}
     ch = {"Authorization": f"Bearer {chef_token}"}
 
-    # 创建发布菜品
+    # 创建上架菜品（上架走 /chef-publish）
     r = await client.post("/api/dishes/", json={"name": "收藏菜"}, headers=ch)
     did = r.json()["id"]
-    await client.put(f"/api/dishes/{did}/status", json={"status": "published"}, headers=ch)
+    await client.put(f"/api/dishes/{did}/chef-publish", json={"publish": True}, headers=ch)
 
     # 收藏
     await client.post("/api/favorites/", json={"dish_id": did}, headers=uh)

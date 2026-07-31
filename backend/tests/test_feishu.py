@@ -33,7 +33,8 @@ async def test_bind_feishu_unauthorized(client: AsyncClient):
 async def test_send_notify_forbidden(client: AsyncClient, user_token: str):
     """测试普通用户无法发送飞书通知"""
     response = await client.post(
-        "/api/feishu/notify?receive_id=test&order_no=ORD001&order_status=pending",
+        "/api/feishu/notify",
+        json={"receive_id": "test", "order_no": "ORD001", "order_status": "pending"},
         headers={"Authorization": f"Bearer {user_token}"},
     )
     assert response.status_code == 403
@@ -43,7 +44,8 @@ async def test_send_notify_forbidden(client: AsyncClient, user_token: str):
 async def test_send_notify_missing_params(client: AsyncClient, admin_token: str):
     """测试缺少参数发送通知"""
     response = await client.post(
-        "/api/feishu/notify?receive_id=test",
+        "/api/feishu/notify",
+        json={"receive_id": "test"},
         headers={"Authorization": f"Bearer {admin_token}"},
     )
     assert response.status_code == 400
@@ -54,9 +56,15 @@ async def test_send_notify_success(client: AsyncClient, admin_token: str):
     """测试成功发送飞书通知（mock）"""
     with patch("app.routers.feishu.feishu_client") as mock_client:
         mock_client.send_order_notification = AsyncMock(return_value=True)
-        
+
         response = await client.post(
-            "/api/feishu/notify?receive_id=test_user&order_no=ORD202605090001&order_status=accepted&items=dish1",
+            "/api/feishu/notify",
+            json={
+                "receive_id": "test_user",
+                "order_no": "ORD202605090001",
+                "order_status": "accepted",
+                "items": ["dish1"],
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -68,9 +76,15 @@ async def test_send_notify_failure(client: AsyncClient, admin_token: str):
     """测试飞书通知发送失败"""
     with patch("app.routers.feishu.feishu_client") as mock_client:
         mock_client.send_order_notification = AsyncMock(return_value=False)
-        
+
         response = await client.post(
-            "/api/feishu/notify?receive_id=test_user&order_no=ORD202605090001&order_status=accepted",
+            "/api/feishu/notify",
+            json={
+                "receive_id": "test_user",
+                "order_no": "ORD202605090001",
+                "order_status": "accepted",
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
-        assert response.status_code == 500
+        # 路由返回 502 BAD_GATEWAY（非 500）
+        assert response.status_code == 502

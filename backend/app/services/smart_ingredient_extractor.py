@@ -96,7 +96,13 @@ class SmartIngredientExtractor:
             ) from e
 
     async def extract_ingredients(self, db: AsyncSession, text: str) -> dict:
-        await self._ensure_model_loaded()
+        try:
+            await self._ensure_model_loaded()
+        except ImportError:
+            # TD-09: llama-cpp-python 未安装时优雅降级到基础抽取器（智能功能可选哲学）
+            logger.warning("llama-cpp-python 未安装，降级到基础食材抽取器")
+            from app.services.ingredient_extractor import ingredient_extractor
+            return await ingredient_extractor.extract_ingredients(db, text)
 
         prompt = EXTRACTION_PROMPT_TEMPLATE.format(text=text)
         response = await asyncio.to_thread(

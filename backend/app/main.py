@@ -236,6 +236,21 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def normalize_api_trailing_slash(request, call_next):
+    """TD-09: 归一化 /api/* 尾斜杠（SPA catch-all 遮蔽 redirect_slashes，405 而非 307）"""
+    path = request.url.path
+    # 仅对 /api/* 路径处理，且不是根 /api/，且以斜杠结尾
+    if path.startswith("/api/") and path != "/api/" and path.endswith("/"):
+        scope = request.scope
+        scope["path"] = path.rstrip("/")
+        # raw_path 在 ASGI 规范中标记为可选，需防御性读取
+        raw_path = scope.get("raw_path")
+        if raw_path is not None:
+            scope["raw_path"] = raw_path.rstrip(b"/")
+    return await call_next(request)
+
+
 @app.on_event("startup")
 async def startup():
     """应用启动事件"""

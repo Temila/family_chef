@@ -127,12 +127,7 @@ class DishService:
             ingredient_subq = (
                 select(DishIngredient.dish_id)
                 .join(Ingredient, DishIngredient.ingredient_id == Ingredient.id)
-                .where(
-                    or_(
-                        Ingredient.name.like(search_pattern),
-                        Ingredient.pinyin.like(search_pattern),
-                    )
-                )
+                .where(Ingredient.name.like(search_pattern))
             )
             query = query.where(
                 or_(
@@ -245,12 +240,7 @@ class DishService:
             ingredient_subq = (
                 select(DishIngredient.dish_id)
                 .join(Ingredient, DishIngredient.ingredient_id == Ingredient.id)
-                .where(
-                    or_(
-                        Ingredient.name.like(search_pattern),
-                        Ingredient.pinyin.like(search_pattern),
-                    )
-                )
+                .where(Ingredient.name.like(search_pattern))
             )
             count_query = count_query.where(
                 or_(

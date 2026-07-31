@@ -175,7 +175,7 @@ async def test_order_service_create_and_get(db: AsyncSession):
     dish = await DishService.create_dish(db, dish_data, created_by=admin.id)
     await db.commit()
     
-    update_data = DishUpdate(status="published")
+    update_data = DishUpdate(status="enabled")
     await DishService.update_dish(db, dish.id, update_data)
     await db.commit()
     

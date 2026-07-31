@@ -15,7 +15,7 @@ async def sample_dish(client: AsyncClient, admin_token: str) -> int:
         json={
             "name": "测试菜品",
             "description": "用于订单测试",
-            "status": "published",
+            "status": "enabled",
         }
     )
     assert response.status_code == 201
@@ -35,12 +35,14 @@ async def test_create_order(client: AsyncClient, user_token: str, sample_dish: i
             "notes": "少放辣",
         }
     )
-    
+
     assert response.status_code == 201
+    # 创建订单（自动按厨师拆单）返回订单列表
     data = response.json()
-    assert data["status"] == "pending"
-    assert "order_no" in data
-    assert len(data["items"]) == 1
+    order = data[0] if isinstance(data, list) else data
+    assert order["status"] == "pending"
+    assert "order_no" in order
+    assert len(order["items"]) == 1
 
 
 @pytest.mark.asyncio
@@ -115,13 +117,13 @@ async def test_get_order(client: AsyncClient, user_token: str, sample_dish: int)
         }
     )
     
-    order_id = create_response.json()["id"]
-    
+    order_id = create_response.json()[0]["id"]
+
     response = await client.get(
         f"/api/orders/{order_id}",
         headers={"Authorization": f"Bearer {user_token}"}
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == order_id
@@ -151,15 +153,15 @@ async def test_update_order_status_forbidden(client: AsyncClient, user_token: st
         }
     )
     
-    order_id = create_response.json()["id"]
-    
+    order_id = create_response.json()[0]["id"]
+
     # 普通用户尝试更新状态
     response = await client.put(
         f"/api/orders/{order_id}/status",
         headers={"Authorization": f"Bearer {user_token}"},
         json={"status": "accepted"}
     )
-    
+
     assert response.status_code == 403
 
 
@@ -175,14 +177,14 @@ async def test_cancel_order(client: AsyncClient, user_token: str, sample_dish: i
         }
     )
     
-    order_id = create_response.json()["id"]
-    
+    order_id = create_response.json()[0]["id"]
+
     # 取消订单
     response = await client.delete(
         f"/api/orders/{order_id}",
         headers={"Authorization": f"Bearer {user_token}"}
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "cancelled"
@@ -232,12 +234,12 @@ async def test_order_permission(client: AsyncClient, user_token: str, chef_token
         }
     )
     
-    order_id = create_response.json()["id"]
-    
+    order_id = create_response.json()[0]["id"]
+
     # 厨师可以查看任何订单
     response = await client.get(
         f"/api/orders/{order_id}",
         headers={"Authorization": f"Bearer {chef_token}"}
     )
-    
+
     assert response.status_code == 200
