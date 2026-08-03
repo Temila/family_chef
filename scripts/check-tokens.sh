@@ -10,6 +10,7 @@
 #   5. styles.css 中的硬编码 border-radius: <非零>px
 #   6. JSX 中的硬编码 borderRadius: <非零>number
 #   7. tokens.css 存在且包含全部 MD3 令牌族
+#   8. JSX style prop 中 color/background 的硬编码 #xxxxxx 十六进制色值（Phase 17 D-23 — .js 主题色生成器天然豁免）
 # ================================================
 set -u
 
@@ -93,6 +94,15 @@ else
         fail "tokens.css 缺失或令牌族不完整 (Check #7): 缺少$MISSING"
     fi
 fi
+
+# Check #8 — JSX style prop 中的硬编码 #xxxxxx 十六进制色值（Phase 17 D-23）
+# presets.js / theme-engine.js 因扩展名为 .js 不匹配 --glob '*.jsx'，天然豁免
+echo "=== Check 8: JSX hex-lint ==="
+JSX_HEX_OUTPUT=$(rg -n --no-heading "\b(color|background[A-Za-z]*):\s*['\"]#[0-9a-fA-F]{6}\b" \
+    --glob '*.jsx' \
+    "$FRONTEND_DIR/src/components/" \
+    "$FRONTEND_DIR/src/pages/" 2>/dev/null || true)
+check "JSX 中的 #xxxxxx 硬编码色值 (Check #8)" "$JSX_HEX_OUTPUT"
 
 # 最终汇总
 PASSED=$((TOTAL - FAILURES))
