@@ -8,13 +8,12 @@ import sys
 import threading
 from pathlib import Path
 
-from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+from alembic import command
 from app.config import settings, smart_settings
 from app.database import init_db
 
@@ -264,7 +263,12 @@ async def startup():
             _log(f"  ⚠ 自动迁移失败: {e}（可手动执行 cd backend && uv run alembic upgrade head）")
     await init_db()
 
-    from app.initial_data import create_initial_data, create_preset_categories, create_preset_ingredients, create_seed_test_dishes
+    from app.initial_data import (
+        create_initial_data,
+        create_preset_categories,
+        create_preset_ingredients,
+        create_seed_test_dishes,
+    )
 
     await create_initial_data()
     await create_preset_categories()
@@ -311,6 +315,7 @@ from app.routers import (
     ingredients,
     orders,
     preferences,
+    themes,
     tools,
     upload,
     users,
@@ -332,6 +337,7 @@ app.include_router(feishu.router, prefix="/api/feishu", tags=["飞书集成"])
 app.include_router(tools.router, prefix="/api/tools", tags=["工具"])
 app.include_router(upload.router, prefix="/api/upload", tags=["文件上传"])
 app.include_router(wishes.router, prefix="/api/wishes", tags=["愿望单"])
+app.include_router(themes.router, prefix="/api/themes", tags=["自定义主题"])
 
 frontend_dist_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend/dist"
