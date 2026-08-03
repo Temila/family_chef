@@ -267,6 +267,44 @@ class ApiClient {
     return this.get(`/favorites?${qs}`);
   }
 
+  // ─── Themes ─────────────────────────────────────
+  async getThemes() {
+    const items = await this.get('/themes');
+    return (items || []).map(theme => {
+      const { source_colors, ...rest } = theme;
+      return { ...rest, sourceColors: source_colors };
+    });
+  }
+
+  async createTheme(data) {
+    return this.post('/themes', {
+      name: data.name,
+      source_colors: {
+        primary: data.sourceColors.primary,
+        secondary: data.sourceColors.secondary,
+        tertiary: data.sourceColors.tertiary,
+      },
+      variant: data.variant,
+    });
+  }
+
+  async updateTheme(id, data) {
+    const body = { ...data };
+    if (data.sourceColors) {
+      body.source_colors = {
+        primary: data.sourceColors.primary,
+        secondary: data.sourceColors.secondary,
+        tertiary: data.sourceColors.tertiary,
+      };
+      delete body.sourceColors;
+    }
+    return this.put(`/themes/${id}`, body);
+  }
+
+  async deleteTheme(id) {
+    return this.del(`/themes/${id}`);
+  }
+
   // ─── Preferences ─────────────────────────────────────
   async getPreferences() {
     return this.get('/preferences');
