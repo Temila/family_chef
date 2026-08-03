@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useParams 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SnackbarProvider } from './contexts/ToastContext';
 import { CategoriesProvider } from './contexts/CategoriesContext';
+import { ThemeProvider } from './theme';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import UserHomePage from './pages/UserHomePage';
@@ -27,6 +28,7 @@ import GuestOrderPage from './pages/GuestOrderPage';
 import UserWishesPage from './pages/UserWishesPage';
 import ChefWishesPage from './pages/ChefWishesPage';
 import AdminWishesPage from './pages/AdminWishesPage';
+import ThemePage from './pages/ThemePage';
 // styles.css 现统一由 src/index.css @import 加载（Phase 9 合并 CSS 入口，避免重复打包）
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
@@ -102,9 +104,10 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <CategoriesProvider>
-          <SnackbarProvider>
-            <Routes>
+        <SnackbarProvider>
+          <CategoriesProvider>
+            <ThemeProvider>
+              <Routes>
             <Route path="/guest/:token" element={<GuestOrderPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/force-change-password" element={<ForceChangePasswordPage />} />
@@ -287,12 +290,21 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/theme"
+                element={
+                  <ProtectedRoute requiredRoles={['user', 'chef', 'admin']}>
+                    <ThemePage />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </SnackbarProvider>
-        </CategoriesProvider>
+              </Routes>
+            </ThemeProvider>
+          </CategoriesProvider>
+        </SnackbarProvider>
       </AuthProvider>
     </BrowserRouter>
   );
