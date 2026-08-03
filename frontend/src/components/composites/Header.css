@@ -2,7 +2,7 @@
    MD3 Sidecar Header (Top App Bar)
    Phase 11 — COMPO-09 / LOGIC-03
    PC 端 3 列式：logo + 品牌 | 页面标题 | 用户头像 + 下拉菜单
-   仅 PC (≥1024px) 显示，移动端隐藏。
+   全设备可见 (Phase 17 D-19) — /theme 入口需在 PC+mobile 均可访问。
    ═══════════════════════════════════════════════════════════════════ */
 
 /* 64dp sticky top bar with blur — visible on all screen sizes */

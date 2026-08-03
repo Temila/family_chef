@@ -79,6 +79,9 @@ import {
   Bolt as BoltIcon,                // ⚡ — 快捷/闪电
   TrendingUp as TrendingUpIcon,    // 📈 — 趋势上升
   Send as SendIcon,                // 🚀 — 发送/分享
+  // Phase 17 必要扩展（ThemePage 入口 + 重置按钮）
+  Palette as PaletteIcon,          // 🎨 — /theme 入口按钮（Header.D-18）
+  RestartAlt as RestartAltIcon,    // 🔄 — ThemePage 重置默认主题按钮
 } from '@material-symbols-svg/react';
 
 // 静态映射表：调用方 name → 内部 SVG 组件
@@ -146,6 +149,9 @@ const ICONS = {
   bolt: BoltIcon,
   'trending-up': TrendingUpIcon,
   send: SendIcon,
+  // Phase 17 必要扩展（ThemePage 入口 + 重置按钮）
+  palette: PaletteIcon,
+  'restart-alt': RestartAltIcon,
 };
 
 export default function Icon({

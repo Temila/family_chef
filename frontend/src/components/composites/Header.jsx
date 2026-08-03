@@ -45,6 +45,7 @@ const PAGE_TITLES = {
   '/admin/stats': '数据统计',
   '/admin/logs': '系统日志',
   '/ingredients': '食材管理',
+  '/theme': '主题',
 };
 
 export default function Header({ title, showBack = false, actions }) {
@@ -99,6 +100,13 @@ export default function Header({ title, showBack = false, actions }) {
             ariaLabel={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
             onClick={handleToggleTheme}
             className="md-header__theme-toggle"
+          />
+          {/* D-18: Palette IconButton — 跳转到 /theme 主题页面 */}
+          <IconButton
+            icon="palette"
+            ariaLabel="选择主题"
+            onClick={() => navigate('/theme')}
+            className="md-header__theme-page"
           />
           {user && (
             <>
