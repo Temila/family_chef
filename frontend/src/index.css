@@ -1,5 +1,6 @@
 @import './css/tokens.css';
 @import './css/styles.css';
+@import './css/theme-page.css';
 
 :root {
   font-family: var(--md-font-body);
