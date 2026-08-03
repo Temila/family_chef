@@ -54,15 +54,15 @@
 
 - [x] **FND-01**: theme-engine 模块从种子色（primary/secondary/tertiary + MD3 variant）派生完整 MD3 light+dark 配色并生成 CSS 覆盖层
 - [x] **FND-02**: 活动 theme 通过生成的 `<style id="fc-dynamic-theme">` 元素应用（`:root`/`[data-theme="dark"]` 分块），tokens.css 不被修改
-- [ ] **FND-03**: 自定义 theme 与现有 header 明暗切换协同，零 JS 重应用（CSS 级联处理模式切换）
+- [x] **FND-03**: 自定义 theme 与现有 header 明暗切换协同，零 JS 重应用（CSS 级联处理模式切换）
 - [x] **FND-04**: FOUC 防护 — index.html 内联阻塞脚本在首帧前读取活动 theme 并注入 CSS
-- [ ] **FND-05**: ThemeContext 管理活动 theme + 季节开关，mount/change 时应用，value memoized
-- [ ] **FND-06**: 深色模式下 elevation 阴影 + surface-tint 跟随自定义色（覆盖 --md-elevation-* 令牌）
+- [x] **FND-05**: ThemeContext 管理活动 theme + 季节开关，mount/change 时应用，value memoized
+- [x] **FND-06**: 深色模式下 elevation 阴影 + surface-tint 跟随自定义色（覆盖 --md-elevation-* 令牌）
 - [x] **FND-07**: hex-lint CI gate 保证组件不硬编码颜色（维持 0 匹配不变量）
 
 ### Theme Page & Presets
 
-- [ ] **TPAGE-01**: Header 入口按钮（主题切换与头像之间）跳转 /theme 页面
+- [x] **TPAGE-01**: Header 入口按钮（主题切换与头像之间）跳转 /theme 页面
 - [ ] **TPAGE-02**: /theme 页面以卡片网格展示所有 theme（移动端优先响应式）
 - [ ] **TPAGE-03**: 每张卡片即实时预览（mini-UI 通过 CSS 变量继承作用域到该 theme）
 - [ ] **TPAGE-04**: 5 个预设 theme：当前配色 + 春/夏/秋/冬季色板
@@ -84,7 +84,7 @@
 
 - [x] **SYNC-01**: CustomTheme 模型（source_colors JSON 列，per-user）+ Alembic create_table 迁移
 - [x] **SYNC-02**: REST API CRUD `/api/themes`（JWT 鉴权，per-user 归属）
-- [ ] **SYNC-03**: 跨设备同步 — DB 为真相源，localStorage 缓存活动选择，mount 时按 updatedAt 对账
+- [x] **SYNC-03**: 跨设备同步 — DB 为真相源，localStorage 缓存活动选择，mount 时按 updatedAt 对账
 - [x] **SYNC-04**: 自定义 theme 按用户隔离，仅可见自己的
 
 ### Seasonal Auto-Switch
@@ -151,12 +151,12 @@ Deferred to future release. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | FND-01 | Phase 17 | Complete |
 | FND-02 | Phase 17 | Complete |
-| FND-03 | Phase 17 | Pending |
+| FND-03 | Phase 17 | Complete |
 | FND-04 | Phase 17 | Complete |
-| FND-05 | Phase 17 | Pending |
-| FND-06 | Phase 17 | Pending |
+| FND-05 | Phase 17 | Complete |
+| FND-06 | Phase 17 | Complete |
 | FND-07 | Phase 17 | Complete |
-| TPAGE-01 | Phase 17 | Pending |
+| TPAGE-01 | Phase 17 | Complete |
 | TPAGE-02 | Phase 17 | Pending |
 | TPAGE-03 | Phase 17 | Pending |
 | TPAGE-04 | Phase 17 | Pending |
@@ -165,7 +165,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | TPAGE-07 | Phase 17 | Pending |
 | SYNC-01 | Phase 17 | Complete (17-01) |
 | SYNC-02 | Phase 17 | Complete (17-01) |
-| SYNC-03 | Phase 17 | Pending |
+| SYNC-03 | Phase 17 | Complete |
 | SYNC-04 | Phase 17 | Complete (17-01) |
 | EDIT-01 | Phase 18 | Pending |
 | EDIT-02 | Phase 18 | Pending |
