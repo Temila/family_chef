@@ -82,10 +82,10 @@
 
 ### Backend Persistence
 
-- [ ] **SYNC-01**: CustomTheme 模型（source_colors JSON 列，per-user）+ Alembic create_table 迁移
-- [ ] **SYNC-02**: REST API CRUD `/api/themes`（JWT 鉴权，per-user 归属）
+- [x] **SYNC-01**: CustomTheme 模型（source_colors JSON 列，per-user）+ Alembic create_table 迁移
+- [x] **SYNC-02**: REST API CRUD `/api/themes`（JWT 鉴权，per-user 归属）
 - [ ] **SYNC-03**: 跨设备同步 — DB 为真相源，localStorage 缓存活动选择，mount 时按 updatedAt 对账
-- [ ] **SYNC-04**: 自定义 theme 按用户隔离，仅可见自己的
+- [x] **SYNC-04**: 自定义 theme 按用户隔离，仅可见自己的
 
 ### Seasonal Auto-Switch
 
@@ -163,10 +163,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | TPAGE-05 | Phase 17 | Pending |
 | TPAGE-06 | Phase 17 | Pending |
 | TPAGE-07 | Phase 17 | Pending |
-| SYNC-01 | Phase 17 | Pending |
-| SYNC-02 | Phase 17 | Pending |
+| SYNC-01 | Phase 17 | Complete (17-01) |
+| SYNC-02 | Phase 17 | Complete (17-01) |
 | SYNC-03 | Phase 17 | Pending |
-| SYNC-04 | Phase 17 | Pending |
+| SYNC-04 | Phase 17 | Complete (17-01) |
 | EDIT-01 | Phase 18 | Pending |
 | EDIT-02 | Phase 18 | Pending |
 | EDIT-03 | Phase 18 | Pending |

@@ -65,7 +65,7 @@
 
 **Milestone Goal:** 让用户能够自定义网站配色（MD3 色彩令牌），选择预设或创建无限自定义皮肤，并支持按季节自动切换。运行时用户驱动的 MD3 动态着色，叠加在现有 code-generated token 系统之上。压缩为 2 个阶段交付——Phase 17 一次性构建 apply 引擎 + /theme 页面 + 预设 + 后端持久化，Phase 18 交付自定义编辑器与季节自动切换。
 
-- [ ] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (planned 2026-08-02, ready for execution)
+- [🚧] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (planned 2026-08-02, 17-01 complete)
 - [ ] **Phase 18: Custom Editor & Seasonal Auto-Switch** - react-colorful 种子色编辑器 + 9 种 MD3 变体 + 实时预览直写 DOM + 增删改自定义 theme + 季节解析 + 自动切换开关 + 半球 + 手动挂起 override
 
 ## Phase Details

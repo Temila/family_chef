@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
-status: planning
-last_updated: "2026-07-31T15:04:59.521Z"
-last_activity: 2026-07-31 — v1.5 roadmap compressed from 5 phases → 2 phases (Phase 17 + Phase 18), 29/29 requirements mapped
+status: executing
+last_updated: "2026-08-03T01:58:40.000Z"
+last_activity: 2026-08-03 -- Phase 17 plan 17-01 complete (CustomTheme backend foundation)
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 6
+  completed_plans: 1
+  percent: 16
 ---
 
 # Project State
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 17 — Theme System Foundation: Engine, Page, Presets & Persistence (v1.5 自定义网站皮肤)
+**Current focus:** Phase 17 — Theme System Foundation
 
 ## Branch State
 
@@ -28,25 +28,25 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 |------|------|------|
 | `main` | `14ed5fd` (v1.1) | v1.2 已撤销，回退到 v1.1（含完整 wishlist） |
 | `dev` | `14ed5fd` (v1.1) | 与 main 同步 |
-| `feature/ui-rebuild` | `2fdcddd` | Phase 8-15 成果（MD3 令牌 + 动效/state-layer + bugfix sweep + Sheet + Portal dropdowns + 导航重构 + seed），v1.3 基分支 |
+| `feature/ui-rebuild` | `6ace4df` | Phase 8-17.01 成果（MD3 令牌 + Phase 17 plan 01 CustomTheme 后端） |
 | Tags | v1.0, v1.1, v1.3 |
 
 ⚠️ **Phase 10-14 已基于 `feature/ui-rebuild` 开发**——main/dev 上没有 MD3 令牌基础。
 
 ## Current Position
 
-Phase: 17 of 18 (Theme System Foundation — Engine, Page, Presets & Persistence) — first phase of v1.5
-Plan: —
-Status: Ready to plan (roadmap revised to 2 phases, awaiting /gsd-plan-phase 17)
-Last activity: 2026-07-31 — v1.5 roadmap compressed from 5 phases → 2 phases (Phase 17 + Phase 18), 29/29 requirements mapped
+Phase: 17 (Theme System Foundation) — EXECUTING
+Plan: 2 of 6
+Status: 17-01 complete; ready for 17-02
+Last activity: 2026-08-03 -- Phase 17 plan 17-01 complete (CustomTheme model + Alembic + REST API + 12 tests)
 
-Progress: [░░░░░░░░░░] 0% (0 of 2 v1.5 phases; Phases 1-16 shipped)
+Progress: [▓▓░░░░░░░░] 16% (1/6 v1.5 plans; Phases 1-16 shipped, 17-01 complete)
 
 ## Session Continuity
 
-Last session: 2026-07-31T15:04:59.509Z
-Stopped at: Phase 17 context gathered
-Next: `/gsd-plan-phase 17` to plan the Theme System Foundation phase (LOW research flag; small MCU runtime-import spike only). Phase 18 will need `/gsd-plan-phase --research-phase 18` (HIGH — HCT/variant/direct-to-DOM preview spike).
+Last session: 2026-08-03T01:58:40Z
+Stopped at: Completed Phase 17 plan 17-01 (CustomTheme backend foundation)
+Next: `/gsd-execute-phase 17` to continue with plan 17-02 (theme-engine.js + presets.js + ThemeContext frontend foundation).
 
 ## Deferred Items
 
