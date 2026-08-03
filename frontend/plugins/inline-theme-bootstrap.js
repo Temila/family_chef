@@ -23,11 +23,12 @@ export default function inlineThemeBootstrap() {
 
   return {
     name: 'inline-theme-bootstrap',
+    enforce: 'post',
     transformIndexHtml(html) {
-      const script = `<script>${bundle()}</script>`;
-      return html.includes(PLACEHOLDER)
-        ? html.replace(PLACEHOLDER, script)
-        : html.replace('<head>', `<head>\n    ${script}`);
+      return {
+        html: html.replace(PLACEHOLDER, ''),
+        tags: [{ tag: 'script', children: bundle(), injectTo: 'head' }],
+      };
     },
   };
 }
