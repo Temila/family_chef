@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-03T01:58:40.000Z"
-last_activity: 2026-08-03 -- Phase 17 plan 17-01 complete (CustomTheme backend foundation)
+last_updated: "2026-08-03T02:41:46.353Z"
+last_activity: 2026-08-03 -- Phase 17 plan 17-02 complete (runtime theme engine + classic FOUC bootstrap)
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 1
-  percent: 16
+  completed_plans: 2
+  percent: 33
 ---
 
 # Project State
@@ -36,17 +36,17 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 17 (Theme System Foundation) — EXECUTING
-Plan: 2 of 6
-Status: 17-01 complete; ready for 17-02
-Last activity: 2026-08-03 -- Phase 17 plan 17-01 complete (CustomTheme model + Alembic + REST API + 12 tests)
+Plan: 3 of 6
+Status: Ready to execute
+Last activity: 2026-08-03
 
-Progress: [▓▓░░░░░░░░] 16% (1/6 v1.5 plans; Phases 1-16 shipped, 17-01 complete)
+Progress: [███░░░░░░░] 33%
 
 ## Session Continuity
 
-Last session: 2026-08-03T01:58:40Z
-Stopped at: Completed Phase 17 plan 17-01 (CustomTheme backend foundation)
-Next: `/gsd-execute-phase 17` to continue with plan 17-02 (theme-engine.js + presets.js + ThemeContext frontend foundation).
+Last session: 2026-08-03T02:41:46.150Z
+Stopped at: Completed 17-02-PLAN.md
+Next: `/gsd-execute-phase 17` to continue with plan 17-03 (ThemeContext frontend foundation).
 
 ## Deferred Items
 
@@ -148,6 +148,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 15 P03 | 1min | 3 tasks | 3 files |
 | Phase 15 P04 | 2min | 3 tasks | 6 files |
 | Phase 15 P05 | 2min | 2 tasks | 1 files |
+| Phase 17 P02 | 18min | 3 tasks | 10 files |
 
 ## Decisions
 
@@ -226,6 +227,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 15]: Phase 15-04: BottomBar logout fully removed (destructure + tab action + onClick branch) — logout centralized in Header avatar dropdown per D-NAV05-01 — Rationale: D-NAV05-01 mandates logout removal from bottom nav; single logout path via Header avatar menu (D-NAV02-01)
 - [Phase 15]: Phase 15-05: OrderPage 高级筛选 trigger uses <Icon name="filter" /> (FilterList) not "tune" — tune is not in Icon.jsx mapping table (PATTERNS Finding 1) — tune icon absent from @material-symbols-svg/react@0.13.0 import set; filter is the established semantic equivalent already used elsewhere
 - [Phase 15]: Phase 15-05: handleClearFilters preserves favoritesOnly + sortBy — only resets region/cuisine/filters — UI-SPEC locked decision: favoritesOnly and sortBy are top-level controls, not advanced filters
+- [Phase 17]: Runtime theme engine derives TonalSpot light/dark CSS with dark-only surface-tint elevation overrides; FOUC bootstrap is a classic esbuild IIFE injected after generated styles.
 
 ## Operator Next Steps
 

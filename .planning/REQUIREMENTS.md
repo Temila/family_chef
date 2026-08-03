@@ -52,10 +52,10 @@
 
 ### Foundation & Engine
 
-- [ ] **FND-01**: theme-engine 模块从种子色（primary/secondary/tertiary + MD3 variant）派生完整 MD3 light+dark 配色并生成 CSS 覆盖层
-- [ ] **FND-02**: 活动 theme 通过生成的 `<style id="fc-dynamic-theme">` 元素应用（`:root`/`[data-theme="dark"]` 分块），tokens.css 不被修改
+- [x] **FND-01**: theme-engine 模块从种子色（primary/secondary/tertiary + MD3 variant）派生完整 MD3 light+dark 配色并生成 CSS 覆盖层
+- [x] **FND-02**: 活动 theme 通过生成的 `<style id="fc-dynamic-theme">` 元素应用（`:root`/`[data-theme="dark"]` 分块），tokens.css 不被修改
 - [ ] **FND-03**: 自定义 theme 与现有 header 明暗切换协同，零 JS 重应用（CSS 级联处理模式切换）
-- [ ] **FND-04**: FOUC 防护 — index.html 内联阻塞脚本在首帧前读取活动 theme 并注入 CSS
+- [x] **FND-04**: FOUC 防护 — index.html 内联阻塞脚本在首帧前读取活动 theme 并注入 CSS
 - [ ] **FND-05**: ThemeContext 管理活动 theme + 季节开关，mount/change 时应用，value memoized
 - [ ] **FND-06**: 深色模式下 elevation 阴影 + surface-tint 跟随自定义色（覆盖 --md-elevation-* 令牌）
 - [ ] **FND-07**: hex-lint CI gate 保证组件不硬编码颜色（维持 0 匹配不变量）
@@ -149,10 +149,10 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 17 | Pending |
-| FND-02 | Phase 17 | Pending |
+| FND-01 | Phase 17 | Complete |
+| FND-02 | Phase 17 | Complete |
 | FND-03 | Phase 17 | Pending |
-| FND-04 | Phase 17 | Pending |
+| FND-04 | Phase 17 | Complete |
 | FND-05 | Phase 17 | Pending |
 | FND-06 | Phase 17 | Pending |
 | FND-07 | Phase 17 | Pending |
