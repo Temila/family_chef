@@ -127,5 +127,5 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | ✓ Complete | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 6/6 | ✓ Complete | 2026-07-30 |
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
-| 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 2/6 | In Progress|  |
+| 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 3/6 | In Progress|  |
 | 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 0/TBD | Not started | - |
