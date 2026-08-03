@@ -4,5 +4,6 @@ export {
   buildCssSync,
   injectThemeCss,
   lightTokenNames,
-} from './theme-engine';
-export { DEFAULT_PRESET, PRESETS } from './presets';
+} from './theme-engine.js';
+export { DEFAULT_PRESET, PRESETS } from './presets.js';
+export { ThemeProvider, useTheme } from './theme-context.jsx';
