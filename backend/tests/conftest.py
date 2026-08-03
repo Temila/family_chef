@@ -2,12 +2,13 @@
 家味 · Family Chef - 测试配置
 """
 
-import pytest
 import asyncio
-from typing import AsyncGenerator
-from httpx import AsyncClient, ASGITransport
+from collections.abc import AsyncGenerator
+
+import pytest
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # 使用内存 SQLite 进行测试
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -41,20 +42,21 @@ async def setup_database():
     """创建测试数据库表（仅一次）"""
     # 导入 Base 和所有模型，确保表被注册
     from app.database import Base
-    
-    # 导入所有模型
-    from app.models.user import User
-    from app.models.ingredient import Ingredient, IngredientAlias
-    from app.models.category import Category
-    from app.models.dish import Dish, DishIngredient, DishCategory
-    from app.models.order import Order, OrderItem
-    from app.models.favorite import Favorite
-    from app.models.preference import TastePreference
-    from app.models.schedule import ChefSchedule
-    from app.models.log import SystemLog
-    from app.models.guest_invitation import GuestInvitation
-    from app.models.wish import Wish
-    
+
+    # 导入所有模型（仅用于触发模型注册到 Base.metadata,无须使用)
+    from app.models.user import User  # noqa: F401
+    from app.models.ingredient import Ingredient, IngredientAlias  # noqa: F401
+    from app.models.category import Category  # noqa: F401
+    from app.models.dish import Dish, DishIngredient, DishCategory  # noqa: F401
+    from app.models.order import Order, OrderItem  # noqa: F401
+    from app.models.favorite import Favorite  # noqa: F401
+    from app.models.preference import TastePreference  # noqa: F401
+    from app.models.schedule import ChefSchedule  # noqa: F401
+    from app.models.log import SystemLog  # noqa: F401
+    from app.models.guest_invitation import GuestInvitation  # noqa: F401
+    from app.models.wish import Wish  # noqa: F401
+    from app.models.custom_theme import CustomTheme  # noqa: F401
+
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -70,6 +72,7 @@ async def clean_all_tables():
             "order_items",
             "orders",
             "wishes",
+            "custom_themes",
             "guest_invitations",
             "dish_categories",
             "dish_ingredients",
@@ -125,8 +128,8 @@ async def db() -> AsyncGenerator[AsyncSession, None]:
 async def client(db) -> AsyncGenerator[AsyncClient, None]:
     """测试 HTTP 客户端"""
     # 覆盖 get_db 依赖
-    from app.main import app
     from app.database import get_db
+    from app.main import app
     
     async def override_get_db():
         async with test_session_factory() as session:

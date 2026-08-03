@@ -12,9 +12,9 @@
 import sqlite3
 from pathlib import Path
 
-from alembic import command
 from alembic.config import Config
 
+from alembic import command
 
 # Alembic 配置文件路径（相对 backend/ 目录）
 _ALEMBIC_INI = Path(__file__).resolve().parent.parent / "alembic.ini"
@@ -235,8 +235,11 @@ def test_downgrade_then_upgrade_round_trip(tmp_path: Path):
     assert "submitter_last_viewed_at" in _wishes_column_names(conn)
     conn.close()
 
-    # ========== 降级一级 ==========
-    command.downgrade(cfg, "-1")
+    # ========== 降级到 3a41e4977098 之前的版本 ==========
+    # Phase 17 在 head 之前新增了 custom themes 迁移(3bec850ed472),
+    # 所以"降一级"不再直接撤掉本迁移;明确指定 72b56533bb6d 即可让本测试
+    # 不依赖当前 head 的具体位置。
+    command.downgrade(cfg, "72b56533bb6d")
 
     conn = sqlite3.connect(str(db_path))
     try:
