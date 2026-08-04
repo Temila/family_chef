@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
-status: executing
-last_updated: "2026-08-04T07:33:00.000Z"
-last_activity: 2026-08-04 -- Phase 17 plan 17-06 verification complete (6/6 plans)
+status: verifying
+last_updated: "2026-08-04T07:59:14.183Z"
+last_activity: 2026-08-04
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 6
   completed_plans: 6
-  percent: 100
+  percent: 50
 ---
 
 # Project State
@@ -37,14 +37,14 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 Phase: 17 (Theme System Foundation) — COMPLETE (6/6 plans)
 Plan: 6 of 6
-Status: Verification gate passed; ready for human UAT + Phase 18 kickoff
-Last activity: 2026-08-04 -- Phase 17 plan 17-06 verification gate complete
+Status: Phase complete — ready for verification
+Last activity: 2026-08-04
 
-Progress: [██████████] 100% (Phase 17)
+Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-08-04T07:33:00.000Z
+Last session: 2026-08-04T07:34:52.336Z
 Stopped at: Completed 17-06-PLAN.md (verification gate; Phase 17 closed)
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
@@ -151,6 +151,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 17 P02 | 18min | 3 tasks | 10 files |
 | Phase 17 P03 | 2min | 2 tasks | 1 files |
 | Phase 17 P04 | 7min | 3 tasks | 5 files |
+| Phase 17 P06 | 12min | 3 tasks | 1 files |
 
 ## Decisions
 
@@ -230,6 +231,7 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 15]: Phase 15-05: OrderPage 高级筛选 trigger uses <Icon name="filter" /> (FilterList) not "tune" — tune is not in Icon.jsx mapping table (PATTERNS Finding 1) — tune icon absent from @material-symbols-svg/react@0.13.0 import set; filter is the established semantic equivalent already used elsewhere
 - [Phase 15]: Phase 15-05: handleClearFilters preserves favoritesOnly + sortBy — only resets region/cuisine/filters — UI-SPEC locked decision: favoritesOnly and sortBy are top-level controls, not advanced filters
 - [Phase 17]: Runtime theme engine derives TonalSpot light/dark CSS with dark-only surface-tint elevation overrides; FOUC bootstrap is a classic esbuild IIFE injected after generated styles.
+- [Phase 17]: 17-06 verification close-out auto-fixed 2 deviations: (a) Rule 3 closed the 17-05 commit gap (3 untracked ThemeCard/Preview files now committed atomically with the Rule 1 fix); (b) Rule 1 replaced ThemePreview.jsx Button/Chip hardcoded paddings ('4px 8px' / '2px 6px') with var(--md-spacing-1) var(--md-spacing-2) to satisfy MD3 Check #8b. Pre-existing AdminIngredientsPage.jsx MD3 violations documented as out-of-scope per deviation rule scope boundary — Phase 17 introduces 0 new token compliance regressions. — ThemePreview padding uses the smallest MD3 spacing tokens (var(--md-spacing-1) var(--md-spacing-2) = 4px 8px) to preserve the mini-UI visual intent while satisfying MD3 Check #8b. The Rule 3 commit gap close is necessary because 17-05 executor was cancelled mid-execution; orchestrator-written SUMMARY claimed 'no rework needed' but files were untracked. Combining both fixes into a single atomic commit minimizes branch churn and keeps 17-05's deliverable complete on feature/ui-rebuild.
 
 ## Operator Next Steps
 
