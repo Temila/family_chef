@@ -65,7 +65,7 @@
 
 **Milestone Goal:** 让用户能够自定义网站配色（MD3 色彩令牌），选择预设或创建无限自定义皮肤，并支持按季节自动切换。运行时用户驱动的 MD3 动态着色，叠加在现有 code-generated token 系统之上。压缩为 2 个阶段交付——Phase 17 一次性构建 apply 引擎 + /theme 页面 + 预设 + 后端持久化，Phase 18 交付自定义编辑器与季节自动切换。
 
-- [🚧] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (planned 2026-08-02, 17-01 complete)
+- [x] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (completed 2026-08-04, all 7 ROADMAP success criteria verified end-to-end via 17-06)
 - [ ] **Phase 18: Custom Editor & Seasonal Auto-Switch** - react-colorful 种子色编辑器 + 9 种 MD3 变体 + 实时预览直写 DOM + 增删改自定义 theme + 季节解析 + 自动切换开关 + 半球 + 手动挂起 override
 
 ## Phase Details
@@ -127,5 +127,5 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 14. UI Bugfix & Filter Popup | v1.3 | 7/7 | ✓ Complete | 2026-07-29 |
 | 15. Navigation Restructure & Test Data | v1.3 | 6/6 | ✓ Complete | 2026-07-30 |
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
-| 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 5/6 | In Progress|  |
+| 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | ✓ Complete | 2026-08-04 |
 | 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 0/TBD | Not started | - |

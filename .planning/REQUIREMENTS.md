@@ -63,12 +63,12 @@
 ### Theme Page & Presets
 
 - [x] **TPAGE-01**: Header 入口按钮（主题切换与头像之间）跳转 /theme 页面
-- [ ] **TPAGE-02**: /theme 页面以卡片网格展示所有 theme（移动端优先响应式）
-- [ ] **TPAGE-03**: 每张卡片即实时预览（mini-UI 通过 CSS 变量继承作用域到该 theme）
-- [ ] **TPAGE-04**: 5 个预设 theme：当前配色 + 春/夏/秋/冬季色板
-- [ ] **TPAGE-05**: 点击卡片应用 theme，选择持久化到 localStorage
-- [ ] **TPAGE-06**: 当前活动 theme 卡片显示选中指示
-- [ ] **TPAGE-07**: 预设可编辑（用户可改色）但不可删除，5 个预设条目始终存在
+- [x] **TPAGE-02**: /theme 页面以卡片网格展示所有 theme（移动端优先响应式）
+- [x] **TPAGE-03**: 每张卡片即实时预览（mini-UI 通过 CSS 变量继承作用域到该 theme）
+- [x] **TPAGE-04**: 5 个预设 theme：当前配色 + 春/夏/秋/冬季色板
+- [x] **TPAGE-05**: 点击卡片应用 theme，选择持久化到 localStorage
+- [x] **TPAGE-06**: 当前活动 theme 卡片显示选中指示
+- [x] **TPAGE-07**: 预设可编辑（用户可改色）但不可删除，5 个预设条目始终存在
 
 ### Custom Editor
 
@@ -157,12 +157,12 @@ Deferred to future release. Tracked but not in current roadmap.
 | FND-06 | Phase 17 | Complete |
 | FND-07 | Phase 17 | Complete |
 | TPAGE-01 | Phase 17 | Complete |
-| TPAGE-02 | Phase 17 | Pending |
-| TPAGE-03 | Phase 17 | Pending |
-| TPAGE-04 | Phase 17 | Pending |
-| TPAGE-05 | Phase 17 | Pending |
-| TPAGE-06 | Phase 17 | Pending |
-| TPAGE-07 | Phase 17 | Pending |
+| TPAGE-02 | Phase 17 | Complete |
+| TPAGE-03 | Phase 17 | Complete |
+| TPAGE-04 | Phase 17 | Complete |
+| TPAGE-05 | Phase 17 | Complete |
+| TPAGE-06 | Phase 17 | Complete |
+| TPAGE-07 | Phase 17 | Complete |
 | SYNC-01 | Phase 17 | Complete (17-01) |
 | SYNC-02 | Phase 17 | Complete (17-01) |
 | SYNC-03 | Phase 17 | Complete |
