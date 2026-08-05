@@ -89,10 +89,10 @@
 
 ### Seasonal Auto-Switch
 
-- [ ] **SEAS-01**: 季节解析器从用户本地时区检测当前季节
-- [ ] **SEAS-02**: 季节自动切换开关 — 开启时自动选择对应季节预设
-- [ ] **SEAS-03**: 半球处理（默认北半球 + 可选南半球切换）
-- [ ] **SEAS-04**: 手动选择挂起自动切换（带 TTL 的 override），避免重载时回退
+- [x] **SEAS-01**: 季节解析器从用户本地时区检测当前季节
+- [x] **SEAS-02**: 季节自动切换开关 — 开启时自动选择对应季节预设
+- [x] **SEAS-03**: 半球处理（默认北半球 + 可选南半球切换）
+- [x] **SEAS-04**: 手动选择挂起自动切换（带 TTL 的 override），避免重载时回退
 
 ## v2 Requirements
 
@@ -174,10 +174,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | EDIT-05 | Phase 18 | Pending |
 | EDIT-06 | Phase 18 | Pending |
 | EDIT-07 | Phase 18 | Complete |
-| SEAS-01 | Phase 18 | Pending |
-| SEAS-02 | Phase 18 | Pending |
-| SEAS-03 | Phase 18 | Pending |
-| SEAS-04 | Phase 18 | Pending |
+| SEAS-01 | Phase 18 | Complete |
+| SEAS-02 | Phase 18 | Complete |
+| SEAS-03 | Phase 18 | Complete |
+| SEAS-04 | Phase 18 | Complete |
 
 **Coverage:**
 - v1.5 requirements: 29 total

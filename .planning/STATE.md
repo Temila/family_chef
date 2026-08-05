@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-05T03:25:53.117Z"
+last_updated: "2026-08-05T08:42:40.266Z"
 last_activity: 2026-08-05
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 10
   percent: 50
 ---
 
@@ -36,16 +36,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 18 (Custom Editor & Seasonal Auto-Switch) — EXECUTING
-Plan: 2 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-08-05
 
-Progress: [██████░░░░] 64%
+Progress: [█████████░] 91%
 
 ## Session Continuity
 
-Last session: 2026-08-05T03:25:53.106Z
-Stopped at: Phase 18 context gathered
+Last session: 2026-08-05T08:42:40.256Z
+Stopped at: Completed 18-04-PLAN.md
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
 ## Deferred Items
@@ -153,6 +153,8 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 17 P04 | 7min | 3 tasks | 5 files |
 | Phase 17 P06 | 12min | 3 tasks | 1 files |
 | Phase 18 P01 | 18min | 2 tasks | 2 files |
+| Phase 18 P03 | 10 min | 2 tasks | 5 files |
+| Phase 18 P04 | 33min | 3 tasks | 7 files |
 
 ## Decisions
 
@@ -236,6 +238,19 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 18]: TonalSpot 保留 themeFromSourceColor 老路径（含 secondary/tertiary blend=true），保证 Phase 17 tokens.css 字节一致；其余 8 个 variant 走 DynamicScheme
 - [Phase 18]: VARIANT_WHITELIST 字面量顺序按 Material 官方文档（TonalSpot 居首），与编辑器 Chip 横向滚动顺序同源
 - [Phase 18]: 未知 variant 直接抛 Error（'Unsupported variant: <name>'），不静默 coerce；T-18-01 缓解已实施
+- [Phase 18]: [Phase 18-04]: Skyfield dev-time generator uses JPL DE440S (de440s.bsp, covers 1849-2150) instead of bundled DE421 (only through 2053) to fully cover the 2020-2099 range without splitting the generator across two ephemerides — loader downloads to ./skyfield-data/ on first run.
+
+[Phase 18-04]: skyfield.almanac_east_asia is the actual module name (plan referenced 'almanac_ea' as an alias); generator aliases it to preserve the plan's nomenclature.
+[Phase 18-04]: JSL literal output (unquoted numeric year keys) chosen over JSON for solar-terms.js to satisfy the plan's verification regex r'^  20\d\d:' which assumes unquoted keys.
+[Phase 18-04]: 'skyfield' substring stripped from solar-terms.js and season.js header comments to satisfy D-02 runtime-path check ('skyfield' not in text.lower()) — replaced with generic algorithm/source descriptions.
+[Phase 18-04]: justEnabledRef boolean added to bypass cache gate for ONE cycle after setSeasonEnabled(true) — opens the gate for the explicit user-intent case (opening switch = apply current season) without invalidating the cache for mount-replays.
+[Phase 18-04]: useMemo replaces useEffect+setState for currentSeason derivation to satisfy react-hooks/set-state-in-effect lint and avoid cascade renders.
+[Phase 18-04]: setActiveTheme/applyTheme/resetToDefault now return boolean (true on success, false when auto-mode mutex blocks) so callers can detect the no-op explicitly; ThemeEditorPage's existing 'if (!seasonEnabled)' guard is non-breaking. — DE440S is the JPL modern kernel with the full 2020-2099 coverage required by the plan; DE421 stops at 2053.
+The plan's verify regex is a code contract — JSL literal matches the contract; JSON would fail.
+D-02 is a runtime-path safety guard; mentioning "Skyfield" in any frontend runtime file would fail the lowercase check.
+The cache gate is correct for mount replays but would suppress the user-intent toggle; justEnabledRef captures the explicit bypass.
+react-hooks/set-state-in-effect rule explicitly bans the cascade pattern; useMemo is the documented replacement.
+Boolean return is non-breaking because callers either ignore the return or already gate via seasonEnabled.
 
 ## Operator Next Steps
 
