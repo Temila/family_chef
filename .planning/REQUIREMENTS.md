@@ -72,12 +72,12 @@
 
 ### Custom Editor
 
-- [ ] **EDIT-01**: 自定义编辑器（react-colorful）含 primary/secondary/tertiary 种子色选择器 + hex 输入
+- [x] **EDIT-01**: 自定义编辑器（react-colorful）含 primary/secondary/tertiary 种子色选择器 + hex 输入
 - [x] **EDIT-02**: MD3 变体选择器（9 种：TonalSpot/Vibrant/Expressive/Content/Mono/Neutral/Fidelity/Rainbow/FruitSalad）
-- [ ] **EDIT-03**: 实时预览随拖拽即时反馈（直写 DOM，不全应用重渲染）
-- [ ] **EDIT-04**: 用户可命名保存自定义 theme（数量无上限）
-- [ ] **EDIT-05**: 用户可编辑已有自定义 theme
-- [ ] **EDIT-06**: 用户可删除自定义 theme（预设除外）
+- [x] **EDIT-03**: 实时预览随拖拽即时反馈（直写 DOM，不全应用重渲染）
+- [x] **EDIT-04**: 用户可命名保存自定义 theme（数量无上限）
+- [x] **EDIT-05**: 用户可编辑已有自定义 theme
+- [x] **EDIT-06**: 用户可删除自定义 theme（预设除外）
 - [x] **EDIT-07**: 种子色驱动派生保证 WCAG AA 对比度，用户不直接编辑派生角色（primary-container 等）
 
 ### Backend Persistence
@@ -167,12 +167,12 @@ Deferred to future release. Tracked but not in current roadmap.
 | SYNC-02 | Phase 17 | Complete (17-01) |
 | SYNC-03 | Phase 17 | Complete |
 | SYNC-04 | Phase 17 | Complete (17-01) |
-| EDIT-01 | Phase 18 | Pending |
+| EDIT-01 | Phase 18 | Complete |
 | EDIT-02 | Phase 18 | Complete |
-| EDIT-03 | Phase 18 | Pending |
-| EDIT-04 | Phase 18 | Pending |
-| EDIT-05 | Phase 18 | Pending |
-| EDIT-06 | Phase 18 | Pending |
+| EDIT-03 | Phase 18 | Complete |
+| EDIT-04 | Phase 18 | Complete |
+| EDIT-05 | Phase 18 | Complete |
+| EDIT-06 | Phase 18 | Complete |
 | EDIT-07 | Phase 18 | Complete |
 | SEAS-01 | Phase 18 | Complete |
 | SEAS-02 | Phase 18 | Complete |
