@@ -1,31 +1,41 @@
 ---
 phase: 18-custom-editor-seasonal-auto-switch
-verified: 2026-08-05T17:30:00Z
-status: gaps_found
-score: 17/18 must-haves verified
+verified: 2026-08-05T09:39:51Z
+status: passed
+score: 18/18 must-haves verified
 overrides_applied: 0
-gaps:
-  - truth: "Blank, whitespace-only, over-100-character, and duplicate names prevent a save and surface a Chinese error."
-    status: partial
-    reason: "Duplicate-name interception works on the create path (backend pre-check → 400 → Chinese remap), but renaming an existing custom theme to an existing name on the edit path raises an unhandled sqlalchemy IntegrityError → HTTP 500 with an English 'Internal Server Error' toast (WR-01). The save IS prevented (DB unique constraint), so no duplicate is created and no data is corrupted, but the promised Chinese duplicate error does not surface on the edit path."
-    artifacts:
-      - path: "backend/app/services/custom_theme_service.py"
-        issue: "update_theme (lines 49-79) has ownership check only — no duplicate-name pre-check excluding self; IntegrityError escapes db.flush()"
-      - path: "backend/app/routers/themes.py"
-        issue: "PUT /{theme_id} catches only ThemePermissionError and ValueError (lines 56-59); IntegrityError propagates as HTTP 500"
-      - path: "frontend/src/pages/ThemeEditorPage.jsx"
-        issue: "Error remap /同名|已存在|duplicate/i (line 264) never matches 'Internal Server Error', so user sees English toast instead of Chinese duplicate message"
-    missing:
-      - "Duplicate-name pre-check in update_theme (excluding the theme itself) raising ValueError → 400, OR catch IntegrityError in the PUT router and map to 400 with the Chinese 已存在同名主题 message"
 human_verification: []
+re_verification:
+  previous_status: gaps_found
+  previous_score: 17/18
+  gaps_closed:
+    - "WR-01: rename-to-duplicate on PUT /api/themes/{id} now returns HTTP 400 with Chinese 已存在同名主题 detail (duplicate pre-check in update_theme excluding self) — verified by regression test test_update_theme_duplicate_name; suite 13/13 passed"
+  gaps_remaining: []
+  regressions: []
 ---
 
 # Phase 18: Custom Editor & Seasonal Auto-Switch Verification Report
 
 **Phase Goal:** 自定义编辑器交付 — react-colorful 种子色编辑器 (primary/secondary/tertiary) + 9 种 MD3 变体 (TonalSpot/Vibrant/Expressive/Content/Mono/Neutral/Fidelity/Rainbow/FruitSalad) + 编辑器内 scoped 实时预览直写 DOM + 增删改自定义 theme（fork/重名拦截/删除确认）+ 季节自动切换（节气/本地时区/半球/持久化/首绘/cache 门控/开关互斥）.
-**Verified:** 2026-08-05T17:30:00Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-08-05T09:39:51Z
+**Status:** passed
+**Re-verification:** Yes — after gap closure (WR-01)
+
+## Re-verification (WR-01 closed)
+
+**Previous status:** gaps_found (17/18) — gap: duplicate-name interception missing on the edit/rename path (`update_theme` had no pre-check → unhandled IntegrityError → HTTP 500 English error).
+
+**Fix applied (commit `93202fa`):**
+- `backend/app/services/custom_theme_service.py` — `update_theme` now pre-checks duplicate names excluding self (`CustomTheme.id != theme_id`, only when `name` in patch and changed), raising `ValueError("已存在同名主题: {name}")` mirroring `create_theme`. The PUT router's existing `except ValueError → HTTP 400` (themes.py:58-59) now surfaces the Chinese detail, which the editor's `/同名|已存在|duplicate/i` remap (ThemeEditorPage.jsx:264) renders as the in-place input error.
+- `backend/tests/test_themes.py` — added `test_update_theme_duplicate_name`: rename-to-existing → 400 + Chinese detail; original name preserved after rejection; same-name self-update → 200. `test_create_theme_duplicate_name` regression intact.
+
+**Verification evidence (re-run):**
+- `uv run pytest tests/test_themes.py -q` → **13 passed** (was 12 + 1 new regression test)
+- Frontend canaries unchanged by backend fix: `node --test src/theme/theme-engine.test.mjs src/theme/season.test.mjs` → **23 pass, 0 fail**; `npm run lint -- --quiet` → exit 0, clean.
+
+**Frontend note:** blank/whitespace/>100-char names remain blocked client-side (validateName) with Chinese errors; the duplicate case is now server-side pre-checked on BOTH create and edit paths — the must-have "blank/whitespace/>100-char/duplicate names prevent save and surface a Chinese error" is fully met.
+
+**Gap closure:** must-have truth #9 upgraded from ✗ FAILED (partial) → ✓ VERIFIED. Score 18/18. Non-blocking warnings WR-02..WR-05 remain carried forward (not part of any must-have; human-verification items 2 covers WR-02 severity assessment).
 
 ## Goal Achievement
 
@@ -41,7 +51,7 @@ human_verification: []
 | 6 | Deep-linkable editor with primary/secondary/tertiary live picker + valid hex input | ✓ VERIFIED | ThemeEditorPage.jsx — 3× `HexColorPicker`+`HexColorInput` (react-colorful), `HEX_COLOR_RE` gate, routes `/theme/editor`, `?themeId=`, `?preset=`; Header+BottomBar shell |
 | 7 | Dragging updates ONLY scoped preview via direct CSS text/DOM mutation; app theme unchanged until save | ✓ VERIFIED | `buildScopedCss` rewrites `:root`/`[data-theme="dark"]` → `[data-fc-theme-scope="editor-preview"]`, written via `styleRef.current.textContent` in effect; NO `injectThemeCss`/`setActiveTheme`/`fc_active_theme` write during draft (ThemeEditorPage.jsx:185-193); apply only after save when `!seasonEnabled` (line 253-255) |
 | 8 | New→POST, existing custom→PUT, preset fork→POST with prefilled 我的春/夏/秋/冬; manual save applies + returns to /theme | ✓ VERIFIED | `handleSave` dispatches POST (`mode: 'new'|'fork'`) vs PUT (`mode:'edit' && originalId`); `PRESET_FORK_NAMES` {spring:'我的春', summer:'我的夏', autumn:'我的秋', winter:'我的冬'}; `refreshCustomThemes()` then `setActiveTheme(saved)` (manual only) then `navigate('/theme')` |
-| 9 | Blank/whitespace/>100-char/duplicate names prevent save + surface Chinese error | ✗ FAILED (partial) | Blank/whitespace/>100 blocked client-side with Chinese errors (validateName). Duplicate: CREATE path OK (backend 400 `已存在同名主题` → remap). EDIT path BROKEN: `update_theme` has no duplicate pre-check → IntegrityError → HTTP 500 English toast (WR-01). See gaps. |
+| 9 | Blank/whitespace/>100-char/duplicate names prevent save + surface Chinese error | ✓ VERIFIED | Blank/whitespace/>100 blocked client-side with Chinese errors (validateName). Duplicate: pre-checked server-side on BOTH create (`create_theme`) and edit (`update_theme`, excluding self) paths → 400 `已存在同名主题` → editor remap. WR-01 fixed (commit 93202fa); regression `test_update_theme_duplicate_name` + suite 13/13 passed |
 | 10 | Season derived from 立春/立夏/立秋/立冬 in user local timezone, not fixed months/backend | ✓ VERIFIED | `solar-terms.js` — 80 years × 4 terms = 320 UTC ISO timestamps (regex-verified: 80 year keys, 80 of each term); `season.js` converts to local calendar via getFullYear/getMonth/getDate + YYYYMMDD key compare; no month tables, no backend API |
 | 11 | Auto-switch selects only spring/summer/autumn/winter preset, never default/custom | ✓ VERIFIED | `getSeasonPresetId` whitelist-rejects everything else; `applyCurrentSeason` uses `PRESETS.find(p => p.id === presetId)` only; `applySeasonalPresetDirect` sole bypass (theme-context.jsx:302-323) |
 | 12 | North default hemisphere; stored south choice inverts exactly, no browser/IP heuristics | ✓ VERIFIED | `normalizeHemisphere` defaults north; `NORTH_TO_SOUTH` = {spring→autumn, summer→winter, autumn→spring, winter→summer} applied to north result (season.js:57-82). First-principles check: 立春→autumn, 立夏→winter, 立秋→spring, 立冬→summer — exact inversion, locked by tests (season.test.mjs:72-117) |
@@ -52,7 +62,7 @@ human_verification: []
 | 17 | Custom edit/fork/delete affordances with confirmation; preset never deletable | ✓ VERIFIED | `handleEdit` custom→themeId, preset→`?preset=` only in manual mode; `handleDelete` custom-only with `window.confirm` (Chinese) → `api.deleteTheme` → refresh → active fallback via resetToDefault (manual only) → toasts; ThemeCard `showDelete = kind==='custom' && onDelete` — preset delete impossible |
 | 18 | Settings page has exact warning 开启后仅使用四季主题，手动应用失效 + immediate toggle/hemisphere | ✓ VERIFIED | ThemeSettingsPage.jsx:80 exact string in prominent `<aside role="note" aria-live="polite">` region; controlled checkbox → `setSeasonEnabled(Boolean(checked))`; north/south radio → `setHemisphere`; no TTL/timezone/IP heuristics |
 
-**Score:** 17/18 truths verified
+**Score:** 18/18 truths verified
 
 ### Required Artifacts
 
@@ -111,7 +121,7 @@ human_verification: []
 | EDIT-02 | 18-01 | 9 MD3 variants | ✓ SATISFIED | VARIANT_WHITELIST + dispatch; tests prove per-variant role differences |
 | EDIT-03 | 18-03 | Live preview direct DOM, no full re-render | ✓ SATISFIED | Scoped style textContent; no global injection during draft |
 | EDIT-04 | 18-03/18-05 | Name + save custom theme (unlimited) | ✓ SATISFIED | POST create + validation; 新建 entry reachable |
-| EDIT-05 | 18-03/18-05 | Edit existing custom theme | ✓ SATISFIED (with gap) | PUT edit path works; rename-to-duplicate → HTTP 500 English error (WR-01) |
+| EDIT-05 | 18-03/18-05 | Edit existing custom theme | ✓ SATISFIED | PUT edit path works; rename-to-duplicate → 400 Chinese error (WR-01 fixed, regression test 13/13) |
 | EDIT-06 | 18-05 | Delete custom (preset excluded) | ✓ SATISFIED | api.deleteTheme + confirm + refresh; preset never deletable |
 | EDIT-07 | 18-01 | Seed-only editing, WCAG AA derived roles | ✓ SATISFIED | All roles MCU-derived from 3 seeds; no derived-role editing surface |
 | SEAS-01 | 18-04 | Season from user local timezone | ✓ SATISFIED | Local calendar-day comparison of solar terms; 23 test-verified boundaries |
@@ -123,7 +133,7 @@ human_verification: []
 
 | File | Line | Pattern | Severity | Impact |
 | ---- | ---- | ------- | -------- | ------ |
-| backend/app/services/custom_theme_service.py | 69-79 | Missing duplicate pre-check in update_theme → IntegrityError | ⚠️ WARNING (WR-01) | Rename-to-duplicate → HTTP 500 + English toast on edit path; D-16 duplicate interception incomplete |
+| backend/app/services/custom_theme_service.py | 74-86 | ~~Missing duplicate pre-check in update_theme → IntegrityError~~ **RESOLVED (WR-01)** | ✅ FIXED | Duplicate pre-check excluding self added in commit 93202fa → 400 Chinese error; locked by `test_update_theme_duplicate_name`; suite 13/13 |
 | frontend/src/theme/theme-context.jsx | 191, 220-229 | Initial state ignores fc_season_enabled; apply effect re-injects stale fc_active_theme before seasonal microtask correction | ⚠️ WARNING (WR-02) | Transient wrong-theme flash post-hydration when auto-switch on and active ≠ season preset; FOUC first paint itself correct |
 | frontend/src/pages/ThemeEditorPage.jsx | 51-61 | Duplicated variant whitelist (VARIANT_OPTIONS) instead of importing VARIANT_WHITELIST | ⚠️ WARNING (WR-03) | Divergence risk only; values match today |
 | frontend/src/pages/ThemeSettingsPage.jsx | 76, 99 | aria-describedby self-referential / backwards | ⚠️ WARNING (WR-04) | Screen readers never announced mutex warning; visible warning unaffected |
@@ -133,14 +143,14 @@ human_verification: []
 
 ### Review Warnings — Impact Assessment (not fixed, per instructions)
 
-- **WR-01 (rename-to-duplicate → HTTP 500):** Affects EDIT-05/D-16 acceptance **on the edit path only**. The save is still blocked (DB unique constraint rolls back — no duplicate, no corruption) and the create path is fully compliant; but the promised Chinese duplicate-name error becomes an English "Internal Server Error". This makes must-have truth #9 only partially verified → **status: gaps_found**. Small fix (duplicate pre-check in `update_theme` excluding self, or IntegrityError→400 mapping in PUT router).
+- **WR-01 (rename-to-duplicate → HTTP 500):** ✅ **FIXED in commit `93202fa`** — `update_theme` now pre-checks duplicates excluding self and raises `ValueError(已存在同名主题)` → PUT router maps to 400 with Chinese detail; regression test `test_update_theme_duplicate_name` covers rename-to-existing (400 + Chinese), original-name preservation, and same-name self-update (200). Backend suite 13/13. No longer a gap.
 - **WR-02 (stale-theme flash after hydration):** Does **NOT** violate the SEAS-02/SEAS-04 first-paint acceptance — `fouc-bootstrap.js` correctly paints the season preset at first paint and honors `fc_season_enabled` (verified). The flash occurs *after* hydration when React re-injects stale `fc_active_theme` before the seasonal effect corrects it; the final state is correct and the cache gate still yields one seasonal application. Functional/UX defect (wrong-theme flicker on load in auto mode), warning-level, not a must-have failure. Fix would be season-aware initial state in `readActiveThemeFromStorage` or gating the apply effect while seasonEnabled.
 
 ### Gaps Summary
 
-1. **Duplicate-name interception on the edit path (WR-01)** — must-have truth #9 partial. `update_theme` (backend) lacks the duplicate pre-check that `create_theme` has; renaming a custom theme to an existing name violates `uq_custom_themes_user_name` at flush, the PUT router catches neither IntegrityError nor maps it, and the editor's `/同名|已存在|duplicate/i` remap cannot match the English 500. Blocked save (good) but Chinese error promise unmet (bad) on the phase's own edit/rename flow. Fix: mirror the create-path pre-check in `update_theme` (excluding the theme itself) or catch IntegrityError in the PUT route → 400 with `已存在同名主题`. All other 17 truths verified. No later phase covers this (Phase 18 is the final v1.5 phase) — must be fixed as a follow-up.
+1. **Duplicate-name interception on the edit path (WR-01) — CLOSED.** `update_theme` (backend) lacked the duplicate pre-check that `create_theme` has; renaming a custom theme to an existing name violated `uq_custom_themes_user_name` at flush → HTTP 500 English error. Fixed in commit `93202fa`: pre-check excluding self (`CustomTheme.id != theme_id`) raising `ValueError(已存在同名主题)` → PUT router's existing ValueError catch returns 400 with Chinese detail → editor remap surfaces it. Verified by re-running the suite: **13 passed** (includes new `test_update_theme_duplicate_name`). Must-have truth #9 now fully verified — all 18 truths pass. No data corruption was ever possible (DB unique constraint), and both create and edit paths now deliver the promised Chinese duplicate error.
 
-2. Non-blocking warnings carried forward (no fix performed): WR-02 stale-theme flash post-hydration, WR-03 duplicated whitelist, WR-04 ARIA miswire, WR-05 misleading sync toast.
+2. Non-blocking warnings carried forward (no fix performed): WR-02 stale-theme flash post-hydration, WR-03 duplicated whitelist, WR-04 ARIA miswire, WR-05 misleading sync toast. None are must-have failures; WR-02 severity is covered by human-verification item 2.
 
 ### Human Verification Required
 
@@ -152,5 +162,5 @@ human_verification: []
 
 ---
 
-_Verified: 2026-08-05T17:30:00Z_
+_Verified: 2026-08-05T09:39:51Z_
 _Verifier: the agent (gsd-verifier)_
