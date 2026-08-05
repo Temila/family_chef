@@ -53,7 +53,7 @@ class CustomThemeService:
         theme_id: int,
         theme_data: ThemeUpdate,
     ) -> CustomTheme:
-        """更新主题(所有权检查,非所有者抛 ThemePermissionError → 403)。"""
+        """更新主题(所有权检查,非所有者抛 ThemePermissionError → 403;重名抛 ValueError → 400)。"""
         result = await db.execute(
             select(CustomTheme).where(
                 and_(
@@ -70,6 +70,20 @@ class CustomThemeService:
         if "source_colors" in patch and patch["source_colors"] is not None:
             # 嵌套 SourceColors → dict
             patch["source_colors"] = theme_data.source_colors.model_dump()
+
+        # 重名拦截（排除自身）——与 create_theme 一致，避免 uq 约束抛 IntegrityError → 500
+        if "name" in patch and patch["name"] != theme.name:
+            dup = await db.execute(
+                select(CustomTheme).where(
+                    and_(
+                        CustomTheme.user_id == current_user.id,
+                        CustomTheme.name == patch["name"],
+                        CustomTheme.id != theme_id,
+                    )
+                )
+            )
+            if dup.scalar_one_or_none() is not None:
+                raise ValueError(f"已存在同名主题: {patch['name']}")
 
         for field, value in patch.items():
             setattr(theme, field, value)

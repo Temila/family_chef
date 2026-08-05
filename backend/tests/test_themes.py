@@ -195,6 +195,50 @@ async def test_update_theme_not_owner(
 
 
 @pytest.mark.asyncio
+async def test_update_theme_duplicate_name(client: AsyncClient, user_token: str):
+    """重命名到已存在名称应返回 400(排除自身),而非 500"""
+    r1 = await client.post(
+        "/api/themes",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json=VALID_PAYLOAD,
+    )
+    assert r1.status_code == 201
+    theme_a = r1.json()
+
+    r2 = await client.post(
+        "/api/themes",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={**VALID_PAYLOAD, "name": "我的夏"},
+    )
+    assert r2.status_code == 201
+
+    # theme_a 改名为 theme_b 的名字 → 400 + 中文提示
+    response = await client.put(
+        f"/api/themes/{theme_a['id']}",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"name": "我的夏"},
+    )
+    assert response.status_code == 400
+    assert "已存在同名主题" in response.json()["detail"]
+
+    # theme_a 保留原名字（未损坏）
+    list_resp = await client.get(
+        "/api/themes", headers={"Authorization": f"Bearer {user_token}"}
+    )
+    assert list_resp.status_code == 200
+    names = {t["name"] for t in list_resp.json()}
+    assert names == {"我的春", "我的夏"}
+
+    # 更新为自身同名（PUT 不带 name 或带相同 name）应正常 200
+    same_name = await client.put(
+        f"/api/themes/{theme_a['id']}",
+        headers={"Authorization": f"Bearer {user_token}"},
+        json={"name": "我的春"},
+    )
+    assert same_name.status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_delete_theme(client: AsyncClient, user_token: str):
     """删除主题 — 204 + 后续 GET 看不到"""
     create_resp = await client.post(
