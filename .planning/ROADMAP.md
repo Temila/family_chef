@@ -71,10 +71,12 @@
 ## Phase Details
 
 ### Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence
+
 **Goal**: 一个完整可用的 theme 系统——用户在 /theme 页面浏览 5 个预设并以卡片即时预览，一键应用并持久化到 localStorage，自定义 theme 跨设备同步（DB 为真相源），apply 层无 FOUC 且与明暗切换正交。本阶段构建所有下游消费的基础：theme-engine.js（派生 + 应用）、FOUC bootstrap、ThemeContext、/theme 卡片页（卡片即预览）、5 个预设、header 入口按钮、后端 CustomTheme 模型 + 迁移 + CRUD API + 跨设备同步。/theme 页面同时渲染自定义 theme 的展示槽位（display-ready），但创建/编辑自定义 theme 在 Phase 18 交付。
 **Depends on**: Nothing (first phase of v1.5)
 **Requirements**: FND-01, FND-02, FND-03, FND-04, FND-05, FND-06, FND-07, TPAGE-01, TPAGE-02, TPAGE-03, TPAGE-04, TPAGE-05, TPAGE-06, TPAGE-07, SYNC-01, SYNC-02, SYNC-03, SYNC-04
 **Success Criteria** (what must be TRUE):
+
   1. 当 localStorage 中已持久化一个非默认 theme 时，冷加载刷新后首帧即为该 theme，无默认绿色闪烁（在 DevTools 4× CPU throttle 下验证 FOUC-free）
   2. 自定义 theme 活动时，点击 header 现有明暗切换按钮，所有 MD3 表面正确重新着色（无苍白-on-暗或回退默认绿）——零 JS 重应用，纯 CSS 级联（生成式 `<style id="fc-dynamic-theme">` 携带独立 `:root`/`[data-theme="dark"]` 分块）
   3. 深色模式下 elevation 阴影与 surface-tint 跟随自定义配色（不再使用硬编码 rgba(0,0,0,X)）；ThemeContext 在 mount/theme 切换时应用 theme，value 被 memoized
@@ -82,6 +84,7 @@
   5. /theme 展示 5 个预设（当前配色 + 春/夏/秋/冬）；点击任意卡片即全应用并持久化到 localStorage；当前活动 theme 卡片显示选中指示；预设可编辑（改色）但不可删除，5 个预设条目始终存在
   6. 用户的自定义 theme 保存到后端 DB（CustomTheme 模型 + Alembic 迁移，JWT 鉴权 per-user 归属），完整登出/登录后仍然存在；跨设备同步（DB 为真相源，localStorage 缓存活动选择，mount 时按 updatedAt 对账）；保存失败弹 toast 不静默吞掉；每个用户仅能查看自己的 theme
   7. CI hex-lint 门禁在任何组件 CSS 重新引入硬编码十六进制色时失败（维持 0 匹配不变量）
+
 **Plans**: TBD
 
 > 研究标记 LOW：现有 `theme` util + `generate-tokens.cjs` 提供 apply 层模板，`favorites.py` 提供精确的 per-user CRUD 模板。仅需一个小的 MCU 运行时导入 spike（确认 v0.4.0 经 Vite 打包后在浏览器可用）。
@@ -89,16 +92,33 @@
 **UI hint**: yes
 
 ### Phase 18: Custom Editor & Seasonal Auto-Switch
+
 **Goal**: 用户通过实时颜色编辑器（种子色驱动，WCAG AA 由 MD3 引擎保证，9 种 MD3 变体）创建、命名、编辑、删除无限数量的自定义皮肤，并支持按季节自动切换——自动切换尊重手动选择（挂起而非覆盖）并正确处理半球。
 **Depends on**: Phase 17（消费 apply 引擎 + 后端 CustomTheme CRUD API + /theme 页面）
 **Requirements**: EDIT-01, EDIT-02, EDIT-03, EDIT-04, EDIT-05, EDIT-06, EDIT-07, SEAS-01, SEAS-02, SEAS-03, SEAS-04
 **Success Criteria** (what must be TRUE):
+
   1. 用户可在自定义编辑器中通过 react-colorful 颜色选择器 + hex 输入选择 primary/secondary/tertiary 三种种子色；拖动选择器时实时预览即时重新着色，无感知延迟（直写 DOM，不触发整应用重渲染）
   2. 用户可从 9 种 MD3 变体（TonalSpot/Vibrant/Expressive/Content/Mono/Neutral/Fidelity/Rainbow/FruitSalad）中选择，派生配色随之改变；每个 user-saved theme 的文本角色自动满足 WCAG AA 对比度（由 MD3 SchemeTonalSpot 派生保证，用户不直接编辑派生角色如 primary-container）
   3. 用户可为自定义 theme 命名保存（数量无上限），编辑已有自定义 theme，删除自定义 theme（预设不可删）
   4. 开启季节自动切换时，app 从用户本地时区检测当前季节并自动选择对应季节预设；用户可在北半球（默认）与南半球之间切换，季节检测随之调整
   5. 手动选择 theme 挂起自动切换（带 TTL 的 override），刷新页面不会回退到自动选择且挂起可逆；季节评估仅在季节边界发生一次（存储 fc_last_season），而非每次 mount 都触发
-**Plans**: TBD
+
+**Plans**: 5 plans
+Plans:
+**Wave 1**
+
+- [ ] 18-01-PLAN.md — nine-variant MD3 engine dispatch and regression tests
+- [ ] 18-02-PLAN.md — blocking legitimacy gate for react-colorful and Skyfield
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 18-03-PLAN.md — scoped custom theme editor and CRUD save semantics
+- [ ] 18-04-PLAN.md — solar-term data, local season resolver, and cached auto-switch context
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 18-05-PLAN.md — theme settings, editor routes, guarded card actions, and custom deletion
 
 > 研究标记 HIGH：需 `/gsd-plan-phase --research-phase 18`。HCT 色彩空间行为、Variant 枚举（9 种）、直写 DOM 预览模式均需在 commit 编辑器数据模型前 spike MCU 运行时集成。
 > 开放产品决策（discuss 阶段）：(a) 季节定义——气象学（3-5 月春）vs 节气（立春/立夏/立秋/立冬，更符合中文家庭场景）；(b) 半球检测方式（无浏览器半球 API，时区启发式脆弱）；(c) 自动切换 vs 手动选择的精确交互语义。
