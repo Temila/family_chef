@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-05T02:57:50.972Z"
-last_activity: 2026-08-05 -- Phase 18 planning complete
+last_updated: "2026-08-05T03:25:53.117Z"
+last_activity: 2026-08-05
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 11
-  completed_plans: 6
+  completed_plans: 7
   percent: 50
 ---
 
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Phase 17 — Theme System Foundation (verification gate complete)
+**Current focus:** Phase 18 — Custom Editor & Seasonal Auto-Switch
 
 ## Branch State
 
@@ -35,16 +35,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 17 (Theme System Foundation) — COMPLETE (6/6 plans)
-Plan: 6 of 6
+Phase: 18 (Custom Editor & Seasonal Auto-Switch) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-08-05 -- Phase 18 planning complete
+Last activity: 2026-08-05
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 64%
 
 ## Session Continuity
 
-Last session: 2026-08-05T01:25:22.043Z
+Last session: 2026-08-05T03:25:53.106Z
 Stopped at: Phase 18 context gathered
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
@@ -152,6 +152,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 17 P03 | 2min | 2 tasks | 1 files |
 | Phase 17 P04 | 7min | 3 tasks | 5 files |
 | Phase 17 P06 | 12min | 3 tasks | 1 files |
+| Phase 18 P01 | 18min | 2 tasks | 2 files |
 
 ## Decisions
 
@@ -232,6 +233,9 @@ See .planning/milestones/v1.1-ROADMAP.md "Key Decisions" for full archive. Highl
 - [Phase 15]: Phase 15-05: handleClearFilters preserves favoritesOnly + sortBy — only resets region/cuisine/filters — UI-SPEC locked decision: favoritesOnly and sortBy are top-level controls, not advanced filters
 - [Phase 17]: Runtime theme engine derives TonalSpot light/dark CSS with dark-only surface-tint elevation overrides; FOUC bootstrap is a classic esbuild IIFE injected after generated styles.
 - [Phase 17]: 17-06 verification close-out auto-fixed 2 deviations: (a) Rule 3 closed the 17-05 commit gap (3 untracked ThemeCard/Preview files now committed atomically with the Rule 1 fix); (b) Rule 1 replaced ThemePreview.jsx Button/Chip hardcoded paddings ('4px 8px' / '2px 6px') with var(--md-spacing-1) var(--md-spacing-2) to satisfy MD3 Check #8b. Pre-existing AdminIngredientsPage.jsx MD3 violations documented as out-of-scope per deviation rule scope boundary — Phase 17 introduces 0 new token compliance regressions. — ThemePreview padding uses the smallest MD3 spacing tokens (var(--md-spacing-1) var(--md-spacing-2) = 4px 8px) to preserve the mini-UI visual intent while satisfying MD3 Check #8b. The Rule 3 commit gap close is necessary because 17-05 executor was cancelled mid-execution; orchestrator-written SUMMARY claimed 'no rework needed' but files were untracked. Combining both fixes into a single atomic commit minimizes branch churn and keeps 17-05's deliverable complete on feature/ui-rebuild.
+- [Phase 18]: TonalSpot 保留 themeFromSourceColor 老路径（含 secondary/tertiary blend=true），保证 Phase 17 tokens.css 字节一致；其余 8 个 variant 走 DynamicScheme
+- [Phase 18]: VARIANT_WHITELIST 字面量顺序按 Material 官方文档（TonalSpot 居首），与编辑器 Chip 横向滚动顺序同源
+- [Phase 18]: 未知 variant 直接抛 Error（'Unsupported variant: <name>'），不静默 coerce；T-18-01 缓解已实施
 
 ## Operator Next Steps
 

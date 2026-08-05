@@ -108,7 +108,7 @@
 Plans:
 **Wave 1**
 
-- [ ] 18-01-PLAN.md — nine-variant MD3 engine dispatch and regression tests
+- [x] 18-01-PLAN.md — nine-variant MD3 engine dispatch and regression tests
 - [ ] 18-02-PLAN.md — blocking legitimacy gate for react-colorful and Skyfield
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -148,4 +148,4 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 15. Navigation Restructure & Test Data | v1.3 | 6/6 | ✓ Complete | 2026-07-30 |
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
-| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 0/TBD | Not started | - |
+| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 1/5 | In Progress|  |
