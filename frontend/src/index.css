@@ -2,6 +2,7 @@
 @import './css/styles.css';
 @import './css/theme-page.css';
 @import './css/theme-editor.css';
+@import './css/theme-settings.css';
 
 :root {
   font-family: var(--md-font-body);

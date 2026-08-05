@@ -1,0 +1,249 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Theme Settings (Phase 18 — D-08 / D-09 / D-11 / SEAS-02 / SEAS-03)
+   /theme/settings 子页：互斥醒目提醒横幅 + 开关 + 半球二选一
+   所有间距通过 var(--md-spacing-*)，所有颜色通过 var(--md-color-*)
+   严格遵循 Check #8（无 hex literal）
+   ═══════════════════════════════════════════════════════════════════ */
+
+.theme-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-spacing-5);
+  padding: var(--md-spacing-4) var(--md-spacing-4) var(--md-spacing-7);
+}
+
+.theme-settings__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--md-spacing-3);
+}
+
+.theme-settings__title-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.theme-settings__title {
+  font-family: var(--md-font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--md-color-on-surface);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.theme-settings__subtitle {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--md-color-on-surface-variant);
+  margin-top: var(--md-spacing-1);
+  line-height: 1.4;
+}
+
+/* D-09 互斥提醒横幅 —— 显著独立 DOM 区域。
+   视觉权重高于普通说明文案（error-container 配色 + 边框 + 醒目 icon）。 */
+.theme-settings__mutex-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--md-spacing-3);
+  padding: var(--md-spacing-3) var(--md-spacing-4);
+  border-radius: var(--md-radius-md);
+  background: var(--md-color-error-container);
+  color: var(--md-color-on-error-container);
+  border: 1px solid var(--md-color-error);
+  min-height: 48px;
+}
+
+.theme-settings__mutex-warning-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--md-radius-full);
+  background: var(--md-color-error);
+  color: var(--md-color-on-error);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.theme-settings__mutex-warning-text {
+  font-family: var(--md-font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Section 容器（开关区、半球区） */
+.theme-settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-spacing-3);
+  padding: var(--md-spacing-4);
+  border-radius: var(--md-radius-md);
+  background: var(--md-color-surface-container-low);
+}
+
+.theme-settings__section-title {
+  font-family: var(--md-font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-color-on-surface);
+  line-height: 1.3;
+}
+
+.theme-settings__section-hint {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--md-color-on-surface-variant);
+  line-height: 1.5;
+}
+
+/* 开关行：左侧文本标签，右侧 switch —— 48dp 触控目标 */
+.theme-settings__toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--md-spacing-3);
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.theme-settings__toggle-label {
+  font-family: var(--md-font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--md-color-on-surface);
+  line-height: 1.4;
+  flex: 1 1 auto;
+}
+
+.theme-settings__toggle-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 52px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.theme-settings__toggle-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.theme-settings__toggle-track {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--md-radius-full);
+  background: var(--md-color-surface-container-highest);
+  border: 2px solid var(--md-color-outline);
+  position: relative;
+  transition: background var(--md-motion-duration-short, 150ms)
+    var(--md-motion-easing-standard, ease-in-out);
+}
+
+.theme-settings__toggle-thumb {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: var(--md-radius-full);
+  background: var(--md-color-outline);
+  transition: left var(--md-motion-duration-short, 150ms)
+    var(--md-motion-easing-standard, ease-in-out),
+    background var(--md-motion-duration-short, 150ms)
+    var(--md-motion-easing-standard, ease-in-out);
+}
+
+.theme-settings__toggle-input:checked ~ .theme-settings__toggle-track {
+  background: var(--md-color-primary);
+  border-color: var(--md-color-primary);
+}
+
+.theme-settings__toggle-input:checked ~ .theme-settings__toggle-track .theme-settings__toggle-thumb {
+  left: 28px;
+  background: var(--md-color-on-primary);
+}
+
+.theme-settings__toggle-input:focus-visible ~ .theme-settings__toggle-track {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* 半球二选一行：等宽两列，48dp 触控目标 */
+.theme-settings__hemisphere-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--md-spacing-3);
+}
+
+.theme-settings__hemisphere-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--md-spacing-2) var(--md-spacing-3);
+  border-radius: var(--md-radius-md);
+  background: var(--md-color-surface);
+  border: 1px solid var(--md-color-outline-variant);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--md-motion-duration-short, 150ms)
+    var(--md-motion-easing-standard, ease-in-out);
+}
+
+.theme-settings__hemisphere-option--selected {
+  border-color: var(--md-color-primary);
+}
+
+.theme-settings__hemisphere-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.theme-settings__hemisphere-input:focus-visible + .md-chip {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
+/* 底部操作按钮行 */
+.theme-settings__actions {
+  display: flex;
+  gap: var(--md-spacing-3);
+  justify-content: flex-end;
+  padding-top: var(--md-spacing-3);
+  border-top: 1px solid var(--md-color-outline-variant);
+}
+
+/* 极窄屏：单列堆叠 */
+@media (max-width: 420px) {
+  .theme-settings {
+    padding: var(--md-spacing-3) var(--md-spacing-3) var(--md-spacing-6);
+  }
+
+  .theme-settings__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
