@@ -65,6 +65,9 @@ frontend/playwright-report/
 # UV
 uv.lock
 
+# Skyfield dev-time ephemeris download (scripts/generate-solar-terms.py)
+skyfield-data/
+
 # 文档和原型（不纳入版本控制）
 docs-dev/
 front-end-prototype/

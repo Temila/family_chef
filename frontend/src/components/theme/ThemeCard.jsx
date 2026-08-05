@@ -1,5 +1,6 @@
 /**
  * ThemeCard — Phase 17 (TPAGE-03 / TPAGE-06 / D-05 + D-06 + D-07)
+ *           + Phase 18 (D-10 / D-12 / D-17)
  *
  * 卡片即预览：每一张卡片包一个 <div data-fc-theme-scope={themeId}>
  * 在该 scope 内通过 buildCssSync 派生出该主题专属的 --md-color-* 变量。
@@ -14,10 +15,17 @@
  *
  * 安全 (T-17-21 / T-17-26): buildCssSync 由 try/catch 包围，引擎异常时 scoped style 为空 → 退化
  * 至页面激活主题在 scope 内 fallback，不破坏卡片交互。
+ *
+ * 行动按钮 (D-10/D-12/D-17)：
+ *   - 自定义：渲染 `编辑` + `删除` 按钮
+ *   - 预设：仅在 onEdit 由 page 传入（即手动模式 preset fork）时渲染 `编辑`
+ *   - 所有 action 必须 event.stopPropagation() + event.preventDefault() 防止
+ *     Card 自身的 onClick（应用主题）二次触发
  */
 
 import { useMemo } from 'react';
 import { buildCssSync } from '../../theme/theme-engine';
+import Button from '../primitives/Button';
 import Card from '../primitives/Card';
 import ThemePreview from './ThemePreview';
 import './ThemeCard.css';
@@ -26,7 +34,22 @@ function isCustomTheme(theme) {
   return theme.kind === 'custom' || Boolean(theme.user_id) || (typeof theme.id === 'number' && theme.id > 0);
 }
 
-export default function ThemeCard({ theme, isActive, onClick }) {
+function stopEvent(event) {
+  if (event && typeof event.stopPropagation === 'function') {
+    event.stopPropagation();
+  }
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+}
+
+export default function ThemeCard({
+  theme,
+  isActive,
+  onClick,
+  onEdit,
+  onDelete,
+}) {
   const kind = isCustomTheme(theme) ? 'custom' : 'preset';
 
   // T-17-21: scoped style 生成失败 → 返回空字符串，scope 内部退回页面 active theme
@@ -52,6 +75,18 @@ export default function ThemeCard({ theme, isActive, onClick }) {
   }, [theme.id, theme.sourceColors, theme.variant, sourceColorsKey]);
 
   const kindLabel = kind === 'custom' ? '自定义' : '预设';
+  const showEdit = typeof onEdit === 'function';
+  const showDelete = kind === 'custom' && typeof onDelete === 'function';
+
+  const handleEditClick = (event) => {
+    stopEvent(event);
+    onEdit(theme);
+  };
+
+  const handleDeleteClick = (event) => {
+    stopEvent(event);
+    onDelete(theme);
+  };
 
   return (
     <Card
@@ -71,6 +106,34 @@ export default function ThemeCard({ theme, isActive, onClick }) {
           <ThemePreview />
         </div>
       </div>
+
+      {(showEdit || showDelete) && (
+        <div className="theme-card__actions">
+          {showEdit && (
+            <Button
+              size="sm"
+              variant="outlined"
+              icon="edit"
+              onClick={handleEditClick}
+              aria-label={`编辑主题 ${theme.name}`}
+            >
+              编辑
+            </Button>
+          )}
+          {showDelete && (
+            <Button
+              size="sm"
+              variant="text"
+              icon="delete"
+              onClick={handleDeleteClick}
+              aria-label={`删除主题 ${theme.name}`}
+            >
+              删除
+            </Button>
+          )}
+        </div>
+      )}
+
       {isActive && (
         <div className="theme-card__footer">
           <span className="theme-card__active-indicator" aria-live="polite">

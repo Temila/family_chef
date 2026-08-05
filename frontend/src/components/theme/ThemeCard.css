@@ -83,6 +83,28 @@
   padding: 0 var(--md-spacing-3) var(--md-spacing-2);
 }
 
+/* 行动按钮行（Phase 18 — D-10 / D-12 / D-17） */
+.theme-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--md-spacing-2);
+  align-items: center;
+  padding: 0 var(--md-spacing-3) var(--md-spacing-2);
+  border-top: 1px solid var(--md-color-outline-variant);
+  padding-top: var(--md-spacing-2);
+}
+
+.theme-card__actions > .md-button {
+  min-height: 36px;
+  flex: 0 0 auto;
+}
+
+@media (min-width: 480px) {
+  .theme-card__actions {
+    justify-content: flex-end;
+  }
+}
+
 /* Preview 子内容在 preview container 内 —— 不需要 scoped CSS 重写 */
 .theme-card__preview > * {
   color: var(--md-color-on-surface);
