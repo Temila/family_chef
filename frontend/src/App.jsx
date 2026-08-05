@@ -29,6 +29,8 @@ import UserWishesPage from './pages/UserWishesPage';
 import ChefWishesPage from './pages/ChefWishesPage';
 import AdminWishesPage from './pages/AdminWishesPage';
 import ThemePage from './pages/ThemePage';
+import ThemeEditorPage from './pages/ThemeEditorPage';
+import ThemeSettingsPage from './pages/ThemeSettingsPage';
 // styles.css 现统一由 src/index.css @import 加载（Phase 9 合并 CSS 入口，避免重复打包）
 
 const VALID_ROLES = ['admin', 'user', 'chef'];
@@ -295,6 +297,22 @@ function App() {
                 element={
                   <ProtectedRoute requiredRoles={['user', 'chef', 'admin']}>
                     <ThemePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/theme/editor"
+                element={
+                  <ProtectedRoute requiredRoles={['user', 'chef', 'admin']}>
+                    <ThemeEditorPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/theme/settings"
+                element={
+                  <ProtectedRoute requiredRoles={['user', 'chef', 'admin']}>
+                    <ThemeSettingsPage />
                   </ProtectedRoute>
                 }
               />

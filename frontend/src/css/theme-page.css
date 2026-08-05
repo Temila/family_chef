@@ -93,3 +93,15 @@
     margin-left: auto;
   }
 }
+
+/* 操作行：新建 + 主题设置 入口（Phase 18 — D-08） */
+.theme-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--md-spacing-2);
+  padding: 0 var(--md-spacing-4) var(--md-spacing-3);
+}
+
+.theme-page__actions > .md-button {
+  min-height: 48px;
+}
