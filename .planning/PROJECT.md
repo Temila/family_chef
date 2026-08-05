@@ -10,7 +10,7 @@
 
 ## Current State
 
-**Shipped v1.2** — 2026-07-29: Material Design 3 前端重构完整交付。6 phases / 18 plans / 40+ tasks，完整 MD3 设计令牌 + 7 种原始组件 + 5 种复合组件 + 导航体系 + 8dp 网格 + 动效/state-layer。保留所有业务逻辑零回归。
+**Shipped v1.5** — 2026-08-05: 自定义网站皮肤（Theme Customization）完整交付。Phases 17-18 / 11 plans：MD3 运行时主题引擎（9 种变体 dispatch）+ FOUC bootstrap + 5 预设 + /theme 页面 + 自定义主题后端 CRUD + react-colorful 种子色编辑器（scoped 实时预览）+ 节气驱动的季节自动切换（2020-2099 本地时区解析 + 半球反转 + 互斥开关）。
 
 ## Current Milestone: v1.5 自定义网站皮肤 / Theme Customization
 
@@ -45,10 +45,10 @@
 - ✓ MD3 组件化（COMPO-01~12, except COMPO-09 deferred） — v1.2
 - ✓ 8dp 网格间距 + 触控目标 ≥48dp（UX-01~05） — v1.2
 - ✓ 业务逻辑零回归（LOGIC-01~03） — v1.2
+- ✓ 自定义网站皮肤（EDIT-01~07, SEAS-01~04） — v1.5
 
 ### Active
 
-- [ ] 自定义 theme 入口 + /theme 页面 + 5 预设 + 自定义编辑器 + 季节自动切换 + 混合存储 (v1.5)
 - [ ] 访客备注功能（GORD-06，延期自 v1.0 → v2）
 - [ ] COMPO-09 Navigation Rail + Navigation Bar 缺陷修复 — v1.2 deferred
 - [ ] MOTION-05 MD3 motion duration/easing tokens — v1.2 deferred
@@ -67,8 +67,9 @@
 - **Shipped v1.2**: Material Design 3 重构，6 phases / 18 plans / 242 files / +46k LOC
 - **Shipped v1.3**: Bugfix + UI Refinements，2 phases / 13 plans（导航重组 + 筛选弹窗 + seed 数据）
 - **Shipped v1.4**: Tech Debt Cleanup，1 phase / 4 plans（CORS/migration/test/lint 修复）
+- **Shipped v1.5**: 自定义网站皮肤，2 phases / 11 plans（主题引擎 + 编辑器 + 季节自动切换）
 - **Tech stack**: FastAPI + SQLAlchemy 2.0 (async) + React 19 + Vite + SQLite
-- **Feature branch**: 待定（feature/custom-theme）
+- **Feature branch**: feature/ui-rebuild
 
 ## Key Decisions
 
@@ -104,7 +105,7 @@ v1.2 在保留 v1.0/v1.1 全部业务能力（访客点菜 + 菜品愿望单）�
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-07-31 after v1.5 milestone start*
+*Last updated: 2026-08-05 after v1.5 milestone complete*
 
 ## Constraints
 
