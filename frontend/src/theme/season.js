@@ -19,14 +19,6 @@ export const HEMISPHERE_NORTH = 'north';
 export const HEMISPHERE_SOUTH = 'south';
 const HEMISPHERE_SET = new Set([HEMISPHERE_NORTH, HEMISPHERE_SOUTH]);
 
-/** 节气名 -> 北半球季节名（其余六个节气忽略；只用于四立） */
-const TERM_TO_NORTH_SEASON = Object.freeze({
-  lichun: 'spring',
-  lixia: 'summer',
-  liqiu: 'autumn',
-  lidong: 'winter',
-});
-
 /** 北→南半球映射（直接交换：春↔秋, 夏↔冬） */
 const NORTH_TO_SOUTH = Object.freeze({
   spring: 'autumn',

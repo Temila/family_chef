@@ -1,5 +1,19 @@
 /**
- * 主题 Context — Phase 17 (D-11 memoized value + D-15/16/17 sync)
+ * 主题 Context — Phase 18 (D-09 互斥 + D-03 季节缓存 + D-11 开关即时生效)
+ *
+ * 在 Phase 17 的基础上叠加季节自动切换状态机：
+ *   - fc_season_enabled (default false) — 开关
+ *   - fc_hemisphere (default 'north')    — 半球（北/南）
+ *   - fc_last_season ('north:spring')   — 缓存，避免每次 mount 都重应用
+ *
+ * 互斥模型（D-09）：
+ *   - 当 seasonEnabled=true 时，公开的 setActiveTheme / applyTheme / resetToDefault
+ *     一律返回 false 不变 activeTheme。
+ *   - 唯一的旁路是内部 applyCurrentSeason()，由 useEffect 触发。
+ *
+ * 缓存闸门（D-03）：
+ *   - 只在缓存键不匹配 或 activeTheme.id 与季节不匹配时才注入新主题。
+ *   - 同一次会话内季节边界切换才重新注入一次。
  */
 
 /* eslint-disable react-refresh/only-export-components -- Context Provider 与 useTheme 同文件导出是 React Context 标准范式 */
@@ -19,9 +33,21 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useToast } from '../contexts/ToastContext.jsx';
 import { buildCssSync, injectThemeCss } from './theme-engine.js';
 import { DEFAULT_PRESET, PRESETS } from './presets.js';
+import {
+  getSeasonForDate,
+  getSeasonPresetId,
+  normalizeHemisphere,
+} from './season.js';
 
 const ACTIVE_THEME_KEY = 'fc_active_theme';
+const SEASON_ENABLED_KEY = 'fc_season_enabled';
+const HEMISPHERE_KEY = 'fc_hemisphere';
+const LAST_SEASON_KEY = 'fc_last_season';
+
 const ThemeContext = createContext(null);
+
+const VALID_HEMISPHERES = new Set(['north', 'south']);
+const VALID_SEASONS = new Set(['spring', 'summer', 'autumn', 'winter']);
 
 function sameSourceColors(left, right) {
   return Boolean(
@@ -87,20 +113,109 @@ function normalizeTheme(theme) {
   };
 }
 
+// 读取并校验 fc_season_enabled：仅 'true' 字符串为真，否则默认 false
+function readSeasonEnabledFromStorage() {
+  try {
+    return localStorage.getItem(SEASON_ENABLED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function writeSeasonEnabledToStorage(value) {
+  try {
+    localStorage.setItem(SEASON_ENABLED_KEY, value ? 'true' : 'false');
+  } catch {
+    /* localStorage 不可用时静默失败 */
+  }
+}
+
+// 读取并校验 fc_hemisphere：仅 'north'/'south' 合规
+function readHemisphereFromStorage() {
+  try {
+    const stored = localStorage.getItem(HEMISPHERE_KEY);
+    return VALID_HEMISPHERES.has(stored) ? stored : 'north';
+  } catch {
+    return 'north';
+  }
+}
+
+function writeHemisphereToStorage(value) {
+  try {
+    localStorage.setItem(HEMISPHERE_KEY, value);
+  } catch {
+    /* localStorage 不可用时静默失败 */
+  }
+}
+
+// 读取并校验 fc_last_season：'hemisphere:season' 形态，季度必须是 4 个季节之一
+function readLastSeasonFromStorage() {
+  try {
+    const stored = localStorage.getItem(LAST_SEASON_KEY);
+    if (typeof stored !== 'string') return null;
+    const [hemi, season] = stored.split(':');
+    if (!VALID_HEMISPHERES.has(hemi)) return null;
+    if (!VALID_SEASONS.has(season)) return null;
+    return stored;
+  } catch {
+    return null;
+  }
+}
+
+function writeLastSeasonToStorage(value) {
+  try {
+    if (value == null) {
+      localStorage.removeItem(LAST_SEASON_KEY);
+    } else {
+      localStorage.setItem(LAST_SEASON_KEY, value);
+    }
+  } catch {
+    /* localStorage 不可用时静默失败 */
+  }
+}
+
+/**
+ * 缓存闸门判定：仅当缓存键不同于新值，或 activeTheme 不是匹配的季节预设时才注入。
+ * 同季节同半球的二次 mount 直接复用，避免每次 mount 都重建 CSS。
+ */
+function shouldApplySeasonalPreset(season, hemisphere, cachedKey, activeTheme) {
+  const compoundKey = `${hemisphere}:${season}`;
+  const cacheMatches = cachedKey === compoundKey;
+  const activeMatchesSeasonal = Boolean(activeTheme && activeTheme.id === season);
+  return !(cacheMatches && activeMatchesSeasonal);
+}
+
 export const ThemeProvider = ({ children }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [activeTheme, setActiveThemeState] = useState(readActiveThemeFromStorage);
   const [customThemes, setCustomThemes] = useState([]);
+  const [seasonEnabled, setSeasonEnabledState] = useState(readSeasonEnabledFromStorage);
+  const [hemisphere, setHemisphereState] = useState(readHemisphereFromStorage);
   const fetchedAtRef = useRef(null);
+  // 当 setSeasonEnabled(true) 后第一次进入自动模式，强制重新应用（即使缓存命中）。
+  // 这是为了应对"用户主动打开开关"的语义：打开开关就是意图切换到当前季节，
+  // 不应该被旧的 cacheHits 抑制掉（cache gate 设计上只用于 mount）。
+  const justEnabledRef = useRef(false);
 
+  /**
+   * 公开的 setActiveTheme —— D-09 互斥闸门。
+   * seasonEnabled=true 时返回 false 不变主题；返回 true 表示成功切换。
+   */
   const setActiveTheme = useCallback((theme) => {
+    if (seasonEnabled) return false;
     setActiveThemeState(normalizeTheme(theme));
-  }, []);
+    return true;
+  }, [seasonEnabled]);
 
+  /**
+   * 公开的 resetToDefault —— D-09 互斥闸门（同 setActiveTheme）。
+   */
   const resetToDefault = useCallback(() => {
+    if (seasonEnabled) return false;
     setActiveThemeState(DEFAULT_PRESET);
-  }, []);
+    return true;
+  }, [seasonEnabled]);
 
   useEffect(() => {
     try {
@@ -148,15 +263,103 @@ export const ThemeProvider = ({ children }) => {
     return undefined;
   }, [user?.id, refreshCustomThemes]);
 
+  /**
+   * D-11: 打开/关闭季节自动切换开关，即时持久化；on→off 不改主题（保留用户上次手动选择），
+   * off→on 触发 justEnabledRef，下一次 applyCurrentSeason() 强制应用一次。
+   */
+  const setSeasonEnabled = useCallback((next) => {
+    const value = Boolean(next);
+    setSeasonEnabledState(value);
+    writeSeasonEnabledToStorage(value);
+    if (value) {
+      // 主动开启：下一次应用时跳过缓存闸门
+      justEnabledRef.current = true;
+    }
+  }, []);
+
+  /**
+   * D-06 / D-07: 切换半球。auto=ON 时立即重新评估 + 应用倒置季节预设；auto=OFF 仅持久化偏好。
+   */
+  const setHemisphere = useCallback((next) => {
+    const value = normalizeHemisphere(next);
+    setHemisphereState(value);
+    writeHemisphereToStorage(value);
+    // 应用层响应在外部 useEffect：依赖 seasonEnabled 时才生效
+  }, []);
+
+  /**
+   * 内部旁路：直接套用预设（不经过 D-09 互斥闸门）。
+   * 仅供 applyCurrentSeason() 等受控路径调用。
+   */
+  const applySeasonalPresetDirect = useCallback((preset) => {
+    setActiveThemeState(preset);
+  }, []);
+
+  /**
+   * 内部 evaluate + apply：评估当前本地季节，应用季节预设；缓存命中且 active 匹配则跳过。
+   * 仅当 seasonEnabled=true 时由 useEffect 触发。
+   */
+  const applyCurrentSeason = useCallback(({ force = false } = {}) => {
+    const season = getSeasonForDate(new Date(), hemisphere);
+    if (!season) return false; // 表外年份：保留 fc_active_theme/默认
+    const presetId = getSeasonPresetId(season);
+    if (!presetId) return false;
+    const preset = PRESETS.find(p => p.id === presetId);
+    if (!preset) return false;
+
+    const cache = readLastSeasonFromStorage();
+    const shouldApply = force
+      || justEnabledRef.current
+      || shouldApplySeasonalPreset(season, hemisphere, cache, activeTheme);
+    if (!shouldApply) {
+      justEnabledRef.current = false;
+      return false;
+    }
+
+    applySeasonalPresetDirect(preset);
+    writeLastSeasonToStorage(`${hemisphere}:${season}`);
+    justEnabledRef.current = false;
+    return true;
+  }, [activeTheme, applySeasonalPresetDirect, hemisphere]);
+
+  // currentSeason 派生自 hemisphere + 当前时刻；hemisphere 切换即重算，无需 effect。
+  const currentSeason = useMemo(
+    () => getSeasonForDate(new Date(), hemisphere),
+    [hemisphere],
+  );
+
+  // 开关 ON：mount / hemisphere 改变 / 用户上线时 evaluate
+  useEffect(() => {
+    if (!seasonEnabled) return;
+    queueMicrotask(() => { applyCurrentSeason(); });
+  }, [seasonEnabled, hemisphere, user?.id, applyCurrentSeason]);
+
   const value = useMemo(() => ({
     activeTheme,
     setActiveTheme,
     customThemes,
     refreshCustomThemes,
-    applyTheme: setActiveTheme,
+    applyTheme: setActiveTheme, // D-09: 公开 applyTheme 同样受互斥
     resetToDefault,
     PRESETS,
-  }), [activeTheme, customThemes, setActiveTheme, refreshCustomThemes, resetToDefault]);
+    // Phase 18 seasonal state (D-03/D-05/D-06/D-09)
+    seasonEnabled,
+    hemisphere,
+    currentSeason,
+    setSeasonEnabled,
+    setHemisphere,
+  }), [
+    activeTheme,
+    setActiveTheme,
+    customThemes,
+    refreshCustomThemes,
+    resetToDefault,
+    seasonEnabled,
+    hemisphere,
+    currentSeason,
+    setSeasonEnabled,
+    setHemisphere,
+  ]);
 
   return (
     <ThemeContext.Provider value={value}>
