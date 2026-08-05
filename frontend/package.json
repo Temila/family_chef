@@ -21,6 +21,7 @@
     "@material/material-color-utilities": "^0.4.0",
     "marked": "^18.0.3",
     "react": "^19.2.5",
+    "react-colorful": "^5.8.0",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.15.0"
   },
