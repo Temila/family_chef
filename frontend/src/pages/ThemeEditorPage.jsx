@@ -263,6 +263,7 @@ export default function ThemeEditorPage() {
       const message = String(err?.message || '保存失败');
       if (/同名|已存在|duplicate/i.test(message)) {
         setNameError(`已存在同名主题：${finalName}`);
+        showToast(`已存在同名主题：${finalName}`, 'error');
       } else if (message.includes('主题名称不能为空') || message.includes('不能为空')) {
         setNameError('主题名称不能为空');
       } else if (message.includes('颜色值')) {
