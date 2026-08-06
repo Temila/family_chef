@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: milestone_complete
-last_updated: 2026-08-06T16:42:49.030Z
+last_updated: 2026-08-06T16:45:39.927Z
 last_activity: 2026-08-06
 progress:
   total_phases: 2
@@ -39,7 +39,7 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 18
 Plan: Not started
 Status: Milestone complete
-Last activity: 2026-08-06
+Last activity: 2026-08-06 - Completed quick task 260807-121: 季节开关开启时允许为各季节选择主题
 
 Progress: [██████████] 100%
 
@@ -108,6 +108,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260730-m1p | filter-action-row 左组靠左（padding 左 16px / 右 48px 非对称），已关联/未关联挨着高级筛选 | 2026-07-30 |  | [260730-m1p-filter-row-left-flush](./quick/260730-m1p-filter-row-left-flush/) |
 | 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 |  | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
 | 260730-oa9 | 订单详情页两段式 MD3 布局（初版 2div+40/60grid，后修正为 3 卡堆叠匹配部署版参考） | 2026-07-30 | 7028075→2fdcddd | [260730-oa9-http-localhost-5173-orders-1-1-div-div-m](./quick/260730-oa9-http-localhost-5173-orders-1-1-div-div-m/) |
+| 260807-121 | 季节开关开启时允许为春/夏/秋/冬各选主题（预设+自定义），默认沿用四季预设；持久化至 fc_season_theme_map，首帧 FOUC 引导读 map | 2026-08-06 | 45cc059→d69e4bd | [260807-121-season-theme-selector](./quick/260807-121-season-theme-selector/) |
 
 ## Performance Metrics
 
