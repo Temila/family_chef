@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-06T16:04:27.617Z"
-last_activity: 2026-08-06 -- Phase 18 execution started
+last_updated: "2026-08-06T16:11:41.755Z"
+last_activity: 2026-08-06
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 15
-  completed_plans: 11
+  completed_plans: 12
   percent: 50
 ---
 
@@ -36,15 +36,15 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 18 (custom-editor-seasonal-auto-switch) — EXECUTING
-Plan: 1 of 9
-Status: Executing Phase 18
-Last activity: 2026-08-06 -- Phase 18 execution started
+Plan: 2 of 9
+Status: Ready to execute
+Last activity: 2026-08-06
 
-Progress: [██████████] 100%
+Progress: [████████░░] 80%
 
 ## Session Continuity
 
-Last session: 2026-08-05T01:25:22.043Z
+Last session: 2026-08-06T16:10:46.566Z
 Stopped at: Phase 18 context gathered
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
@@ -155,6 +155,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 18 P01 | 18min | 2 tasks | 2 files |
 | Phase 18 P03 | 10 min | 2 tasks | 5 files |
 | Phase 18 P04 | 33min | 3 tasks | 7 files |
+| Phase 18 P07 | 4min | 2 tasks | 3 files |
 
 ## Decisions
 
@@ -251,6 +252,9 @@ D-02 is a runtime-path safety guard; mentioning "Skyfield" in any frontend runti
 The cache gate is correct for mount replays but would suppress the user-intent toggle; justEnabledRef captures the explicit bypass.
 react-hooks/set-state-in-effect rule explicitly bans the cascade pattern; useMemo is the documented replacement.
 Boolean return is non-breaking because callers either ignore the return or already gate via seasonEnabled.
+
+- [Phase ?]: [Phase 18-07]: TonalSpot variant 统一走 DynamicScheme(Variant.TONAL_SPOT) + secondaryPalette/tertiaryPalette 注入 — 移除 deriveTonalSpotSchemes + themeFromSourceColor；修复 UAT Test 5 secondary/tertiary 种子被忽略问题
+- [Phase ?]: [Phase 18-07]: primary 色值从 #056d37/#81d997 变为 #316a42/#98d4a4 — root cause: themeFromSourceColor 用已废弃 Scheme/CorePalette（fixed tones），DynamicScheme 用 MaterialDynamicColors（dynamic tone curves）；threat T-18-07-02 accept；tokens.css 旧值仅 FOUC 回退
 
 ## Operator Next Steps
 
