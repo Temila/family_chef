@@ -12,6 +12,8 @@
 
 **Shipped v1.5** — 2026-08-05: 自定义网站皮肤（Theme Customization）完整交付。Phases 17-18 / 11 plans：MD3 运行时主题引擎（9 种变体 dispatch）+ FOUC bootstrap + 5 预设 + /theme 页面 + 自定义主题后端 CRUD + react-colorful 种子色编辑器（scoped 实时预览）+ 节气驱动的季节自动切换（2020-2099 本地时区解析 + 半球反转 + 互斥开关）。
 
+**Gap closure (Phase 18.4)** — 2026-08-06: UAT 发现的 6 个问题全部修复。18-06 修复 Vite dev 模式 CSS 级联遮蔽（injectThemeCss 重新 appendChild 确保 fc-dynamic-theme 胜出）；18-07 统一 TonalSpot 走 DynamicScheme 以响应 secondary/tertiary 种子；18-08 重名错误增加 Snackbar 弹窗；18-09 自动模式卡片单击改为 no-op；并修复侧栏使用 surface-container-lowest 导致的"固定白色"问题。
+
 ## Current Milestone: v1.5 自定义网站皮肤 / Theme Customization
 
 **Goal:** 让用户能够自定义网站配色（MD3 色彩令牌），选择预设或创建无限自定义皮肤，并支持按季节自动切换。
@@ -105,7 +107,7 @@ v1.2 在保留 v1.0/v1.1 全部业务能力（访客点菜 + 菜品愿望单）�
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-08-05 after v1.5 milestone complete*
+*Last updated: 2026-08-06 after Phase 18 gap-closure approval*
 
 ## Constraints
 
