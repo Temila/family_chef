@@ -214,7 +214,10 @@ export function buildCss(sourceColors, variant = 'TonalSpot') {
 }
 
 /**
- * 创建或复用动态主题样式节点，重复应用只替换文本内容。
+ * 创建或复用动态主题样式节点。每次调用都重新 appendChild 到 <head> 末尾，
+ * 确保 fc-dynamic-theme 始终是 <head> 最后一个 <style>，在 CSS 级联中
+ * 胜出（同特异性 :root 选择器，后源序优先）。修复 Vite dev 模式下
+ * tokens.css 注入到 fc-dynamic-theme 之后导致动态主题被覆盖的问题。
  */
 export function injectThemeCss(cssText) {
   let element = document.getElementById('fc-dynamic-theme');
@@ -224,6 +227,7 @@ export function injectThemeCss(cssText) {
     document.head.appendChild(element);
   }
   element.textContent = cssText;
+  document.head.appendChild(element);
 }
 
 export const lightTokenNames = [
