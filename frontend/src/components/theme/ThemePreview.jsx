@@ -76,6 +76,20 @@ export default function ThemePreview() {
       >
         已选标签
       </Chip>
+      {/* tertiary 可见块 —— 让第三色种子变化在预览中可见（Phase 18-07） */}
+      <div
+        style={{
+          alignSelf: 'flex-start',
+          background: 'var(--md-color-tertiary-container)',
+          color: 'var(--md-color-on-tertiary-container)',
+          fontSize: '10px',
+          fontWeight: 600,
+          padding: 'var(--md-spacing-1) var(--md-spacing-2)',
+          borderRadius: 'var(--md-radius-xs)',
+        }}
+      >
+        第三色标签
+      </div>
       {/* 4-step surface ramp（D-06）—— 色彩梯度一眼可见 */}
       <div
         aria-hidden="true"

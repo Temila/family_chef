@@ -36,8 +36,12 @@ test('default seed produces light + dark blocks with primary tones', () => {
 
   assert.match(css, /:root \{/);
   assert.match(css, /\[data-theme="dark"\] \{/);
-  assert.match(css, /--md-color-primary: #056d37;/);
-  assert.match(css, /--md-color-primary: #81d997;/);
+  // Phase 18-07: TonalSpot 统一为 DynamicScheme(Variant.TONAL_SPOT) 派生路径，
+  // primary 从旧 Scheme/CorePalette 的 #056d37/#81d997 变为 DynamicScheme 的
+  // #316a42/#98d4a4。两者均为 MCU 官方派生，差异仅在色度曲线（见 SUMMARY 偏差记录）。
+  // tokens.css 仍保留旧值作为 FOUC 回退（Plan 18-06 cascade fix 确保 dynamic 胜出）。
+  assert.match(css, /--md-color-primary: #316a42;/);
+  assert.match(css, /--md-color-primary: #98d4a4;/);
   assert.match(css, /--md-color-surface-container-lowest: #ffffff;/);
   assert.ok(countRoleDeclarations(css) >= 28);
 });
@@ -99,7 +103,7 @@ test('TonalSpot primary is unaffected by secondary/tertiary seed changes', () =>
   assert.equal(
     basePrimary,
     altSeedsPrimary,
-    'primary must remain #056d37 regardless of secondary/tertiary seeds',
+    'primary must remain #316a42 regardless of secondary/tertiary seeds',
   );
 });
 
@@ -111,7 +115,7 @@ test('custom source colors produce a different primary role', () => {
   });
 
   assert.match(css, /--md-color-primary:/);
-  assert.doesNotMatch(css, /--md-color-primary: #056d37;/);
+  assert.doesNotMatch(css, /--md-color-primary: #316a42;/);
   assert.match(css, /--md-elevation-5:/);
 });
 

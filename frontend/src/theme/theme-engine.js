@@ -4,8 +4,9 @@
  *
  * 9 种 MD3 变体（TonalSpot / Vibrant / Expressive / Content /
  * Mono / Neutral / Fidelity / Rainbow / FruitSalad）均通过 MCU
- * DynamicScheme 派生；TonalSpot 走 themeFromSourceColor 老路径
- * 以保持 Phase 17 tokens.css 完全字节一致。
+ * DynamicScheme 派生（含用户 secondary/tertiary 种子注入）。
+ * TonalSpot 原走 themeFromSourceColor，Phase 18-07 gap closure
+ * 统一为 DynamicScheme 以修复 secondary/tertiary 被忽略的问题。
  */
 
 import {
@@ -14,7 +15,6 @@ import {
   DynamicScheme,
   Variant,
   argbFromHex,
-  themeFromSourceColor,
 } from '@material/material-color-utilities';
 
 const DIRECT_ROLES = [
@@ -158,32 +158,7 @@ function validateVariant(variant) {
 }
 
 /**
- * TonalSpot 走 themeFromSourceColor 老路径（含 secondary/tertiary
- * blend=true）。Phase 17 的 tokens.css 与 17-03 hex-lint 哨兵都是
- * 由此路径产出的，必须保持字节一致，故不在此路径改用 DynamicScheme。
- */
-function deriveTonalSpotSchemes(sourceColors) {
-  const theme = themeFromSourceColor(argbFromHex(sourceColors.primary), [
-    {
-      name: 'secondary',
-      value: argbFromHex(sourceColors.secondary),
-      blend: true,
-    },
-    {
-      name: 'tertiary',
-      value: argbFromHex(sourceColors.tertiary),
-      blend: true,
-    },
-  ]);
-  return {
-    light: theme.schemes.light,
-    dark: theme.schemes.dark,
-    palettes: theme.palettes,
-  };
-}
-
-/**
- * 其余 8 个 variant 走 DynamicScheme 路径：primary/neutral/neutralVariant/
+ * 全部 9 个 variant 走 DynamicScheme 路径：primary/neutral/neutralVariant/
  * error 由 MCU 按变体规则派生；用户种子 secondary/tertiary 通过
  * TonalPalette.fromInt 显式注入，确保用户能微调这两个色相。
  */
@@ -209,26 +184,16 @@ function deriveDynamicSchemes(sourceColors, variant) {
 
 /**
  * 同步生成 light/dark 两套 CSS。variant 决定派生的 MCU 变体：
- * TonalSpot 复用 Phase 17 themeFromSourceColor 路径；
- * 其它 8 个 variant 走 DynamicScheme 路径（带用户 secondary/tertiary 种子）。
+ * 所有 variant 统一走 DynamicScheme 路径（含用户 secondary/tertiary 种子注入）。
  * 未知 variant 直接抛 Error（防止 localStorage 损坏数据被静默吞掉）。
  */
 export function buildCssSync(sourceColors, variant = 'TonalSpot') {
   validateSourceColors(sourceColors);
   validateVariant(variant);
 
-  let lightCss;
-  let darkCss;
-
-  if (variant === 'TonalSpot') {
-    const { light, dark, palettes } = deriveTonalSpotSchemes(sourceColors);
-    lightCss = buildSchemeCss(light, palettes, 'light');
-    darkCss = buildSchemeCss(dark, palettes, 'dark');
-  } else {
-    const { light, dark, palettes, darkPalettes } = deriveDynamicSchemes(sourceColors, variant);
-    lightCss = buildSchemeCss(light, palettes, 'light');
-    darkCss = buildSchemeCss(dark, darkPalettes, 'dark');
-  }
+  const { light, dark, palettes, darkPalettes } = deriveDynamicSchemes(sourceColors, variant);
+  const lightCss = buildSchemeCss(light, palettes, 'light');
+  const darkCss = buildSchemeCss(dark, darkPalettes, 'dark');
 
   return [
     ':root {',
