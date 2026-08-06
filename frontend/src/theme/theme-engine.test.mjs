@@ -55,6 +55,54 @@ test('dark block emits 5 elevation overrides with tint color-mix (FND-06)', () =
   assert.match(dark, /--md-color-surface-tint:/);
 });
 
+test('TonalSpot responds to secondary seed changes (UAT Test 5 regression)', () => {
+  const baseSecondary = matchRole(
+    buildCssSync(DEFAULT_SOURCE_COLORS, 'TonalSpot'),
+    'secondary',
+  );
+  const altSecondary = matchRole(
+    buildCssSync({ ...DEFAULT_SOURCE_COLORS, secondary: '#FF0000' }, 'TonalSpot'),
+    'secondary',
+  );
+  assert.notEqual(
+    baseSecondary,
+    altSecondary,
+    'changing secondary seed must change --md-color-secondary in TonalSpot output',
+  );
+});
+
+test('TonalSpot responds to tertiary seed changes (UAT Test 5 regression)', () => {
+  const baseTertiary = matchRole(
+    buildCssSync(DEFAULT_SOURCE_COLORS, 'TonalSpot'),
+    'tertiary',
+  );
+  const altTertiary = matchRole(
+    buildCssSync({ ...DEFAULT_SOURCE_COLORS, tertiary: '#0000FF' }, 'TonalSpot'),
+    'tertiary',
+  );
+  assert.notEqual(
+    baseTertiary,
+    altTertiary,
+    'changing tertiary seed must change --md-color-tertiary in TonalSpot output',
+  );
+});
+
+test('TonalSpot primary is unaffected by secondary/tertiary seed changes', () => {
+  const basePrimary = matchRole(
+    buildCssSync(DEFAULT_SOURCE_COLORS, 'TonalSpot'),
+    'primary',
+  );
+  const altSeedsPrimary = matchRole(
+    buildCssSync({ primary: '#34834E', secondary: '#FF0000', tertiary: '#0000FF' }, 'TonalSpot'),
+    'primary',
+  );
+  assert.equal(
+    basePrimary,
+    altSeedsPrimary,
+    'primary must remain #056d37 regardless of secondary/tertiary seeds',
+  );
+});
+
 test('custom source colors produce a different primary role', () => {
   const css = buildCssSync({
     primary: '#6750A4',
