@@ -1,17 +1,40 @@
 ---
 phase: 18-custom-editor-seasonal-auto-switch
-verified: 2026-08-05T09:39:51Z
-status: passed
-score: 18/18 must-haves verified
+verified: 2026-08-06T16:27:50Z
+status: human_needed
+score: 18/18 must-haves verified (code-level) — 5 browser-only items pending human re-test
 overrides_applied: 0
-human_verification: []
+human_verification:
+  - test: "UAT Test 6 — save custom theme applies it visually (page colors change)"
+    why_human: "DOM cascade ordering (appendChild repositioning) cannot be exercised in Node.js; requires browser DOM to confirm fc-dynamic-theme wins over tokens.css"
+  - test: "UAT Test 9 — toggling 季节自动切换 ON changes page to current season preset colors"
+    why_human: "Same DOM-cascade fix as Test 6; visual confirmation requires browser"
+  - test: "UAT Test 12 — clicking a theme card in manual mode applies that theme's colors"
+    why_human: "Same DOM-cascade fix as Test 6/9; visual confirmation requires browser"
+  - test: "UAT Test 8 — duplicate-name save shows red error Snackbar popup alongside inline Input error"
+    why_human: "Snackbar popup rendering (red bar, error icon, 6s auto-dismiss) requires browser DOM interaction"
+  - test: "UAT Test 10 — auto-mode custom card body click is no-op; 编辑 button still navigates to editor"
+    why_human: "Click behavior/no-navigation requires browser interaction to verify"
 re_verification:
-  previous_status: gaps_found
-  previous_score: 17/18
+  previous_status: passed
+  previous_score: 18/18
+  cycle: "Phase 18.4 — gap closure after UAT found 6 issues (tests 5, 6, 8, 9, 10, 12)"
   gaps_closed:
-    - "WR-01: rename-to-duplicate on PUT /api/themes/{id} now returns HTTP 400 with Chinese 已存在同名主题 detail (duplicate pre-check in update_theme excluding self) — verified by regression test test_update_theme_duplicate_name; suite 13/13 passed"
+    - "test-5 (18-07): TonalSpot now routes through DynamicScheme; secondary/tertiary seeds affect CSS output — verified by 3 new regression tests + structural grep"
+    - "test-6 (18-06): injectThemeCss re-appends fc-dynamic-theme to end of <head> — 2 appendChild calls confirmed structurally; visual re-test pending"
+    - "test-8 (18-08): duplicate-name catch branch now calls showToast(..., 'error') alongside setNameError — grep confirms line 266; visual re-test pending"
+    - "test-9 (18-06): same cascade fix as test-6; visual re-test pending"
+    - "test-10 (18-09): handleThemeClick auto-mode branch is uniform early-return (no navigate); onEdit wiring unchanged — grep confirms; interaction re-test pending"
+    - "test-12 (18-06): same cascade fix as test-6; visual re-test pending"
   gaps_remaining: []
   regressions: []
+  wr01_re_verification:
+    previous_status: gaps_found
+    previous_score: 17/18
+    gaps_closed:
+      - "WR-01: rename-to-duplicate on PUT /api/themes/{id} now returns HTTP 400 with Chinese 已存在同名主题 detail (duplicate pre-check in update_theme excluding self) — verified by regression test test_update_theme_duplicate_name; suite 13/13 passed"
+    gaps_remaining: []
+    regressions: []
 ---
 
 # Phase 18: Custom Editor & Seasonal Auto-Switch Verification Report
@@ -162,5 +185,134 @@ re_verification:
 
 ---
 
-_Verified: 2026-08-05T09:39:51Z_
+_Verified: 2026-08-05T09:39:51Z (initial + WR-01 closure)_
+_Verifier: the agent (gsd-verifier)_
+
+---
+
+# Gap-Closure Re-Verification (Phase 18.4)
+
+**Trigger:** UAT session `18-UAT.md` diagnosed 6 issues (tests 5, 6, 8, 9, 10, 12) after the phase was marked complete. Four gap-closure plans (18-06, 18-07, 18-08, 18-09) were executed to close them.
+**Re-verified:** 2026-08-06T16:27:50Z
+**Status:** human_needed — all 6 code fixes verified structurally + 26/26 automated tests pass; 5 browser-only visual/interaction confirmations pending human re-test
+**Re-verification cycle:** passed (18/18) → UAT 6 issues → gap closure → human_needed (18/18 code-level, 5 browser items pending)
+
+## Gap Closure Confirmation
+
+### Test 5 (18-07) — TonalSpot secondary/tertiary seed fix — ✅ CLOSED (code), visual re-test bundled with item 1
+
+| Check | Evidence | Status |
+|-------|----------|--------|
+| `deriveTonalSpotSchemes` removed | `rg "deriveTonalSpotSchemes\|themeFromSourceColor"` in theme-engine.js — only 2 hits, both inside docstring comments (L8, L92); zero functional references | ✓ VERIFIED |
+| All 9 variants route through `deriveDynamicSchemes` | theme-engine.js:194 — `const { light, dark, palettes, darkPalettes } = deriveDynamicSchemes(sourceColors, variant);` is the sole dispatch path | ✓ VERIFIED |
+| `themeFromSourceColor` not imported | theme-engine.js:12-18 import block contains only `Hct, TonalPalette, DynamicScheme, Variant, argbFromHex` | ✓ VERIFIED |
+| Tertiary-container element in ThemePreview | ThemePreview.jsx:79-92 — `<div>` with `background: 'var(--md-color-tertiary-container)'` + `color: 'var(--md-color-on-tertiary-container)'`, label "第三色标签" | ✓ VERIFIED |
+| Regression test: secondary seed changes --md-color-secondary | `theme-engine.test.mjs:62-76` "TonalSpot responds to secondary seed changes (UAT Test 5 regression)" — PASSES | ✓ VERIFIED |
+| Regression test: tertiary seed changes --md-color-tertiary | `theme-engine.test.mjs:78-92` "TonalSpot responds to tertiary seed changes (UAT Test 5 regression)" — PASSES | ✓ VERIFIED |
+| Regression test: primary unaffected by secondary/tertiary seeds | `theme-engine.test.mjs:94-108` "TonalSpot primary is unaffected..." — PASSES | ✓ VERIFIED |
+
+### Test 6 / 9 / 12 (18-06) — CSS cascade ordering fix — ✅ CLOSED (code), visual re-test pending
+
+| Check | Evidence | Status |
+|-------|----------|--------|
+| `injectThemeCss` has TWO `document.head.appendChild(element)` calls | `rg -c "document.head.appendChild" frontend/src/theme/theme-engine.js` → **2** (L227 creation block + L230 reorder after textContent) | ✓ VERIFIED |
+| Second appendChild is AFTER `element.textContent = cssText` | theme-engine.js:229-230 — `element.textContent = cssText;` immediately followed by `document.head.appendChild(element);` | ✓ VERIFIED |
+| First appendChild still in creation block | theme-engine.js:224-227 — inside `if (!element) { ... document.head.appendChild(element); }` | ✓ VERIFIED |
+| DOM cascade ordering effect | Cannot be exercised in Node.js (no DOM) — requires browser | ⚠️ HUMAN RE-TEST (Tests 6, 9, 12) |
+
+### Test 8 (18-08) — Duplicate-name error Snackbar — ✅ CLOSED (code), visual re-test pending
+
+| Check | Evidence | Status |
+|-------|----------|--------|
+| Duplicate-name catch branch has BOTH `setNameError` AND `showToast` | ThemeEditorPage.jsx:264-266 — `if (/同名\|已存在\|duplicate/i.test(message)) { setNameError(...); showToast(\`已存在同名主题：${finalName}\`, 'error'); }` | ✓ VERIFIED |
+| showToast uses `'error'` variant | Line 266 second arg is `'error'` (not 'success'/'warn') | ✓ VERIFIED |
+| `showToast.*已存在同名主题` appears exactly once | `rg -n "showToast.*已存在同名主题" frontend/src/pages/ThemeEditorPage.jsx` → 1 hit (L266) | ✓ VERIFIED |
+| Snackbar popup visual (red bar, icon, 6s dismiss) | Cannot be verified in CI — requires browser DOM | ⚠️ HUMAN RE-TEST (Test 8) |
+
+### Test 10 (18-09) — Auto-mode custom card click no-op — ✅ CLOSED (code), interaction re-test pending
+
+| Check | Evidence | Status |
+|-------|----------|--------|
+| `handleThemeClick` has NO `navigate(...)` in `if (seasonEnabled)` block | ThemePage.jsx:70-77 — `if (seasonEnabled) { ... return; }` contains only a comment + early return; zero navigate calls | ✓ VERIFIED |
+| All `navigate(` calls are in other functions | `rg -n "navigate" ThemePage.jsx` → 5 hits: L37 (useNavigate), L62 (handleNew), L66 (handleOpenSettings), L82 (handleEdit custom), L91 (handleEdit preset) — none in handleThemeClick | ✓ VERIFIED |
+| `onEdit` wiring still passes handleEdit for custom cards | ThemePage.jsx:166 — `onEdit={theme.kind === 'custom' \|\| !seasonEnabled ? () => handleEdit(theme) : undefined}` unchanged | ✓ VERIFIED |
+| Docstring updated to no-op behavior | ThemePage.jsx:15 — "自动模式 + 自定义：单击 → no-op（不应用、不跳转；编辑通过卡片「编辑」按钮）" | ✓ VERIFIED |
+| Click behavior / no-navigation | Requires browser interaction to verify | ⚠️ HUMAN RE-TEST (Test 10) |
+
+## 18-07 Deviation Assessment — ACCEPTABLE
+
+**The deviation:** The 18-07 plan's objective claimed that routing TonalSpot through `DynamicScheme(Variant.TONAL_SPOT)` would produce byte-identical primary/surface output to the old `themeFromSourceColor` path (asserted `#056d37` light primary / `#81d997` dark primary). Investigation during execution revealed this was incorrect:
+
+- `themeFromSourceColor` uses the **deprecated `Scheme` class** (`CorePalette`-based, fixed tones) — NOT `SchemeTonalSpot`.
+- `DynamicScheme` uses `MaterialDynamicColors` (dynamic tone curves) — a fundamentally different derivation system.
+- Resulting primary values differ: light `#056d37` → `#316a42`; dark `#81d997` → `#98d4a4` (both are greens; cosmetically similar).
+
+**Assessment: ACCEPTABLE.** The deviation is the expected and correct consequence of switching MCU derivation systems. Verified facts:
+
+1. **New values ARE the genuine DynamicScheme output.** The `theme-engine.test.mjs:43-44` assertions now match `#316a42` / `#98d4a4`, and 26/26 tests pass. The old `Scheme`/`CorePalette` path is deprecated; `DynamicScheme` is the current MCU-recommended path.
+2. **tokens.css retains old values as FOUC fallback only.** Confirmed: `rg "#056d37\|#81d997" frontend/src/css/tokens.css` → 8 hits (L16, L43, L51, L63, L67, L201, L228, L236). tokens.css was NOT regenerated by any gap-closure commit (`git log 93202fa..HEAD -- frontend/src/css/tokens.css` empty). This is correct: tokens.css serves only as the FOUC first-paint fallback before React hydrates and `injectThemeCss` runs.
+3. **18-06's cascade fix ensures the dynamic theme wins at runtime.** The `document.head.appendChild(element)` reorder (theme-engine.js:230) guarantees `fc-dynamic-theme` is always the last `<style>` in `<head>`, so the seed-derived `#316a42` overrides the FOUC `#056d37` once React mounts. The FOUC flash (if any) is between two greens of the same hue family — cosmetically negligible.
+4. **Threat model T-18-07-02 carries an "accept" disposition** for this divergence, recorded in `18-07-PLAN.md` and `18-07-SUMMARY.md`.
+5. **No must-have is violated.** Truth #1 (variant differentiation), #2 (MD3-derived roles), #7 (WCAG AA via MD3 engine) all still hold — DynamicScheme produces valid MD3 roles with engine-guaranteed contrast. The secondary/tertiary responsiveness gap (the actual UAT defect) is fully closed.
+
+**Verdict:** The deviation is correctly documented, threat-modeled, and accepted. No action required.
+
+## Regression Check — Originally-Passing Must-Haves
+
+The 18 original truths were re-checked. All still hold at the code level. Two notable intentional changes from gap closure:
+
+| Truth | Original wording | Current state | Notes |
+|-------|-----------------|---------------|-------|
+| #1 (9-variant differentiation) | ✓ VERIFIED | ✓ VERIFIED | TonalSpot now joins the other 8 variants on the DynamicScheme path; "alternate variants differ from TonalSpot" test (L177-203) still passes — primary still differs across variants |
+| #16 (card click behavior) | "auto custom-click → editor navigation (no apply)" | **UPDATED** — "auto custom-click → no-op; edit via always-visible 编辑 button" | Intentional behavior change driven by UAT Test 10 feedback. The original "navigate" design was the 18-05 implementation; the user rejected it in UAT. 18-09 implements the UAT-correct no-op behavior. onEdit wiring (L166) preserves editor access via the button in all modes. |
+
+All other 16 truths unchanged. Backend regression check: `git diff --stat 93202fa..HEAD -- backend/` is empty — no backend files touched by any gap-closure commit, so WR-01 (duplicate-name PUT 400) and all backend must-haves remain intact.
+
+## Automated Test Results
+
+| Gate | Command | Result | Status |
+|------|---------|--------|--------|
+| Theme + season suite | `node --test src/theme/theme-engine.test.mjs src/theme/season.test.mjs` | 26 pass, 0 fail (16 theme-engine + 10 season) | ✓ PASS |
+| Lint | `npm run lint -- --quiet` | exit 0, no output | ✓ PASS |
+| Production build | `npm run build` | built in 1.44s, exit 0 (chunk-size warning only, pre-existing) | ✓ PASS |
+| Structural: 18-06 cascade | `rg -c "document.head.appendChild" theme-engine.js` | 2 | ✓ PASS |
+| Structural: 18-07 dead code | `rg "deriveTonalSpotSchemes\|themeFromSourceColor" theme-engine.js` (functional) | 0 functional hits (2 comment-only) | ✓ PASS |
+| Structural: 18-08 Snackbar | `rg -c "showToast.*已存在同名主题.*error" ThemeEditorPage.jsx` | 1 | ✓ PASS |
+| Structural: 18-09 no-navigate | `sed -n '70,77p' ThemePage.jsx \| rg -c "navigate("` | 0 | ✓ PASS |
+
+## Commits Verified
+
+| Plan | Commit | Type | Files |
+|------|--------|------|-------|
+| 18-07 RED | `a9e0b28` | test | theme-engine.test.mjs |
+| 18-07 GREEN | `5383ad4` | feat | theme-engine.js, theme-engine.test.mjs, ThemePreview.jsx |
+| 18-06 | `82b0256` | fix | theme-engine.js |
+| 18-08 | `cacabc3` | fix | ThemeEditorPage.jsx |
+| 18-09 | `52ec09c` | fix | ThemePage.jsx |
+
+All 5 commits confirmed in `git log`. No backend files modified in any gap-closure commit.
+
+## Human Verification Required (Browser-Only)
+
+The following 5 items cannot be verified in CI/Node and require a human to open `npm run dev` and confirm the visual/interaction behavior:
+
+1. **UAT Test 6 — save applies theme visually.** Save a custom theme in `/theme/editor`; confirm the page colors change immediately to the saved theme. *Why human:* DOM cascade ordering (appendChild repositioning) cannot be exercised in Node.js.
+2. **UAT Test 9 — seasonal toggle changes colors.** Toggle 季节自动切换 ON in `/theme/settings`; confirm the page changes to the current season preset's colors. *Why human:* same DOM-cascade dependency as Test 6.
+3. **UAT Test 12 — manual card click applies theme.** In manual mode, click a theme card in `/theme`; confirm the page colors change to that theme. *Why human:* same DOM-cascade dependency.
+4. **UAT Test 8 — duplicate-name Snackbar popup.** Save/rename a theme to an existing name; confirm BOTH the inline Input error AND a top-of-screen red error Snackbar appear (6s auto-dismiss). *Why human:* Snackbar popup rendering requires browser DOM.
+5. **UAT Test 10 — auto-mode no-op + edit button.** With 季节自动切换 ON, click a custom theme card BODY (expect no navigation, no apply); then click the 编辑 button on the card (expect navigation to editor). *Why human:* click/no-navigation behavior requires browser interaction.
+
+## Gaps Summary
+
+**No code gaps remain.** All 6 UAT issues have verified code fixes:
+- Test 5: engine-level fix fully verified by 3 new automated regression tests (secondary/tertiary responsiveness + primary stability).
+- Tests 6/9/12: cascade fix verified structurally (2 appendChild calls); DOM-cascade effect is browser-only by nature.
+- Test 8: Snackbar call verified structurally (showToast + setNameError in same branch); popup visual is browser-only.
+- Test 10: navigate removal verified structurally (0 navigate in handleThemeClick body); interaction is browser-only.
+
+**Status rationale:** `human_needed` (not `passed`) because the gap-closure methodology requires browser-only visual/interaction confirmation for 5 of the 6 fixes. The must-have score remains 18/18 at the code level — no truth regressed, no truth failed. Once a human confirms the 5 browser items in `npm run dev`, the status can be promoted to `passed`.
+
+---
+
+_Re-verified: 2026-08-06T16:27:50Z (Phase 18.4 gap-closure cycle)_
 _Verifier: the agent (gsd-verifier)_
