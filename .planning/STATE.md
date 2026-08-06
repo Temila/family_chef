@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-06T16:14:33.065Z"
+last_updated: "2026-08-06T16:18:03.037Z"
 last_activity: 2026-08-06
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
   percent: 50
 ---
 
@@ -36,15 +36,15 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 18 (custom-editor-seasonal-auto-switch) — EXECUTING
-Plan: 3 of 9
+Plan: 4 of 9
 Status: Ready to execute
 Last activity: 2026-08-06
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 93%
 
 ## Session Continuity
 
-Last session: 2026-08-06T16:14:33.054Z
+Last session: 2026-08-06T16:17:57.983Z
 Stopped at: Completed 18-08-PLAN.md
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
@@ -157,6 +157,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 18 P04 | 33min | 3 tasks | 7 files |
 | Phase 18 P07 | 4min | 2 tasks | 3 files |
 | Phase 18 P08 | 1min | 2 tasks | 1 files |
+| Phase 18 P09 | 1min | 2 tasks | 1 files |
 
 ## Decisions
 
@@ -257,6 +258,7 @@ Boolean return is non-breaking because callers either ignore the return or alrea
 - [Phase ?]: [Phase 18-07]: TonalSpot variant 统一走 DynamicScheme(Variant.TONAL_SPOT) + secondaryPalette/tertiaryPalette 注入 — 移除 deriveTonalSpotSchemes + themeFromSourceColor；修复 UAT Test 5 secondary/tertiary 种子被忽略问题
 - [Phase ?]: [Phase 18-07]: primary 色值从 #056d37/#81d997 变为 #316a42/#98d4a4 — root cause: themeFromSourceColor 用已废弃 Scheme/CorePalette（fixed tones），DynamicScheme 用 MaterialDynamicColors（dynamic tone curves）；threat T-18-07-02 accept；tokens.css 旧值仅 FOUC 回退
 - [Phase 18]: Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139) — Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139)
+- [Phase ?]: Auto+custom card body click is a silent no-op (early return) matching auto+preset; editor entry exclusively via always-visible 编辑 button (Phase 18-09 closes UAT Test 10)
 
 ## Operator Next Steps
 

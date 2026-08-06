@@ -125,7 +125,7 @@ Plans:
 - [ ] 18-06-PLAN.md — injectThemeCss cascade ordering fix (closes Tests 6, 9, 12)
 - [x] 18-07-PLAN.md — TonalSpot secondary/tertiary engine path fix (closes Test 5)
 - [x] 18-08-PLAN.md — duplicate-name showToast enhancement (closes Test 8)
-- [ ] 18-09-PLAN.md — handleThemeClick auto-mode navigate removal (closes Test 10)
+- [x] 18-09-PLAN.md — handleThemeClick auto-mode navigate removal (closes Test 10)
 
 > 研究标记 HIGH：需 `/gsd-plan-phase --research-phase 18`。HCT 色彩空间行为、Variant 枚举（9 种）、直写 DOM 预览模式均需在 commit 编辑器数据模型前 spike MCU 运行时集成。
 > 开放产品决策（discuss 阶段）：(a) 季节定义——气象学（3-5 月春）vs 节气（立春/立夏/立秋/立冬，更符合中文家庭场景）；(b) 半球检测方式（无浏览器半球 API，时区启发式脆弱）；(c) 自动切换 vs 手动选择的精确交互语义。
@@ -155,4 +155,4 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 15. Navigation Restructure & Test Data | v1.3 | 6/6 | ✓ Complete | 2026-07-30 |
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
-| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 7/9 | In Progress|  |
+| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 8/9 | In Progress|  |
