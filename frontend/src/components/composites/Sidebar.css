@@ -11,7 +11,7 @@
 .md-sidebar {
   display: none;
   width: 80px;
-  background: var(--md-color-surface-container-lowest);
+  background: var(--md-color-surface-container-low);
   flex-direction: column;
   position: fixed;
   top: 0;
