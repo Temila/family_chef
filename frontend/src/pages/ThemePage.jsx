@@ -12,7 +12,7 @@
  * 季节自动切换互斥（D-09 + D-10 + D-11）：
  *   - 手动模式：单击预设/自定义 → setActiveTheme(theme)
  *   - 自动模式 + 预设：单击 → no-op（不应用、不提示）
- *   - 自动模式 + 自定义：单击 → 导航到 /theme/editor?themeId=<id>（不应用）
+ *   - 自动模式 + 自定义：单击 → no-op（不应用、不跳转；编辑通过卡片「编辑」按钮）
  *
  * 编辑/删除：
  *   - 自定义编辑：永远可达
@@ -69,10 +69,8 @@ export default function ThemePage() {
   // D-10 / D-09：单击行为
   const handleThemeClick = (theme) => {
     if (seasonEnabled) {
-      // 自动模式下：自定义 → 引导到编辑器（不应用）；预设 → 完全 no-op
-      if (theme.kind === 'custom') {
-        navigate(`/theme/editor?themeId=${encodeURIComponent(theme.id)}`);
-      }
+      // 自动模式下：所有卡片单击均为 no-op（不应用、不跳转）。
+      // 自定义卡片的编辑入口始终通过卡片上的「编辑」按钮（onEdit）。
       return;
     }
     setActiveTheme(theme);
