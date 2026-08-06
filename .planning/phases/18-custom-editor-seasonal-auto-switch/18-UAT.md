@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: resolved
 phase: 18-custom-editor-seasonal-auto-switch
 source: 18-01-SUMMARY.md, 18-03-SUMMARY.md, 18-04-SUMMARY.md, 18-05-SUMMARY.md
 started: 2026-08-06T13:42:27Z
-updated: 2026-08-06T23:15:00Z
+updated: 2026-08-06T16:45:00Z
 ---
 
 ## Current Test
@@ -84,7 +84,7 @@ blocked: 0
 ## Gaps
 
 - truth: "拖动次色/第三色取色器时编辑器内预览应即时变化"
-  status: failed
+  status: resolved
   reason: "User reported: 退出后重进，只有主色调整时预览会有变化，次色和第三色修改时无变化"
   severity: major
   test: 5
@@ -102,7 +102,7 @@ blocked: 0
   debug_session: .planning/debug/secondary-tertiary-preview.md
 
 - truth: "保存自定义主题后该主题应自动应用为活动主题（点击卡片应切换主题色）"
-  status: failed
+  status: resolved
   reason: "User reported: 卡片保存成功，但选中卡片后主题色没有切换"
   severity: major
   test: 6
@@ -115,7 +115,7 @@ blocked: 0
   debug_session: .planning/debug/save-not-applying.md
 
 - truth: "重名错误除当前错误提示外还需弹出式卡片提醒"
-  status: failed
+  status: resolved
   reason: "User reported: 通过，但同名的错误提示不够明显，除当前的错误提示外，需要再通过弹出式的卡片来提醒"
   severity: minor
   test: 8
@@ -128,7 +128,7 @@ blocked: 0
   debug_session: .planning/debug/duplicate-toast-enhancement.md
 
 - truth: "开启季节自动切换后页面颜色应反映当前季节预设主题"
-  status: failed
+  status: resolved
   reason: "User reported: 通过，但选中主题后页面颜色没有变化"
   severity: major
   test: 9
@@ -141,7 +141,7 @@ blocked: 0
   debug_session: .planning/debug/seasonal-no-color-change.md
 
 - truth: "自动模式下自定义主题卡片应显示编辑按钮（与手动模式一致），卡片本身点击不应跳转"
-  status: failed
+  status: resolved
   reason: "User reported: 通过，第二点不符合要求，不是点击主题卡片跳转，而是需要提供编辑按钮（与季节开关关闭时一致）"
   severity: minor
   test: 10
@@ -155,7 +155,7 @@ blocked: 0
   debug_session: .planning/debug/auto-mode-edit-button.md
 
 - truth: "手动模式下点击主题卡片空白区域应正常应用主题（页面颜色变化）"
-  status: failed
+  status: resolved
   reason: "User reported: 同样的问题，点击卡片页面主题无变化，显示已选中。其他都通过"
   severity: major
   test: 12
