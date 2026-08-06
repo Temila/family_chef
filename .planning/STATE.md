@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-06T16:18:03.037Z"
+last_updated: "2026-08-06T16:21:38.740Z"
 last_activity: 2026-08-06
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 15
-  completed_plans: 14
-  percent: 50
+  completed_plans: 15
+  percent: 100
 ---
 
 # Project State
@@ -36,16 +36,16 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 18 (custom-editor-seasonal-auto-switch) — EXECUTING
-Plan: 4 of 9
+Plan: 5 of 9
 Status: Ready to execute
 Last activity: 2026-08-06
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-08-06T16:17:57.983Z
-Stopped at: Completed 18-08-PLAN.md
+Last session: 2026-08-06T16:21:38.731Z
+Stopped at: Completed 18-06-PLAN.md
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
 ## Deferred Items
@@ -158,6 +158,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 18 P07 | 4min | 2 tasks | 3 files |
 | Phase 18 P08 | 1min | 2 tasks | 1 files |
 | Phase 18 P09 | 1min | 2 tasks | 1 files |
+| Phase 18 P06 | 1min | 2 tasks | 1 files |
 
 ## Decisions
 
@@ -259,6 +260,7 @@ Boolean return is non-breaking because callers either ignore the return or alrea
 - [Phase ?]: [Phase 18-07]: primary 色值从 #056d37/#81d997 变为 #316a42/#98d4a4 — root cause: themeFromSourceColor 用已废弃 Scheme/CorePalette（fixed tones），DynamicScheme 用 MaterialDynamicColors（dynamic tone curves）；threat T-18-07-02 accept；tokens.css 旧值仅 FOUC 回退
 - [Phase 18]: Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139) — Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139)
 - [Phase ?]: Auto+custom card body click is a silent no-op (early return) matching auto+preset; editor entry exclusively via always-visible 编辑 button (Phase 18-09 closes UAT Test 10)
+- [Phase ?]: [Phase 18-06]: injectThemeCss cascade fix = appendChild-on-every-call (fix option a) over :root:root specificity bump (option b) — re-ordering preserves the existing :root specificity contract; applied to both dev and production for defense-in-depth
 
 ## Operator Next Steps
 

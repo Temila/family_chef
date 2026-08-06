@@ -122,7 +122,7 @@ Plans:
 
 **Wave 4** *(gap closure — diagnosed UAT fixes)*
 
-- [ ] 18-06-PLAN.md — injectThemeCss cascade ordering fix (closes Tests 6, 9, 12)
+- [x] 18-06-PLAN.md — injectThemeCss cascade ordering fix (closes Tests 6, 9, 12)
 - [x] 18-07-PLAN.md — TonalSpot secondary/tertiary engine path fix (closes Test 5)
 - [x] 18-08-PLAN.md — duplicate-name showToast enhancement (closes Test 8)
 - [x] 18-09-PLAN.md — handleThemeClick auto-mode navigate removal (closes Test 10)
@@ -155,4 +155,4 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 15. Navigation Restructure & Test Data | v1.3 | 6/6 | ✓ Complete | 2026-07-30 |
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
-| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 8/9 | In Progress|  |
+| 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 9/9 | Complete   | 2026-08-06 |
