@@ -32,10 +32,9 @@ import { api } from '../api/client.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useToast } from '../contexts/ToastContext.jsx';
 import { buildCssSync, injectThemeCss } from './theme-engine.js';
-import { DEFAULT_PRESET, PRESETS } from './presets.js';
+import { DEFAULT_PRESET, PRESETS, buildDefaultSeasonThemeMap } from './presets.js';
 import {
   getSeasonForDate,
-  getSeasonPresetId,
   normalizeHemisphere,
 } from './season.js';
 
@@ -43,6 +42,7 @@ const ACTIVE_THEME_KEY = 'fc_active_theme';
 const SEASON_ENABLED_KEY = 'fc_season_enabled';
 const HEMISPHERE_KEY = 'fc_hemisphere';
 const LAST_SEASON_KEY = 'fc_last_season';
+const SEASON_THEME_MAP_KEY = 'fc_season_theme_map';
 
 const ThemeContext = createContext(null);
 
@@ -175,13 +175,53 @@ function writeLastSeasonToStorage(value) {
 }
 
 /**
- * 缓存闸门判定：仅当缓存键不同于新值，或 activeTheme 不是匹配的季节预设时才注入。
- * 同季节同半球的二次 mount 直接复用，避免每次 mount 都重建 CSS。
+ * 读取并校验 fc_season_theme_map：季节→主题映射。
+ * - 缺失/解析失败：返回 buildDefaultSeasonThemeMap()。
+ * - 存在但部分损坏：逐季节校验 sourceColors，坏项回退到默认 map 的对应预设。
+ * - 合法项必须是对象且 sourceColors 通过 isValidSourceColors。
  */
-function shouldApplySeasonalPreset(season, hemisphere, cachedKey, activeTheme) {
+function readSeasonThemeMapFromStorage() {
+  const defaultMap = buildDefaultSeasonThemeMap();
+  try {
+    const stored = localStorage.getItem(SEASON_THEME_MAP_KEY);
+    if (!stored) return defaultMap;
+    const parsed = JSON.parse(stored);
+    if (!parsed || typeof parsed !== 'object') return defaultMap;
+
+    const merged = {};
+    for (const season of VALID_SEASONS) {
+      const candidate = parsed[season];
+      if (candidate && isValidSourceColors(candidate.sourceColors)) {
+        merged[season] = candidate;
+      } else {
+        merged[season] = defaultMap[season];
+      }
+    }
+    return merged;
+  } catch {
+    return defaultMap;
+  }
+}
+
+function writeSeasonThemeMapToStorage(map) {
+  try {
+    localStorage.setItem(SEASON_THEME_MAP_KEY, JSON.stringify(map));
+  } catch {
+    /* localStorage 不可用时静默失败 */
+  }
+}
+
+/**
+ * 缓存闸门判定：仅当缓存键不同于新值，或 activeTheme.id 不等于
+ * seasonThemeMap[season].id 时才注入。同季节同半球的二次 mount 直接复用，避免每次 mount 都重建 CSS。
+ */
+function shouldApplySeasonalPreset(season, hemisphere, cachedKey, activeTheme, seasonThemeMap) {
   const compoundKey = `${hemisphere}:${season}`;
   const cacheMatches = cachedKey === compoundKey;
-  const activeMatchesSeasonal = Boolean(activeTheme && activeTheme.id === season);
+  const mappedId = seasonThemeMap?.[season]?.id;
+  const activeMatchesSeasonal = Boolean(
+    activeTheme && mappedId != null && activeTheme.id === mappedId,
+  );
   return !(cacheMatches && activeMatchesSeasonal);
 }
 
@@ -192,6 +232,7 @@ export const ThemeProvider = ({ children }) => {
   const [customThemes, setCustomThemes] = useState([]);
   const [seasonEnabled, setSeasonEnabledState] = useState(readSeasonEnabledFromStorage);
   const [hemisphere, setHemisphereState] = useState(readHemisphereFromStorage);
+  const [seasonThemeMap, setSeasonThemeMapState] = useState(readSeasonThemeMapFromStorage);
   const fetchedAtRef = useRef(null);
   // 当 setSeasonEnabled(true) 后第一次进入自动模式，强制重新应用（即使缓存命中）。
   // 这是为了应对"用户主动打开开关"的语义：打开开关就是意图切换到当前季节，
@@ -288,6 +329,24 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   /**
+   * 设置某季节对应的主题（预设或自定义）。
+   * 校验 season 合法 + theme.sourceColors 完整；否则静默 no-op。
+   * 写入后持久化 + 触发 justEnabledRef 强制下一次 applyCurrentSeason 重应用，
+   * 实现"更改当前季节主题后立即生效"。
+   */
+  const setSeasonTheme = useCallback((season, theme) => {
+    if (!VALID_SEASONS.has(season)) return;
+    if (!theme || !isValidSourceColors(theme.sourceColors)) return;
+    setSeasonThemeMapState((prev) => {
+      const next = { ...prev, [season]: theme };
+      writeSeasonThemeMapToStorage(next);
+      return next;
+    });
+    // 镜像 setSeasonEnabled 的即时生效范式：下一次 applyCurrentSeason 强制重应用
+    justEnabledRef.current = true;
+  }, []);
+
+  /**
    * 内部旁路：直接套用预设（不经过 D-09 互斥闸门）。
    * 仅供 applyCurrentSeason() 等受控路径调用。
    */
@@ -296,31 +355,31 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   /**
-   * 内部 evaluate + apply：评估当前本地季节，应用季节预设；缓存命中且 active 匹配则跳过。
-   * 仅当 seasonEnabled=true 时由 useEffect 触发。
+   * 内部 evaluate + apply：评估当前本地季节，应用 seasonThemeMap 中该季节对应的主题；
+   * 缓存命中且 active 匹配则跳过。仅当 seasonEnabled=true 时由 useEffect 触发。
    */
   const applyCurrentSeason = useCallback(({ force = false } = {}) => {
     const season = getSeasonForDate(new Date(), hemisphere);
     if (!season) return false; // 表外年份：保留 fc_active_theme/默认
-    const presetId = getSeasonPresetId(season);
-    if (!presetId) return false;
-    const preset = PRESETS.find(p => p.id === presetId);
-    if (!preset) return false;
+
+    // 直接从 seasonThemeMap 读取完整主题对象（不再走 getSeasonPresetId + PRESETS.find 两步）
+    const themed = seasonThemeMap[season];
+    if (!themed || !isValidSourceColors(themed.sourceColors)) return false;
 
     const cache = readLastSeasonFromStorage();
     const shouldApply = force
       || justEnabledRef.current
-      || shouldApplySeasonalPreset(season, hemisphere, cache, activeTheme);
+      || shouldApplySeasonalPreset(season, hemisphere, cache, activeTheme, seasonThemeMap);
     if (!shouldApply) {
       justEnabledRef.current = false;
       return false;
     }
 
-    applySeasonalPresetDirect(preset);
+    applySeasonalPresetDirect(themed);
     writeLastSeasonToStorage(`${hemisphere}:${season}`);
     justEnabledRef.current = false;
     return true;
-  }, [activeTheme, applySeasonalPresetDirect, hemisphere]);
+  }, [activeTheme, applySeasonalPresetDirect, hemisphere, seasonThemeMap]);
 
   // currentSeason 派生自 hemisphere + 当前时刻；hemisphere 切换即重算，无需 effect。
   const currentSeason = useMemo(
@@ -348,6 +407,9 @@ export const ThemeProvider = ({ children }) => {
     currentSeason,
     setSeasonEnabled,
     setHemisphere,
+    // Quick 260807-121: 季节→主题映射 + setter
+    seasonThemeMap,
+    setSeasonTheme,
   }), [
     activeTheme,
     setActiveTheme,
@@ -359,6 +421,8 @@ export const ThemeProvider = ({ children }) => {
     currentSeason,
     setSeasonEnabled,
     setHemisphere,
+    seasonThemeMap,
+    setSeasonTheme,
   ]);
 
   return (

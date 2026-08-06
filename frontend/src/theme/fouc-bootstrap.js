@@ -36,11 +36,21 @@ import { getSeasonForDate, getSeasonPresetId, normalizeHemisphere } from './seas
       var season = getSeasonForDate(new Date(), hemisphere);
       var presetId = season ? getSeasonPresetId(season) : null;
       if (presetId) {
-        var match = null;
-        for (var i = 0; i < PRESETS.length; i += 1) {
-          if (PRESETS[i].id === presetId) { match = PRESETS[i]; break; }
+        // Quick 260807-121: 优先读取 fc_season_theme_map 中用户为该季节选择的主题
+        var seasonMapRaw = localStorage.getItem('fc_season_theme_map');
+        var seasonMap = null;
+        try { seasonMap = seasonMapRaw ? JSON.parse(seasonMapRaw) : null; } catch { seasonMap = null; }
+        if (seasonMap && seasonMap[season] && seasonMap[season].sourceColors
+            && seasonMap[season].sourceColors.primary) {
+          seasonPreset = seasonMap[season];
+        } else {
+          // 兜底：map 缺失/损坏时回退到 PRESETS find（保留对历史/损坏 map 的健壮性）
+          var match = null;
+          for (var i = 0; i < PRESETS.length; i += 1) {
+            if (PRESETS[i].id === presetId) { match = PRESETS[i]; break; }
+          }
+          if (match) seasonPreset = match;
         }
-        if (match) seasonPreset = match;
       }
     }
 
