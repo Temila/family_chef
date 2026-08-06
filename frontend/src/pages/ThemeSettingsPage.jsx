@@ -27,6 +27,10 @@ const SEASON_TOGGLE_ID = 'theme-settings-season-toggle';
 const HEMISPHERE_NORTH_ID = 'theme-settings-hemisphere-north';
 const HEMISPHERE_SOUTH_ID = 'theme-settings-hemisphere-south';
 
+// Quick 260807-121: 季节主题选择器常量
+const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
+const SEASON_LABELS = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
+
 export default function ThemeSettingsPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -35,6 +39,10 @@ export default function ThemeSettingsPage() {
     hemisphere,
     setSeasonEnabled,
     setHemisphere,
+    seasonThemeMap,
+    setSeasonTheme,
+    customThemes,
+    PRESETS,
   } = useTheme();
 
   const handleSeasonToggle = (event) => {
@@ -49,6 +57,16 @@ export default function ThemeSettingsPage() {
   const handleHemisphereChange = (next) => {
     setHemisphere(next);
     showToast(next === 'south' ? '已切换到南半球' : '已切换到北半球', 'success');
+  };
+
+  // Quick 260807-121: 更改某季节对应的主题（预设或自定义）
+  const handleSeasonThemeChange = (season, event) => {
+    const selectedId = event.target.value;
+    const pool = [...PRESETS, ...customThemes];
+    const matched = pool.find(t => t.id === selectedId);
+    if (!matched) return;
+    setSeasonTheme(season, matched);
+    showToast(`已更新${SEASON_LABELS[season]}主题：${matched.name}`, 'success');
   };
 
   const handleBack = () => {
@@ -77,7 +95,7 @@ export default function ThemeSettingsPage() {
         >
           <span className="theme-settings__mutex-warning-icon" aria-hidden="true">⚠</span>
           <span className="theme-settings__mutex-warning-text">
-            开启后仅使用四季主题，手动应用失效
+            开启后按所选季节主题自动切换，手动应用失效
           </span>
         </aside>
 
@@ -168,6 +186,37 @@ export default function ThemeSettingsPage() {
             南半球与北半球的季节相反：北半球的春对应南半球的秋。
           </div>
         </section>
+
+        {/* Quick 260807-121: 季节主题选择器 —— 仅当季节自动切换开启时渲染。
+            每个季节可选所有预设 + 当前用户自定义主题；默认值为 seasonThemeMap 中的当前映射。 */}
+        {seasonEnabled && (
+          <section className="theme-settings__section">
+            <div className="theme-settings__section-title">季节主题</div>
+            {SEASONS.map(season => (
+              <div key={season} className="theme-settings__season-row">
+                <label
+                  className="theme-settings__season-label"
+                  htmlFor={`${season}-season-select`}
+                >
+                  {SEASON_LABELS[season]}
+                </label>
+                <select
+                  id={`${season}-season-select`}
+                  className="theme-settings__season-select"
+                  value={seasonThemeMap[season]?.id ?? ''}
+                  onChange={(e) => handleSeasonThemeChange(season, e)}
+                >
+                  {[...PRESETS, ...customThemes].map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+            <div className="theme-settings__section-hint">
+              为每个季节选择主题；更改当前季节的主题会立即生效。
+            </div>
+          </section>
+        )}
 
         <div className="theme-settings__actions">
           <Button variant="filled" onClick={handleBack}>

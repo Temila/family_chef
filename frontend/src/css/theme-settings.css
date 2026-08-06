@@ -227,6 +227,41 @@
   outline-offset: 2px;
 }
 
+/* Quick 260807-121: 季节主题选择器行 —— 左标签右 select，48dp 触控目标 */
+.theme-settings__season-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--md-spacing-3);
+  min-height: 48px;
+}
+
+.theme-settings__season-label {
+  font-family: var(--md-font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--md-color-on-surface);
+  flex: 1 1 auto;
+}
+
+.theme-settings__season-select {
+  min-width: 140px;
+  min-height: 48px;
+  padding: var(--md-spacing-2) var(--md-spacing-3);
+  border-radius: var(--md-radius-md);
+  border: 1px solid var(--md-color-outline-variant);
+  background: var(--md-color-surface);
+  color: var(--md-color-on-surface);
+  font-family: var(--md-font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.theme-settings__season-select:focus-visible {
+  outline: var(--md-focus-ring-outer);
+  outline-offset: 2px;
+}
+
 /* 底部操作按钮行 */
 .theme-settings__actions {
   display: flex;
@@ -244,6 +279,11 @@
 
   .theme-settings__actions {
     flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .theme-settings__season-row {
+    flex-direction: column;
     align-items: stretch;
   }
 }
