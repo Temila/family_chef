@@ -95,19 +95,24 @@ export default function Header({ title, showBack = false, actions }) {
 
         {/* 右：主题切换 IconButton + 用户菜单（actions 已下沉至下方独立 action 区，D-NAV01-01/02） */}
         <div className="md-header__right" ref={menuRef}>
-          <IconButton
-            icon={currentTheme === 'dark' ? 'light-mode' : 'dark-mode'}
-            ariaLabel={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
-            onClick={handleToggleTheme}
-            className="md-header__theme-toggle"
-          />
-          {/* D-18: Palette IconButton — 跳转到 /theme 主题页面 */}
-          <IconButton
-            icon="palette"
-            ariaLabel="选择主题"
-            onClick={() => navigate('/theme')}
-            className="md-header__theme-page"
-          />
+          {/* D-A2: 未登录隐藏 light/dark 主题切换（user guard 防御 AuthProvider 初始加载窗口） */}
+          {user && (
+            <IconButton
+              icon={currentTheme === 'dark' ? 'light-mode' : 'dark-mode'}
+              ariaLabel={currentTheme === 'dark' ? '切换浅色' : '切换深色'}
+              onClick={handleToggleTheme}
+              className="md-header__theme-toggle"
+            />
+          )}
+          {/* D-18/D-A2: Palette IconButton 跳转 /theme，未登录隐藏 */}
+          {user && (
+            <IconButton
+              icon="palette"
+              ariaLabel="选择主题"
+              onClick={() => navigate('/theme')}
+              className="md-header__theme-page"
+            />
+          )}
           {user && (
             <>
               <button
