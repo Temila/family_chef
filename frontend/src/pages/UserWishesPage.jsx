@@ -337,13 +337,19 @@ export default function UserWishesPage() {
       )}
 
       {/* FAB — 仅用户页有，渲染在 Header 外部以避开 header-right 的堆叠上下文。
-          .fab className 仅承担 placement（position: fixed / bottom / right / z-index），
-          视觉由 .md-fab 提供（D-08：16px 圆角、primary-container 填充、elevation-3）。 */}
+          placement 通过 inline style 传递（Ripple self 模式注入 position:relative 为内联样式，
+          CSS class 无法覆盖；childProps.style 在 composedStyle 中排在 base 之后，可安全覆盖）。 */}
       <FAB
         icon="add"
         ariaLabel="新建愿望"
         onClick={openCreate}
         className="fab"
+        style={{
+          position: 'fixed',
+          bottom: 'calc(var(--md-nav-height) + var(--md-spacing-4))',
+          right: 'var(--md-spacing-5)',
+          zIndex: 150,
+        }}
       />
 
       {/* 单 overlay 不变量：同时只渲染一个弹窗 */}
