@@ -295,16 +295,20 @@ export const ThemeProvider = ({ children }) => {
   // useLayoutEffect（非 useEffect）：CSS 必须在浏览器绘制前同步就位，否则切换主题时
   // 首帧仍用旧主题的 --md-color-primary，导致 .theme-card--active 的 outline 高亮
   // 出现单帧色差（Phase 17/18 既有渲染架构；UAT 反馈后改用同步注入消除闪烁）。
+  // 写 localStorage 需 user?.id 守门：登出后 state 会重置为 DEFAULT_PRESET，若不守门
+  // 该 effect 会立即把 fc_active_theme 重新写入（WR-01，破坏 D-A6 removeItem 语义）。
   useLayoutEffect(() => {
     try {
       const cssText = buildCssSync(activeTheme.sourceColors, activeTheme.variant);
       injectThemeCss(cssText);
-      writeActiveThemeToStorage(activeTheme);
+      if (user?.id) {
+        writeActiveThemeToStorage(activeTheme);
+      }
     } catch {
       showToast('主题应用失败，已恢复默认', 'error');
       queueMicrotask(() => { setActiveThemeState(DEFAULT_PRESET); });
     }
-  }, [activeTheme, showToast]);
+  }, [activeTheme, showToast, user?.id]);
 
   // Phase 19 D-A1/D-A4: 双写——除现有 localStorage 写入外，200ms debounce PUT 到服务端
   useEffect(() => {
