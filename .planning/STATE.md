@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 Phase: 19 (account-bound-theme-preferences) — EXECUTING
 Plan: 2 of 2
 Status: Phase complete — ready for verification
-Last activity: 2026-08-07
+Last activity: 2026-08-07 - Completed quick task 260807-si7: 修复3个问题（订单筛选行排版/my-wishes FAB/管理员重置密码）
 
 Progress: [██████████] 100%
 
@@ -108,6 +108,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | 260730-m6k | 撤销 260730-m1p：将高级筛选+已关联+未关联包装到 `__filters` div（gap=spacing-2），恢复对称 48px padding | 2026-07-30 |  | [260730-m6k-wrap-left-filters](./quick/260730-m6k-wrap-left-filters/) |
 | 260730-oa9 | 订单详情页两段式 MD3 布局（初版 2div+40/60grid，后修正为 3 卡堆叠匹配部署版参考） | 2026-07-30 | 7028075→2fdcddd | [260730-oa9-http-localhost-5173-orders-1-1-div-div-m](./quick/260730-oa9-http-localhost-5173-orders-1-1-div-div-m/) |
 | 260807-121 | 季节开关开启时允许为春/夏/秋/冬各选主题（预设+自定义），默认沿用四季预设；持久化至 fc_season_theme_map，首帧 FOUC 引导读 map | 2026-08-06 | 45cc059→d69e4bd | [260807-121-season-theme-selector](./quick/260807-121-season-theme-selector/) |
+| 260807-si7 | 修复3个问题：订单页筛选行排版、my-wishes FAB按钮位置+版本号v1.5.0、管理员重置密码功能 | 2026-08-07 | 33fe7f3→df60643 | [260807-si7-3-1-order-ingredients-2-my-wishes-v1-5-0](./quick/260807-si7-3-1-order-ingredients-2-my-wishes-v1-5-0/) |
 
 ## Performance Metrics
 
