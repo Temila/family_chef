@@ -165,7 +165,7 @@ input, textarea, select { font-family: var(--md-font-body); }
 
 /* FAB —— Phase 10：视觉属性已由 .md-fab primitive 接管（D-08：16px 圆角、primary-container 填充、elevation-3）。
    .fab className 现仅承担 placement（position / bottom / right / z-index），由调用方 className="fab" 透传。 */
-.fab { position: fixed; bottom: calc(var(--md-nav-height) + var(--md-spacing-4)); right: var(--md-spacing-5); z-index: 150; }
+.md-fab.fab { position: fixed; bottom: calc(var(--md-nav-height) + var(--md-spacing-4)); right: var(--md-spacing-5); z-index: 150; }
 
 /* Login Page */
 .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--md-color-surface-container-low); padding: var(--md-spacing-4); }
