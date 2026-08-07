@@ -81,6 +81,42 @@ async def test_put_then_get_roundtrip(client: AsyncClient, user_token: str):
 
 
 @pytest.mark.asyncio
+async def test_put_active_theme_with_integer_id_roundtrip(client: AsyncClient, user_token: str):
+    """自定义主题的 id 是 DB 自增整数(非预设字符串), PUT 应接受并如实往返。
+
+    回归测试: Phase 19 UAT 测试 3 发现 active_theme.id=1 (int) 被 422 拒绝,
+    因为 ActiveThemePayload.id 原定义为 Optional[str]。修复后 id 同时接受 str/int。
+    """
+    custom_theme_payload = {
+        **VALID_PAYLOAD,
+        "active_theme": {
+            "sourceColors": {"primary": "#aa1122", "secondary": "#bb2233", "tertiary": "#cc3344"},
+            "variant": "TonalSpot",
+            "kind": "custom",
+            "id": 1,  # 自定义主题 DB 主键是整数
+            "name": "测试主题1",
+        },
+    }
+    put_resp = await client.put(
+        "/api/users/me/theme-preferences",
+        headers=_auth(user_token),
+        json=custom_theme_payload,
+    )
+    assert put_resp.status_code == 200, put_resp.text
+    data = put_resp.json()
+    assert data["active_theme"]["id"] == 1  # 整数如实往返
+    assert data["active_theme"]["kind"] == "custom"
+
+    # GET 读回仍是整数
+    get_resp = await client.get(
+        "/api/users/me/theme-preferences",
+        headers=_auth(user_token),
+    )
+    assert get_resp.status_code == 200
+    assert get_resp.json()["active_theme"]["id"] == 1
+
+
+@pytest.mark.asyncio
 async def test_put_upsert_no_duplicate_row(client: AsyncClient, user_token: str):
     """连续两次 PUT 不应创建新行(upsert), updated_at 推进"""
     await client.put(

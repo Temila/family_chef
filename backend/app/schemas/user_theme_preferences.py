@@ -7,7 +7,7 @@ Pydantic V2 schemas for /api/users/me/theme-preferences:
   - UserThemePreferencesResponse — GET/PUT 响应
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import (
     BaseModel,
@@ -27,9 +27,11 @@ class ActiveThemePayload(BaseModel):
 
     sourceColors 必须包含 primary/secondary/tertiary 三个非空字符串;
     id/name/variant/kind 为可选元数据,用于前端还原完整主题对象。
+    id 同时接受字符串(预设主题 'default'/'forest')与整数(自定义主题 DB 自增主键),
+    以保证自定义主题可如实往返 PUT/GET (Phase 19 UAT 测试 3 修复)。
     """
 
-    id: Optional[str] = None
+    id: Optional[Union[str, int]] = None
     name: Optional[str] = None
     sourceColors: dict
     variant: Optional[str] = None

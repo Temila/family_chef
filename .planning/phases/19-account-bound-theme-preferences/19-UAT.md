@@ -8,7 +8,7 @@ updated: 2026-08-07T06:12:00Z
 
 ## Current Test
 
-[testing paused — 测试 2 发现 blocker，已停止 UAT 先修复]
+[testing paused — 测试 3 发现 blocker：自定义主题 PUT 422，正在排查]
 
 ## Tests
 
@@ -18,13 +18,14 @@ result: pass
 
 ### 2. 登录时从服务器加载主题（D-A4）
 expected: 已有服务器主题偏好的用户，在一个全新的浏览器/配置（localStorage 为空）中登录。登录后，其主题（当前主题、季节开关、半球、季节主题映射）从服务器应用到本设备——例如之前选过绿色 TonalSpot 主题并开启季节模式且半球=south，这些设置在本设备上重新出现。
-result: issue
-reported: "点击切换后后台进入循环了，前端页面无法实现主题切换"
-severity: blocker
+result: pass
+note: 初测发现主题切换触发后台请求无限循环（blocker），已在 6dc9602 修复（latest-ref 模式隔离用户键 effect 依赖）。复测通过。
 
 ### 3. 首次登录上传本地主题（D-A5）
 expected: 服务器尚无偏好的用户（新账号，或 Phase 19 后首次）登录。其本地主题设置（fc_active_theme、fc_season_enabled、fc_hemisphere、fc_season_theme_map）作为初始载荷上传到服务器。验证方式：之后在第二台设备登录看到相同主题（或检查数据库 / GET /api/users/me/theme-preferences 返回 200 且包含本地值）。
-result: [pending]
+result: issue
+reported: "点击自己新建的测试主题1，前端页面正常渲染，后端报错422：active_theme.id Input should be a valid string, input 1（自定义主题 id 是整数，schema 要 str）；退出后无法保存"
+severity: blocker
 
 ### 4. 主题变更保存到服务器（D-A1）
 expected: 登录状态下，修改当前主题（如选择不同预设）。变更立即写入 localStorage，且约 200ms 后一次防抖 PUT 更新服务器。刷新页面——新主题保留。重要边界情况：首次登录迁移（测试 3）之后立即做的第一次主题变更也必须保留——如果第一次变更被静默丢弃，请报告（疑似缺陷 CR-02）。
@@ -49,16 +50,26 @@ result: [pending]
 ## Summary
 
 total: 8
-passed: 1
+passed: 2
 issues: 1
-pending: 6
+pending: 5
 skipped: 0
 blocked: 0
 
 ## Gaps
 
-- truth: "登录/切换主题时前端正常工作，不触发后台请求循环"
+- truth: "自定义主题可作为 active_theme 上传到服务端偏好（PUT 200）"
   status: failed
+  reason: "用户报告：点击自建测试主题1，后端 422：active_theme.id Input should be a valid string, input 1。自定义主题 id 是 DB 自增整数，但后端 ActiveThemePayload.id 定义为 Optional[str]，类型不匹配"
+  severity: blocker
+  test: 3
+  root_cause: "待排查"     # 待排查
+  artifacts: []      # 待排查
+  missing: []        # 待排查
+  debug_session: ""  # 待排查
+
+- truth: "登录/切换主题时前端正常工作，不触发后台请求循环"
+  status: resolved
   reason: "用户报告：点击切换后后台进入循环了，前端页面无法实现主题切换"
   severity: blocker
   test: 2
@@ -67,5 +78,5 @@ blocked: 0
     - path: "frontend/src/theme/theme-context.jsx"
       issue: "用户键 effect 依赖含身份随 activeTheme 变化的回调，引发登录态下任一主题变更触发 GET→setState→重跑的无限循环"
   missing:
-    - "已修复：用 latest-ref 模式（refreshCustomThemesRef/refreshThemePreferencesRef）持有回调，用户键 effect 依赖仅 [user?.id]，只在登录/登出时触发"
+    - "已修复：用 latest-ref 模式（refreshCustomThemesRef/refreshThemePreferencesRef）持有回调，用户键 effect 依赖仅 [user?.id]，只在登录/登出时触发（commit 6dc9602）"
   debug_session: ""
