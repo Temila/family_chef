@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
-status: verifying
-last_updated: "2026-08-07T05:41:56.316Z"
-last_activity: 2026-08-07
+status: Awaiting next milestone
+last_updated: "2026-08-07T13:52:18.225Z"
+last_activity: 2026-08-07 — Milestone v1.5 completed and archived
 progress:
   total_phases: 3
   completed_phases: 3
@@ -35,12 +35,10 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 19 (account-bound-theme-preferences) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-08-07 - Completed quick task 260807-si7: 修复3个问题（订单筛选行排版/my-wishes FAB/管理员重置密码）
-
-Progress: [██████████] 100%
+Phase: Milestone v1.5 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-08-07 — Milestone v1.5 completed and archived
 
 ## Session Continuity
 
@@ -271,5 +269,4 @@ Boolean return is non-breaking because callers either ignore the return or alrea
 
 ## Operator Next Steps
 
-- Phase 19 (account-bound-theme-preferences) is functionally complete (backend Plan 01 + frontend Plan 02). Run `/gsd-verify-work 19` for human UAT.
-- Manual end-to-end (login GET 200/PUT 200, first-login 404→PUT migration, logout fc_* removal + fc_theme/fc_last_season preservation, Header button hiding) deferred to UAT verifier.
+- Start the next milestone with /gsd-new-milestone

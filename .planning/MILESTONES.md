@@ -1,5 +1,29 @@
 # Milestones
 
+## v1.5 自定义网站皮肤 / Theme Customization (Shipped: 2026-08-07)
+
+**Phases completed:** 3 phases, 17 plans, 41 tasks
+
+**Key accomplishments:**
+
+- CustomTheme model + Alembic migration + Pydantic schemas + JWT-protected REST API at /api/themes with per-user ownership enforcement, validated by 12 passing pytest cases with no regressions across the 350-case baseline suite.
+- Synchronous Material Design 3 runtime derivation with five presets and a stylesheet-ordered classic FOUC bootstrap.
+- An eighth MD3 token check now rejects hardcoded `#RRGGBB` values in JSX color/background style props while preserving JavaScript theme emitters.
+- Memoized ThemeProvider with persistent MD3 application, authenticated custom-theme synchronization, explicit API key normalization, and protected `/theme` routing.
+- All 7 ROADMAP Phase 17 success criteria are testable from code on disk; 32 file actions from plans 17-01..17-05 are present and committed; 9 automated verification commands green; curl smoke test confirms SYNC-03 JWT per-user CRUD end-to-end (login → POST 201 → GET 200 → PUT 200 → DELETE 204 → GET 200[]); pre-existing AdminIngredientsPage.jsx MD3 spacing violations documented as out-of-scope per deviation rule scope boundary.
+- buildCssSync now dispatches TonalSpot + 8 alternate MD3 variants (Vibrant/Expressive/Content/Mono/Neutral/Fidelity/Rainbow/FruitSalad) via DynamicScheme while keeping the Phase 17 TonalSpot CSS byte-identical.
+- Independent /theme/editor route with three HexColorPicker+HexColorInput seeds, 9-variant Chip row, scoped [data-fc-theme-scope="editor-preview"] live preview, POST/PUT/fork save semantics, and seasonEnabled mutex hookup for Plan 18-04.
+- 80-year Skyfield-pre-generated solar-term table + local-time resolver with exact hemisphere inversion + cache-gated ThemeProvider mutex + first-paint FOUC bootstrap.
+- The /theme surface is now fully navigable: 新建 → editor, 主题设置 → settings, custom cards edit/delete, preset cards fork in manual mode, auto-mode mutex honored across every click path.
+- One-line fix (`document.head.appendChild(element)`) in `injectThemeCss` ensures `fc-dynamic-theme` is always the last `<style>` in `<head>`, closing UAT Tests 6/9/12 where Vite dev-mode `tokens.css` was overriding the dynamic theme
+- TonalSpot variant now routes through DynamicScheme so secondary/tertiary seed colors affect generated CSS; ThemePreview gains a tertiary-visible block
+- One-line fix adding `showToast('error')` alongside `setNameError` so duplicate theme names trigger both inline Input error AND red Snackbar popup (closes UAT Test 8)
+- Removed the auto+custom `navigate` branch from `handleThemeClick` so auto-mode card-body click is a uniform silent no-op (like presets); editor access remains via the always-visible 编辑 button
+- Server-side persistence layer for per-user theme preferences — UserThemePreferences model + Alembic migration + Pydantic V2 schemas + service + JWT-protected GET/PUT endpoints at /api/users/me/theme-preferences (server LWW, 1 row/user, FK CASCADE)
+- Frontend dual-write wiring (localStorage + 200ms debounced server PUT) with login-fetch hydration, 404 first-login migration upload, logout 4-key cleanup, and unauthenticated Header button hiding — all additive, rendering pipeline byte-identical
+
+---
+
 ## v1.2 MD3重构 (Shipped: 2026-07-29)
 
 **Phases completed:** 5 phases, 15 plans, 40 tasks

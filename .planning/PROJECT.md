@@ -10,22 +10,7 @@
 
 ## Current State
 
-**Shipped v1.5** — 2026-08-05: 自定义网站皮肤（Theme Customization）完整交付。Phases 17-18 / 11 plans：MD3 运行时主题引擎（9 种变体 dispatch）+ FOUC bootstrap + 5 预设 + /theme 页面 + 自定义主题后端 CRUD + react-colorful 种子色编辑器（scoped 实时预览）+ 节气驱动的季节自动切换（2020-2099 本地时区解析 + 半球反转 + 互斥开关）。
-
-**Gap closure (Phase 18.4)** — 2026-08-06: UAT 发现的 6 个问题全部修复。18-06 修复 Vite dev 模式 CSS 级联遮蔽（injectThemeCss 重新 appendChild 确保 fc-dynamic-theme 胜出）；18-07 统一 TonalSpot 走 DynamicScheme 以响应 secondary/tertiary 种子；18-08 重名错误增加 Snackbar 弹窗；18-09 自动模式卡片单击改为 no-op；并修复侧栏使用 surface-container-lowest 导致的"固定白色"问题。
-
-## Current Milestone: v1.5 自定义网站皮肤 / Theme Customization
-
-**Goal:** 让用户能够自定义网站配色（MD3 色彩令牌），选择预设或创建无限自定义皮肤，并支持按季节自动切换。
-
-**Target features:**
-- Header 新增 /theme 入口按钮（位于主题切换与用户头像之间，图标待 discuss 阶段确认）
-- 新 /theme 页面：以卡片形式展示所有 theme，卡片本身即预览
-- 5 个预设 theme：当前配色 + 春/夏/秋/冬四季主题色（仅可编辑，不可删除）
-- 自定义 theme 编辑器：调整 MD3 主色/主色容器/次级色/强调色等参数，实时预览，保存为自定义 theme（数量无上限，可编辑可删除）
-- 季节自动切换开关
-- 存储：预设+当前选择存 localStorage；自定义 theme 存后端 DB（跨设备同步）
-- 明暗切换（light/dark）保留为 header 独立按钮，不整合进 /theme
+**Shipped v1.5** — 2026-08-07: 自定义网站皮肤（Theme Customization）完整交付。Phases 17-19 / 17 plans：MD3 运行时主题引擎（9 种变体 dispatch）+ FOUC bootstrap + 5 预设 + /theme 页面 + 自定义主题后端 CRUD + react-colorful 种子色编辑器（scoped 实时预览）+ 节气驱动的季节自动切换（2020-2099 本地时区解析 + 半球反转 + 互斥开关）+ 账号绑定主题偏好（跨设备同步，DB 为真相源）。
 
 ## Requirements
 
@@ -47,7 +32,7 @@
 - ✓ MD3 组件化（COMPO-01~12, except COMPO-09 deferred） — v1.2
 - ✓ 8dp 网格间距 + 触控目标 ≥48dp（UX-01~05） — v1.2
 - ✓ 业务逻辑零回归（LOGIC-01~03） — v1.2
-- ✓ 自定义网站皮肤（EDIT-01~07, SEAS-01~04） — v1.5
+- ✓ 自定义网站皮肤（FND-01~07, TPAGE-01~07, SYNC-01~04, EDIT-01~07, SEAS-01~04, D-A1~A7） — v1.5
 
 ### Active
 
@@ -69,7 +54,7 @@
 - **Shipped v1.2**: Material Design 3 重构，6 phases / 18 plans / 242 files / +46k LOC
 - **Shipped v1.3**: Bugfix + UI Refinements，2 phases / 13 plans（导航重组 + 筛选弹窗 + seed 数据）
 - **Shipped v1.4**: Tech Debt Cleanup，1 phase / 4 plans（CORS/migration/test/lint 修复）
-- **Shipped v1.5**: 自定义网站皮肤，2 phases / 11 plans（主题引擎 + 编辑器 + 季节自动切换）
+- **Shipped v1.5**: 自定义网站皮肤，3 phases / 17 plans（主题引擎 + 编辑器 + 季节自动切换 + 账号绑定偏好）
 - **Tech stack**: FastAPI + SQLAlchemy 2.0 (async) + React 19 + Vite + SQLite
 - **Feature branch**: feature/ui-rebuild
 
@@ -90,6 +75,11 @@
 | 保留 .form-input for select | select 不在 Input primitive 范围内，Phase 11 尚未实现 Select | ✓ Good |
 | D-BUG-01 Ripple fix = Option 3 hybrid | self mode on native button, wrap mode for composites | ✓ Good |
 | D-EMOJI-01: 128 emoji→Icon | 统一 Material Symbols，删除 pictographic emoji 散落 | ✓ Good |
+| Theme Engine: MD3 DynamicScheme 运行时派生 | 种子色驱动、9 种变体、CSS 级联覆盖 tokens.css | ✓ Good |
+| FOUC bootstrap: index.html 内联 IIFE | 首帧阻塞脚本在 React hydration 前注入主题 CSS | ✓ Good |
+| 季节检测: Skyfield 预生成 80 年节气表 | 精确二十四节气、避免运行时天文计算开销 | ✓ Good |
+| 账号绑定偏好: server LWW + localStorage FOUC 缓存 | DB 为真相源、localStorage 降级为首帧缓存 | ✓ Good |
+| CR-01: SQLite PRAGMA foreign_keys=ON per connection | 修复 FK CASCADE 形同虚设的根因 | ✓ Good |
 
 ## Evolution
 
@@ -107,7 +97,7 @@ v1.2 在保留 v1.0/v1.1 全部业务能力（访客点菜 + 菜品愿望单）�
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-08-06 after Phase 18 gap-closure approval*
+*Last updated: 2026-08-07 after v1.5 milestone*
 
 ## Constraints
 
