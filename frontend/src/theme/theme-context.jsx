@@ -409,6 +409,18 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [user?.id]);
 
+  // Phase 19 修复：user-keyed effect 只应在登录/登出（user?.id 变化）时触发。
+  // 直接把 refreshCustomThemes / refreshThemePreferences 放进依赖数组会引发无限循环——
+  // refreshCustomThemes 的身份依赖 activeTheme，任一主题变更 → 回调新身份 → effect 重跑 →
+  // refreshThemePreferences GET 200 → setActiveThemeState(新对象) → activeTheme 变 → 回调新身份 → ... 死循环。
+  // 用 latest-ref 模式持有最新回调，effect 仅依赖 [user?.id]。
+  const refreshCustomThemesRef = useRef(refreshCustomThemes);
+  const refreshThemePreferencesRef = useRef(refreshThemePreferences);
+  useEffect(() => {
+    refreshCustomThemesRef.current = refreshCustomThemes;
+    refreshThemePreferencesRef.current = refreshThemePreferences;
+  });
+
   useEffect(() => {
     if (!user?.id) {
       // D-A6: 登出清理——移除 4 个账号偏好 key，重置 context state；
@@ -433,11 +445,11 @@ export const ThemeProvider = ({ children }) => {
     }
     // 登录：并行拉取自定义主题缓存（Phase 17）+ 账号偏好（Phase 19）
     queueMicrotask(() => {
-      refreshCustomThemes();
-      refreshThemePreferences();
+      refreshCustomThemesRef.current?.();
+      refreshThemePreferencesRef.current?.();
     });
     return undefined;
-  }, [user?.id, refreshCustomThemes, refreshThemePreferences]);
+  }, [user?.id]);
 
   /**
    * D-11: 打开/关闭季节自动切换开关，即时持久化；on→off 不改主题（保留用户上次手动选择），
