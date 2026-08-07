@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
 status: executing
-last_updated: "2026-08-07T02:51:42.733Z"
-last_activity: 2026-08-07 -- Phase 19 planning complete
+last_updated: "2026-08-07T05:33:52.669Z"
+last_activity: 2026-08-07
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 17
-  completed_plans: 15
+  completed_plans: 16
   percent: 67
 ---
 
@@ -20,7 +20,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** 让家庭成员和访客都能简单、愉快地参与到家庭用餐的菜品选择与准备
-**Current focus:** Milestone complete
+**Current focus:** Phase 19 — account-bound-theme-preferences
 
 ## Branch State
 
@@ -35,17 +35,17 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 ## Current Position
 
-Phase: 18
-Plan: Not started
+Phase: 19 (account-bound-theme-preferences) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-07 -- Phase 19 planning complete
+Last activity: 2026-08-07
 
-Progress: [██████████] 100%
+Progress: [█████████░] 94%
 
 ## Session Continuity
 
-Last session: 2026-08-07T02:19:47.329Z
-Stopped at: Phase 19 context gathered
+Last session: 2026-08-07T05:33:52.652Z
+Stopped at: Completed 19-01-PLAN.md (backend theme preferences)
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
 ## Deferred Items
@@ -160,6 +160,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 18 P08 | 1min | 2 tasks | 1 files |
 | Phase 18 P09 | 1min | 2 tasks | 1 files |
 | Phase 18 P06 | 1min | 2 tasks | 1 files |
+| Phase 19 P01 | 5min | 3 tasks | 8 files |
 
 ## Decisions
 
@@ -262,6 +263,7 @@ Boolean return is non-breaking because callers either ignore the return or alrea
 - [Phase 18]: Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139) — Reused existing showToast(error) pattern from sibling catch branches in ThemeEditorPage handleSave; no new imports or SnackbarProvider needed — useToast already imported (line 27), showToast already destructured (line 139)
 - [Phase ?]: Auto+custom card body click is a silent no-op (early return) matching auto+preset; editor entry exclusively via always-visible 编辑 button (Phase 18-09 closes UAT Test 10)
 - [Phase ?]: [Phase 18-06]: injectThemeCss cascade fix = appendChild-on-every-call (fix option a) over :root:root specificity bump (option b) — re-ordering preserves the existing :root specificity contract; applied to both dev and production for defense-in-depth
+- [Phase ?]: [Phase 19-01] user_theme_preferences 单表 1 行/用户 (user_id PK + FK CASCADE), D-A7 字段精简为 active_theme/season_enabled/hemisphere/season_theme_map + updated_at; GET 404 触发 D-A5 首次上传; PUT server LWW 整体替换 (D-A1); 端点挂在现有 /api/users 路由 (main.py 不动)
 
 ## Operator Next Steps
 

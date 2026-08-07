@@ -148,7 +148,7 @@ Plans:
 **Plans**: 2 plansPlans:
 **Wave 1**
 
-- [ ] 19-01-PLAN.md — Backend persistence layer: user_theme_preferences table + Alembic migration + GET/PUT /api/users/me/theme-preferences + tests (D-A7, D-A1 server LWW)
+- [x] 19-01-PLAN.md — Backend persistence layer: user_theme_preferences table + Alembic migration + GET/PUT /api/users/me/theme-preferences + tests (D-A7, D-A1 server LWW)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -182,4 +182,4 @@ Phases execute in numeric order: 17 → 18 → 19. Phase 18 depends on Phase 17 
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
 | 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 9/9 | Complete    | 2026-08-06 |
-| 19. Account-Bound Theme Preferences | v1.5 | 0/0 | Not started | — |
+| 19. Account-Bound Theme Preferences | v1.5 | 1/2 | In Progress|  |

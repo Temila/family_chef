@@ -119,3 +119,12 @@ None - no external service configuration required. Backend-only plan; migration 
 ---
 *Phase: 19-account-bound-theme-preferences*
 *Completed: 2026-08-07*
+
+## Self-Check: PASSED
+
+- All 5 created files exist on disk ✓
+- All 3 modified files exist on disk ✓
+- SUMMARY.md exists at expected path ✓
+- All 4 commit hashes present in git log (33f5549, c502ebe, 0c0c2bd, 6a54b41) ✓
+- 9/9 new tests pass; 13/13 test_themes.py regression check passes ✓
+- Alembic migration round-trip (upgrade/downgrade/upgrade) verified ✓
