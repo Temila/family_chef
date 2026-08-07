@@ -8,10 +8,10 @@ updated: 2026-08-07T06:12:00Z
 
 ## Current Test
 
-number: 7
-name: 跨用户主题隔离
+number: 8
+name: 用户删除级联清除偏好（D-A7 / FK CASCADE）
 expected: |
-  用户 A 的偏好对用户 B 不可见。
+  删除用户后 user_theme_preferences 行被 FK CASCADE 自动移除。需要数据库或管理员权限。
 awaiting: 用户响应
 
 ## Tests
@@ -46,33 +46,54 @@ result: pass
 note: 附带发现 GuestOrderPage 固定移动端尺寸无法适配 PC（已记录为单独修复项，不阻塞 Phase 19 UAT）。
 
 ### 7. 跨用户主题隔离
-expected: 以用户 A 登录，设置一个醒目的主题（如红/橙预设）。登出，以用户 B 登录。用户 B 看不到用户 A 的主题——B 看到 B 自己之前保存的主题（无则默认）。通过 GET /api/users/me/theme-preferences（作为 B）返回 B 的行（或 404）确认，绝不返回 A 的数据。
-result: [pending]
+expected: 登录为用户 A，设置一个醒目的主题（如红/橙预设）。登出，登录为用户 B。用户 B 看不到用户 A 的主题——B 看到 B 自己之前保存的主题（无则默认）。通过 GET /api/users/me/theme-preferences（作为 B）返回 B 的行（或 404）确认，绝不返回 A 的数据。
+result: pass
 
 ### 8. 用户删除级联清除偏好（D-A7 / FK CASCADE）
-expected: 对一个有主题偏好行的用户，删除该用户（如直接数据库 `DELETE FROM users WHERE id=<uid>`，或通过管理员删除用户接口）。对应的 `user_theme_preferences` 行由 FK ON DELETE CASCADE 自动移除。验证：`SELECT COUNT(*) FROM user_theme_preferences WHERE user_id=<uid>` 返回 0。已知疑似缺陷 CR-01：本应用 SQLite 默认 `PRAGMA foreign_keys=0`，因此级联可能不触发、行可能成为孤儿——如果计数保持为 1，请报告。（需要数据库或管理员权限。）
-result: [pending]
+expected: 删除用户后 user_theme_preferences 行被 FK ON DELETE CASCADE 自动移除。
+result: issue
+reported: "测试流程：admin 创建用户(uid=12) → 创建自定义主题(theme_id=2) → 创建主题偏好行 → admin 硬删用户。结果：users 表 0 行（已删），user_theme_preferences 表仍 1 行（孤儿，未被级联清理）。PRAGMA foreign_keys = 0。"
+severity: blocker
+note: 已知缺陷 CR-01 复现成功。SQLite 默认 PRAGMA foreign_keys=OFF，本应用 backend/app/database.py 缺少 connect listener 强制开启，导致 ON DELETE CASCADE 永不触发。test_cascade_delete_on_user_delete 是假阳性（conftest 意外开启 pragma 仅在 :memory: 测试连接）。
 
 ## Summary
 
 total: 8
-passed: 6
-issues: 0
-pending: 2
+passed: 7
+issues: 1
+pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
 
-- truth: "GuestOrderPage（访客点菜）适配 PC 端显示（当前仅移动端）"
+- truth: "删除用户时 user_theme_preferences 行被 FK CASCADE 自动清理（不残留孤儿）"
   status: failed
+  reason: "测试流程复现：用户删除后 user_theme_preferences 行残留（PRAGMA foreign_keys=0）"
+  severity: blocker
+  test: 8
+  root_cause: "SQLite 默认 PRAGMA foreign_keys=OFF；backend/app/database.py 缺少 connect listener 强制 PRAGMA foreign_keys=ON；测试 conftest.py 的 .clean_all_tables 仅在 :memory: 测试连接上意外开启 pragma，掩盖了生产引擎缺陷"
+  artifacts:
+    - path: "backend/app/database.py"
+      issue: "create_async_engine 后未注册 @event.listens_for(engine, 'connect') 启动 PRAGMA foreign_keys=ON"
+    - path: "backend/tests/conftest.py"
+      issue: "clean_all_tables 在 :memory: 测试连接上 PRAGMA foreign_keys ON/OFF 切换，意外掩盖生产引擎缺陷，造成 false-positive"
+  missing:
+    - "修复方案：backend/app/database.py 加 connect event listener 设 PRAGMA foreign_keys=ON；conftest.py 移除 toggle，让测试在 production-equivalent 连接上验证（这同时会暴露所有其他 FK CASCADE 表 custom_themes/wishes 等的同类缺陷）"
+  debug_session: ""
+
+- truth: "GuestOrderPage（访客点菜）适配 PC 端显示"
+  status: resolved
   reason: "用户报告：访客点菜页面被固定为移动端尺寸，无法适配 PC 显示"
   severity: major
   test: 6 (附带发现)
-  root_cause: "待排查"     # 待排查
-  artifacts: []      # 待排查
-  missing: []        # 待排查
-  debug_session: ""  # 待排查
+  root_cause: ".guest-page CSS 强制 max-width: 420px，GuestOrderPage 路由不包 PcLayout"
+  artifacts:
+    - path: "frontend/src/css/styles.css"
+      issue: ".guest-page 缺少 640/960+ 断点媒体查询"
+  missing:
+    - "已修复：.guest-page 在 640px+ 放宽到 640px、960px+ 放宽到 960px；.guest-cart-bar/.cart-detail-panel 同步跟随（commit aba7500）"
+  debug_session: ""
 
 - truth: "登出后 4 个账号绑定键全部移除（含 fc_active_theme 不被重新创建）"
   status: resolved

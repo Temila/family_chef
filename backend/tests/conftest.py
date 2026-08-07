@@ -7,7 +7,7 @@ from collections.abc import AsyncGenerator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import text
+from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # 使用内存 SQLite 进行测试
@@ -20,6 +20,18 @@ test_engine = create_async_engine(
     echo=False,
     connect_args={"check_same_thread": False},
 )
+
+
+# CR-01 修复（Phase 19 UAT 测试 8）：test_engine 也需要 PRAGMA foreign_keys=ON
+# connect listener——否则 test_session_factory 的直连（绕过 app.engine）与生产
+# 引擎行为不一致，FK CASCADE 测试会变 false-positive。
+@event.listens_for(test_engine.sync_engine, "connect")
+def _enable_sqlite_foreign_keys_test(dbapi_connection, connection_record):
+    """每个新测试连接强制开启外键约束（与生产 engine 行为一致）"""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
+    cursor.close()
+
 
 # 创建测试会话工厂
 test_session_factory = async_sessionmaker(
@@ -63,12 +75,15 @@ async def setup_database():
 
 
 async def clean_all_tables():
-    """清理所有表数据"""
+    """清理所有表数据
+
+    CR-01 修复（Phase 19 UAT 测试 8）：保持生产引擎等同的 PRAGMA foreign_keys=ON
+    (由 backend/app/database.py 的 connect listener 开启)，按依赖反序删除，
+    让测试连接与生产连接行为一致（之前 PRAGMA OFF toggle 掩盖了 FK 缺陷，
+    使 test_cascade_delete_on_user_delete 成为 false-positive）。
+    """
     async with test_engine.connect() as conn:
-        # 禁用外键检查
-        await conn.execute(text("PRAGMA foreign_keys = OFF"))
-        
-        # 删除所有表数据（按依赖顺序）
+        # 按依赖反序删除（children → parents）——FK ON 时必须遵守
         tables = [
             "order_items",
             "orders",
@@ -95,17 +110,13 @@ async def clean_all_tables():
                 await conn.execute(text(f"DELETE FROM {table}"))
             except Exception:
                 pass  # 表可能不存在或无数据
-        
+
         # 重置自增 ID
         try:
             await conn.execute(text("DELETE FROM sqlite_sequence"))
         except Exception:
             pass
-        
-        await conn.commit()
-        
-        # 重新启用外键检查
-        await conn.execute(text("PRAGMA foreign_keys = ON"))
+
         await conn.commit()
 
 
