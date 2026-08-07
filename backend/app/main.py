@@ -55,7 +55,16 @@ def _run_migrations() -> None:
     cfg = Config(str(ini_path))
     # 锁定与应用相同的数据库 URL（忽略 CWD 差异）
     cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-    command.upgrade(cfg, "head")
+    try:
+        command.upgrade(cfg, "head")
+    except Exception as e:
+        if "already exists" in str(e).lower():
+            # 表已存在但 alembic_version 为空（init_db 的 create_all 兜底留下的状态）。
+            # 标记为 head，避免每次启动都从第一个迁移重跑然后失败。
+            command.stamp(cfg, "head")
+            _log("  ⚠ 检测到表已存在但 alembic_version 为空，已标记为 head（create_all 遗留状态已修复）")
+        else:
+            raise
 
 
 class _DownloadProgress:
