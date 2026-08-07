@@ -67,6 +67,7 @@
 
 - [x] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (completed 2026-08-04, all 7 ROADMAP success criteria verified end-to-end via 17-06)
 - [x] **Phase 18: Custom Editor & Seasonal Auto-Switch** - react-colorful 种子色编辑器 + 9 种 MD3 变体 + 实时预览直写 DOM + 增删改自定义 theme + 季节解析 + 自动切换开关 + 半球 + 手动挂起 override (completed 2026-08-05)
+- [ ] **Phase 19: Account-Bound Theme Preferences** - 将 Phase 18 中 localStorage 存储的主题偏好（活动主题、季节开关、半球、季节→主题映射）迁移为账号绑定（后端为真相源）；localStorage 保留为 FOUC 首帧缓存层。fc_theme (legacy light/dark) 不迁移
 
 ## Phase Details
 
@@ -131,10 +132,27 @@ Plans:
 > 开放产品决策（discuss 阶段）：(a) 季节定义——气象学（3-5 月春）vs 节气（立春/立夏/立秋/立冬，更符合中文家庭场景）；(b) 半球检测方式（无浏览器半球 API，时区启发式脆弱）；(c) 自动切换 vs 手动选择的精确交互语义。
 **UI hint**: yes
 
+### Phase 19: Account-Bound Theme Preferences
+
+**Goal**: 将 Phase 18 引入并仅存于 localStorage 的主题偏好（活动主题、季节自动切换开关、半球、季节→主题映射）迁移为账号绑定——后端为单一真相源，跨设备一致；localStorage 降级为 FOUC 首帧无网络引导的缓存层，并在登录后异步校准。自定义主题的"定义"已在 Phase 17 与账号绑定，本阶段只迁移用户的"选择与偏好"。fc_theme (legacy light/dark 变体) 维持 localStorage（仅为旧用户视觉平滑过渡，不再是新功能依赖）。
+**Depends on**: Phase 18（消费 theme-context / fouc-bootstrap / ThemeSettingsPage 与所有现有 localStorage 键契约）
+**Requirements**: TBD（discuss 阶段收敛）
+**Success Criteria** (what must be TRUE):
+
+  1. 后端持久化用户的活动主题、季节开关、半球、季节→主题映射（DB 为真相源）；同一账号在不同设备登录后偏好一致
+  2. FOUC 首帧引导（IIFE 内联）仍能在 React hydration 之前确定首帧主题——依靠 localStorage 缓存，零网络请求；登录后异步从后端校准，差异处理策略由 discuss 阶段决定
+  3. fc_last_season 维持 localStorage（纯设备级渲染缓存，语义不属于账号偏好）
+  4. 登出/换账号时主题偏好不串号——按用户隔离 key 或登出时清理
+  5. 离线/后端不可用时回退到 localStorage 缓存，不阻塞功能
+
+**Plans**: TBD
+> 开放产品决策（discuss 阶段）：(a) 多设备竞态策略——last-write-wins vs 时间戳合并；(b) 未登录期间本地修改如何 merge 到账号（merge-on-login vs 提示用户选择）；(c) 访客（无账号 JWT）场景下主题偏好如何处理（仅本地 / 隐藏 / 默认主题）；(d) 数据模型——单表 user_theme_preferences (1 行/用户) vs 拆分表。
+**UI hint**: no（仅后端 + 引导层与 theme-context 改造，无新页面）
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consumes apply engine + backend CustomTheme CRUD API + /theme page).
+Phases execute in numeric order: 17 → 18 → 19. Phase 18 depends on Phase 17 (consumes apply engine + backend CustomTheme CRUD API + /theme page). Phase 19 depends on Phase 18 (consumes theme-context / fouc-bootstrap / ThemeSettingsPage and all current localStorage key contracts).
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -156,3 +174,4 @@ Phases execute in numeric order: 17 → 18. Phase 18 depends on Phase 17 (consum
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
 | 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 9/9 | Complete    | 2026-08-06 |
+| 19. Account-Bound Theme Preferences | v1.5 | 0/0 | Not started | — |
