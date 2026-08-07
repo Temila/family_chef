@@ -113,6 +113,35 @@ function normalizeTheme(theme) {
   };
 }
 
+// Phase 19: 账号绑定序列化——将内存主题对象转为后端 ActiveThemePayload 线上传输格式（camelCase sourceColors）
+function serializeActiveTheme(theme) {
+  if (!theme) return null;
+  return {
+    id: theme.id,
+    name: theme.name,
+    sourceColors: theme.sourceColors,
+    variant: theme.variant,
+    kind: theme.kind,
+  };
+}
+
+function serializeSeasonThemeMap(map) {
+  const out = {};
+  for (const season of VALID_SEASONS) {
+    const entry = map?.[season];
+    if (entry) {
+      out[season] = {
+        id: entry.id,
+        name: entry.name,
+        sourceColors: entry.sourceColors,
+        variant: entry.variant,
+        kind: entry.kind,
+      };
+    }
+  }
+  return out;
+}
+
 // 读取并校验 fc_season_enabled：仅 'true' 字符串为真，否则默认 false
 function readSeasonEnabledFromStorage() {
   try {
@@ -238,6 +267,10 @@ export const ThemeProvider = ({ children }) => {
   // 这是为了应对"用户主动打开开关"的语义：打开开关就是意图切换到当前季节，
   // 不应该被旧的 cacheHits 抑制掉（cache gate 设计上只用于 mount）。
   const justEnabledRef = useRef(false);
+  // Phase 19: 账号绑定主题偏好同步（refs 避免触发重渲染）
+  const preferencesLoadedRef = useRef(false); // 当前会话是否至少完成一次服务端同步
+  const skipNextPutRef = useRef(false); // 跳过下一次 debounced PUT（同步/上传后置 true）
+  const debouncedPutTimerRef = useRef(null); // debounce 定时器句柄
 
   /**
    * 公开的 setActiveTheme —— D-09 互斥闸门。
@@ -269,6 +302,37 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [activeTheme, showToast]);
 
+  // Phase 19 D-A1/D-A4: 双写——除现有 localStorage 写入外，200ms debounce PUT 到服务端
+  useEffect(() => {
+    if (!user || !preferencesLoadedRef.current) return;
+    if (skipNextPutRef.current) {
+      skipNextPutRef.current = false;
+      return;
+    }
+    if (debouncedPutTimerRef.current) {
+      clearTimeout(debouncedPutTimerRef.current);
+    }
+    debouncedPutTimerRef.current = setTimeout(async () => {
+      try {
+        await api.updateThemePreferences({
+          active_theme: serializeActiveTheme(activeTheme),
+          season_enabled: seasonEnabled,
+          hemisphere,
+          season_theme_map: serializeSeasonThemeMap(seasonThemeMap),
+        });
+      } catch {
+        /* PUT 失败静默（D-A4）；服务端 LWW 下次拉取自然校准 */
+      }
+      debouncedPutTimerRef.current = null;
+    }, 200);
+    return () => {
+      if (debouncedPutTimerRef.current) {
+        clearTimeout(debouncedPutTimerRef.current);
+        debouncedPutTimerRef.current = null;
+      }
+    };
+  }, [user, activeTheme, seasonEnabled, hemisphere, seasonThemeMap]);
+
   const refreshCustomThemes = useCallback(async () => {
     if (!user) return;
 
@@ -298,11 +362,82 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [activeTheme, setActiveTheme, showToast, user]);
 
+  /**
+   * Phase 19 D-A4/D-A5: 登录后静默 GET 服务端偏好。
+   * - 200：用服务端值水合 state + localStorage；置 skipNextPutRef 避免回声 PUT。
+   * - 404：首次迁移——读取本地 4 个 fc_* key 上传为初始 payload（D-A5）。
+   * - 其他错误：静默回退本地缓存，不弹 toast（D-A4）。
+   */
+  const refreshThemePreferences = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const server = await api.getThemePreferences();
+      skipNextPutRef.current = true;
+      const enabled = Boolean(server.season_enabled);
+      const hemi = normalizeHemisphere(server.hemisphere);
+      const map = server.season_theme_map || buildDefaultSeasonThemeMap();
+      setActiveThemeState(normalizeTheme(server.active_theme));
+      setSeasonEnabledState(enabled);
+      setHemisphereState(hemi);
+      setSeasonThemeMapState(map);
+      writeActiveThemeToStorage(server.active_theme);
+      writeSeasonEnabledToStorage(enabled);
+      writeHemisphereToStorage(hemi);
+      writeSeasonThemeMapToStorage(map);
+      preferencesLoadedRef.current = true;
+    } catch (err) {
+      if (err?.status === 404) {
+        // D-A5: 服务器无偏好，把本地缓存上传作为初始 payload
+        const localTheme = readActiveThemeFromStorage();
+        const localEnabled = readSeasonEnabledFromStorage();
+        const localHemi = readHemisphereFromStorage();
+        const localMap = readSeasonThemeMapFromStorage();
+        skipNextPutRef.current = true;
+        try {
+          await api.updateThemePreferences({
+            active_theme: serializeActiveTheme(localTheme),
+            season_enabled: localEnabled,
+            hemisphere: localHemi,
+            season_theme_map: serializeSeasonThemeMap(localMap),
+          });
+        } catch {
+          /* 上传失败静默；后续 debounced PUT 会重试 */
+        }
+      }
+      // 其他错误（含上传失败）：静默回退本地缓存，不弹 toast（D-A4）
+      preferencesLoadedRef.current = true;
+    }
+  }, [user?.id]);
+
   useEffect(() => {
-    if (!user?.id) return undefined;
-    queueMicrotask(() => { refreshCustomThemes(); });
+    if (!user?.id) {
+      // D-A6: 登出清理——移除 4 个账号偏好 key，重置 context state；
+      // 保留 fc_theme（legacy light/dark）+ fc_last_season（渲染缓存），不与账号绑定。
+      // setState 经 queueMicrotask 延迟以规避 react-hooks/set-state-in-effect 级联渲染（同文件既有范式）
+      localStorage.removeItem(ACTIVE_THEME_KEY);
+      localStorage.removeItem(SEASON_ENABLED_KEY);
+      localStorage.removeItem(HEMISPHERE_KEY);
+      localStorage.removeItem(SEASON_THEME_MAP_KEY);
+      queueMicrotask(() => {
+        setActiveThemeState(DEFAULT_PRESET);
+        setSeasonEnabledState(false);
+        setHemisphereState('north');
+        setSeasonThemeMapState(buildDefaultSeasonThemeMap());
+      });
+      preferencesLoadedRef.current = false;
+      if (debouncedPutTimerRef.current) {
+        clearTimeout(debouncedPutTimerRef.current);
+        debouncedPutTimerRef.current = null;
+      }
+      return undefined;
+    }
+    // 登录：并行拉取自定义主题缓存（Phase 17）+ 账号偏好（Phase 19）
+    queueMicrotask(() => {
+      refreshCustomThemes();
+      refreshThemePreferences();
+    });
     return undefined;
-  }, [user?.id, refreshCustomThemes]);
+  }, [user?.id, refreshCustomThemes, refreshThemePreferences]);
 
   /**
    * D-11: 打开/关闭季节自动切换开关，即时持久化；on→off 不改主题（保留用户上次手动选择），
