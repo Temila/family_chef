@@ -51,35 +51,31 @@ result: pass
 
 ### 8. 用户删除级联清除偏好（D-A7 / FK CASCADE）
 expected: 删除用户后 user_theme_preferences 行被 FK ON DELETE CASCADE 自动移除。
-result: issue
-reported: "测试流程：admin 创建用户(uid=12) → 创建自定义主题(theme_id=2) → 创建主题偏好行 → admin 硬删用户。结果：users 表 0 行（已删），user_theme_preferences 表仍 1 行（孤儿，未被级联清理）。PRAGMA foreign_keys = 0。"
-severity: blocker
-note: 已知缺陷 CR-01 复现成功。SQLite 默认 PRAGMA foreign_keys=OFF，本应用 backend/app/database.py 缺少 connect listener 强制开启，导致 ON DELETE CASCADE 永不触发。test_cascade_delete_on_user_delete 是假阳性（conftest 意外开启 pragma 仅在 :memory: 测试连接）。
+result: pass
+note: 初测在生产引擎上复现成功——PRAGMA foreign_keys=0，删 user 后偏好行残留（CR-01 缺陷）。已在 0824c20 修复（database.py 加 connect listener 强制 FK=ON，conftest.py 移除 toggle 并加同名 listener）。修复后端到端复现：admin 创用户→建主题→建偏好→admin 硬删→偏好行被级联清理 ✓。test_user_theme_preferences 10/10 测试通过（含原 cascade 测试现为真阳性）。
 
 ## Summary
 
 total: 8
-passed: 7
-issues: 1
+passed: 8
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
 
-- truth: "删除用户时 user_theme_preferences 行被 FK CASCADE 自动清理（不残留孤儿）"
-  status: failed
-  reason: "测试流程复现：用户删除后 user_theme_preferences 行残留（PRAGMA foreign_keys=0）"
+- truth: "删除用户时 user_theme_preferences 行被 FK CASCADE 自动清理"
+  status: resolved
+  reason: "初测在生产引擎上复现成功——PRAGMA foreign_keys=0，删 user 后偏好行残留"
   severity: blocker
   test: 8
-  root_cause: "SQLite 默认 PRAGMA foreign_keys=OFF；backend/app/database.py 缺少 connect listener 强制 PRAGMA foreign_keys=ON；测试 conftest.py 的 .clean_all_tables 仅在 :memory: 测试连接上意外开启 pragma，掩盖了生产引擎缺陷"
+  root_cause: "SQLite 默认 PRAGMA foreign_keys=OFF；backend/app/database.py 缺少 connect listener；conftest.py toggle 掩盖缺陷"
   artifacts:
     - path: "backend/app/database.py"
-      issue: "create_async_engine 后未注册 @event.listens_for(engine, 'connect') 启动 PRAGMA foreign_keys=ON"
     - path: "backend/tests/conftest.py"
-      issue: "clean_all_tables 在 :memory: 测试连接上 PRAGMA foreign_keys ON/OFF 切换，意外掩盖生产引擎缺陷，造成 false-positive"
   missing:
-    - "修复方案：backend/app/database.py 加 connect event listener 设 PRAGMA foreign_keys=ON；conftest.py 移除 toggle，让测试在 production-equivalent 连接上验证（这同时会暴露所有其他 FK CASCADE 表 custom_themes/wishes 等的同类缺陷）"
+    - "已修复：database.py 加 @event.listens_for 强制 PRAGMA foreign_keys=ON；conftest.py 移除 toggle + 加同名 listener（commit 0824c20）。35/35 测试通过。"
   debug_session: ""
 
 - truth: "GuestOrderPage（访客点菜）适配 PC 端显示"
@@ -111,14 +107,17 @@ blocked: 0
 ## Gaps
 
 - truth: "自定义主题可作为 active_theme 上传到服务端偏好（PUT 200）"
-  status: failed
-  reason: "用户报告：点击自建测试主题1，后端 422：active_theme.id Input should be a valid string, input 1。自定义主题 id 是 DB 自增整数，但后端 ActiveThemePayload.id 定义为 Optional[str]，类型不匹配"
+  status: resolved
+  reason: "用户报告：自定义主题 PUT 422（id 整数 vs schema str）"
   severity: blocker
   test: 3
-  root_cause: "待排查"     # 待排查
-  artifacts: []      # 待排查
-  missing: []        # 待排查
-  debug_session: ""  # 待排查
+  root_cause: "ActiveThemePayload.id 定义为 Optional[str]，但 custom_themes.id 是 Integer 自增主键"
+  artifacts:
+    - path: "backend/app/schemas/user_theme_preferences.py"
+    - path: "backend/tests/test_user_theme_preferences.py"
+  missing:
+    - "已修复：id 改为 Optional[Union[str, int]]；新增回归测试 test_put_active_theme_with_integer_id_roundtrip（commit f3da4bf）。10/10 通过。"
+  debug_session: ""
 
 - truth: "登录/切换主题时前端正常工作，不触发后台请求循环"
   status: resolved
