@@ -8,7 +8,11 @@ updated: 2026-08-07T06:12:00Z
 
 ## Current Test
 
-[testing paused — 测试 3 发现 blocker：自定义主题 PUT 422，正在排查]
+number: 4
+name: 主题变更保存到服务器（D-A1）
+expected: |
+  登录状态下修改当前主题；变更立即写入 localStorage 且约 200ms 后 PUT 到服务器；刷新后保留。
+awaiting: 用户响应
 
 ## Tests
 
@@ -23,9 +27,8 @@ note: 初测发现主题切换触发后台请求无限循环（blocker），已�
 
 ### 3. 首次登录上传本地主题（D-A5）
 expected: 服务器尚无偏好的用户（新账号，或 Phase 19 后首次）登录。其本地主题设置（fc_active_theme、fc_season_enabled、fc_hemisphere、fc_season_theme_map）作为初始载荷上传到服务器。验证方式：之后在第二台设备登录看到相同主题（或检查数据库 / GET /api/users/me/theme-preferences 返回 200 且包含本地值）。
-result: issue
-reported: "点击自己新建的测试主题1，前端页面正常渲染，后端报错422：active_theme.id Input should be a valid string, input 1（自定义主题 id 是整数，schema 要 str）；退出后无法保存"
-severity: blocker
+result: pass
+note: 初测自定义主题 PUT 被 422 拒绝（id 整数 vs schema str），已在 f3da4bf 修复（id 改为 Union[str,int]）。复测通过。附带观察：切换主题时卡片选中高亮短暂消失（已记录为测试 4 之后的待查项）。
 
 ### 4. 主题变更保存到服务器（D-A1）
 expected: 登录状态下，修改当前主题（如选择不同预设）。变更立即写入 localStorage，且约 200ms 后一次防抖 PUT 更新服务器。刷新页面——新主题保留。重要边界情况：首次登录迁移（测试 3）之后立即做的第一次主题变更也必须保留——如果第一次变更被静默丢弃，请报告（疑似缺陷 CR-02）。
@@ -50,11 +53,26 @@ result: [pending]
 ## Summary
 
 total: 8
-passed: 2
-issues: 1
+passed: 3
+issues: 0
 pending: 5
 skipped: 0
 blocked: 0
+
+## Gaps
+
+- truth: "切换主题时卡片选中高亮色无闪烁（首帧即用新主题主色）"
+  status: failed
+  reason: "用户报告：切换主题时卡片外框的选中高亮色会消失，需要等待一段时间或刷新后才能出现"
+  severity: minor
+  test: 3
+  root_cause: ".theme-card--active 的 outline 用 var(--md-color-primary)；该 CSS 变量由 useEffect (post-paint) 重建，切换主题首帧仍用旧主题主色"
+  artifacts:
+    - path: "frontend/src/theme/theme-context.jsx"
+      issue: "injectThemeCss effect 走 useEffect 在绘制后注入 CSS，导致首帧色差"
+  missing:
+    - "已修复：改用 useLayoutEffect 在绘制前同步注入 CSS（commit 待提交）"
+  debug_session: ""
 
 ## Gaps
 
