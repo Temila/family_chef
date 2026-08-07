@@ -102,6 +102,7 @@ class UserService:
         role: Optional[str] = None,
         is_active: Optional[bool] = None,
         feishu_open_id: Optional[str] = None,
+        password: Optional[str] = None,
     ) -> Optional[User]:
         """更新用户信息"""
         user = await UserService.get_user_by_id(db, user_id)
@@ -118,6 +119,8 @@ class UserService:
             user.is_active = is_active
         if feishu_open_id is not None:
             user.feishu_open_id = feishu_open_id
+        if password is not None:
+            user.password_hash = hash_password(password)
 
         await db.flush()
         await db.refresh(user)

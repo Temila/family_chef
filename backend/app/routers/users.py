@@ -27,6 +27,14 @@ class UserUpdateRequest(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
     feishu_open_id: Optional[str] = None
+    password: Optional[str] = None
+
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v):
+        if v is not None and len(v) < 6:
+            raise ValueError('密码至少 6 位')
+        return v
 
     @field_validator('display_name')
     @classmethod
@@ -126,6 +134,7 @@ async def update_user(
             role=request.role,
             is_active=request.is_active,
             feishu_open_id=request.feishu_open_id,
+            password=request.password,
         )
         if not user:
             raise HTTPException(
