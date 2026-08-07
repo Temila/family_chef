@@ -454,12 +454,27 @@ input, textarea, select { font-family: var(--md-font-body); }
 .markdown-body th { background: var(--md-color-surface-container-low); font-weight: 600; }
 
 /* ═══ Guest Page ═══════════════════ */
+/* 移动端：固定手机尺寸（不变，访客主用手机访问）；
+   PC 端：放宽到 960px 并加内边距，让菜品网格自然铺开。
+   GuestOrderPage 直接在路由里渲染，未包 PcLayout，所以这里负责全部断点适配。 */
 .guest-page { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 0; background: var(--md-color-surface); }
+@media (min-width: 640px) {
+  .guest-page { max-width: 640px; padding: 0 var(--md-spacing-3); }
+}
+@media (min-width: 960px) {
+  .guest-page { max-width: 960px; padding: 0 var(--md-spacing-5); }
+}
 
 .guest-cart-bar { bottom: 0; padding-bottom: calc(var(--md-spacing-3) + env(safe-area-inset-bottom, 0px)); }
-@media (min-width: 1024px) { .guest-cart-bar { left: 50%; max-width: 420px; transform: translateX(-50%); } }
+@media (min-width: 640px) {
+  .guest-cart-bar { left: 50%; max-width: 640px; transform: translateX(-50%); }
+  .guest-cart-bar ~ .cart-detail-panel { left: 50%; max-width: 640px; transform: translateX(-50%); }
+}
+@media (min-width: 960px) {
+  .guest-cart-bar { left: 50%; max-width: 960px; transform: translateX(-50%); }
+  .guest-cart-bar ~ .cart-detail-panel { left: 50%; max-width: 960px; transform: translateX(-50%); }
+}
 .guest-cart-bar ~ .cart-detail-panel { bottom: 52px; }
-@media (min-width: 1024px) { .guest-cart-bar ~ .cart-detail-panel { left: 50%; max-width: 420px; transform: translateX(-50%); } }
 
 /* 10-02-MIGRATION: guest-page .dish-card 覆盖已删除 (GuestDishCard 重构后无 .dish-card 引用) */
 

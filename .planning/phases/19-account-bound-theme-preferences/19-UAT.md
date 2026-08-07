@@ -8,10 +8,10 @@ updated: 2026-08-07T06:12:00Z
 
 ## Current Test
 
-number: 4
-name: 主题变更保存到服务器（D-A1）
+number: 7
+name: 跨用户主题隔离
 expected: |
-  登录状态下修改当前主题；变更立即写入 localStorage 且约 200ms 后 PUT 到服务器；刷新后保留。
+  用户 A 的偏好对用户 B 不可见。
 awaiting: 用户响应
 
 ## Tests
@@ -31,16 +31,19 @@ result: pass
 note: 初测自定义主题 PUT 被 422 拒绝（id 整数 vs schema str），已在 f3da4bf 修复（id 改为 Union[str,int]）。复测通过。附带观察：切换主题时卡片选中高亮短暂消失（已记录为测试 4 之后的待查项）。
 
 ### 4. 主题变更保存到服务器（D-A1）
-expected: 登录状态下，修改当前主题（如选择不同预设）。变更立即写入 localStorage，且约 200ms 后一次防抖 PUT 更新服务器。刷新页面——新主题保留。重要边界情况：首次登录迁移（测试 3）之后立即做的第一次主题变更也必须保留——如果第一次变更被静默丢弃，请报告（疑似缺陷 CR-02）。
-result: [pending]
+expected: 登录状态下，修改当前主题。变更立即写入 localStorage 且约 200ms 后 PUT 更新服务器。刷新页面，新主题保留。重要边界情况：首次登录迁移（测试 3）之后立即做的第一次主题变更也必须保留。
+result: pass
+note: 初测发现切换主题时卡片高亮闪烁（已用 useLayoutEffect 在 7bace1a 修复）。
 
 ### 5. 登出清除账号绑定偏好（D-A6）
-expected: 登出。localStorage 中 4 个账号绑定键被移除：`fc_active_theme`、`fc_season_enabled`、`fc_hemisphere`、`fc_season_theme_map`。主题状态重置为默认（DEFAULT_PRESET、季节关、north）。遗留键 `fc_theme`（亮/暗）和 `fc_last_season`（渲染缓存）保留。已知疑似缺陷 WR-01：登出后 `fc_active_theme` 可能被主题效应重新创建——如果看到它重新出现，请报告。
-result: [pending]
+expected: 登出。localStorage 中 4 个账号绑定键被移除：fc_active_theme、fc_season_enabled、fc_hemisphere、fc_season_theme_map。主题状态重置为默认（DEFAULT_PRESET、季节关、north）。遗留键 fc_theme（亮/暗）和 fc_last_season（渲染缓存）保留。
+result: pass
+note: 初测发现 fc_active_theme 被 logout 后 useLayoutEffect 重新创建（WR-01），已在 a93ed65 修复（writeActiveThemeToStorage 加 user?.id 守门）。复测通过。
 
 ### 6. 未登录时隐藏 Header 主题控件（D-A2/D-A3）
 expected: 在登录页（未登录/未认证），Header 不显示亮/暗主题切换按钮，也不显示调色板（主题选择器）按钮。只有用户登录后才出现。
-result: [pending]
+result: pass
+note: 附带发现 GuestOrderPage 固定移动端尺寸无法适配 PC（已记录为单独修复项，不阻塞 Phase 19 UAT）。
 
 ### 7. 跨用户主题隔离
 expected: 以用户 A 登录，设置一个醒目的主题（如红/橙预设）。登出，以用户 B 登录。用户 B 看不到用户 A 的主题——B 看到 B 自己之前保存的主题（无则默认）。通过 GET /api/users/me/theme-preferences（作为 B）返回 B 的行（或 404）确认，绝不返回 A 的数据。
@@ -53,25 +56,35 @@ result: [pending]
 ## Summary
 
 total: 8
-passed: 3
+passed: 6
 issues: 0
-pending: 5
+pending: 2
 skipped: 0
 blocked: 0
 
 ## Gaps
 
-- truth: "切换主题时卡片选中高亮色无闪烁（首帧即用新主题主色）"
+- truth: "GuestOrderPage（访客点菜）适配 PC 端显示（当前仅移动端）"
   status: failed
-  reason: "用户报告：切换主题时卡片外框的选中高亮色会消失，需要等待一段时间或刷新后才能出现"
-  severity: minor
-  test: 3
-  root_cause: ".theme-card--active 的 outline 用 var(--md-color-primary)；该 CSS 变量由 useEffect (post-paint) 重建，切换主题首帧仍用旧主题主色"
+  reason: "用户报告：访客点菜页面被固定为移动端尺寸，无法适配 PC 显示"
+  severity: major
+  test: 6 (附带发现)
+  root_cause: "待排查"     # 待排查
+  artifacts: []      # 待排查
+  missing: []        # 待排查
+  debug_session: ""  # 待排查
+
+- truth: "登出后 4 个账号绑定键全部移除（含 fc_active_theme 不被重新创建）"
+  status: resolved
+  reason: "用户报告：登出后 fc_active_theme 被重新创建（WR-01）"
+  severity: major
+  test: 5
+  root_cause: "logout queueMicrotask 重置 activeTheme 为 DEFAULT_PRESET，触发 useLayoutEffect 调用 writeActiveThemeToStorage 把 fc_active_theme 写回"
   artifacts:
     - path: "frontend/src/theme/theme-context.jsx"
-      issue: "injectThemeCss effect 走 useEffect 在绘制后注入 CSS，导致首帧色差"
+      issue: "writeActiveThemeToStorage 未守门 user?.id，登出态仍写入"
   missing:
-    - "已修复：改用 useLayoutEffect 在绘制前同步注入 CSS（commit 待提交）"
+    - "已修复：writeActiveThemeToStorage 加 user?.id 守门（commit a93ed65）"
   debug_session: ""
 
 ## Gaps
