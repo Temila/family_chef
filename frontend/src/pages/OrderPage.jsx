@@ -350,34 +350,37 @@ export default function OrderPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--md-spacing-2)', padding: '0 var(--md-spacing-4) var(--md-spacing-1)'}}>
-        <Button
-          variant="tonal"
-          size="sm"
-          onClick={() => setShowFilters(true)}
-          startIcon={<Icon name="filter" size={18} />}
-        >
-          高级筛选
-        </Button>
-        <Chip variant="filter" selected={favoritesOnly}
-          
-          onClick={() => setFavoritesOnly(!favoritesOnly)}
-        >
-          <Icon name="favorite" size={18} /> 收藏
-        </Chip>
-        <select
-          className="form-input"
-          style={{ width: 'auto', appearance: 'none', paddingRight: 'var(--md-spacing-5)', background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="name">默认排序</option>
-          <option value="created">最新添加</option>
-          <option value="popular">热门优先</option>
-        </select>
-        <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: '28px' }}>
-          共 {total} 道
-        </span>
+      <div className="filter-action-row">
+        <div className="filter-action-row__filters">
+          <Button
+            variant="tonal"
+            size="sm"
+            onClick={() => setShowFilters(true)}
+            startIcon={<Icon name="filter" size={18} />}
+          >
+            高级筛选
+          </Button>
+          <Chip variant="filter" selected={favoritesOnly}
+            onClick={() => setFavoritesOnly(!favoritesOnly)}
+          >
+            <Icon name="favorite" size={18} /> 收藏
+          </Chip>
+        </div>
+        <div className="filter-action-row__actions">
+          <select
+            className="form-input"
+            style={{ width: 'auto', appearance: 'none', paddingRight: 'var(--md-spacing-5)', background: `var(--md-color-surface-container) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999BAA'/%3E%3C/svg%3E") no-repeat right 8px center` }}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="name">默认排序</option>
+            <option value="created">最新添加</option>
+            <option value="popular">热门优先</option>
+          </select>
+          <span style={{ fontSize: '0.75rem', color: 'var(--md-color-on-surface-variant)', lineHeight: '28px' }}>
+            共 {total} 道
+          </span>
+        </div>
       </div>
 
       {showFilters && (
