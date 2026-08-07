@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.utils.security import hash_password
 
+GUEST_USERNAME = "__guest__"
+
 
 class UserService:
     """用户服务"""
@@ -33,7 +35,7 @@ class UserService:
         search: Optional[str] = None,
     ) -> dict:
         """分页查询用户列表"""
-        query = select(User)
+        query = select(User).where(User.username != GUEST_USERNAME)
 
         if role:
             query = query.where(User.role == role)
@@ -43,7 +45,7 @@ class UserService:
                 User.username.contains(search) | User.display_name.contains(search)
             )
 
-        count_query = select(func.count(User.id))
+        count_query = select(func.count(User.id)).where(User.username != GUEST_USERNAME)
         if role:
             count_query = count_query.where(User.role == role)
         if search:
@@ -108,6 +110,8 @@ class UserService:
         user = await UserService.get_user_by_id(db, user_id)
         if not user:
             return None
+        if user.username == GUEST_USERNAME:
+            raise ValueError("系统保留用户不允许修改")
 
         if display_name is not None:
             user.display_name = display_name
@@ -139,6 +143,8 @@ class UserService:
         user = await UserService.get_user_by_id(db, user_id)
         if not user:
             return False
+        if user.username == GUEST_USERNAME:
+            raise ValueError("系统保留用户不允许修改密码")
 
         if not verify_password(old_password, user.password_hash):
             raise ValueError("原密码错误")
@@ -154,6 +160,8 @@ class UserService:
         user = await UserService.get_user_by_id(db, user_id)
         if not user:
             return False
+        if user.username == GUEST_USERNAME:
+            raise ValueError("系统保留用户不允许删除")
 
         await db.delete(user)
         await db.flush()

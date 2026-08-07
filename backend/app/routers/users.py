@@ -203,16 +203,22 @@ async def delete_user(
             detail="不能删除自己",
         )
 
-    success = await user_service.delete_user(db, user_id)
-    if not success:
+    try:
+        success = await user_service.delete_user(db, user_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="用户不存在",
+            )
+        await db.commit()
+        await log_action(current_user.id, "delete_user", "user", user_id, f"删除用户 #{user_id}")
+        return None
+    except ValueError as e:
+        await db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="用户不存在",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
         )
-
-    await db.commit()
-    await log_action(current_user.id, "delete_user", "user", user_id, f"删除用户 #{user_id}")
-    return None
 
 
 @router.get("/me/theme-preferences", response_model=UserThemePreferencesResponse)
