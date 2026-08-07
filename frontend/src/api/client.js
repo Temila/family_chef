@@ -54,7 +54,9 @@ class ApiClient {
     }
 
     if (!res.ok) {
-      throw new Error(data.detail || '请求失败');
+      const err = new Error(data.detail || '请求失败');
+      err.status = res.status;
+      throw err;
     }
 
     return data;
@@ -303,6 +305,16 @@ class ApiClient {
 
   async deleteTheme(id) {
     return this.del(`/themes/${id}`);
+  }
+
+  // ─── Theme Preferences (账号绑定, Phase 19) ─────────────────────────────────────
+  // 线上传输格式为 camelCase sourceColors（与后端 ActiveThemePayload 一致），无需 snake↔camel 转换。
+  async getThemePreferences() {
+    return this.get('/users/me/theme-preferences');
+  }
+
+  async updateThemePreferences(payload) {
+    return this.put('/users/me/theme-preferences', payload);
   }
 
   // ─── Preferences ─────────────────────────────────────
