@@ -145,10 +145,15 @@ Plans:
   4. 登出/换账号时主题偏好不串号——按用户隔离 key 或登出时清理
   5. 离线/后端不可用时回退到 localStorage 缓存，不阻塞功能
 
-**Plans**: 2 plans
-Plans:
+**Plans**: 2 plansPlans:
+**Wave 1**
+
 - [ ] 19-01-PLAN.md — Backend persistence layer: user_theme_preferences table + Alembic migration + GET/PUT /api/users/me/theme-preferences + tests (D-A7, D-A1 server LWW)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 19-02-PLAN.md — Frontend integration: ApiClient methods + theme-context dual-write + login-fetch + logout cleanup + Header auth guard (D-A1, D-A2, D-A3, D-A4, D-A5, D-A6)
+
 > 开放产品决策（discuss 阶段）：(a) 多设备竞态策略——last-write-wins vs 时间戳合并；(b) 未登录期间本地修改如何 merge 到账号（merge-on-login vs 提示用户选择）；(c) 访客（无账号 JWT）场景下主题偏好如何处理（仅本地 / 隐藏 / 默认主题）；(d) 数据模型——单表 user_theme_preferences (1 行/用户) vs 拆分表。
 **UI hint**: no（仅后端 + 引导层与 theme-context 改造，无新页面）
 
