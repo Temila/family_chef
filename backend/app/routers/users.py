@@ -9,9 +9,14 @@ from pydantic import BaseModel, field_validator
 from app.database import get_db
 from app.routers.auth import get_current_user_from_token, require_role, get_current_user_allow_force_pwd_change
 from app.services.user_service import user_service
+from app.services.user_theme_preferences_service import user_theme_preferences_service
 from app.middleware.logging import log_action
 from app.models.user import User
 from app.schemas.user import _sanitize, _check_unsafe
+from app.schemas.user_theme_preferences import (
+    UserThemePreferencesResponse,
+    UserThemePreferencesUpdate,
+)
 
 router = APIRouter()
 
@@ -199,3 +204,38 @@ async def delete_user(
     await db.commit()
     await log_action(current_user.id, "delete_user", "user", user_id, f"删除用户 #{user_id}")
     return None
+
+
+@router.get("/me/theme-preferences", response_model=UserThemePreferencesResponse)
+async def get_my_theme_preferences(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token),
+):
+    """读取当前登录用户的主题偏好 (Phase 19 D-A7)。
+
+    不存在时返回 404, 客户端据此触发首次迁移上传 (D-A5)。
+    """
+    try:
+        row = await user_theme_preferences_service.get_or_404(db, current_user.id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="未设置主题偏好",
+        )
+    return UserThemePreferencesResponse.model_validate(row)
+
+
+@router.put("/me/theme-preferences", response_model=UserThemePreferencesResponse)
+async def put_my_theme_preferences(
+    payload: UserThemePreferencesUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token),
+):
+    """整体替换当前登录用户的主题偏好 (Phase 19 D-A1/D-A7)。
+
+    服务端 LWW: upsert 语义, 不存在则创建, 存在则整体覆盖。
+    """
+    row = await user_theme_preferences_service.upsert(db, current_user.id, payload)
+    await db.commit()
+    await db.refresh(row)
+    return UserThemePreferencesResponse.model_validate(row)
