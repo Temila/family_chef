@@ -56,6 +56,7 @@ async def setup_database():
     from app.models.guest_invitation import GuestInvitation  # noqa: F401
     from app.models.wish import Wish  # noqa: F401
     from app.models.custom_theme import CustomTheme  # noqa: F401
+    from app.models.user_theme_preferences import UserThemePreferences  # noqa: F401
 
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -73,6 +74,7 @@ async def clean_all_tables():
             "orders",
             "wishes",
             "custom_themes",
+            "user_theme_preferences",
             "guest_invitations",
             "dish_categories",
             "dish_ingredients",
