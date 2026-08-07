@@ -7,7 +7,7 @@
 # -------------------- 应用基础配置 --------------------
 app:
   name: "家味·Family Chef"
-  version: "1.3.0"
+  version: "1.5.0"
   url: "https://family-chef.app" # 飞书深链基址（部署时改为实际公网地址）
   debug: true
   secret_key: "CHANGE-ME-TO-A-RANDOM-LONG-STRING"
