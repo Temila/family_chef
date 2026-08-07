@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 自定义网站皮肤 / Theme Customization
-status: executing
-last_updated: "2026-08-07T05:33:52.669Z"
+status: verifying
+last_updated: "2026-08-07T05:41:56.316Z"
 last_activity: 2026-08-07
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 17
-  completed_plans: 16
-  percent: 67
+  completed_plans: 17
+  percent: 100
 ---
 
 # Project State
@@ -37,15 +37,15 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 Phase: 19 (account-bound-theme-preferences) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-07
 
-Progress: [█████████░] 94%
+Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-08-07T05:33:52.652Z
-Stopped at: Completed 19-01-PLAN.md (backend theme preferences)
+Last session: 2026-08-07T05:41:53.436Z
+Stopped at: Completed 19-02-PLAN.md (frontend dual-write)
 Next: `/gsd-verify-work 17` to run human UAT, then `/gsd-plan-phase 18` for custom editor + seasonal auto-switch.
 
 ## Deferred Items
@@ -161,6 +161,7 @@ Items acknowledged and carried forward from v1.1 milestone close:
 | Phase 18 P09 | 1min | 2 tasks | 1 files |
 | Phase 18 P06 | 1min | 2 tasks | 1 files |
 | Phase 19 P01 | 5min | 3 tasks | 8 files |
+| Phase 19 P02 | 5min | 3 tasks | 3 files |
 
 ## Decisions
 
@@ -264,8 +265,10 @@ Boolean return is non-breaking because callers either ignore the return or alrea
 - [Phase ?]: Auto+custom card body click is a silent no-op (early return) matching auto+preset; editor entry exclusively via always-visible 编辑 button (Phase 18-09 closes UAT Test 10)
 - [Phase ?]: [Phase 18-06]: injectThemeCss cascade fix = appendChild-on-every-call (fix option a) over :root:root specificity bump (option b) — re-ordering preserves the existing :root specificity contract; applied to both dev and production for defense-in-depth
 - [Phase ?]: [Phase 19-01] user_theme_preferences 单表 1 行/用户 (user_id PK + FK CASCADE), D-A7 字段精简为 active_theme/season_enabled/hemisphere/season_theme_map + updated_at; GET 404 触发 D-A5 首次上传; PUT server LWW 整体替换 (D-A1); 端点挂在现有 /api/users 路由 (main.py 不动)
+- [Phase 19-02]: Frontend dual-write — localStorage (existing) + 200ms debounced PUT gated on user && preferencesLoadedRef; skipNextPutRef one-shot flag suppresses echo-back after server hydration (D-A1/D-A4); login GET 200 hydrates / 404 uploads local fc_* as initial payload (D-A5); logout removes 4 fc_* keys + resets state, preserves fc_theme + fc_last_season (D-A6); refs (not state) for sync bookkeeping to avoid re-render storms; refreshThemePreferences defined before user-keyed useEffect to avoid TDZ on deps array; logout setState wrapped in queueMicrotask (set-state-in-effect lint, file's existing pattern)
+- [Phase 19-02]: Header ThemeToggle + Palette IconButtons wrapped in {user && (...)} guards (D-A2/D-A3) — defense-in-depth for AuthProvider initial-load window; /theme route already ProtectedRoute-gated; ApiClient bare path /users/me/theme-preferences (baseURL=/api), err.status attached for 404 detection, no snake↔camel transform (wire format matches backend ActiveThemePayload)
 
 ## Operator Next Steps
 
-- Start Phase 17 (Theme System Foundation — Engine, Page, Presets & Persistence) with `/gsd-plan-phase 17`
-- Phase 18 (Custom Editor & Seasonal Auto-Switch) will need `/gsd-plan-phase --research-phase 18` (HIGH research flag — HCT/Variant/直写DOM preview spike; also season definition + hemisphere product decisions for discuss phase)
+- Phase 19 (account-bound-theme-preferences) is functionally complete (backend Plan 01 + frontend Plan 02). Run `/gsd-verify-work 19` for human UAT.
+- Manual end-to-end (login GET 200/PUT 200, first-login 404→PUT migration, logout fc_* removal + fc_theme/fc_last_season preservation, Header button hiding) deferred to UAT verifier.

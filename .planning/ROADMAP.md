@@ -67,7 +67,7 @@
 
 - [x] **Phase 17: Theme System Foundation — Engine, Page, Presets & Persistence** - theme-engine 派生 + FOUC 防护 + 生成式 `<style>` 应用层 + ThemeContext + 深色/elevation 跟随 + /theme 卡片页 + 5 预设 + CustomTheme 模型/迁移/JWT CRUD + 跨设备对账 + hex-lint — 6 plans (completed 2026-08-04, all 7 ROADMAP success criteria verified end-to-end via 17-06)
 - [x] **Phase 18: Custom Editor & Seasonal Auto-Switch** - react-colorful 种子色编辑器 + 9 种 MD3 变体 + 实时预览直写 DOM + 增删改自定义 theme + 季节解析 + 自动切换开关 + 半球 + 手动挂起 override (completed 2026-08-05)
-- [ ] **Phase 19: Account-Bound Theme Preferences** - 将 Phase 18 中 localStorage 存储的主题偏好（活动主题、季节开关、半球、季节→主题映射）迁移为账号绑定（后端为真相源）；localStorage 保留为 FOUC 首帧缓存层。fc_theme (legacy light/dark) 不迁移 — 2 plans
+- [x] **Phase 19: Account-Bound Theme Preferences** - 将 Phase 18 中 localStorage 存储的主题偏好（活动主题、季节开关、半球、季节→主题映射）迁移为账号绑定（后端为真相源）；localStorage 保留为 FOUC 首帧缓存层。fc_theme (legacy light/dark) 不迁移 — 2 plans (completed 2026-08-07)
 
 ## Phase Details
 
@@ -152,7 +152,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 19-02-PLAN.md — Frontend integration: ApiClient methods + theme-context dual-write + login-fetch + logout cleanup + Header auth guard (D-A1, D-A2, D-A3, D-A4, D-A5, D-A6)
+- [x] 19-02-PLAN.md — Frontend integration: ApiClient methods + theme-context dual-write + login-fetch + logout cleanup + Header auth guard (D-A1, D-A2, D-A3, D-A4, D-A5, D-A6)
 
 > 开放产品决策（discuss 阶段）：(a) 多设备竞态策略——last-write-wins vs 时间戳合并；(b) 未登录期间本地修改如何 merge 到账号（merge-on-login vs 提示用户选择）；(c) 访客（无账号 JWT）场景下主题偏好如何处理（仅本地 / 隐藏 / 默认主题）；(d) 数据模型——单表 user_theme_preferences (1 行/用户) vs 拆分表。
 **UI hint**: no（仅后端 + 引导层与 theme-context 改造，无新页面）
@@ -182,4 +182,4 @@ Phases execute in numeric order: 17 → 18 → 19. Phase 18 depends on Phase 17 
 | 16. Tech Debt Cleanup | v1.4 | 4/4 | ✓ Complete | 2026-07-30 |
 | 17. Theme System Foundation — Engine, Page, Presets & Persistence | v1.5 | 6/6 | Complete   | 2026-08-04 |
 | 18. Custom Editor & Seasonal Auto-Switch | v1.5 | 9/9 | Complete    | 2026-08-06 |
-| 19. Account-Bound Theme Preferences | v1.5 | 1/2 | In Progress|  |
+| 19. Account-Bound Theme Preferences | v1.5 | 2/2 | Complete   | 2026-08-07 |
